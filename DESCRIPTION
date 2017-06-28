@@ -1,0 +1,13 @@
+Package: monadR
+Title: A monadic library for handling error
+Version: 0.0.0.9000
+Author: Zebulun Arendsee
+Maintainer: Zebulun Arendsee <arendsee@iastate.edu>
+URL: https://github.com/arendsee/monadR
+BugReports: https://github.com/arendsee/monadR/issues
+Description:
+    This library allows pure handling of functions that may fail.
+Depends: R (>= 3.4.0)
+License: GPL-3 + file LICENSE
+Encoding: UTF-8
+LazyData: true
