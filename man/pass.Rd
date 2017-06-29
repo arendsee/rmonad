@@ -18,7 +18,7 @@ Load a value into the report monad
 \examples{
 foo <- function(x) {
   if(x <= 0){
-    fail("x <= 0, cannot log")
+    fail(x, "x <= 0, cannot log")
   } else {
     pass(log(x))
   }

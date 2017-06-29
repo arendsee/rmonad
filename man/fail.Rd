@@ -4,9 +4,11 @@
 \alias{fail}
 \title{Load a failure message into the monad}
 \usage{
-fail(s)
+fail(x, s)
 }
 \arguments{
+\item{x}{A value (which is be ignored)}
+
 \item{s}{An error message}
 }
 \value{

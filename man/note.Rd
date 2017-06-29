@@ -4,12 +4,14 @@
 \alias{note}
 \title{Append a note message onto the monad}
 \usage{
-note(m, s)
+note(m, s, force = FALSE)
 }
 \arguments{
 \item{m}{A report monad}
 
 \item{s}{A string describing a note}
+
+\item{force}{logical, should we add the note even to a failed monad?}
 }
 \value{
 A report monad with a new note appended

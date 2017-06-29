@@ -45,8 +45,11 @@ mzero <- function() { methods::new("monadR") }
 #' @param m2  Report monad
 #' @return A report monad with combines m1 and m2 
 mcombine <- function(m1, m2){
+  m1 <- as.monadR(m1)
+  m2 <- as.monadR(m2)
   m <- methods::new(
      "monadR",
+     x        = list(),
      errors   = append(m1@errors,   m2@errors),
      notes    = append(m1@notes,    m2@notes),
      warnings = append(m1@warnings, m2@warnings),
@@ -67,7 +70,7 @@ mcombine <- function(m1, m2){
 #' @examples
 #' foo <- function(x) {
 #'   if(x <= 0){
-#'     fail("x <= 0, cannot log")
+#'     fail(x, "x <= 0, cannot log")
 #'   } else {
 #'     pass(log(x))
 #'   }
@@ -75,16 +78,27 @@ mcombine <- function(m1, m2){
 #' foo(-1)
 #' foo(2)
 pass <- function(x) {
-  methods::new("monadR", x=list(x)) 
+  if(class(x) == "monadR"){
+    x
+  } else {
+    methods::new("monadR", x=list(x)) 
+  }
 }
 
 #' Load a failure message into the monad
 #'
 #' @export
+#' @param x A value (which is be ignored)
 #' @param s An error message
 #' @return A failing monad report
-fail <- function(s) {
-  methods::new("monadR", errors=list(s), OK=FALSE)
+fail <- function(x, s) {
+  if(class(x) == "monadR"){
+    x@errors <- append(x@errors, s)
+    x@OK <- FALSE
+  } else {
+    x <- methods::new("monadR", errors=list(s), OK=FALSE)
+  }
+  x
 }
 
 #' Append a warning message onto the monad
@@ -92,9 +106,14 @@ fail <- function(s) {
 #' @export
 #' @param m A report monad
 #' @param s A string describing a warning
+#' @param force logical, should we add the note even to a failed monad?
 #' @return A report monad with a new warning appended
-warn <- function(m, s) {
-  z@warnings <- append(z@warnings, s)
+warn <- function(m, s, force=FALSE) {
+  m <- as.monadR(m)
+  if(m@OK || force){
+    m@warnings <- append(m@warnings, s)
+  }
+  m
 }
 
 #' Append a note message onto the monad
@@ -102,26 +121,12 @@ warn <- function(m, s) {
 #' @export
 #' @param m A report monad
 #' @param s A string describing a note
+#' @param force logical, should we add the note even to a failed monad?
 #' @return A report monad with a new note appended
-note <- function(m, s) {
-  z@note <- append(z@note, s)
-}
-
-#' This function is appropriate when function f will not fail
-#'
-#' @export
-#' @param m Either a monadic error container or a simple value
-#' @param f A function to apply to the value contained by the container
-fmap <- function(m, f){
-  if(methods::isClass(m, "monadR")){
-    # Apply function only if m is in the passing state
-    # Otherwise propagate the failure
-    if(m$OK){
-      m$x <- f(m$x)
-    }
-  } else {
-    # If m is not an error container, then just apply f to it 
-    m <- f(m)
+note <- function(m, s, force=FALSE) {
+  m <- as.monadR(m)
+  if(m@OK || force){
+    m@notes <- append(m@notes, s)
   }
   m
 }
@@ -132,7 +137,7 @@ fmap <- function(m, f){
 #' @param x A value
 #' @return Value wrapped in a report monad
 as.monadR <- function(x){
-  if (methods::isClass(x, "monadR")) { x } else { pass(x) }
+  if (class(x) == "monadR") { x } else { pass(x) }
 }
 
 #' Apply a function to several arguments

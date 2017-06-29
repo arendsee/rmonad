@@ -4,12 +4,14 @@
 \alias{warn}
 \title{Append a warning message onto the monad}
 \usage{
-warn(m, s)
+warn(m, s, force = FALSE)
 }
 \arguments{
 \item{m}{A report monad}
 
 \item{s}{A string describing a warning}
+
+\item{force}{logical, should we add the note even to a failed monad?}
 }
 \value{
 A report monad with a new warning appended
