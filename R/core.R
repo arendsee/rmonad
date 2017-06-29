@@ -165,16 +165,29 @@ bindMerge <- function(xs, f){
 
 #' Apply f to the contents of a monad and merge messages 
 #'
+#' This function uses non-standard evaluation to insert x into f as the first
+#' positional argument. This allows specialization of f, but also prevents
+#' higher-order voodoo from being performed.
+#'
 #' @export
 #' @param x The input, may or may not be a monad report
 #' @param f A function of the value contained in x
 #' @return A monad report
+#' @examples
+#' bind(5, runif(min=10, max=20))
 bind <- function(x, f){
+
   m <- as.monadR(x)
+
   if(m@OK)
   {
+    # insert x as first positional in f
+    f1    <- as.list(substitute(f))
+    func  <- as.character(f1[[1]])
+    fargs <- append(m@x, f1[-1])
+    envir <- parent.frame()
+    y     <- as.monadR( do.call(func, fargs, envir=envir) )
     # merge notes and warnings, replace value
-    y <- as.monadR( do.call(f, m@x) )
     y@notes    <- append(m@notes,    y@notes)
     y@warnings <- append(m@warnings, y@warnings)
   }
@@ -184,4 +197,15 @@ bind <- function(x, f){
     y <- m
   }
   y
+}
+
+#' Infix version of \code{bind}
+#'
+#' @export
+#' @param l left-hand side
+#' @param r right-hand side
+#' @return result of bind(l, r)
+`%>>=%` <- function(l, r) {
+    envir <- parent.frame()
+    eval(as.call(list(bind, substitute(l), substitute(r))), envir=envir)
 }

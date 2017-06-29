@@ -128,3 +128,17 @@ test_that(
     expect_equal(bind(42,  nf), new_mp)
   }
 )
+
+test_that(
+  "operators work",
+  {
+    expect_equal( m3e %>>=% mfp , m3e    )
+    expect_equal( m3e %>>=% mfe , m3e    )
+    expect_equal( m3e %>>=% nf  , m3e    )
+    expect_equal( m3  %>>=% mfp , m4     )
+    expect_equal( m3  %>>=% nf  , m4     )
+    expect_equal( 42  %>>=% mfp , new_mp )
+    expect_equal( 42  %>>=% mfe , new_me )
+    expect_equal( 42  %>>=% nf  , new_mp )
+  }
+)

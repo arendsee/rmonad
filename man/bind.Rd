@@ -15,5 +15,10 @@ bind(x, f)
 A monad report
 }
 \description{
-Apply f to the contents of a monad and merge messages
+This function uses non-standard evaluation to insert x into f as the first
+positional argument. This allows specialization of f, but also prevents
+higher-order voodoo from being performed.
+}
+\examples{
+bind(5, runif(min=10, max=20))
 }
