@@ -1,166 +1,115 @@
-#' The eponymous monad type
+#' A record of past events 
 #'
-#' @slot x List of values produced if the parent computation succeeded
-#' @slot errors List of errors accumulated so far 
+#' @slot code     A string showing the function that created record's report 
+#' @slot errors   List of errors accumulated so far 
 #' @slot warnings List of warnings accumulated so far
-#' @slot notes List of notes accumulated so far
-#' @slot OK TRUE if the report is currently passing
-monadR <- setClass(
-  "monadR",
+#' @slot notes    List of notes accumulated so far
+record <- setClass(
+  "record",
   representation(
-    x        = "list",
+    code     = "character",
     errors   = "list",
     warnings = "list",
-    notes    = "list",
-    OK       = "logical"
+    notes    = "list"
   ),
   prototype(
-    x        = list(),
+    code     = "",
     errors   = list(),
     warnings = list(),
-    notes    = list(),
-    OK       = TRUE
+    notes    = list() 
   )
 )
 
-#' The monoid zero element for monad report
-#'
-#' The report monad is also a monoid. Which means there is 1) an associative
-#' operator that can merge reports (\code{mcombine}) and 2) a zero element.
-#' \code{mzero} represents the zero element.
-#'
-mzero <- function() { methods::new("monadR") }
+print.record <- function(x, ...) {
+  if(length(x@code) > 0){
+    cat(sprintf("R> %s\n", x@code)) 
+  }
+  if(length(x@errors) != 0){
+    cat("Error: ")
+    cat(paste(unlist(x@errors), collapse="\nError: "))
+    cat("\n")
+  }
+  if(length(x@warnings) != 0){
+    cat("Warning: ")
+    cat(paste(unlist(x@warnings), collapse="\nWarning: "))
+    cat("\n")
+  }
+  if(length(x@notes) != 0){
+    cat("Note: ")
+    cat(paste(unlist(x@notes), collapse="\nNote: "))
+    cat("\n")
+  }
+}
 
-#' Combine two reports into one
+#' The eponymous monad type
 #'
-#' This is the associative binary operator that, together with the zero element
-#' \code{mzero}, define the report monad as a monoid.
-#'
-#' Since each slot in the monadR class is a list, two reports can be
-#' combined simple by appending each list in m2 to the corresponding list in
-#' m1.
+#' @slot x       List of values produced if the parent computation succeeded
+#' @slot stage   The active record 
+#' @slot history A list of past records
+#' @slot OK      TRUE if the report is currently passing
+monadR <- setClass(
+  "monadR",
+  representation(
+    x       = "list",
+    stage   = "record",
+    history = "list",
+    OK      = "logical"
+  ),
+  prototype(
+    x       = list(),
+    stage   = new("record"),
+    history = list(),
+    OK      = TRUE
+  )
+)
+
+print.monadR <- function(x, ...){
+  print(x@stage)
+
+  if(length(x@x) == 1){
+    cat("x: ")
+    print(x@x[[1]])
+  } else if(length(x@x > 1)) {
+    print(x@x)
+  }
+
+  if(length(x@history) > 0){
+    cat("\n ----------------- \n\n")
+    f <- lapply(x@history, function(x) {print(x); cat("\n")})
+  }
+}
+
+#' Merge list of reports into one
 #'
 #' @export
-#' @param m1  Report monad
-#' @param m2  Report monad
-#' @return A report monad with combines m1 and m2 
-mcombine <- function(m1, m2){
-  m1 <- as.monadR(m1)
-  m2 <- as.monadR(m2)
-  m <- methods::new(
+#' @param ms  List of report
+#' @return A combined report
+combine <- function(ms){
+  ms <- lapply(ms, as.monadR)
+  rec <- new("record")
+  out <- new(
      "monadR",
      x        = list(),
-     errors   = append(m1@errors,   m2@errors),
-     notes    = append(m1@notes,    m2@notes),
-     warnings = append(m1@warnings, m2@warnings),
+     stage    = rec,
+     history  = Reduce( append, lapply(ms, function(m) append(m@stage, m@history)), list() ),
      OK       = FALSE
   )
-  if(m1@OK && m2@OK){
-    m@x  <- append(m1@x, m2@x)
-    m@OK <- TRUE
+  if(all(sapply(ms, function(m) m@OK))){
+    out@x  <- Reduce( append, lapply(ms, function(m) m@x), list() )
+    out@OK <- TRUE
   }
-  m
+  out 
 }
 
-#' Load a value into the report monad
-#'
-#' @export
-#' @param x  The result of a successful computation
-#' @return  The result wrapped in the report monad
-#' @examples
-#' foo <- function(x) {
-#'   if(x <= 0){
-#'     fail(x, "x <= 0, cannot log")
-#'   } else {
-#'     pass(log(x))
-#'   }
-#' }
-#' foo(-1)
-#' foo(2)
-pass <- function(x) {
-  if(class(x) == "monadR"){
-    x
-  } else {
-    methods::new("monadR", x=list(x)) 
-  }
-}
-
-#' Load a failure message into the monad
-#'
-#' @export
-#' @param x A value (which is be ignored)
-#' @param s An error message
-#' @return A failing monad report
-fail <- function(x, s) {
-  if(class(x) == "monadR"){
-    x@errors <- append(x@errors, s)
-    x@OK <- FALSE
-  } else {
-    x <- methods::new("monadR", errors=list(s), OK=FALSE)
-  }
-  x
-}
-
-#' Append a warning message onto the monad
-#'
-#' @export
-#' @param m A report monad
-#' @param s A string describing a warning
-#' @param force logical, should we add the note even to a failed monad?
-#' @return A report monad with a new warning appended
-warn <- function(m, s, force=FALSE) {
-  m <- as.monadR(m)
-  if(m@OK || force){
-    m@warnings <- append(m@warnings, s)
-  }
-  m
-}
-
-#' Append a note message onto the monad
-#'
-#' @export
-#' @param m A report monad
-#' @param s A string describing a note
-#' @param force logical, should we add the note even to a failed monad?
-#' @return A report monad with a new note appended
-note <- function(m, s, force=FALSE) {
-  m <- as.monadR(m)
-  if(m@OK || force){
-    m@notes <- append(m@notes, s)
-  }
-  m
-}
 
 #' Lift a value into the report monad if not in one already
 #'
 #' @export
 #' @param x A value
+#' @param ... extra state information for \code{pass}
 #' @return Value wrapped in a report monad
-as.monadR <- function(x){
-  if (class(x) == "monadR") { x } else { pass(x) }
-}
-
-#' Apply a function to several arguments
-#'
-#' This function is a multivariate wrapper for bind. All elements in the list
-#' of input arguments, \code{xs}, are first cast into the \code{monadR} class
-#' (if not in it already). Then these are merged into one report monad. This
-#' report monad is then sent to \code{bind}. You can think of it as merging
-#' many arguments into a single tuple of arguments.
-#'
-#' @export
-#' @param xs A list of inputs to f, these may or may not be in report monads 
-#' @param f some function of xs
-#' @return a result in a report monad
-bindMerge <- function(xs, f){
-  # load inputs in error container if the are not already in one
-  ms <- lapply(as.monadR, xs)
-
-  # combine all report monads into one
-  m <- Reduce(mcombine, ms, mzero()) 
-
-  # send to the binary bind operator
-  bind(m, f)
+as.monadR <- function(x, ...){
+  if (class(x) == "monadR") { x } else { pass(x, ...) }
 }
 
 #' Apply f to the contents of a monad and merge messages 
@@ -177,19 +126,22 @@ bindMerge <- function(xs, f){
 #' bind(5, runif(min=10, max=20))
 bind <- function(x, f){
 
-  m <- as.monadR(x)
+  left_str = deparse(substitute(x))
+
+  m <- as.monadR(x, desc=left_str)
 
   if(m@OK)
   {
     # insert x as first positional in f
-    f1    <- as.list(substitute(f))
-    func  <- as.character(f1[[1]])
-    fargs <- append(m@x, f1[-1])
+    fs    <- substitute(f)
+    fl    <- as.list(fs)
+    func  <- as.character(fl[[1]])
+    fargs <- append(m@x, fl[-1])
     envir <- parent.frame()
     y     <- as.monadR( do.call(func, fargs, envir=envir) )
     # merge notes and warnings, replace value
-    y@notes    <- append(m@notes,    y@notes)
-    y@warnings <- append(m@warnings, y@warnings)
+    y@stage@code <- deparse(fs)
+    y@history    <- append(m@stage, m@history)
   }
   else
   {
@@ -208,4 +160,77 @@ bind <- function(x, f){
 `%>>=%` <- function(l, r) {
     envir <- parent.frame()
     eval(as.call(list(bind, substitute(l), substitute(r))), envir=envir)
+}
+
+#' Load a value into the report monad
+#'
+#' @export
+#' @param x  The result of a successful computation
+#' @param desc An optional description of the source
+#' @return  The result wrapped in the report monad
+#' @examples
+#' foo <- function(x) {
+#'   if(x <= 0){
+#'     fail(x, "x <= 0, cannot log")
+#'   } else {
+#'     pass(log(x))
+#'   }
+#' }
+#' foo(-1)
+#' foo(2)
+pass <- function(x, desc=NULL) {
+  if(class(x) == "monadR"){
+    x
+  } else {
+    desc <- if(is.null(desc)) { deparse(substitute(x)) } else { desc }
+    rec <- new("record", code=desc)
+    new("monadR", x=list(x), stage=rec) 
+  }
+}
+
+#' Load a failure message into the monad
+#'
+#' @export
+#' @param x A value (which is be ignored)
+#' @param s An error message
+#' @return A failing monad report
+fail <- function(x, s) {
+  if(class(x) == "monadR"){
+    x@stage@errors <- append(x@stage@errors, s)
+    x@OK <- FALSE
+  } else {
+    rec <- new("record", code=deparse(substitute(x)), errors=list(s))
+    x <- new("monadR", stage=rec, OK=FALSE)
+  }
+  x
+}
+
+#' Append a warning message onto the monad
+#'
+#' @export
+#' @param m A report monad
+#' @param s A string describing a warning
+#' @param force logical, should we add the note even to a failed monad?
+#' @return A report monad with a new warning appended
+warn <- function(m, s, force=FALSE) {
+  m <- as.monadR(m, desc=deparse(substitute(m)))
+  if(m@OK || force){
+    m@stage@warnings <- append(m@stage@warnings, s)
+  }
+  m
+}
+
+#' Append a note message onto the monad
+#'
+#' @export
+#' @param m A report monad
+#' @param s A string describing a note
+#' @param force logical, should we add the note even to a failed monad?
+#' @return A report monad with a new note appended
+note <- function(m, s, force=FALSE) {
+  m <- as.monadR(m, desc=deparse(substitute(m)))
+  if(m@OK || force){
+    m@stage@notes <- append(m@stage@notes, s)
+  }
+  m
 }

@@ -4,10 +4,12 @@
 \alias{as.monadR}
 \title{Lift a value into the report monad if not in one already}
 \usage{
-as.monadR(x)
+as.monadR(x, ...)
 }
 \arguments{
 \item{x}{A value}
+
+\item{...}{extra state information for \code{pass}}
 }
 \value{
 Value wrapped in a report monad

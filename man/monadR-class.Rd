@@ -13,11 +13,9 @@ The eponymous monad type
 \describe{
 \item{\code{x}}{List of values produced if the parent computation succeeded}
 
-\item{\code{errors}}{List of errors accumulated so far}
+\item{\code{stage}}{The active record}
 
-\item{\code{warnings}}{List of warnings accumulated so far}
-
-\item{\code{notes}}{List of notes accumulated so far}
+\item{\code{history}}{A list of past records}
 
 \item{\code{OK}}{TRUE if the report is currently passing}
 }}

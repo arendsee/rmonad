@@ -4,10 +4,12 @@
 \alias{pass}
 \title{Load a value into the report monad}
 \usage{
-pass(x)
+pass(x, desc = NULL)
 }
 \arguments{
 \item{x}{The result of a successful computation}
+
+\item{desc}{An optional description of the source}
 }
 \value{
 The result wrapped in the report monad

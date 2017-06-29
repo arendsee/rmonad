@@ -1,144 +1,225 @@
 context("monadR")
 
-zero <- new(
-  "monadR",
-  x        = list(),
-  warnings = list(),
-  notes    = list(),
-  errors   = list(),
-  OK       = TRUE
-)
-
 m1 <- new(
   "monadR",
-  x        = list(1),
-  warnings = list("a", "s"),
-  notes    = list("q", "w")
+  x = list(42),
+  stage = new(
+    "record",
+    code     = "",
+    warnings = list("a", "s"),
+    notes    = list("q", "w")
+  )
 )
-m2 <- new(
-  "monadR",
-  x        = list(2),
-  warnings = list("d", "f"),
-  notes    = list("e", "r")
-)
+
 e2 <- new(
   "monadR",
   OK     = FALSE,
-  errors = list("Oh no Mr. Wizard!")
+  stage  = new("record", errors = list("Oh no Mr. Wizard!"))
 )
-m12 <- new(
-  "monadR",
-  x        = list(1,2),
-  warnings = list("a", "s", "d", "f"),
-  notes    = list("q", "w", "e", "r")
-)
+
 m1e <- new(
   "monadR",
-  warnings = list("a", "s"),
-  notes    = list("q", "w"),
-  errors   = list("Oh no Mr. Wizard!"),
-  OK       = FALSE
+  OK     = FALSE,
+  history = list(
+    new(
+      "record",
+      warnings = list("a", "s"),
+      notes    = list("q", "w")
+    ),
+    new(
+      "record",
+      errors = list("Oh no Mr. Wizard!")
+    )
+  )
 )
 
-test_that("mcombine works", {
-  expect_equal(mcombine(m1, m2), m12)
-  expect_equal(mcombine(m1, e2), m1e)
-  expect_equal(mcombine(m1, "yolo"), { m1@x <- append(m1@x, "yolo"); m1 } )
-})
+m2 <- new(
+  "monadR",
+  x = list(82),
+  stage = new(
+    "record",
+    warnings = list("d", "f"),
+    notes    = list("e", "r")
+  )
+)
 
-test_that("mzero works", {
-  expect_equal(new("monadR"), zero)
-  expect_equal(mzero(), zero)
+m12 <- new(
+  "monadR",
+  x = list(42,82),
+  history = list(
+    new(
+      "record",
+      warnings = list("a", "s"),
+      notes    = list("q", "w")
+    ),
+    new(
+      "record",
+      warnings = list("d", "f"),
+      notes    = list("e", "r")
+    )
+  )
+)
+
+m1yolo <- new(
+  "monadR",
+  x = list(42,"yolo"),
+  history = list(
+    new(
+      "record",
+      warnings = list("a", "s"),
+      notes    = list("q", "w")
+    ),
+    new(
+      "record",
+      code="x"
+    )
+  )
+)
+
+test_that("combine works", {
+  expect_equal(combine(list(m1, m2)), m12)
+  expect_equal(combine(list(m1, e2)), m1e)
+  expect_equal(combine(list(m1, "yolo")), m1yolo)
 })
 
 test_that("Monad casting works", {
-  expect_equal(as.monadR(1), new("monadR", x=list(1)))
+  expect_equal(as.monadR(12), new("monadR", x=list(12), stage=new("record", code="x")))
   expect_equal(as.monadR(m1), m1)
+  expect_equal(as.monadR(e2), e2)
 })
 
 test_that(
   "pass, fail, warn, and note work on monadic input",
   {
     expect_equal(pass(m1), m1)
-    expect_equal(note(m1, "sit!"), { m <- m1; m@notes    <- append(m@notes,    "sit!"); m })
-    expect_equal(warn(m1, "run!"), { m <- m1; m@warnings <- append(m@warnings, "run!"); m })
-    expect_equal(fail(m1, "die!"), { m <- m1; m@errors   <- append(m@errors,   "die!"); m@OK=FALSE; m })
+    expect_equal(note(m1, "sit!"), { m <- m1; m@stage@notes    <- append(m@stage@notes,    "sit!"); m })
+    expect_equal(warn(m1, "run!"), { m <- m1; m@stage@warnings <- append(m@stage@warnings, "run!"); m })
+    expect_equal(fail(m1, "die!"), { m <- m1; m@stage@errors   <- append(m@stage@errors,   "die!"); m@OK=FALSE; m })
   }
 )
 
 test_that(
   "pass, fail, warn, and note work on non-monadic input",
   {
-    expect_equal(pass(42),         new("monadR", x=list(42)))
-    expect_equal(note(42, "sit!"), new("monadR", x=list(42), notes    = list("sit!")))
-    expect_equal(warn(42, "run!"), new("monadR", x=list(42), warnings = list("run!")))
-    expect_equal(fail(42, "die!"), new("monadR",             errors   = list("die!"), OK=FALSE))
+    expect_equal(
+      pass(42),
+      new("monadR",x=list(42), stage=new("record", code="42"))
+    )
+
+    expect_equal(
+      note(42, "sit!"),
+      new("monadR", x=list(42), stage=new("record", code="42", notes=list("sit!")))
+    )
+
+    expect_equal(
+      warn(42, "run!"),
+      new(
+        "monadR",
+        x     = list(42),
+        stage = new("record", code="42", warnings = list("run!"))
+      )
+    )
+
+    expect_equal(
+      fail(42, "die!"),
+      new(
+        "monadR",
+        OK=FALSE,
+        stage = new(
+          "record",
+          code="42",
+          errors = list("die!")
+        )
+      )
+    )
   }
 )
 
-m3 <- new(
+m1b <- new(
   "monadR",
-  x        = list(42),
-  warnings = list("a", "s"),
-  notes    = list("q", "w")
+  OK     = FALSE,
+  stage  = new(
+             "record",
+             errors = list("die!")
+           ),
+  history = list(
+    new(
+      "record",
+      warnings = list("a", "s"),
+      notes    = list("q", "w")
+    )
+  )
 )
-m3e <- new(
+
+m12b <- new(
   "monadR",
-  x        = list(),
-  errors   = list("die m3e!"),
-  warnings = list("a", "s"),
-  notes    = list("q", "w"),
-  OK       = FALSE
+  x = list(84),
+  history = list(
+    new(
+      "record",
+      warnings = list("a", "s"),
+      notes    = list("q", "w")
+    )
+  )
 )
-m4 <- new(
-  "monadR",
-  x        = list(84),
-  warnings = list("a", "s"),
-  notes    = list("q", "w")
-)
+
 mfp <- function(x) { pass(2 * x) }
 mfe <- function(x) { fail(x, "die!") }
 nf  <- function(x) { 2 * x }
 
-new_me <- new("monadR", errors=list("die!"), OK=FALSE)
-new_mp <- new("monadR", x=list(84))
-
 test_that(
   "bind always propagates failed states",
   {
-    expect_equal(bind(m3e, mfp), m3e)
-    expect_equal(bind(m3e, mfe), m3e)
-    expect_equal(bind(m3e, nf ), m3e)
+    expect_equal(bind(m1b, mfp), m1b)
+    expect_equal(bind(m1b, mfe), m1b)
+    expect_equal(bind(m1b, nf ), m1b)
   }
 )
 
 test_that(
   "bind functions may be monadic or not",
   {
-    expect_equal(bind(m3, mfp), m4)
-    expect_equal(bind(m3, nf ), m4)
+    expect_equal(bind(m1, mfp), {m <- m12b; m@stage@code = "mfp"; m })
+    expect_equal(bind(m1, nf ), {m <- m12b; m@stage@code = "nf";  m })
   }
+)
+
+new_me <- new(
+  "monadR",
+  OK    = FALSE,
+  stage = new(
+    "record",
+    errors=list("die!")
+  ),
+  history = list(new("record", code="42"))
+)
+
+new_mp <- new(
+  "monadR",
+  x     = list(84),
+  stage = new("record"),
+  history = list(new("record", code="42"))
 )
 
 test_that(
   "bind works with non-monadic input",
   {
-    expect_equal(bind(42, mfp), new_mp)
-    expect_equal(bind(42, mfe), new_me)
-    expect_equal(bind(42,  nf), new_mp)
+    expect_equal(bind(42, mfp), {m <- new_mp; m@stage@code = "mfp"; m })
+    expect_equal(bind(42, mfe), {m <- new_me; m@stage@code = "mfe"; m })
+    expect_equal(bind(42,  nf), {m <- new_mp; m@stage@code = "nf";  m })
   }
 )
 
 test_that(
   "operators work",
   {
-    expect_equal( m3e %>>=% mfp , m3e    )
-    expect_equal( m3e %>>=% mfe , m3e    )
-    expect_equal( m3e %>>=% nf  , m3e    )
-    expect_equal( m3  %>>=% mfp , m4     )
-    expect_equal( m3  %>>=% nf  , m4     )
-    expect_equal( 42  %>>=% mfp , new_mp )
-    expect_equal( 42  %>>=% mfe , new_me )
-    expect_equal( 42  %>>=% nf  , new_mp )
+    expect_equal( m1e %>>=% mfp , m1e )
+    expect_equal( m1e %>>=% mfe , m1e )
+    expect_equal( m1e %>>=% nf  , m1e )
+    expect_equal( m1  %>>=% mfp , {m <- m12b; m@stage@code = "mfp";  m } )
+    expect_equal( m1  %>>=% nf  , {m <- m12b; m@stage@code = "nf";   m } )
+    expect_equal( 42  %>>=% mfp , { m <- new_mp; m@stage@code = "mfp"; m } )
+    expect_equal( 42  %>>=% mfe , { m <- new_me; m@x <- list(); m@stage@code = "mfe"; m } )
+    expect_equal( 42  %>>=% nf  , { m <- new_mp; m@stage@code = "nf"; m } )
   }
 )
