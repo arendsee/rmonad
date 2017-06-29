@@ -1,37 +1,93 @@
-#' Load a value into the error monad
+#' The eponymous monad type
 #'
 #' @export
+monadR <- setClass(
+  "monadR",
+  representation(x="list", errors="list", warnings="list", notes="list", OK="logical"),
+  prototype(x=list(), errors=list(), warnings=list(), notes=list(), OK=TRUE)
+)
+
+#' The monoid zero element for monad report
+#'
+#' The report monad is also a monoid. Which means there is 1) an associative
+#' operator that can merge reports (\code{mcombine}) and 2) a zero element.
+#' \code{mzero} represents the zero element.
+#'
+mzero <- function() { new("monadR") }
+
+#' Combine two reports into one
+#'
+#' This is the associative binary operator that, together with the zero element
+#' \code{mzero}, define the report monad as a monoid.
+#'
+#' Since each slot in the monadR class is a list, two reports can be
+#' combined simple by appending each list in m2 to the corresponding list in
+#' m1.
+#'
+#' @export
+#' @param m1  Report monad
+#' @param m2  Report monad
+#' @param A report monad with combines m1 and m2 
+mcombine <- function(m1, m2){
+  m <- new(
+     "monadR",
+     x        = NULL,
+     errors   = append(m1@errors,   m2@errors),
+     notes    = append(m1@notes,    m2@notes),
+     warnings = append(m1@warnings, m2@warnings),
+     OK       = FALSE
+  )
+  if(m1@OK && m2@OK){
+    m@x  <- append(m1@x, m2@x)
+    m@OK <- TRUE
+  }
+  m
+}
+
+#' Load a value into the report monad
+#'
+#' @export
+#' @param x  The result of a successful computation
+#' @return  The result wrapped in the report monad
+#' @examples
+#' foo <- function(x) {
+#'   if(x <= 0){
+#'     fail("x <= 0, cannot log")
+#'   } else {
+#'     pass(log(x))
+#'   }
+#' }
+#' foo(-1)
+#' foo(2)
 pass <- function(x) {
-  list(x=x, errors=list(), warnings=list(), notes=list(), OK=TRUE) 
+  new("monadR", x=list(x)) 
 }
 
 #' Load a failure message into the monad
 #'
 #' @export
 fail <- function(s) {
-  list(x=NULL, errors=list(s), warnings=list(), notes=list(), OK=FALSE) 
+  new("monadR", x=NULL, errors=list(s), OK=FALSE)
 }
 
 #' Append a warning message onto the monad
 #'
 #' @export
+#' @param m A report monad
+#' @param s A string describing a warning
+#' @return A report monad with a new warning appended
 warn <- function(m, s) {
-  if(! .is_error_monad(m)){
-    m <- pass(m)
-  }
-  m$warnings <- append(m$warnings, s)
-  m
+  z@warnings <- append(z@warnings, s)
 }
 
 #' Append a note message onto the monad
 #'
 #' @export
+#' @param m A report monad
+#' @param s A string describing a note
+#' @return A report monad with a new note appended
 note <- function(m, s) {
-  if(! .is_error_monad(m)){
-    m <- pass(m)
-  }
-  m$notes <- append(m$notes, s)
-  m
+  z@note <- append(z@note, s)
 }
 
 #' This function is appropriate when function f will not fail
@@ -53,54 +109,51 @@ fmap <- function(m, f){
   m
 }
 
+#' Lift a value into the report monad if not in one already
+#'
 #' @export
-bind <- function(xs, f){
-  # load inputs in error container if the are not already in one
-  ms <- lapply(.load_x, xs)
+#' @param x A value
+#' @return Value wrapped in a report monad
+as.monadR <- function(x){
+  if (isClass(x, "monadR")) { x } else { pass(x) }
+}
 
-  if(all(lapply(ms, function(x) x$OK)))
+#' Apply a function to several arguments
+#'
+#' This function is a multivariate wrapper for bind. All elements in the list
+#' of input arguments, \code{xs}, are first cast into the \code{monadR} class
+#' (if not in it already). Then these are merged into one report monad. This
+#' report monad is then sent to \code{bind}. You can think of it as merging
+#' many arguments into a single tuple of arguments.
+#'
+#' @export
+#' @param xs A list of inputs to f, these may or may not be in report monads 
+#' @param f some function of xs
+#' @param a result in a report monad
+bindMerge <- function(xs, f){
+  # load inputs in error container if the are not already in one
+  ms <- lapply(as.monadR, xs)
+
+  # combine all report monads into one
+  m <- Reduce(mcombine, ms, mzero()) 
+
+  # send to the binary bind operator
+  bind(m, f)
+}
+
+bind <- function(x, f){
+  m <- as.monadR(x)
+  if(m@OK)
   {
     # merge notes and warnings, replace value
-    y <- do.call(f, x)
-    y$notes    <- append(x$notes, y$notes)
-    y$warnings <- append(x$warnings, y$warnings)
+    y <- as.monadR( do.call(f, m@x) )
+    y@notes    <- append(m@notes,    y@notes)
+    y@warnings <- append(m@warnings, y@warnings)
   }
   else
   {
     # propagate error
-    y <- x
+    y <- m
   }
   y
-}
-
-.is_error_monad <- function(x){
-  is.list(x) &&
-    length(names(x) == 5) &&
-    all (names(x) == c("x", "errors", "warnings", "notes", "OK")) 
-}
-
-.load_x <- function(x){
-  if (.is_error_moad(x)) { x } else { pass(x) }
-}
-
-.get_values <- function(ms){
-  if(all(lapply(ms, function(m) m$OK))){
-    lapply(ms, function(m) m$x)
-  } else {
-    Reduce(.propagate, ms, pass(NULL)) 
-  }
-}
-
-.propagate <- function(m1, m2){
-  m <- list(x        = NULL,
-            errors   = append(m1$errors, m2$errors),
-            notes    = append(m1$notes, m2$notes),
-            warnings = append(m1$warnings, m2$warnings),
-            OK       = FALSE
-           )
-  if(m1$OK && m2$OK){
-    m$x <- append(m1$x, m2$x)
-    m$OK <- TRUE
-  }
-  m
 }
