@@ -1,10 +1,26 @@
 #' The eponymous monad type
 #'
-#' @export
+#' @slot x List of values produced if the parent computation succeeded
+#' @slot errors List of errors accumulated so far 
+#' @slot warnings List of warnings accumulated so far
+#' @slot notes List of notes accumulated so far
+#' @slot OK TRUE if the report is currently passing
 monadR <- setClass(
   "monadR",
-  representation(x="list", errors="list", warnings="list", notes="list", OK="logical"),
-  prototype(x=list(), errors=list(), warnings=list(), notes=list(), OK=TRUE)
+  representation(
+    x        = "list",
+    errors   = "list",
+    warnings = "list",
+    notes    = "list",
+    OK       = "logical"
+  ),
+  prototype(
+    x        = list(),
+    errors   = list(),
+    warnings = list(),
+    notes    = list(),
+    OK       = TRUE
+  )
 )
 
 #' The monoid zero element for monad report
@@ -13,7 +29,7 @@ monadR <- setClass(
 #' operator that can merge reports (\code{mcombine}) and 2) a zero element.
 #' \code{mzero} represents the zero element.
 #'
-mzero <- function() { new("monadR") }
+mzero <- function() { methods::new("monadR") }
 
 #' Combine two reports into one
 #'
@@ -27,11 +43,10 @@ mzero <- function() { new("monadR") }
 #' @export
 #' @param m1  Report monad
 #' @param m2  Report monad
-#' @param A report monad with combines m1 and m2 
+#' @return A report monad with combines m1 and m2 
 mcombine <- function(m1, m2){
-  m <- new(
+  m <- methods::new(
      "monadR",
-     x        = NULL,
      errors   = append(m1@errors,   m2@errors),
      notes    = append(m1@notes,    m2@notes),
      warnings = append(m1@warnings, m2@warnings),
@@ -60,14 +75,16 @@ mcombine <- function(m1, m2){
 #' foo(-1)
 #' foo(2)
 pass <- function(x) {
-  new("monadR", x=list(x)) 
+  methods::new("monadR", x=list(x)) 
 }
 
 #' Load a failure message into the monad
 #'
 #' @export
+#' @param s An error message
+#' @return A failing monad report
 fail <- function(s) {
-  new("monadR", x=NULL, errors=list(s), OK=FALSE)
+  methods::new("monadR", errors=list(s), OK=FALSE)
 }
 
 #' Append a warning message onto the monad
@@ -96,7 +113,7 @@ note <- function(m, s) {
 #' @param m Either a monadic error container or a simple value
 #' @param f A function to apply to the value contained by the container
 fmap <- function(m, f){
-  if(.is_error_monad(m)){
+  if(methods::isClass(m, "monadR")){
     # Apply function only if m is in the passing state
     # Otherwise propagate the failure
     if(m$OK){
@@ -115,7 +132,7 @@ fmap <- function(m, f){
 #' @param x A value
 #' @return Value wrapped in a report monad
 as.monadR <- function(x){
-  if (isClass(x, "monadR")) { x } else { pass(x) }
+  if (methods::isClass(x, "monadR")) { x } else { pass(x) }
 }
 
 #' Apply a function to several arguments
@@ -129,7 +146,7 @@ as.monadR <- function(x){
 #' @export
 #' @param xs A list of inputs to f, these may or may not be in report monads 
 #' @param f some function of xs
-#' @param a result in a report monad
+#' @return a result in a report monad
 bindMerge <- function(xs, f){
   # load inputs in error container if the are not already in one
   ms <- lapply(as.monadR, xs)
@@ -141,6 +158,12 @@ bindMerge <- function(xs, f){
   bind(m, f)
 }
 
+#' Apply f to the contents of a monad and merge messages 
+#'
+#' @export
+#' @param x The input, may or may not be a monad report
+#' @param f A function of the value contained in x
+#' @return A monad report
 bind <- function(x, f){
   m <- as.monadR(x)
   if(m@OK)
