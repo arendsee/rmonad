@@ -1,9 +1,8 @@
 # MonadR
 
-Handle error in a pure functional manner.
+`monadR` offers a pure means to propagate errors, warnings and notes through
+a pipeline.
 
-Currently this 'monad' library includes only the single error monad. There are
-many other uses of monads. They are perhaps most well known for their use in separating the pure and impure aspects
 
 # What is a monad?
 
@@ -57,13 +56,15 @@ bind :: m a -> (a -> m b) -> m b
 
 The function `wrap` (or `return` in Haskell) takes a value and lifts it into
 the monad. The `bind` function takes the value of type `a` wrapped in the monad
-`m`, applies a function to it that produces `b` wrapped in a new monad. Note that this is not the same as
+`m`, applies a function to it that produces `b` wrapped in a new monad. Note
+that this is not the same as
 
 ```
 bind :: m a -> (a -> b) -> m b   ### WRONG
 ```
 
-We are not just applying a function to the value wrapped in the monad. `bind` can be broken down into two pieces:
+We are not just applying a function to the value wrapped in the monad. `bind`
+can be broken down into two pieces:
 
 ```
 fmap :: m a -> (a -> m b) -> m (m b)
@@ -74,11 +75,8 @@ join :: m (m b) -> m b
 results in something of type `m (m b)`. `join` then takes this nested monad and
 converts it into the final form `m b`.
 
-# A simple monad example
+# The report monad
 
-To make this a little more concrete, let's think about a vector of integers in
-R. For a vector of integers, we could write
-
-```
-bind.vector <- function() -- continue
-```
+The monad implemented in this package is designed to allow errors, warnings,
+and other messages to be propagated through a program without a invalid values
+being passed on.
