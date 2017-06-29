@@ -1,3 +1,6 @@
+[![Travis-CI Build Status](https://travis-ci.org/arendsee/monadR.svg?branch=master)](https://travis-ci.org/arendsee/monadR)
+[![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/monadR/master.svg)](https://codecov.io/github/arendsee/monadR?branch=master)
+
 # MonadR
 
 `monadR` offers a pure means to propagate errors, warnings and notes through
