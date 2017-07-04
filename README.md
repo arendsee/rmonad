@@ -6,6 +6,33 @@
 `rmonad` offers a pure means to propagate errors, warnings and notes through
 a pipeline.
 
+It is easiest to show using a few examples
+
+```R
+read.table("asdfdf") %$>% colSums %>>% mean
+```
+
+The `%$>%` operator loads the left-hand side into the monad, handling any
+errors, warnings or messages in a pure fashion. The result is then "bound" to
+`colSums`. If the left hand side passed without error, its pure value will be
+passed to `colSums`. If it failed, `colSums`, will not be called, and the
+failed state will propagate.
+
+This pipeline is pure in that there are no side-effects (e.g. nothing is
+written to `stderr`).
+
+If `read.table("asdfdf")` passes but it contains character columns, `colSums`
+will fail. This failure will be recorded and propagated.
+
+```R
+r1 <- read.table("asdfdf") %$>% colSums %>>% mean  # dies on read.table
+r2 <- iris %$>% colSums %>>% mean                  # dies on colSums 
+r3 <- cars %$>% colSums %>>% mean                  # passes
+```
+
+Though the first two fail, the failure is contained within the monad. So the
+exact location of the failure can be explored.
+
 
 # What is a monad?
 
@@ -77,9 +104,3 @@ join :: m (m b) -> m b
 `fmap` looks into `m a` and transforms `a` with the function `a -> m b`, which
 results in something of type `m (m b)`. `join` then takes this nested monad and
 converts it into the final form `m b`.
-
-# The report monad
-
-The monad implemented in this package is designed to allow errors, warnings,
-and other messages to be propagated through a program without a invalid values
-being passed on.

@@ -17,8 +17,14 @@ library(magrittr)
 This simplest use of `monadR` is simply to propagate a failed state through a
 program.
 
-```{r, eval=FALSE}
-pass(34) %>% sqrt %>%
+```{r}
+read.table("adsfdfd") %$>% colSums %>>% mean
+```
+
+```{r}
+r1 <- read.table("asdfdf") %$>% colSums %>>% mean  # dies on read.table
+r2 <- iris %$>% colSums %>>% mean                  # dies on colSums 
+r3 <- cars %$>% colSums %>>% mean                  # passes
 ```
 
 ```{r, eval=FALSE}
