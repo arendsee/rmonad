@@ -13,11 +13,11 @@
 #'
 #'  \%^>\%    monadic bind and record input in monad
 #'
-#'  \%>v\%    run right-hand for its effects -- bind message, pass value
-#'
-#'  \%>^\%    like \%>v\% but stores the result in the monad
+#'  \%>^\%    bind as a new branch, pass input on main
 #'
 #'  \%?>\%    if input is error, run rhs on last passing result
+#'
+#'  \%<?\%    if input is error, use rhs value instead
 #'
 #'  \%__\%    ignore the input, replacing the value with the rhs
 #'
@@ -62,18 +62,18 @@ NULL
 
 #' @rdname infix
 #' @export
-`%>>%` <- function(lhs, rhs) {
-    envir <- parent.frame()
-    eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
-}
-
-#' @rdname infix
-#' @export
 `%$>%` <- function(lhs, rhs) {
     code <- deparse(substitute(lhs))
     lhs <- mrun(lhs, code)
     envir <- parent.frame()
     eval(as.call(list(bind, lhs, substitute(rhs))), envir=envir)
+}
+
+#' @rdname infix
+#' @export
+`%>>%` <- function(lhs, rhs) {
+    envir <- parent.frame()
+    eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 }
 
 #' @rdname infix
@@ -96,17 +96,31 @@ NULL
 #' @export
 `%>_%` <- function(lhs, rhs) {
     envir <- parent.frame()
-    cmd   <- list(bind, substitute(lhs), substitute(rhs), discard=TRUE)
+    cmd   <- list(bind, substitute(lhs), substitute(rhs), discard_out=TRUE)
     eval(as.call(cmd), envir=envir)
 }
 
-# #' @rdname infix
-# #' @export
-# `%?>%` <- function(lhs, rhs) {
-#     envir <- parent.frame()
-#     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
-# }
-#
+#' @rdname infix
+#' @export
+`%?>%` <- function(lhs, rhs) {
+    envir <- parent.frame()
+    cmd   <- list(bind, substitute(lhs), substitute(rhs), handle=TRUE)
+    eval(as.call(cmd), envir=envir)
+}
+
+#' @rdname infix
+#' @export
+`%?<%` <- function(lhs, rhs) {
+    if(lhs@OK){
+      lhs
+    } else {
+      code <- deparse(substitute(rhs))
+      rhs <- mrun(rhs, code)
+      rhs@history <- append(lhs@stage, lhs@history)
+      rhs
+    }
+}
+
 # #' @rdname infix
 # #' @export
 # `%__%` <- function(lhs, rhs) {

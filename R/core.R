@@ -1,5 +1,8 @@
 #' Apply f to the contents of a monad and merge messages 
 #'
+#' This function should not usually be used directly. Rather you should use the
+#' infix operators. They all wrap this function.
+#'
 #' This function uses non-standard evaluation to insert x into f as the first
 #' positional argument. This allows specialization of f, but also prevents
 #' higher-order voodoo from being performed.
@@ -10,37 +13,46 @@
 #' @param print_in logical - should the input be printed?
 #' @param record_in logical - should the input be recorded?
 #' @param branch Store the output in the branch slot
-#' @param discard Ignore the result of the rhs function, passon the left
+#' @param discard_out Ignore the result of the rhs function, passon the left
+#' @param discard_in Ignore the input
+#' @param handle  Operate on a failed state
 #' @return A monad report
 bind <- function(
   x,
   f,
-  print_in   = FALSE,
-  record_in  = FALSE,
-  branch     = FALSE,
-  discard    = FALSE
+  print_in    = FALSE,
+  record_in   = FALSE,
+  branch      = FALSE,
+  discard_out = FALSE,
+  discard_in  = FALSE,
+  handle      = FALSE
 ){
 
   left_str = deparse(substitute(x))
   m <- as_rmonad(x, desc=left_str)
   if(print_in){ print(m@x) }
 
-  if(m@OK)
+  if(handle && m@OK){ return(m) } 
+
+  if(m@OK || handle)
   {
+
     # insert x as first positional in f
     fs    <- substitute(f)
     fl    <- as.list(fs)
     func  <- as.character(fl[[1]])
-    fargs <- append(m@x, fl[-1])
     envir <- parent.frame()
+    fargs <- append(m@x, fl[-1])
     y     <- mrun( do.call(func, fargs, envir=envir) )
+
     # merge notes and warnings, replace value
     if(record_in){ m@stage@x <- m@x }
+
     if(branch){
       m@stage@branch <- append(m@stage@branch, y)
       o <- m
     } else {
-      if(!y@OK || discard){
+      if(!y@OK || discard_out){
         # On failure, propagate the final passing value, this allows
         # for either degugging or passage to alternative handlers.
         y@x <- m@x

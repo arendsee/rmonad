@@ -19,6 +19,13 @@ esc <- function(x){
   m@x
 }
 
+#' Make NULL values an error
+#'
+#' @param x Input value
+null_as_error <- function(x){
+  stopifnot(! is.null(x))
+}
+
 #' Load a value into the report monad
 #'
 #' @export

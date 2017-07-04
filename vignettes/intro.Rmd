@@ -59,6 +59,24 @@ This can also be used for documentation
 rnorm(100) %>_% note("I am about to take the mean") %>>% mean
 ```
 
+Sometimes failure is not the end of the world. For example, we might want to
+try several alternatives functions, and use the first that works. 
+
+```{r}
+1:10 %$>% colSums %?>% sum
+```
+
+Here we will do either `colSums` or `sum`. The pipeline fails only if both
+fail.
+
+Sometimes you want to ignore the previous failure completely, and make a new
+call -- for example in reading files:
+
+```{r}
+# try to load a cached file, on failure rerun the analysis
+"analyasis_cache.tab" %$>% read.table %?<% the_analysis(x)
+```
+
 
 ```{r, eval=FALSE}
 read(datafile) %,=% "data"   %,,%

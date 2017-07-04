@@ -5,7 +5,7 @@
 \title{Apply f to the contents of a monad and merge messages}
 \usage{
 bind(x, f, print_in = FALSE, record_in = FALSE, branch = FALSE,
-  discard = FALSE)
+  discard_out = FALSE, discard_in = FALSE, handle = FALSE)
 }
 \arguments{
 \item{x}{The input, may or may not be a monad report}
@@ -18,12 +18,20 @@ bind(x, f, print_in = FALSE, record_in = FALSE, branch = FALSE,
 
 \item{branch}{Store the output in the branch slot}
 
-\item{discard}{Ignore the result of the rhs function, passon the left}
+\item{discard_out}{Ignore the result of the rhs function, passon the left}
+
+\item{discard_in}{Ignore the input}
+
+\item{handle}{Operate on a failed state}
 }
 \value{
 A monad report
 }
 \description{
+This function should not usually be used directly. Rather you should use the
+infix operators. They all wrap this function.
+}
+\details{
 This function uses non-standard evaluation to insert x into f as the first
 positional argument. This allows specialization of f, but also prevents
 higher-order voodoo from being performed.

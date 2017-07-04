@@ -2,22 +2,28 @@
 % Please edit documentation in R/infix.R
 \name{infix}
 \alias{infix}
-\alias{\%>>\%}
 \alias{\%$>\%}
+\alias{\%>>\%}
 \alias{\%v>\%}
 \alias{\%>^\%}
 \alias{\%>_\%}
+\alias{\%?>\%}
+\alias{\%?<\%}
 \title{Infix operators}
 \usage{
-lhs \%>>\% rhs
-
 lhs \%$>\% rhs
+
+lhs \%>>\% rhs
 
 lhs \%v>\% rhs
 
 lhs \%>^\% rhs
 
 lhs \%>_\% rhs
+
+lhs \%?>\% rhs
+
+lhs \%?<\% rhs
 }
 \arguments{
 \item{lhs}{left hand value}
