@@ -1,9 +1,9 @@
-[![Travis-CI Build Status](https://travis-ci.org/arendsee/monadR.svg?branch=master)](https://travis-ci.org/arendsee/monadR)
-[![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/monadR/master.svg)](https://codecov.io/github/arendsee/monadR?branch=master)
+[![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=master)](https://travis-ci.org/arendsee/rmonad)
+[![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/master.svg)](https://codecov.io/github/arendsee/rmonad?branch=master)
 
 # MonadR
 
-`monadR` offers a pure means to propagate errors, warnings and notes through
+`rmonad` offers a pure means to propagate errors, warnings and notes through
 a pipeline.
 
 

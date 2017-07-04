@@ -47,8 +47,8 @@ print.record <- function(x, ...) {
 #' @slot stage   The active record 
 #' @slot history A list of past records
 #' @slot OK      TRUE if the report is currently passing
-monadR <- setClass(
-  "monadR",
+Rmonad <- setClass(
+  "Rmonad",
   representation(
     x       = "list",
     stage   = "record",
@@ -63,7 +63,7 @@ monadR <- setClass(
   )
 )
 
-print.monadR <- function(x, ...){
+print.rmonad <- function(x, ...){
   print(x@stage)
 
   if(length(x@x) == 1){
@@ -85,10 +85,10 @@ print.monadR <- function(x, ...){
 #' @param ms  List of report
 #' @return A combined report
 combine <- function(ms){
-  ms <- lapply(ms, as.monadR)
+  ms <- lapply(ms, as_rmonad)
   rec <- new("record")
   out <- new(
-     "monadR",
+     "Rmonad",
      x        = list(),
      stage    = rec,
      history  = Reduce( append, lapply(ms, function(m) append(m@stage, m@history)), list() ),
@@ -108,8 +108,8 @@ combine <- function(ms){
 #' @param x A value
 #' @param ... extra state information for \code{pass}
 #' @return Value wrapped in a report monad
-as.monadR <- function(x, ...){
-  if (class(x) == "monadR") { x } else { pass(x, ...) }
+as_rmonad <- function(x, ...){
+  if (class(x) == "Rmonad") { x } else { pass(x, ...) }
 }
 
 #' Apply f to the contents of a monad and merge messages 
@@ -128,7 +128,7 @@ bind <- function(x, f){
 
   left_str = deparse(substitute(x))
 
-  m <- as.monadR(x, desc=left_str)
+  m <- as_rmonad(x, desc=left_str)
 
   if(m@OK)
   {
@@ -138,7 +138,7 @@ bind <- function(x, f){
     func  <- as.character(fl[[1]])
     fargs <- append(m@x, fl[-1])
     envir <- parent.frame()
-    y     <- as.monadR( do.call(func, fargs, envir=envir) )
+    y     <- as_rmonad( do.call(func, fargs, envir=envir) )
     # merge notes and warnings, replace value
     y@stage@code <- deparse(fs)
     y@history    <- append(m@stage, m@history)
@@ -179,12 +179,12 @@ bind <- function(x, f){
 #' foo(-1)
 #' foo(2)
 pass <- function(x, desc=NULL) {
-  if(class(x) == "monadR"){
+  if(class(x) == "Rmonad"){
     x
   } else {
     desc <- if(is.null(desc)) { deparse(substitute(x)) } else { desc }
     rec <- new("record", code=desc)
-    new("monadR", x=list(x), stage=rec) 
+    new("Rmonad", x=list(x), stage=rec) 
   }
 }
 
@@ -195,12 +195,12 @@ pass <- function(x, desc=NULL) {
 #' @param s An error message
 #' @return A failing monad report
 fail <- function(x, s) {
-  if(class(x) == "monadR"){
+  if(class(x) == "Rmonad"){
     x@stage@errors <- append(x@stage@errors, s)
     x@OK <- FALSE
   } else {
     rec <- new("record", code=deparse(substitute(x)), errors=list(s))
-    x <- new("monadR", stage=rec, OK=FALSE)
+    x <- new("Rmonad", stage=rec, OK=FALSE)
   }
   x
 }
@@ -213,7 +213,7 @@ fail <- function(x, s) {
 #' @param force logical, should we add the note even to a failed monad?
 #' @return A report monad with a new warning appended
 warn <- function(m, s, force=FALSE) {
-  m <- as.monadR(m, desc=deparse(substitute(m)))
+  m <- as_rmonad(m, desc=deparse(substitute(m)))
   if(m@OK || force){
     m@stage@warnings <- append(m@stage@warnings, s)
   }
@@ -228,7 +228,7 @@ warn <- function(m, s, force=FALSE) {
 #' @param force logical, should we add the note even to a failed monad?
 #' @return A report monad with a new note appended
 note <- function(m, s, force=FALSE) {
-  m <- as.monadR(m, desc=deparse(substitute(m)))
+  m <- as_rmonad(m, desc=deparse(substitute(m)))
   if(m@OK || force){
     m@stage@notes <- append(m@stage@notes, s)
   }

@@ -1,7 +1,7 @@
-context("monadR")
+context("rmonad.R")
 
 m1 <- new(
-  "monadR",
+  "Rmonad",
   x = list(42),
   stage = new(
     "record",
@@ -12,13 +12,13 @@ m1 <- new(
 )
 
 e2 <- new(
-  "monadR",
+  "Rmonad",
   OK     = FALSE,
   stage  = new("record", errors = list("Oh no Mr. Wizard!"))
 )
 
 m1e <- new(
-  "monadR",
+  "Rmonad",
   OK     = FALSE,
   history = list(
     new(
@@ -34,7 +34,7 @@ m1e <- new(
 )
 
 m2 <- new(
-  "monadR",
+  "Rmonad",
   x = list(82),
   stage = new(
     "record",
@@ -44,7 +44,7 @@ m2 <- new(
 )
 
 m12 <- new(
-  "monadR",
+  "Rmonad",
   x = list(42,82),
   history = list(
     new(
@@ -61,7 +61,7 @@ m12 <- new(
 )
 
 m1yolo <- new(
-  "monadR",
+  "Rmonad",
   x = list(42,"yolo"),
   history = list(
     new(
@@ -83,9 +83,9 @@ test_that("combine works", {
 })
 
 test_that("Monad casting works", {
-  expect_equal(as.monadR(12), new("monadR", x=list(12), stage=new("record", code="x")))
-  expect_equal(as.monadR(m1), m1)
-  expect_equal(as.monadR(e2), e2)
+  expect_equal(as_rmonad(12), new("Rmonad", x=list(12), stage=new("record", code="x")))
+  expect_equal(as_rmonad(m1), m1)
+  expect_equal(as_rmonad(e2), e2)
 })
 
 test_that(
@@ -103,18 +103,18 @@ test_that(
   {
     expect_equal(
       pass(42),
-      new("monadR",x=list(42), stage=new("record", code="42"))
+      new("Rmonad",x=list(42), stage=new("record", code="42"))
     )
 
     expect_equal(
       note(42, "sit!"),
-      new("monadR", x=list(42), stage=new("record", code="42", notes=list("sit!")))
+      new("Rmonad", x=list(42), stage=new("record", code="42", notes=list("sit!")))
     )
 
     expect_equal(
       warn(42, "run!"),
       new(
-        "monadR",
+        "Rmonad",
         x     = list(42),
         stage = new("record", code="42", warnings = list("run!"))
       )
@@ -123,7 +123,7 @@ test_that(
     expect_equal(
       fail(42, "die!"),
       new(
-        "monadR",
+        "Rmonad",
         OK=FALSE,
         stage = new(
           "record",
@@ -136,7 +136,7 @@ test_that(
 )
 
 m1b <- new(
-  "monadR",
+  "Rmonad",
   OK     = FALSE,
   stage  = new(
              "record",
@@ -152,7 +152,7 @@ m1b <- new(
 )
 
 m12b <- new(
-  "monadR",
+  "Rmonad",
   x = list(84),
   history = list(
     new(
@@ -185,7 +185,7 @@ test_that(
 )
 
 new_me <- new(
-  "monadR",
+  "Rmonad",
   OK    = FALSE,
   stage = new(
     "record",
@@ -195,7 +195,7 @@ new_me <- new(
 )
 
 new_mp <- new(
-  "monadR",
+  "Rmonad",
   x     = list(84),
   stage = new("record"),
   history = list(new("record", code="42"))

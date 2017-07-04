@@ -1,4 +1,4 @@
 library(testthat)
-library(monadR)
+library(rmonad)
 
-test_check("monadR")
+test_check("rmonad")

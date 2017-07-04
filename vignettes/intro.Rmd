@@ -10,13 +10,59 @@ vignette: >
 ---
 
 ```{r}
-library(monadR)
+library(rmonad)
 library(magrittr)
 ```
 
 This simplest use of `monadR` is simply to propagate a failed state through a
 program.
 
-```{r}
-34 %>>=% sqrt
+```{r, eval=FALSE}
+pass(34) %>% sqrt %>%
+```
+
+```{r, eval=FALSE}
+read(datafile) %,=% "data"   %,,%
+read(config)   %,=% "config" %,>% dothething
+```
+
+```
+  bind operators
+
+%>>%  bind, preserving errors, warnings, and messages
+      discard input value on success, store it on failure
+
+%v>%  like %>%, but prints input
+
+%^>%  like %>%, but records input
+
+%>v%  run rhs for its effect, preserve its messages, but print its value,
+      passing the input unchanged. This could add notes, warnings, errors;
+      to assert conditions; print values; make quick plots; store results, etc. 
+
+%>^%  like %>v% but stores the result in the monad
+
+%?>%  if is in failed state, call rfs on the last passing value, set OK=TRUE
+      on success else pass doing nothing
+
+%__%  ignore the input, but preserve state, replacing the value with the rhs
+
+%=_%  assign input to a variable (lfs) and clear
+
+%=>%  assign input to a variable (lfs) and pass
+
+  list operators
+
+%,,%  merges rhs and lhs monads
+%,?%  merges if the last element in the list failed, use this one instead,
+     set OK=TRUE on success
+
+%,=%  assign a name the last element in the list
+%,>%  applies the lhs list to the rhs function
+%,@%  applies the lhs list to the rhs function, creating a curried function
+
+  composition operators
+
+%.%  compose two functions (math order)
+%|%  compose two functions (pipeline order)
 ```
