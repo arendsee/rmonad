@@ -15,5 +15,8 @@ as_rmonad(x, ...)
 Value wrapped in a report monad
 }
 \description{
-Lift a value into the report monad if not in one already
+If you are not a haskeller, ignore the following message. \code{as_rmonad}
+is almost a \code{return} function, except that if the input is already an
+Rmonad, it is passed unchanged. \code{pass} is the true \code{return}
+function.
 }

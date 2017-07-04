@@ -163,8 +163,8 @@ m12b <- new(
   )
 )
 
-mfp <- function(x) { pass(2 * x) }
-mfe <- function(x) { fail(x, "die!") }
+mfp <- function(x) { 2 * x }
+mfe <- function(x) { stop("die!") }
 nf  <- function(x) { 2 * x }
 
 test_that(

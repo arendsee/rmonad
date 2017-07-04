@@ -24,7 +24,7 @@ bind <- function(x, f, print_in=FALSE, record_in=FALSE){
     func  <- as.character(fl[[1]])
     fargs <- append(m@x, fl[-1])
     envir <- parent.frame()
-    y     <- as_rmonad( do.call(func, fargs, envir=envir) )
+    y     <- mrun( do.call(func, fargs, envir=envir) )
     # merge notes and warnings, replace value
     if(record_in){ m@stage@x <- m@x }
     y@stage@code <- deparse(fs)
@@ -36,6 +36,55 @@ bind <- function(x, f, print_in=FALSE, record_in=FALSE){
     y <- m
   }
   y
+}
+
+
+#' Run an expression, capture EWM, return Rmonad
+#'
+#' @param expr An expression
+#' @return Rmonad object 
+#' @export
+mrun <- function(expr){
+
+  value <- NULL 
+  warns <- list()
+  fails <- list()
+  isOK  <- TRUE
+
+  notes <- capture.output(
+    {
+      value <- withCallingHandlers(
+        tryCatch(
+          expr,
+          error = function(e) {
+            fails <<- list(e$message);
+            isOK <<- FALSE
+          }
+        ),
+        warning = function(w){
+          warns <<- append(warns, w$message)
+          invokeRestart("muffleWarning")
+        }
+      )
+    },
+    type="message"
+  )
+
+  value <- if(isOK) { list(value) } else { list() }
+
+  new("Rmonad",
+    x = value,
+    stage = new("record",  
+      x        = list(),
+      code     = deparse(substitute(expr)),
+      errors   = fails,
+      warnings = as.list(warns),
+      notes    = as.list(notes)
+    ),
+    history = list(),
+    OK = isOK
+  )
+
 }
 
 
