@@ -94,6 +94,24 @@ NULL
 
 #' @rdname infix
 #' @export
+`%^>%` <- function(lhs, rhs) {
+    envir <- parent.frame()
+
+    # combine branches
+    x <- combine(lhs@stage@branch, keep_history=FALSE)
+    # move history
+    x@history <- append(lhs@stage, lhs@history)
+
+    cmd <- list(bind, x, substitute(rhs))
+    o <- eval(as.call(cmd), envir=envir)
+
+    # Annotate as a branching function
+    o@stage@code <- paste(o@stage@code, " - FUNCTION ON BRANCHES")
+    o
+}
+
+#' @rdname infix
+#' @export
 `%>_%` <- function(lhs, rhs) {
     envir <- parent.frame()
     cmd   <- list(bind, substitute(lhs), substitute(rhs), discard_out=TRUE)

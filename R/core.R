@@ -45,6 +45,8 @@ bind <- function(
     fargs <- append(m@x, fl[-1])
     y     <- mrun( do.call(func, fargs, envir=envir) )
 
+    y@stage@code <- deparse(fs)
+
     # merge notes and warnings, replace value
     if(record_in){ m@stage@x <- m@x }
 
@@ -57,7 +59,6 @@ bind <- function(
         # for either degugging or passage to alternative handlers.
         y@x <- m@x
       }
-      y@stage@code <- deparse(fs)
       y@history    <- append(m@stage, m@history)
       o <- y
     }
@@ -147,15 +148,21 @@ as_rmonad <- function(x, ...){
 #'
 #' @export
 #' @param ms  List of report
+#' @param keep_history Merge the histories of all monads
 #' @return A combined report
-combine <- function(ms){
+combine <- function(ms, keep_history=TRUE){
   ms <- lapply(ms, as_rmonad)
   rec <- new("record")
+  history <- if(keep_history) {
+    Reduce( append, lapply(ms, function(m) append(m@stage, m@history)), list() )
+  } else {
+    list()
+  }
   out <- new(
      "Rmonad",
      x        = list(),
      stage    = rec,
-     history  = Reduce( append, lapply(ms, function(m) append(m@stage, m@history)), list() ),
+     history  = history,
      OK       = FALSE
   )
   if(all(sapply(ms, function(m) m@OK))){

@@ -4,10 +4,12 @@
 \alias{combine}
 \title{Merge list of reports into one}
 \usage{
-combine(ms)
+combine(ms, keep_history = TRUE)
 }
 \arguments{
 \item{ms}{List of report}
+
+\item{keep_history}{Merge the histories of all monads}
 }
 \value{
 A combined report

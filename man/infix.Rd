@@ -6,6 +6,7 @@
 \alias{\%>>\%}
 \alias{\%v>\%}
 \alias{\%>^\%}
+\alias{\%^>\%}
 \alias{\%>_\%}
 \alias{\%?>\%}
 \alias{\%?<\%}
@@ -18,6 +19,8 @@ lhs \%>>\% rhs
 lhs \%v>\% rhs
 
 lhs \%>^\% rhs
+
+lhs \%^>\% rhs
 
 lhs \%>_\% rhs
 

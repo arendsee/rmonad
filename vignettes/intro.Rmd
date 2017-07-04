@@ -41,6 +41,17 @@ store multiple branches.
 rnorm(100) %>^% plot(xlab="index", ylab="value") %>^% summary %>>% mean
 ```
 
+Branches can be used as input, as well.
+
+```{r}
+x <- 1:10 %>^% dgamma(10, 1) %>^% dgamma(10, 5) %^>% pmax()
+x
+x@history[[2]]@branch
+```
+
+Note the branches could be long monadic chains themselves, which might have
+their own branches.
+
 The `%>_%` operator is useful when you want to include a function inside a
 pipeline that should be bypassed, but you want the errors, warnings, and
 messages to pass along with the main. This can be used make assertions about
