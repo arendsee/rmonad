@@ -8,46 +8,60 @@
 #' @rdname rmonad_printers
 #' @export 
 print.record <- function(x, ...) {
-NULL
-
   if(length(x@code) > 0){
     cat(sprintf("R> %s\n", x@code)) 
   }
   if(length(x@errors) != 0){
-    cat("Error: ")
-    cat(paste(unlist(x@errors), collapse="\nError: "))
+    cat(" * ERROR: ")
+    cat(paste(unlist(x@errors), collapse="\n * ERROR: "))
     cat("\n")
   }
   if(length(x@warnings) != 0){
-    cat("Warning: ")
-    cat(paste(unlist(x@warnings), collapse="\nWarning: "))
+    cat(" * WARNING: ")
+    cat(paste(unlist(x@warnings), collapse="\n * WARNING: "))
     cat("\n")
   }
   if(length(x@notes) != 0){
-    cat("Note: ")
-    cat(paste(unlist(x@notes), collapse="\nNote: "))
+    cat(" * NOTE: ")
+    cat(paste(unlist(x@notes), collapse="\n * NOTE: "))
     cat("\n")
   }
-  if(length(x@x) != 0){
+  if(length(x@x) == 1){
     cat("Value:\n")
+    print(x@x[[1]])
+  } else if(length(x@x > 1)) {
     print(x@x)
   }
 }
+setMethod("show", "record",
+  function(object) print(object)
+)
 
 #' @rdname rmonad_printers
 #' @export 
-print.rmonad <- function(x, ...){
+print.Rmonad <- function(x, ...){
+
+  if(length(x@history) > 0){
+    f <- lapply(x@history, function(x) {print(x); cat("\n")})
+  }
+
   print(x@stage)
 
+  if(length(x@history) > 0){
+    cat("\n ----------------- \n\n")
+  }
+
   if(length(x@x) == 1){
-    cat("x: ")
+    cat("Value: ")
     print(x@x[[1]])
   } else if(length(x@x > 1)) {
     print(x@x)
   }
 
-  if(length(x@history) > 0){
-    cat("\n ----------------- \n\n")
-    f <- lapply(x@history, function(x) {print(x); cat("\n")})
+  if(!x@OK){
+    cat("\n *** FAILURE *** \n")
   }
 }
+setMethod("show", "Rmonad",
+  function(object) print(object)
+)

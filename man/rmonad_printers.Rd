@@ -3,12 +3,12 @@
 \name{rmonad_printers}
 \alias{rmonad_printers}
 \alias{print.record}
-\alias{print.rmonad}
+\alias{print.Rmonad}
 \title{Special rmonad_printerss}
 \usage{
 \method{print}{record}(x, ...)
 
-\method{print}{rmonad}(x, ...)
+\method{print}{Rmonad}(x, ...)
 }
 \arguments{
 \item{x}{An object to print}

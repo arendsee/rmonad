@@ -8,6 +8,8 @@ mrun(expr, desc = NULL)
 }
 \arguments{
 \item{expr}{An expression}
+
+\item{desc}{A name to assign to the code slot}
 }
 \value{
 Rmonad object

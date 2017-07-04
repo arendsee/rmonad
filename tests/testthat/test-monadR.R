@@ -205,7 +205,7 @@ test_that(
   "bind works with non-monadic input",
   {
     expect_equal(bind(42, mfp), {m <- new_mp; m@stage@code = "mfp"; m })
-    expect_equal(bind(42, mfe), {m <- new_me; m@stage@code = "mfe"; m })
+    expect_equal(bind(42, mfe), {m <- new_me; m@stage@code = "mfe"; m@x = list(42); m })
     expect_equal(bind(42,  nf), {m <- new_mp; m@stage@code = "nf";  m })
   }
 )
@@ -219,7 +219,11 @@ test_that(
     expect_equal( m1  %>>% mfp , {m <- m12b; m@stage@code = "mfp";  m } )
     expect_equal( m1  %>>% nf  , {m <- m12b; m@stage@code = "nf";   m } )
     expect_equal( 42  %>>% mfp , { m <- new_mp; m@stage@code = "mfp"; m } )
-    expect_equal( 42  %>>% mfe , { m <- new_me; m@x <- list(); m@stage@code = "mfe"; m } )
+    expect_equal( 42  %>>% mfe , { m <- new_me;
+                                   m@x <- list();
+                                   m@stage@code = "mfe";
+                                   m@x = list(42);
+                                   m } )
     expect_equal( 42  %>>% nf  , { m <- new_mp; m@stage@code = "nf"; m } )
   }
 )

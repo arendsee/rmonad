@@ -32,6 +32,11 @@ bind <- function(
     y     <- mrun( do.call(func, fargs, envir=envir) )
     # merge notes and warnings, replace value
     if(record_in){ m@stage@x <- m@x }
+    if(!y@OK){
+      # on failure, propagate the final passing value, this allows
+      # for either degugging or passage to alternative handlers.
+      y@x <- m@x
+    }
     y@stage@code <- deparse(fs)
     y@history    <- append(m@stage, m@history)
   }
@@ -47,6 +52,7 @@ bind <- function(
 #' Run an expression, capture EWM, return Rmonad
 #'
 #' @param expr An expression
+#' @param desc A name to assign to the code slot
 #' @return Rmonad object 
 #' @export
 mrun <- function(expr, desc=NULL){
