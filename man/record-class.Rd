@@ -11,6 +11,8 @@ A record of past events
 \section{Slots}{
 
 \describe{
+\item{\code{x}}{A list of 0 or 1 elements, containing either nothing or data}
+
 \item{\code{code}}{A string showing the function that created record's report}
 
 \item{\code{errors}}{List of errors accumulated so far}

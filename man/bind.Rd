@@ -4,12 +4,14 @@
 \alias{bind}
 \title{Apply f to the contents of a monad and merge messages}
 \usage{
-bind(x, f)
+bind(x, f, print_in = FALSE)
 }
 \arguments{
 \item{x}{The input, may or may not be a monad report}
 
 \item{f}{A function of the value contained in x}
+
+\item{print_in}{logical - should the input be printed?}
 }
 \value{
 A monad report
@@ -18,7 +20,4 @@ A monad report
 This function uses non-standard evaluation to insert x into f as the first
 positional argument. This allows specialization of f, but also prevents
 higher-order voodoo from being performed.
-}
-\examples{
-bind(5, runif(min=10, max=20))
 }

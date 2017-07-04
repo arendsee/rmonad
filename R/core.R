@@ -1,5 +1,6 @@
 #' A record of past events 
 #'
+#' @slot x        A list of 0 or 1 elements, containing either nothing or data
 #' @slot code     A string showing the function that created record's report 
 #' @slot errors   List of errors accumulated so far 
 #' @slot warnings List of warnings accumulated so far
@@ -7,12 +8,14 @@
 record <- setClass(
   "record",
   representation(
+    x        = "list",
     code     = "character",
     errors   = "list",
     warnings = "list",
     notes    = "list"
   ),
   prototype(
+    x        = list(),
     code     = "",
     errors   = list(),
     warnings = list(),
@@ -121,14 +124,15 @@ as_rmonad <- function(x, ...){
 #' @export
 #' @param x The input, may or may not be a monad report
 #' @param f A function of the value contained in x
+#' @param print_in logical - should the input be printed?
 #' @return A monad report
-#' @examples
-#' bind(5, runif(min=10, max=20))
-bind <- function(x, f){
+bind <- function(x, f, print_in=FALSE){
 
   left_str = deparse(substitute(x))
 
   m <- as_rmonad(x, desc=left_str)
+
+  if(print_in){ print(m@x) }
 
   if(m@OK)
   {
@@ -151,15 +155,19 @@ bind <- function(x, f){
   y
 }
 
-#' Infix version of \code{bind}
+#' Take input and do nothing with it
 #'
+#' @param ... whatever
 #' @export
-#' @param l left-hand side
-#' @param r right-hand side
-#' @return result of bind(l, r)
-`%>>=%` <- function(l, r) {
-    envir <- parent.frame()
-    eval(as.call(list(bind, substitute(l), substitute(r))), envir=envir)
+toss <- function(...){ }
+
+#' Return the value of a possibly monadic input
+#'
+#' @param x rmonad or whatever
+#' @export
+esc <- function(x){
+  m <- as_rmonad(x)
+  m@x
 }
 
 #' Load a value into the report monad

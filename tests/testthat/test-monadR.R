@@ -213,13 +213,13 @@ test_that(
 test_that(
   "operators work",
   {
-    expect_equal( m1e %>>=% mfp , m1e )
-    expect_equal( m1e %>>=% mfe , m1e )
-    expect_equal( m1e %>>=% nf  , m1e )
-    expect_equal( m1  %>>=% mfp , {m <- m12b; m@stage@code = "mfp";  m } )
-    expect_equal( m1  %>>=% nf  , {m <- m12b; m@stage@code = "nf";   m } )
-    expect_equal( 42  %>>=% mfp , { m <- new_mp; m@stage@code = "mfp"; m } )
-    expect_equal( 42  %>>=% mfe , { m <- new_me; m@x <- list(); m@stage@code = "mfe"; m } )
-    expect_equal( 42  %>>=% nf  , { m <- new_mp; m@stage@code = "nf"; m } )
+    expect_equal( m1e %>>% mfp , m1e )
+    expect_equal( m1e %>>% mfe , m1e )
+    expect_equal( m1e %>>% nf  , m1e )
+    expect_equal( m1  %>>% mfp , {m <- m12b; m@stage@code = "mfp";  m } )
+    expect_equal( m1  %>>% nf  , {m <- m12b; m@stage@code = "nf";   m } )
+    expect_equal( 42  %>>% mfp , { m <- new_mp; m@stage@code = "mfp"; m } )
+    expect_equal( 42  %>>% mfe , { m <- new_me; m@x <- list(); m@stage@code = "mfe"; m } )
+    expect_equal( 42  %>>% nf  , { m <- new_mp; m@stage@code = "nf"; m } )
   }
 )
