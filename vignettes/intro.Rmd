@@ -69,6 +69,17 @@ try several alternatives functions, and use the first that works.
 Here we will do either `colSums` or `sum`. The pipeline fails only if both
 fail.
 
+This operator can also be used as a pure try-catch:
+
+```{r}
+id <- function(x) x
+iris %$>% colSums %?>% id %>>% summary
+cars %$>% colSums %?>% id %>>% summary
+```
+
+In this way, we can make chains of operations which may fail for some inputs.
+These failures are recorded in the monad, but don't scream and break things.
+
 Sometimes you want to ignore the previous failure completely, and make a new
 call -- for example in reading files:
 

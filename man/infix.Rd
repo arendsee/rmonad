@@ -44,11 +44,11 @@ Infix monadic sequence operators
 
 \%^>\%    monadic bind and record input in monad
 
-\%>v\%    run right-hand for its effects -- bind message, pass value
-
-\%>^\%    like \%>v\% but stores the result in the monad
+\%>^\%    bind as a new branch, pass input on main
 
 \%?>\%    if input is error, run rhs on last passing result
+
+\%<?\%    if input is error, use rhs value instead
 
 \%__\%    ignore the input, replacing the value with the rhs
 

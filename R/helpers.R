@@ -10,6 +10,27 @@ toss <- function(...){ }
 #' @export
 note <- function(...){ }
 
+#' The identity function
+#'
+#' @param x anything
+#' @export
+#' @examples
+#' # pull a value out of failure
+#' 1:10 %$>% colSums %?>% id
+#' # here it just does nothing
+#' cars %$>% colSums %?>% id
+id <- function(x){ x }
+
+#' Ignore the first input, return the second
+#'
+#' This function can be used to change the value in the lhs of a monadic
+#' sequence
+#'
+#' @param x ignored value
+#' @param r replacing value
+#' @export
+const <- function(x, r){ r }
+
 #' Return the value of a possibly monadic input
 #'
 #' @param x rmonad or whatever
