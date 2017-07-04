@@ -5,8 +5,8 @@
 \alias{\%>>\%}
 \alias{\%$>\%}
 \alias{\%v>\%}
-\alias{\%^>\%}
-\alias{\%>v\%}
+\alias{\%>^\%}
+\alias{\%>_\%}
 \title{Infix operators}
 \usage{
 lhs \%>>\% rhs
@@ -15,9 +15,9 @@ lhs \%$>\% rhs
 
 lhs \%v>\% rhs
 
-lhs \%^>\% rhs
+lhs \%>^\% rhs
 
-lhs \%>v\% rhs
+lhs \%>_\% rhs
 }
 \arguments{
 \item{lhs}{left hand value}

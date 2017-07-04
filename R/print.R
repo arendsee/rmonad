@@ -26,6 +26,9 @@ print.record <- function(x, ...) {
     cat(paste(unlist(x@notes), collapse="\n * NOTE: "))
     cat("\n")
   }
+  if(length(x@branch) != 0){
+    cat("Has", length(x@branch), "branches\n")
+  }
   if(length(x@x) == 1){
     cat("Value:\n")
     print(x@x[[1]])

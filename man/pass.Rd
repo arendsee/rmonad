@@ -17,14 +17,3 @@ The result wrapped in the report monad
 \description{
 Load a value into the report monad
 }
-\examples{
-foo <- function(x) {
-  if(x <= 0){
-    fail(x, "x <= 0, cannot log")
-  } else {
-    pass(log(x))
-  }
-}
-foo(-1)
-foo(2)
-}

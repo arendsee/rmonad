@@ -4,7 +4,8 @@
 \alias{bind}
 \title{Apply f to the contents of a monad and merge messages}
 \usage{
-bind(x, f, print_in = FALSE, record_in = FALSE, bypass = FALSE)
+bind(x, f, print_in = FALSE, record_in = FALSE, branch = FALSE,
+  discard = FALSE)
 }
 \arguments{
 \item{x}{The input, may or may not be a monad report}
@@ -14,6 +15,10 @@ bind(x, f, print_in = FALSE, record_in = FALSE, bypass = FALSE)
 \item{print_in}{logical - should the input be printed?}
 
 \item{record_in}{logical - should the input be recorded?}
+
+\item{branch}{Store the output in the branch slot}
+
+\item{discard}{Ignore the result of the rhs function, passon the left}
 }
 \value{
 A monad report

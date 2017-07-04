@@ -80,33 +80,26 @@ NULL
 #' @export
 `%v>%` <- function(lhs, rhs) {
     envir <- parent.frame()
-    cmd   <- list(bind, substitute(lhs), substitute(rhs), print_in=TRUE)
-    eval(as.call(cmd), envir=envir)
-}
-
-#' @rdname infix
-#' @export
-`%^>%` <- function(lhs, rhs) {
-    envir <- parent.frame()
     cmd   <- list(bind, substitute(lhs), substitute(rhs), record_in=TRUE)
     eval(as.call(cmd), envir=envir)
 }
 
 #' @rdname infix
 #' @export
-`%>v%` <- function(lhs, rhs) {
+`%>^%` <- function(lhs, rhs) {
     envir <- parent.frame()
-    cmd   <- list(bind, substitute(lhs), substitute(rhs), bypass=TRUE)
+    cmd   <- list(bind, substitute(lhs), substitute(rhs), branch=TRUE)
     eval(as.call(cmd), envir=envir)
 }
 
-# #' @rdname infix
-# #' @export
-# `%>^%` <- function(lhs, rhs) {
-#     envir <- parent.frame()
-#     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
-# }
-#
+#' @rdname infix
+#' @export
+`%>_%` <- function(lhs, rhs) {
+    envir <- parent.frame()
+    cmd   <- list(bind, substitute(lhs), substitute(rhs), discard=TRUE)
+    eval(as.call(cmd), envir=envir)
+}
+
 # #' @rdname infix
 # #' @export
 # `%?>%` <- function(lhs, rhs) {

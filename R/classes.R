@@ -12,14 +12,16 @@ record <- setClass(
     code     = "character",
     errors   = "list",
     warnings = "list",
-    notes    = "list"
+    notes    = "list",
+    branch   = "list"
   ),
   prototype(
     x        = list(),
     code     = "",
     errors   = list(),
     warnings = list(),
-    notes    = list() 
+    notes    = list(), 
+    branch   = list()
   )
 )
 

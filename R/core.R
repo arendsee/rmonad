@@ -9,13 +9,16 @@
 #' @param f A function of the value contained in x
 #' @param print_in logical - should the input be printed?
 #' @param record_in logical - should the input be recorded?
+#' @param branch Store the output in the branch slot
+#' @param discard Ignore the result of the rhs function, passon the left
 #' @return A monad report
 bind <- function(
   x,
   f,
-  print_in  = FALSE,
-  record_in = FALSE,
-  bypass    = FALSE
+  print_in   = FALSE,
+  record_in  = FALSE,
+  branch     = FALSE,
+  discard    = FALSE
 ){
 
   left_str = deparse(substitute(x))
@@ -33,24 +36,26 @@ bind <- function(
     y     <- mrun( do.call(func, fargs, envir=envir) )
     # merge notes and warnings, replace value
     if(record_in){ m@stage@x <- m@x }
-    if(!y@OK){
-      # On failure, propagate the final passing value, this allows
-      # for either degugging or passage to alternative handlers.
-      y@x <- m@x
+    if(branch){
+      m@stage@branch <- append(m@stage@branch, y)
+      o <- m
+    } else {
+      if(!y@OK || discard){
+        # On failure, propagate the final passing value, this allows
+        # for either degugging or passage to alternative handlers.
+        y@x <- m@x
+      }
+      y@stage@code <- deparse(fs)
+      y@history    <- append(m@stage, m@history)
+      o <- y
     }
-    if(bypass){
-      show(y@x)
-      y@x <- m@x
-    }
-    y@stage@code <- deparse(fs)
-    y@history    <- append(m@stage, m@history)
   }
   else
   {
     # propagate error
-    y <- m
+    o <- m
   }
-  y
+  o
 }
 
 

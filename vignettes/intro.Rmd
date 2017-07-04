@@ -27,11 +27,38 @@ r2 <- iris %$>% colSums %>>% mean                  # dies on colSums
 r3 <- cars %$>% colSums %>>% mean                  # passes
 ```
 
-Effects can be called in middle of the pipeline
+The pipeline can branch is the `%>^%` operator:
 
 ```{r}
-rnorm(100) %>v% plot(xlab="index", ylab="value") %>>% mean
+rnorm(100) %>^% plot(xlab="index", ylab="value") %>>% mean
 ```
+
+This stores the result of `plot` in a branch off the main pipeline. This means
+that `plot` could fail, but the rest of the pipeline could continue. You can
+store multiple branches.
+
+```{r}
+rnorm(100) %>^% plot(xlab="index", ylab="value") %>^% summary %>>% mean
+```
+
+The `%>_%` operator is useful when you want to include a function inside a
+pipeline that should be bypassed, but you want the errors, warnings, and
+messages to pass along with the main. This can be used make assertions about
+the data inside a pipeline.
+
+```{r}
+is_positive <- function(x) { stopifnot(x > 0) }
+rnorm(100) %>_% is_positive %>>% mean
+```
+
+This can also be used for documentation
+
+```{r}
+# note is just `function(...) { }`, here I use it to document, since
+# Rmonad shows the functions called via NSE.
+rnorm(100) %>_% note("I am about to take the mean") %>>% mean
+```
+
 
 ```{r, eval=FALSE}
 read(datafile) %,=% "data"   %,,%

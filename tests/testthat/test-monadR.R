@@ -88,53 +88,6 @@ test_that("Monad casting works", {
   expect_equal(as_rmonad(e2), e2)
 })
 
-test_that(
-  "pass, fail, warn, and note work on monadic input",
-  {
-    expect_equal(pass(m1), m1)
-    expect_equal(note(m1, "sit!"), { m <- m1; m@stage@notes    <- append(m@stage@notes,    "sit!"); m })
-    expect_equal(warn(m1, "run!"), { m <- m1; m@stage@warnings <- append(m@stage@warnings, "run!"); m })
-    expect_equal(fail(m1, "die!"), { m <- m1; m@stage@errors   <- append(m@stage@errors,   "die!"); m@OK=FALSE; m })
-  }
-)
-
-test_that(
-  "pass, fail, warn, and note work on non-monadic input",
-  {
-    expect_equal(
-      pass(42),
-      new("Rmonad",x=list(42), stage=new("record", code="42"))
-    )
-
-    expect_equal(
-      note(42, "sit!"),
-      new("Rmonad", x=list(42), stage=new("record", code="42", notes=list("sit!")))
-    )
-
-    expect_equal(
-      warn(42, "run!"),
-      new(
-        "Rmonad",
-        x     = list(42),
-        stage = new("record", code="42", warnings = list("run!"))
-      )
-    )
-
-    expect_equal(
-      fail(42, "die!"),
-      new(
-        "Rmonad",
-        OK=FALSE,
-        stage = new(
-          "record",
-          code="42",
-          errors = list("die!")
-        )
-      )
-    )
-  }
-)
-
 m1b <- new(
   "Rmonad",
   OK     = FALSE,
