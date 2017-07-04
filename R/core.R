@@ -14,7 +14,8 @@ bind <- function(
   x,
   f,
   print_in  = FALSE,
-  record_in = FALSE
+  record_in = FALSE,
+  bypass    = FALSE
 ){
 
   left_str = deparse(substitute(x))
@@ -33,8 +34,12 @@ bind <- function(
     # merge notes and warnings, replace value
     if(record_in){ m@stage@x <- m@x }
     if(!y@OK){
-      # on failure, propagate the final passing value, this allows
+      # On failure, propagate the final passing value, this allows
       # for either degugging or passage to alternative handlers.
+      y@x <- m@x
+    }
+    if(bypass){
+      show(y@x)
       y@x <- m@x
     }
     y@stage@code <- deparse(fs)

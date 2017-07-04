@@ -27,6 +27,12 @@ r2 <- iris %$>% colSums %>>% mean                  # dies on colSums
 r3 <- cars %$>% colSums %>>% mean                  # passes
 ```
 
+Effects can be called in middle of the pipeline
+
+```{r}
+rnorm(100) %>v% plot(xlab="index", ylab="value") %>>% mean
+```
+
 ```{r, eval=FALSE}
 read(datafile) %,=% "data"   %,,%
 read(config)   %,=% "config" %,>% dothething

@@ -4,7 +4,7 @@
 \alias{bind}
 \title{Apply f to the contents of a monad and merge messages}
 \usage{
-bind(x, f, print_in = FALSE, record_in = FALSE)
+bind(x, f, print_in = FALSE, record_in = FALSE, bypass = FALSE)
 }
 \arguments{
 \item{x}{The input, may or may not be a monad report}

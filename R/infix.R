@@ -92,13 +92,14 @@ NULL
     eval(as.call(cmd), envir=envir)
 }
 
-# #' @rdname infix
-# #' @export
-# `%>v%` <- function(lhs, rhs) {
-#     envir <- parent.frame()
-#     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir, fmap=TRUE, pass="input")
-# }
-#
+#' @rdname infix
+#' @export
+`%>v%` <- function(lhs, rhs) {
+    envir <- parent.frame()
+    cmd   <- list(bind, substitute(lhs), substitute(rhs), bypass=TRUE)
+    eval(as.call(cmd), envir=envir)
+}
+
 # #' @rdname infix
 # #' @export
 # `%>^%` <- function(lhs, rhs) {
