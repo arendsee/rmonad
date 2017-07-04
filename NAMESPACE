@@ -2,6 +2,7 @@
 
 S3method(print,record)
 S3method(print,rmonad)
+export("%$>%")
 export("%>>%")
 export("%^>%")
 export("%v>%")

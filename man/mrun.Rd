@@ -4,7 +4,7 @@
 \alias{mrun}
 \title{Run an expression, capture EWM, return Rmonad}
 \usage{
-mrun(expr)
+mrun(expr, desc = NULL)
 }
 \arguments{
 \item{expr}{An expression}

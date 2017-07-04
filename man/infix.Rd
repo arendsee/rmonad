@@ -3,11 +3,14 @@
 \name{infix}
 \alias{infix}
 \alias{\%>>\%}
+\alias{\%$>\%}
 \alias{\%v>\%}
 \alias{\%^>\%}
 \title{Infix operators}
 \usage{
 lhs \%>>\% rhs
+
+lhs \%$>\% rhs
 
 lhs \%v>\% rhs
 

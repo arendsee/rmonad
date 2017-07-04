@@ -10,7 +10,12 @@
 #' @param print_in logical - should the input be printed?
 #' @param record_in logical - should the input be recorded?
 #' @return A monad report
-bind <- function(x, f, print_in=FALSE, record_in=FALSE){
+bind <- function(
+  x,
+  f,
+  print_in  = FALSE,
+  record_in = FALSE
+){
 
   left_str = deparse(substitute(x))
   m <- as_rmonad(x, desc=left_str)
@@ -44,7 +49,7 @@ bind <- function(x, f, print_in=FALSE, record_in=FALSE){
 #' @param expr An expression
 #' @return Rmonad object 
 #' @export
-mrun <- function(expr){
+mrun <- function(expr, desc=NULL){
 
   value <- NULL 
   warns <- list()
@@ -72,11 +77,17 @@ mrun <- function(expr){
 
   value <- if(isOK) { list(value) } else { list() }
 
+  code <- if(is.null(desc)) {
+    deparse(substitute(expr))
+  } else {
+    desc
+  }
+
   new("Rmonad",
     x = value,
     stage = new("record",  
       x        = list(),
-      code     = deparse(substitute(expr)),
+      code     = code,
       errors   = fails,
       warnings = as.list(warns),
       notes    = as.list(notes)

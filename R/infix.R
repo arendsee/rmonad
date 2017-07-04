@@ -67,6 +67,12 @@ NULL
     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 }
 
+#' @rdname infix
+#' @export
+`%$>%` <- function(lhs, rhs) {
+    code <- deparse(substitute(lhs))
+    mrun(lhs, code) %>>% rhs
+}
 
 #' @rdname infix
 #' @export
