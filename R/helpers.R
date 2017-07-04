@@ -37,7 +37,11 @@ const <- function(x, r){ r }
 #' @export
 esc <- function(x){
   m <- as_rmonad(x)
-  m@x
+  if(length(m@x) == 1){
+    m@x[[1]]
+  } else {
+    m@x
+  }
 }
 
 #' Make NULL values an error

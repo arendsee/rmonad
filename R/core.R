@@ -59,7 +59,7 @@ bind <- function(
         # for either degugging or passage to alternative handlers.
         y@x <- m@x
       }
-      y@history    <- append(m@stage, m@history)
+      y@history <- append(m@history, m@stage)
       o <- y
     }
   }
@@ -154,7 +154,7 @@ combine <- function(ms, keep_history=TRUE){
   ms <- lapply(ms, as_rmonad)
   rec <- new("record")
   history <- if(keep_history) {
-    Reduce( append, lapply(ms, function(m) append(m@stage, m@history)), list() )
+    Reduce( append, lapply(ms, function(m) append(m@history, m@stage)), list() )
   } else {
     list()
   }
