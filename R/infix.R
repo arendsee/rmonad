@@ -76,107 +76,108 @@ NULL
     eval(as.call(cmd), envir=envir)
 }
 
+#' @rdname infix
+#' @export
+`%^>%` <- function(lhs, rhs) {
+    envir <- parent.frame()
+    cmd   <- list(bind, substitute(lhs), substitute(rhs), record_in=TRUE)
+    eval(as.call(cmd), envir=envir)
+}
+
 # #' @rdname infix
 # #' @export
-# `%^>` <- function(lhs, rhs) {
-#     envir <- parent.frame()
-#     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir, record_in=TRUE, pass="input")
-# }
-#
-# #' @rdname infix
-# #' @export
-# `%>v` <- function(lhs, rhs) {
+# `%>v%` <- function(lhs, rhs) {
 #     envir <- parent.frame()
 #     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir, fmap=TRUE, pass="input")
 # }
 #
 # #' @rdname infix
 # #' @export
-# `%>^` <- function(lhs, rhs) {
+# `%>^%` <- function(lhs, rhs) {
 #     envir <- parent.frame()
 #     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 # }
 #
 # #' @rdname infix
 # #' @export
-# `%?>` <- function(lhs, rhs) {
+# `%?>%` <- function(lhs, rhs) {
 #     envir <- parent.frame()
 #     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 # }
 #
 # #' @rdname infix
 # #' @export
-# `%__` <- function(lhs, rhs) {
+# `%__%` <- function(lhs, rhs) {
 #     envir <- parent.frame()
 #     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 # }
 #
 # #' @rdname infix
 # #' @export
-# `%=_` <- function(lhs, rhs) {
+# `%=_%` <- function(lhs, rhs) {
 #     envir <- parent.frame()
 #     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 # }
 #
 # #' @rdname infix
 # #' @export
-# `%=>` <- function(lhs, rhs) {
+# `%=>%` <- function(lhs, rhs) {
 #     envir <- parent.frame()
 #     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 # }
 #
 # #' @rdname infix
 # #' @export
-# `%,,` <- function(lhs, rhs) {
+# `%,,%` <- function(lhs, rhs) {
 #     envir <- parent.frame()
 #     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 # }
 #
 # #' @rdname infix
 # #' @export
-# `%, ` <- function(lhs, rhs) {
+# `%, %` <- function(lhs, rhs) {
 #     envir <- parent.frame()
 #     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 # }
 #
 # #' @rdname infix
 # #' @export
-# `%,=` <- function(lhs, rhs) {
+# `%,=%` <- function(lhs, rhs) {
 #     envir <- parent.frame()
 #     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 # }
 #
 # #' @rdname infix
 # #' @export
-# `%,>` <- function(lhs, rhs) {
+# `%,>%` <- function(lhs, rhs) {
 #     envir <- parent.frame()
 #     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 # }
 #
 # #' @rdname infix
 # #' @export
-# `%,@` <- function(lhs, rhs) {
+# `%,@%` <- function(lhs, rhs) {
 #     envir <- parent.frame()
 #     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 # }
 #
 # #' @rdname infix
 # #' @export
-# `%.` <- function(lhs, rhs) {
+# `%.%` <- function(lhs, rhs) {
 #     envir <- parent.frame()
 #     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 # }
 #
 # #' @rdname infix
 # #' @export
-# `%|` <- function(lhs, rhs) {
+# `%|%` <- function(lhs, rhs) {
 #     envir <- parent.frame()
 #     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 # }
 #
 # #' @rdname infix
 # #' @export
-# `%>` <- function(lhs, rhs) {
+# `%>%` <- function(lhs, rhs) {
 #     envir <- parent.frame()
 #     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 # }

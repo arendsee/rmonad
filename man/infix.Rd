@@ -4,11 +4,14 @@
 \alias{infix}
 \alias{\%>>\%}
 \alias{\%v>\%}
+\alias{\%^>\%}
 \title{Infix operators}
 \usage{
 lhs \%>>\% rhs
 
 lhs \%v>\% rhs
+
+lhs \%^>\% rhs
 }
 \arguments{
 \item{lhs}{left hand value}
