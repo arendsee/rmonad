@@ -4,12 +4,16 @@
 #' @param ... Additional arguments going to God knows where
 #' @name rmonad_printers
 
+NULL
 
 #' @rdname rmonad_printers
 #' @export 
 print.record <- function(x, ...) {
   if(length(x@code) > 0){
     cat(sprintf("R> %s\n", x@code)) 
+  }
+  if(nchar(x@doc) > 0){
+    cat(sprintf("\n    %s\n\n", x@doc)) 
   }
   if(length(x@errors) != 0){
     cat(" * ERROR: ")

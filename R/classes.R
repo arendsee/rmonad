@@ -5,6 +5,8 @@
 #' @slot errors   List of errors accumulated so far 
 #' @slot warnings List of warnings accumulated so far
 #' @slot notes    List of notes accumulated so far
+#' @slot doc      character vector documentation message
+#' @slot branch   Lost of connected Rmonad objects
 record <- setClass(
   "record",
   representation(
@@ -13,6 +15,7 @@ record <- setClass(
     errors   = "list",
     warnings = "list",
     notes    = "list",
+    doc      = "character",
     branch   = "list"
   ),
   prototype(
@@ -21,6 +24,7 @@ record <- setClass(
     errors   = list(),
     warnings = list(),
     notes    = list(), 
+    doc      = "",
     branch   = list()
   )
 )

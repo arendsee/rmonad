@@ -220,12 +220,37 @@ If you won't the success of one stage to be dependent on the prior stage, you
 can use the branch operator:
 
 ```{r}
-x <- runif(10) %$>% sum %>% record %^__%
-     rnorm(10) %>>% sum %>% record %^__%
+x <- runif(10) %$>% sum %^__%
+     rnorm(10) %>>% sum %^__%
      rexp(10)  %>>% sum
-x@history[[1]]@branch
+unbranch(x)
 ```
 
 Note the use of magrittr's `%>%` to perform an operation on the monad itself,
-rather than its value. The `record` function takes the value in the monad adds
-it to the state.
+rather than its value.
+
+`unbranch` returns a list of all branches in the tree. Here is a more dramatic picture.
+
+```{r}
+runif(10)  %$>% abs %>^% sum %^__%
+rnorm(10)  %>>% abs %>^% sum %^__%
+rnorm("a") %>>% abs %>^% sum %^__%
+rexp(10)   %>>% abs %>^% sum %>%
+    unbranch
+```
+
+Now it is getting a little hard to remember what is what. It would be nice if
+we could document our data. We can do that as follows:
+
+```{r}
+runif(10)  %$>% abs %>% doc(
+    "I take the absolute value of the input here, even though it is already
+    guaranteed to be positive(since it is from a uniform distribution on the
+    range 0 to 1). This is necessary, because otherwise the vertical lines in
+    my code would not line up. That would irritate me."
+                  ) %>^% sum %^__%
+rnorm(10)  %>>% abs %>^% sum %^__%
+rnorm("a") %>>% abs %>^% sum %^__%
+rexp(10)   %>>% abs %>^% sum %>%
+    unbranch
+```
