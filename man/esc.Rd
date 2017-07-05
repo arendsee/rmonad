@@ -10,5 +10,5 @@ esc(x)
 \item{x}{rmonad or whatever}
 }
 \description{
-Return the value of a possibly monadic input
+If the monad is failing, raise an error. Otherwise, write the final value.
 }
