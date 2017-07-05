@@ -1,7 +1,7 @@
 [![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=master)](https://travis-ci.org/arendsee/rmonad)
 [![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/master.svg)](https://codecov.io/github/arendsee/rmonad?branch=master)
 
-# MonadR
+# Rmonad
 
 `rmonad` allows state to be preserved across chains of operations.
 
@@ -18,6 +18,26 @@
  * errors can be handled succinctly, without resort to the tryCatch
 
  * the pipelines can branch freely
+
+
+# Installation
+
+To build the package
+
+```R
+library(devtools)
+install_github("arendsee/rmonad")
+library(rmonad)
+```
+
+To build, install, and view the vignettes
+
+```R
+build_vignettes()
+vignette("intro", package="rmonad")
+```
+
+# How to use Rmonad
 
 
 It is easiest to show using a few examples

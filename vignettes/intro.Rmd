@@ -16,7 +16,7 @@ library(magrittr)
 
 I will introduce `Rmonad` with a simple sequence of squares
 
-```
+```{r}
 1:5      %$>%
     sqrt %>>%
     sqrt %>>%
@@ -28,7 +28,7 @@ inside the monad, and it doesn't ever need to come out. You see that soon.
 
 In `magrittr` you could do something similar:
 
-```
+```{r}
 1:5      %>%
     sqrt %>%
     sqrt %>%
@@ -39,7 +39,7 @@ In `magrittr` you could do something similar:
 quite different, it uses builds monadic sequences, which preserve state between
 calls. The preserved state allows us to access data internal to the pipeline:
 
-```
+```{r}
 1:5      %$>%
     sqrt %v>%
     sqrt %>>%
@@ -50,7 +50,7 @@ The `%v>%` variant of the bind operator stores the results as they are passed.
 
 Now lets look at warnings handling.
 
-```
+```{r}
 -1:3     %$>%
     sqrt %v>%
     sqrt %>>%
@@ -60,7 +60,7 @@ Now lets look at warnings handling.
 `Rmonad` intercepts all errors, warnings, and messages and anchors them to the
 function that produced them. Similarly for errors:
 
-```
+```{r}
 letters  %$>%
     sqrt %v>%
     sqrt %>>%
@@ -70,7 +70,7 @@ letters  %$>%
 The input to the first `sqrt` failed, and was coupled to the resultant error.
 Contrast this with `magrittr`:
 
-```
+```{r}
 letters  %>%
     sqrt %>%
     sqrt %>%
@@ -205,10 +205,14 @@ written to `stderr`).
 If `read.table("asdfdf")` passes but it contains character columns, `colSums`
 will fail. This failure will be recorded and propagated.
 
-```R
+```{r}
 r1 <- read.table("asdfdf") %$>% colSums %>>% mean  # dies on read.table
 r2 <- iris %$>% colSums %>>% mean                  # dies on colSums 
 r3 <- cars %$>% colSums %>>% mean                  # passes
+
+r1
+r2
+r3
 ```
 
 Though the first two fail, the failure is contained within the monad. So the
