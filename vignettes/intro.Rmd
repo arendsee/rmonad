@@ -70,7 +70,7 @@ letters  %$>%
 The input to the first `sqrt` failed, and was coupled to the resultant error.
 Contrast this with `magrittr`:
 
-```{r}
+```{r, eval=FALSE}
 letters  %>%
     sqrt %>%
     sqrt %>%
