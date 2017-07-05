@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Vignette Author" />
+
+<meta name="date" content="2017-07-05" />
+
+<title>Vignette Title</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+</style>
+
+
+
+<link href="data:text/css,body%20%7B%0A%20%20background%2Dcolor%3A%20%23fff%3B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20max%2Dwidth%3A%20700px%3B%0A%20%20overflow%3A%20visible%3B%0A%20%20padding%2Dleft%3A%202em%3B%0A%20%20padding%2Dright%3A%202em%3B%0A%20%20font%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0A%20%20font%2Dsize%3A%2014px%3B%0A%20%20line%2Dheight%3A%201%2E35%3B%0A%7D%0A%0A%23header%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0A%0A%23TOC%20%7B%0A%20%20clear%3A%20both%3B%0A%20%20margin%3A%200%200%2010px%2010px%3B%0A%20%20padding%3A%204px%3B%0A%20%20width%3A%20400px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20border%2Dradius%3A%205px%3B%0A%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20font%2Dsize%3A%2013px%3B%0A%20%20line%2Dheight%3A%201%2E3%3B%0A%7D%0A%20%20%23TOC%20%2Etoctitle%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%20%20font%2Dsize%3A%2015px%3B%0A%20%20%20%20margin%2Dleft%3A%205px%3B%0A%20%20%7D%0A%0A%20%20%23TOC%20ul%20%7B%0A%20%20%20%20padding%2Dleft%3A%2040px%3B%0A%20%20%20%20margin%2Dleft%3A%20%2D1%2E5em%3B%0A%20%20%20%20margin%2Dtop%3A%205px%3B%0A%20%20%20%20margin%2Dbottom%3A%205px%3B%0A%20%20%7D%0A%20%20%23TOC%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dleft%3A%20%2D2em%3B%0A%20%20%7D%0A%20%20%23TOC%20li%20%7B%0A%20%20%20%20line%2Dheight%3A%2016px%3B%0A%20%20%7D%0A%0Atable%20%7B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dcolor%3A%20%23DDDDDD%3B%0A%20%20border%2Dstyle%3A%20outset%3B%0A%20%20border%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0A%20%20border%2Dwidth%3A%202px%3B%0A%20%20padding%3A%205px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%20%20line%2Dheight%3A%2018px%3B%0A%20%20padding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0A%20%20border%2Dleft%2Dstyle%3A%20none%3B%0A%20%20border%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Ap%20%7B%0A%20%20margin%3A%200%2E5em%200%3B%0A%7D%0A%0Ablockquote%20%7B%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20padding%3A%200%2E25em%200%2E75em%3B%0A%7D%0A%0Ahr%20%7B%0A%20%20border%2Dstyle%3A%20solid%3B%0A%20%20border%3A%20none%3B%0A%20%20border%2Dtop%3A%201px%20solid%20%23777%3B%0A%20%20margin%3A%2028px%200%3B%0A%7D%0A%0Adl%20%7B%0A%20%20margin%2Dleft%3A%200%3B%0A%7D%0A%20%20dl%20dd%20%7B%0A%20%20%20%20margin%2Dbottom%3A%2013px%3B%0A%20%20%20%20margin%2Dleft%3A%2013px%3B%0A%20%20%7D%0A%20%20dl%20dt%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%7D%0A%0Aul%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%7D%0A%20%20ul%20li%20%7B%0A%20%20%20%20list%2Dstyle%3A%20circle%20outside%3B%0A%20%20%7D%0A%20%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dbottom%3A%200%3B%0A%20%20%7D%0A%0Apre%2C%20code%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20color%3A%20%23333%3B%0A%20%20white%2Dspace%3A%20pre%2Dwrap%3B%20%20%20%20%2F%2A%20Wrap%20long%20lines%20%2A%2F%0A%7D%0Apre%20%7B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20margin%3A%205px%200px%2010px%200px%3B%0A%20%20padding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Acode%20%7B%0A%20%20font%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0A%20%20font%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0A%20%20padding%3A%202px%200px%3B%0A%7D%0A%0Adiv%2Efigure%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0A%20%20background%2Dcolor%3A%20%23FFFFFF%3B%0A%20%20padding%3A%202px%3B%0A%20%20border%3A%201px%20solid%20%23DDDDDD%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20margin%3A%200%205px%3B%0A%7D%0A%0Ah1%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%20%20font%2Dsize%3A%2035px%3B%0A%20%20line%2Dheight%3A%2040px%3B%0A%7D%0A%0Ah2%20%7B%0A%20%20border%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20padding%2Dbottom%3A%202px%3B%0A%20%20font%2Dsize%3A%20145%25%3B%0A%7D%0A%0Ah3%20%7B%0A%20%20border%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20font%2Dsize%3A%20120%25%3B%0A%7D%0A%0Ah4%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0A%20%20margin%2Dleft%3A%208px%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Ah5%2C%20h6%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23ccc%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Aa%20%7B%0A%20%20color%3A%20%230033dd%3B%0A%20%20text%2Ddecoration%3A%20none%3B%0A%7D%0A%20%20a%3Ahover%20%7B%0A%20%20%20%20color%3A%20%236666ff%3B%20%7D%0A%20%20a%3Avisited%20%7B%0A%20%20%20%20color%3A%20%23800080%3B%20%7D%0A%20%20a%3Avisited%3Ahover%20%7B%0A%20%20%20%20color%3A%20%23BB00BB%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%0A%2F%2A%20Class%20described%20in%20https%3A%2F%2Fbenjeffrey%2Ecom%2Fposts%2Fpandoc%2Dsyntax%2Dhighlighting%2Dcss%0A%20%20%20Colours%20from%20https%3A%2F%2Fgist%2Egithub%2Ecom%2Frobsimmons%2F1172277%20%2A%2F%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Keyword%20%2A%2F%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%2F%2A%20DataType%20%2A%2F%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%2F%2A%20DecVal%20%28decimal%20values%29%20%2A%2F%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20BaseN%20%2A%2F%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Float%20%2A%2F%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Char%20%2A%2F%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20String%20%2A%2F%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%2F%2A%20Comment%20%2A%2F%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%2F%2A%20OtherToken%20%2A%2F%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20AlertToken%20%2A%2F%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Function%20calls%20%2A%2F%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%2F%2A%20ErrorTok%20%2A%2F%0A%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Vignette Title</h1>
+<h4 class="author"><em>Vignette Author</em></h4>
+<h4 class="date"><em>2017-07-05</em></h4>
+
+
+
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rmonad)
+<span class="kw">library</span>(magrittr)</code></pre>
+<p>I will introduce <code>Rmonad</code> with a simple sequence of squares</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="dv">1</span>:<span class="dv">5</span>      %$&gt;%
+<span class="st">    </span>sqrt %&gt;&gt;%
+<span class="st">    </span>sqrt %&gt;&gt;%
+<span class="st">    </span>sqrt</code></pre>
+<pre><code>## R&gt; 1:5
+## 
+## R&gt; sqrt
+## 
+## R&gt; sqrt
+## 
+## R&gt; sqrt
+## 
+##  ----------------- 
+## 
+## Value: [1] 1.000000 1.090508 1.147203 1.189207 1.222845</code></pre>
+<p>So what exactly did Rmonad do with your data? It is still there, but it is inside the monad, and it doesn’t ever need to come out. You see that soon.</p>
+<p>In <code>magrittr</code> you could do something similar:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="dv">1</span>:<span class="dv">5</span>      %&gt;%
+<span class="st">    </span>sqrt %&gt;%
+<span class="st">    </span>sqrt %&gt;%
+<span class="st">    </span>sqrt</code></pre>
+<pre><code>## [1] 1.000000 1.090508 1.147203 1.189207 1.222845</code></pre>
+<p><code>magrittr</code> is standard pipeline, chaining data to output data. <code>Rmonad</code> is quite different, it uses builds monadic sequences, which preserve state between calls. The preserved state allows us to access data internal to the pipeline:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="dv">1</span>:<span class="dv">5</span>      %$&gt;%
+<span class="st">    </span>sqrt %v&gt;%
+<span class="st">    </span>sqrt %&gt;&gt;%
+<span class="st">    </span>sqrt</code></pre>
+<pre><code>## R&gt; 1:5
+## 
+## R&gt; sqrt
+## Value:
+## [1] 1.000000 1.414214 1.732051 2.000000 2.236068
+## 
+## R&gt; sqrt
+## 
+## R&gt; sqrt
+## 
+##  ----------------- 
+## 
+## Value: [1] 1.000000 1.090508 1.147203 1.189207 1.222845</code></pre>
+<p>The <code>%v&gt;%</code> variant of the bind operator stores the results as they are passed.</p>
+<p>Now lets look at warnings handling.</p>
+<pre class="sourceCode r"><code class="sourceCode r">-<span class="dv">1</span>:<span class="dv">3</span>     %$&gt;%
+<span class="st">    </span>sqrt %v&gt;%
+<span class="st">    </span>sqrt %&gt;&gt;%
+<span class="st">    </span>sqrt</code></pre>
+<pre><code>## R&gt; -1:3
+## 
+## R&gt; sqrt
+##  * WARNING: NaNs produced
+## Value:
+## [1]      NaN 0.000000 1.000000 1.414214 1.732051
+## 
+## R&gt; sqrt
+## 
+## R&gt; sqrt
+## 
+##  ----------------- 
+## 
+## Value: [1]      NaN 0.000000 1.000000 1.090508 1.147203</code></pre>
+<p><code>Rmonad</code> intercepts all errors, warnings, and messages and anchors them to the function that produced them. Similarly for errors:</p>
+<pre class="sourceCode r"><code class="sourceCode r">letters  %$&gt;%
+<span class="st">    </span>sqrt %v&gt;%
+<span class="st">    </span>sqrt %&gt;&gt;%
+<span class="st">    </span>sqrt</code></pre>
+<pre><code>## R&gt; letters
+## 
+## R&gt; sqrt
+##  * ERROR: non-numeric argument to mathematical function
+## 
+##  ----------------- 
+## 
+## Value:  [1] &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; &quot;e&quot; &quot;f&quot; &quot;g&quot; &quot;h&quot; &quot;i&quot; &quot;j&quot; &quot;k&quot; &quot;l&quot; &quot;m&quot; &quot;n&quot; &quot;o&quot; &quot;p&quot; &quot;q&quot;
+## [18] &quot;r&quot; &quot;s&quot; &quot;t&quot; &quot;u&quot; &quot;v&quot; &quot;w&quot; &quot;x&quot; &quot;y&quot; &quot;z&quot;
+## 
+##  *** FAILURE ***</code></pre>
+<p>The input to the first <code>sqrt</code> failed, and was coupled to the resultant error. Contrast this with <code>magrittr</code>:</p>
+<pre class="sourceCode r"><code class="sourceCode r">letters  %&gt;%
+<span class="st">    </span>sqrt %&gt;%
+<span class="st">    </span>sqrt %&gt;%
+<span class="st">    </span>sqrt</code></pre>
+<p>Also note that a value was still produced. <code>Rmonad</code> stores the last successful value. It will never use this value, though, unless you use a specific operator (which we will see in a bit).</p>
+<p>Here is a more substantial example</p>
+<pre class="sourceCode r"><code class="sourceCode r">r1 &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;asdfdf&quot;</span>) %$&gt;%<span class="st"> </span>colSums %&gt;&gt;%<span class="st"> </span>mean  <span class="co"># dies on read.table</span>
+r2 &lt;-<span class="st"> </span>iris %$&gt;%<span class="st"> </span>colSums %&gt;&gt;%<span class="st"> </span>mean                  <span class="co"># dies on colSums </span>
+r3 &lt;-<span class="st"> </span>cars %$&gt;%<span class="st"> </span>colSums %&gt;&gt;%<span class="st"> </span>mean                  <span class="co"># passes</span></code></pre>
+<p>You may have noticed that the first operator in each chain is <code>%$&gt;%</code>, whereas the following operators are <code>$&gt;&gt;$</code>. The former operator takes the left hand value and wraps it in a monad, and then performs the left hand function on its value. The <code>$&gt;&gt;$</code> operator, takes a monadic container on the left and applies its value (if it didn’t fail) to the function on the right, then unifies the history.</p>
+<div id="branching-out" class="section level1">
+<h1>Branching out</h1>
+<p>If you want to perform an operation on a value inside the chain, but don’t want to pass it, you can use the branch operator <code>%&gt;^%</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">pass</span>(<span class="kw">rnorm</span>(<span class="dv">100</span>)) %&gt;^%<span class="st"> </span><span class="kw">plot</span>(<span class="dt">xlab=</span><span class="st">&quot;index&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;value&quot;</span>) %&gt;&gt;%<span class="st"> </span>mean</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>## R&gt; rnorm(100)
+## Has 1 branches
+## 
+## R&gt; mean
+## 
+##  ----------------- 
+## 
+## Value: [1] 0.06381148</code></pre>
+<p>This stores the result of <code>plot</code> in a branch off the main pipeline. This means that <code>plot</code> could fail, but the rest of the pipeline could continue. You can store multiple branches.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rnorm</span>(<span class="dv">100</span>) %&gt;^%<span class="st"> </span><span class="kw">plot</span>(<span class="dt">xlab=</span><span class="st">&quot;index&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;value&quot;</span>) %&gt;^%<span class="st"> </span>summary %&gt;&gt;%<span class="st"> </span>mean</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>## R&gt; rnorm(100)
+## Has 2 branches
+## 
+## R&gt; mean
+## 
+##  ----------------- 
+## 
+## Value: [1] -0.1951748</code></pre>
+<p>Branches can be used as input, as well.</p>
+<pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="dv">10</span> %&gt;^%<span class="st"> </span><span class="kw">dgamma</span>(<span class="dv">10</span>, <span class="dv">1</span>) %&gt;^%<span class="st"> </span><span class="kw">dgamma</span>(<span class="dv">10</span>, <span class="dv">5</span>) %^&gt;%<span class="st"> </span><span class="kw">pmax</span>()
+x</code></pre>
+<pre><code>## R&gt; 1:10
+## Has 2 branches
+## 
+## R&gt; 
+## 
+## R&gt; pmax()  - FUNCTION ON BRANCHES
+## 
+##  ----------------- 
+## 
+## Value:  [1] 0.18132789 0.62555018 0.16203584 0.01454077 0.03626558 0.06883849
+##  [7] 0.10140467 0.12407692 0.13175564 0.12511004</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">x@history[[<span class="dv">2</span>]]@branch</code></pre>
+<pre><code>## list()</code></pre>
+<p>Note the branches could be long monadic chains themselves, which might have their own branches.</p>
+<p>The <code>%&gt;_%</code> operator is useful when you want to include a function inside a pipeline that should be bypassed, but you want the errors, warnings, and messages to pass along with the main. This can be used make assertions about the data inside a pipeline.</p>
+<pre class="sourceCode r"><code class="sourceCode r">is_positive &lt;-<span class="st"> </span>function(x) { <span class="kw">stopifnot</span>(x &gt;<span class="st"> </span><span class="dv">0</span>) }
+<span class="kw">rnorm</span>(<span class="dv">100</span>) %&gt;_%<span class="st"> </span>is_positive %&gt;&gt;%<span class="st"> </span>mean</code></pre>
+<pre><code>## R&gt; rnorm(100)
+## 
+## R&gt; is_positive
+##  * ERROR: x &gt; 0 are not all TRUE
+## 
+##  ----------------- 
+## 
+## Value:   [1]  0.62469699 -1.44595213  0.28770073 -1.33286625 -0.23821704
+##   [6]  0.77532797  0.12189761  0.21302224 -0.01538240 -0.23554706
+##  [11]  0.63060309  0.22554265  0.22717589 -1.64764162  1.16235094
+##  [16] -1.10679505 -0.45708593  4.16496608  0.18094117 -1.13844001
+##  [21] -1.43511478 -0.63706961 -0.30103195  0.12381627 -0.70248023
+##  [26] -1.44005163 -0.71903127 -0.64107890 -1.08693902 -0.90629108
+##  [31] -1.29229897  0.98713879  0.05459011  0.93934302  0.66324517
+##  [36]  2.08970971 -0.70805377 -0.17919159  1.32699742 -0.97330400
+##  [41] -0.07920690  1.37000284 -0.71380618 -0.17743879 -0.22278528
+##  [46] -1.45896089 -1.54575075 -0.79452052  0.05936749 -0.35752553
+##  [51]  0.66933952 -0.66677943 -0.64209638  2.20410770  1.90594332
+##  [56] -0.38070892 -0.13244902  0.87302012 -2.16260089  0.27293167
+##  [61] -2.24020051 -0.15107036 -0.43293455  0.34033179 -1.13017029
+##  [66] -1.76571431  0.29626765  0.41126419 -0.61655397 -1.15203107
+##  [71] -2.12567308  1.75595993  0.63607556 -0.48747435  0.37118201
+##  [76] -0.65831784 -0.00600023  0.87540475 -0.90120520 -1.40605181
+##  [81]  1.25812068 -2.52170661  0.12008085  0.18920979 -0.23981386
+##  [86]  0.04298260 -0.98160194 -0.08052125 -1.42093568  1.33617303
+##  [91]  1.17314058 -0.66732662 -1.15996033 -0.97283211 -1.15105488
+##  [96] -1.22641891 -0.88022886  1.76854238  0.09482071 -0.50519713
+## 
+##  *** FAILURE ***</code></pre>
+<p>This can also be used for documentation</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># note is just `function(...) { }`, here I use it to document, since</span>
+<span class="co"># Rmonad shows the functions called via NSE.</span>
+<span class="kw">rnorm</span>(<span class="dv">100</span>) %&gt;_%<span class="st"> </span><span class="kw">note</span>(<span class="st">&quot;I am about to take the mean&quot;</span>) %&gt;&gt;%<span class="st"> </span>mean</code></pre>
+<pre><code>## R&gt; rnorm(100)
+## 
+## R&gt; note(&quot;I am about to take the mean&quot;)
+## 
+## R&gt; mean
+## 
+##  ----------------- 
+## 
+## Value: [1] 0.01310155</code></pre>
+<p>Sometimes failure is not the end of the world. For example, we might want to try several alternatives functions, and use the first that works.</p>
+</div>
+<div id="handling-error" class="section level1">
+<h1>Handling error</h1>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="dv">1</span>:<span class="dv">10</span> %$&gt;%<span class="st"> </span>colSums %?&gt;%<span class="st"> </span>sum</code></pre>
+<pre><code>## R&gt; 1:10
+## 
+## R&gt; colSums
+##  * ERROR: 'x' must be an array of at least two dimensions
+## 
+## R&gt; sum
+## 
+##  ----------------- 
+## 
+## Value: [1] 55</code></pre>
+<p>Here we will do either <code>colSums</code> or <code>sum</code>. The pipeline fails only if both fail.</p>
+<p>This operator can also be used as a pure try-catch:</p>
+<pre class="sourceCode r"><code class="sourceCode r">id &lt;-<span class="st"> </span>function(x) x
+iris %$&gt;%<span class="st"> </span>colSums %?&gt;%<span class="st"> </span>id %&gt;&gt;%<span class="st"> </span>summary</code></pre>
+<pre><code>## R&gt; iris
+## 
+## R&gt; colSums
+##  * ERROR: 'x' must be numeric
+## 
+## R&gt; id
+## 
+## R&gt; summary
+## 
+##  ----------------- 
+## 
+## Value:   Sepal.Length    Sepal.Width     Petal.Length    Petal.Width   
+##  Min.   :4.300   Min.   :2.000   Min.   :1.000   Min.   :0.100  
+##  1st Qu.:5.100   1st Qu.:2.800   1st Qu.:1.600   1st Qu.:0.300  
+##  Median :5.800   Median :3.000   Median :4.350   Median :1.300  
+##  Mean   :5.843   Mean   :3.057   Mean   :3.758   Mean   :1.199  
+##  3rd Qu.:6.400   3rd Qu.:3.300   3rd Qu.:5.100   3rd Qu.:1.800  
+##  Max.   :7.900   Max.   :4.400   Max.   :6.900   Max.   :2.500  
+##        Species  
+##  setosa    :50  
+##  versicolor:50  
+##  virginica :50  
+##                 
+##                 
+## </code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">cars %$&gt;%<span class="st"> </span>colSums %?&gt;%<span class="st"> </span>id %&gt;&gt;%<span class="st"> </span>summary</code></pre>
+<pre><code>## R&gt; cars
+## 
+## R&gt; colSums
+## 
+## R&gt; summary
+## 
+##  ----------------- 
+## 
+## Value:    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##     770    1115    1460    1460    1804    2149</code></pre>
+<p>In this way, we can make chains of operations which may fail for some inputs. These failures are recorded in the monad, but don’t scream and break things.</p>
+<p>Sometimes you want to ignore the previous failure completely, and make a new call – for example in reading files:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># try to load a cached file, on failure rerun the analysis</span>
+<span class="st">&quot;analyasis_cache.tab&quot;</span> %$&gt;%<span class="st"> </span>read.table %?&lt;%<span class="st"> </span><span class="kw">the_analysis</span>(x)</code></pre>
+<pre><code>## R&gt; read.table
+##  * ERROR: cannot open the connection
+##  * WARNING: cannot open file 'analyasis_cache.tab': No such file or directory
+## 
+## R&gt; &quot;analyasis_cache.tab&quot;
+## 
+## R&gt; the_analysis(x)
+##  * ERROR: could not find function &quot;the_analysis&quot;
+## 
+##  ----------------- 
+## 
+## 
+##  *** FAILURE ***</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">read</span>(datafile) %,=%<span class="st"> &quot;data&quot;</span>   %,,%
+<span class="kw">read</span>(config)   %,=%<span class="st"> &quot;config&quot;</span> %,&gt;%<span class="st"> </span>dothething</code></pre>
+</div>
+<div id="what-is-a-monad" class="section level1">
+<h1>What is a monad?</h1>
+<p><code>rmonad</code> offers a pure means to propagate errors, warnings and notes through a pipeline.</p>
+<p>It is easiest to show using a few examples</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">read.table</span>(<span class="st">&quot;asdfdf&quot;</span>) %$&gt;%<span class="st"> </span>colSums %&gt;&gt;%<span class="st"> </span>mean</code></pre>
+<p>The <code>%$&gt;%</code> operator loads the left-hand side into the monad, handling any errors, warnings or messages in a pure fashion. The result is then “bound” to <code>colSums</code>. If the left hand side passed without error, its pure value will be passed to <code>colSums</code>. If it failed, <code>colSums</code>, will not be called, and the failed state will propagate.</p>
+<p>This pipeline is pure in that there are no side-effects (e.g. nothing is written to <code>stderr</code>).</p>
+<p>If <code>read.table(&quot;asdfdf&quot;)</code> passes but it contains character columns, <code>colSums</code> will fail. This failure will be recorded and propagated.</p>
+<pre class="sourceCode r"><code class="sourceCode r">r1 &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;asdfdf&quot;</span>) %$&gt;%<span class="st"> </span>colSums %&gt;&gt;%<span class="st"> </span>mean  <span class="co"># dies on read.table</span>
+r2 &lt;-<span class="st"> </span>iris %$&gt;%<span class="st"> </span>colSums %&gt;&gt;%<span class="st"> </span>mean                  <span class="co"># dies on colSums </span>
+r3 &lt;-<span class="st"> </span>cars %$&gt;%<span class="st"> </span>colSums %&gt;&gt;%<span class="st"> </span>mean                  <span class="co"># passes</span>
+
+r1</code></pre>
+<pre><code>## R&gt; read.table(&quot;asdfdf&quot;)
+##  * ERROR: cannot open the connection
+##  * WARNING: cannot open file 'asdfdf': No such file or directory
+## 
+##  *** FAILURE ***</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">r2</code></pre>
+<pre><code>## R&gt; iris
+## 
+## R&gt; colSums
+##  * ERROR: 'x' must be numeric
+## 
+##  ----------------- 
+## 
+## Value:     Sepal.Length Sepal.Width Petal.Length Petal.Width    Species
+## 1            5.1         3.5          1.4         0.2     setosa
+## 2            4.9         3.0          1.4         0.2     setosa
+## 3            4.7         3.2          1.3         0.2     setosa
+## 4            4.6         3.1          1.5         0.2     setosa
+## 5            5.0         3.6          1.4         0.2     setosa
+## 6            5.4         3.9          1.7         0.4     setosa
+## 7            4.6         3.4          1.4         0.3     setosa
+## 8            5.0         3.4          1.5         0.2     setosa
+## 9            4.4         2.9          1.4         0.2     setosa
+## 10           4.9         3.1          1.5         0.1     setosa
+## 11           5.4         3.7          1.5         0.2     setosa
+## 12           4.8         3.4          1.6         0.2     setosa
+## 13           4.8         3.0          1.4         0.1     setosa
+## 14           4.3         3.0          1.1         0.1     setosa
+## 15           5.8         4.0          1.2         0.2     setosa
+## 16           5.7         4.4          1.5         0.4     setosa
+## 17           5.4         3.9          1.3         0.4     setosa
+## 18           5.1         3.5          1.4         0.3     setosa
+## 19           5.7         3.8          1.7         0.3     setosa
+## 20           5.1         3.8          1.5         0.3     setosa
+## 21           5.4         3.4          1.7         0.2     setosa
+## 22           5.1         3.7          1.5         0.4     setosa
+## 23           4.6         3.6          1.0         0.2     setosa
+## 24           5.1         3.3          1.7         0.5     setosa
+## 25           4.8         3.4          1.9         0.2     setosa
+## 26           5.0         3.0          1.6         0.2     setosa
+## 27           5.0         3.4          1.6         0.4     setosa
+## 28           5.2         3.5          1.5         0.2     setosa
+## 29           5.2         3.4          1.4         0.2     setosa
+## 30           4.7         3.2          1.6         0.2     setosa
+## 31           4.8         3.1          1.6         0.2     setosa
+## 32           5.4         3.4          1.5         0.4     setosa
+## 33           5.2         4.1          1.5         0.1     setosa
+## 34           5.5         4.2          1.4         0.2     setosa
+## 35           4.9         3.1          1.5         0.2     setosa
+## 36           5.0         3.2          1.2         0.2     setosa
+## 37           5.5         3.5          1.3         0.2     setosa
+## 38           4.9         3.6          1.4         0.1     setosa
+## 39           4.4         3.0          1.3         0.2     setosa
+## 40           5.1         3.4          1.5         0.2     setosa
+## 41           5.0         3.5          1.3         0.3     setosa
+## 42           4.5         2.3          1.3         0.3     setosa
+## 43           4.4         3.2          1.3         0.2     setosa
+## 44           5.0         3.5          1.6         0.6     setosa
+## 45           5.1         3.8          1.9         0.4     setosa
+## 46           4.8         3.0          1.4         0.3     setosa
+## 47           5.1         3.8          1.6         0.2     setosa
+## 48           4.6         3.2          1.4         0.2     setosa
+## 49           5.3         3.7          1.5         0.2     setosa
+## 50           5.0         3.3          1.4         0.2     setosa
+## 51           7.0         3.2          4.7         1.4 versicolor
+## 52           6.4         3.2          4.5         1.5 versicolor
+## 53           6.9         3.1          4.9         1.5 versicolor
+## 54           5.5         2.3          4.0         1.3 versicolor
+## 55           6.5         2.8          4.6         1.5 versicolor
+## 56           5.7         2.8          4.5         1.3 versicolor
+## 57           6.3         3.3          4.7         1.6 versicolor
+## 58           4.9         2.4          3.3         1.0 versicolor
+## 59           6.6         2.9          4.6         1.3 versicolor
+## 60           5.2         2.7          3.9         1.4 versicolor
+## 61           5.0         2.0          3.5         1.0 versicolor
+## 62           5.9         3.0          4.2         1.5 versicolor
+## 63           6.0         2.2          4.0         1.0 versicolor
+## 64           6.1         2.9          4.7         1.4 versicolor
+## 65           5.6         2.9          3.6         1.3 versicolor
+## 66           6.7         3.1          4.4         1.4 versicolor
+## 67           5.6         3.0          4.5         1.5 versicolor
+## 68           5.8         2.7          4.1         1.0 versicolor
+## 69           6.2         2.2          4.5         1.5 versicolor
+## 70           5.6         2.5          3.9         1.1 versicolor
+## 71           5.9         3.2          4.8         1.8 versicolor
+## 72           6.1         2.8          4.0         1.3 versicolor
+## 73           6.3         2.5          4.9         1.5 versicolor
+## 74           6.1         2.8          4.7         1.2 versicolor
+## 75           6.4         2.9          4.3         1.3 versicolor
+## 76           6.6         3.0          4.4         1.4 versicolor
+## 77           6.8         2.8          4.8         1.4 versicolor
+## 78           6.7         3.0          5.0         1.7 versicolor
+## 79           6.0         2.9          4.5         1.5 versicolor
+## 80           5.7         2.6          3.5         1.0 versicolor
+## 81           5.5         2.4          3.8         1.1 versicolor
+## 82           5.5         2.4          3.7         1.0 versicolor
+## 83           5.8         2.7          3.9         1.2 versicolor
+## 84           6.0         2.7          5.1         1.6 versicolor
+## 85           5.4         3.0          4.5         1.5 versicolor
+## 86           6.0         3.4          4.5         1.6 versicolor
+## 87           6.7         3.1          4.7         1.5 versicolor
+## 88           6.3         2.3          4.4         1.3 versicolor
+## 89           5.6         3.0          4.1         1.3 versicolor
+## 90           5.5         2.5          4.0         1.3 versicolor
+## 91           5.5         2.6          4.4         1.2 versicolor
+## 92           6.1         3.0          4.6         1.4 versicolor
+## 93           5.8         2.6          4.0         1.2 versicolor
+## 94           5.0         2.3          3.3         1.0 versicolor
+## 95           5.6         2.7          4.2         1.3 versicolor
+## 96           5.7         3.0          4.2         1.2 versicolor
+## 97           5.7         2.9          4.2         1.3 versicolor
+## 98           6.2         2.9          4.3         1.3 versicolor
+## 99           5.1         2.5          3.0         1.1 versicolor
+## 100          5.7         2.8          4.1         1.3 versicolor
+## 101          6.3         3.3          6.0         2.5  virginica
+## 102          5.8         2.7          5.1         1.9  virginica
+## 103          7.1         3.0          5.9         2.1  virginica
+## 104          6.3         2.9          5.6         1.8  virginica
+## 105          6.5         3.0          5.8         2.2  virginica
+## 106          7.6         3.0          6.6         2.1  virginica
+## 107          4.9         2.5          4.5         1.7  virginica
+## 108          7.3         2.9          6.3         1.8  virginica
+## 109          6.7         2.5          5.8         1.8  virginica
+## 110          7.2         3.6          6.1         2.5  virginica
+## 111          6.5         3.2          5.1         2.0  virginica
+## 112          6.4         2.7          5.3         1.9  virginica
+## 113          6.8         3.0          5.5         2.1  virginica
+## 114          5.7         2.5          5.0         2.0  virginica
+## 115          5.8         2.8          5.1         2.4  virginica
+## 116          6.4         3.2          5.3         2.3  virginica
+## 117          6.5         3.0          5.5         1.8  virginica
+## 118          7.7         3.8          6.7         2.2  virginica
+## 119          7.7         2.6          6.9         2.3  virginica
+## 120          6.0         2.2          5.0         1.5  virginica
+## 121          6.9         3.2          5.7         2.3  virginica
+## 122          5.6         2.8          4.9         2.0  virginica
+## 123          7.7         2.8          6.7         2.0  virginica
+## 124          6.3         2.7          4.9         1.8  virginica
+## 125          6.7         3.3          5.7         2.1  virginica
+## 126          7.2         3.2          6.0         1.8  virginica
+## 127          6.2         2.8          4.8         1.8  virginica
+## 128          6.1         3.0          4.9         1.8  virginica
+## 129          6.4         2.8          5.6         2.1  virginica
+## 130          7.2         3.0          5.8         1.6  virginica
+## 131          7.4         2.8          6.1         1.9  virginica
+## 132          7.9         3.8          6.4         2.0  virginica
+## 133          6.4         2.8          5.6         2.2  virginica
+## 134          6.3         2.8          5.1         1.5  virginica
+## 135          6.1         2.6          5.6         1.4  virginica
+## 136          7.7         3.0          6.1         2.3  virginica
+## 137          6.3         3.4          5.6         2.4  virginica
+## 138          6.4         3.1          5.5         1.8  virginica
+## 139          6.0         3.0          4.8         1.8  virginica
+## 140          6.9         3.1          5.4         2.1  virginica
+## 141          6.7         3.1          5.6         2.4  virginica
+## 142          6.9         3.1          5.1         2.3  virginica
+## 143          5.8         2.7          5.1         1.9  virginica
+## 144          6.8         3.2          5.9         2.3  virginica
+## 145          6.7         3.3          5.7         2.5  virginica
+## 146          6.7         3.0          5.2         2.3  virginica
+## 147          6.3         2.5          5.0         1.9  virginica
+## 148          6.5         3.0          5.2         2.0  virginica
+## 149          6.2         3.4          5.4         2.3  virginica
+## 150          5.9         3.0          5.1         1.8  virginica
+## 
+##  *** FAILURE ***</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">r3</code></pre>
+<pre><code>## R&gt; cars
+## 
+## R&gt; colSums
+## 
+## R&gt; mean
+## 
+##  ----------------- 
+## 
+## Value: [1] 1459.5</code></pre>
+<p>Though the first two fail, the failure is contained within the monad. So the exact location of the failure can be explored.</p>
+</div>
+<div id="what-is-a-monad-1" class="section level1">
+<h1>What is a monad?</h1>
+<div id="a-little-background-syntax" class="section level2">
+<h2>A little background syntax</h2>
+<p>To describe what a monad is I first need to introduce a little syntax for specifying functions. I am pulling this syntax roughly from Haskell (the language where monads are most well developed). The function <code>max</code>, which takes the maximum of two numbers can be specified as follows:</p>
+<pre><code>max :: Numeric -&gt; Numeric -&gt; Numeric
+           ^         ^           ^
+          /         /           /
+ arg1 ---'  arg2 --'  result --'</code></pre>
+<p>While the function <code>max</code> takes specifically numeric arguments, some functions can take arguments of any type. These type variables can be expressed with single, lowercase letters. For example, a function that takes two arguments and return the first argument would have the signature <code>a -&gt; b -&gt; a</code>.</p>
+<p>Some types are also parameterized. For example, a homogenous list is a parameterized type. A function that returns the nth element from a list might have the signature:</p>
+<pre><code>nth :: List a -&gt; Integer -&gt; a</code></pre>
+<p>Where <code>List a</code> means a list of elements of type <code>a</code>, where <code>a</code> can be anything. Now <code>List</code> could be replaced with generic value:</p>
+<pre><code>nth :: OrderedContainer l =&gt; l a -&gt; Integer -&gt; a</code></pre>
+<p>The term <code>OrderedContainer l</code> is a <em>constraint</em> on what values <code>l</code> can take. So in R, this <code>l</code> might refer to a list, an atomic vector, a data.frame, or any of the other types that are indexed.</p>
+</div>
+<div id="the-monad-definition" class="section level2">
+<h2>The monad definition</h2>
+<p>A monad is a parameterized type <code>m</code> for which the following two functions are defined:</p>
+<pre><code>wrap :: a -&gt; m a
+bind :: m a -&gt; (a -&gt; m b) -&gt; m b</code></pre>
+<p>The function <code>wrap</code> (or <code>return</code> in Haskell) takes a value and lifts it into the monad. The <code>bind</code> function takes the value of type <code>a</code> wrapped in the monad <code>m</code>, applies a function to it that produces <code>b</code> wrapped in a new monad. Note that this is not the same as</p>
+<pre><code>bind :: m a -&gt; (a -&gt; b) -&gt; m b   ### WRONG</code></pre>
+<p>We are not just applying a function to the value wrapped in the monad. <code>bind</code> can be broken down into two pieces:</p>
+<pre><code>fmap :: m a -&gt; (a -&gt; m b) -&gt; m (m b)
+join :: m (m b) -&gt; m b</code></pre>
+<p><code>fmap</code> looks into <code>m a</code> and transforms <code>a</code> with the function <code>a -&gt; m b</code>, which results in something of type <code>m (m b)</code>. <code>join</code> then takes this nested monad and converts it into the final form <code>m b</code>.</p>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

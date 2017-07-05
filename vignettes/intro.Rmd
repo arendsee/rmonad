@@ -12,6 +12,7 @@ vignette: >
 ```{r}
 library(rmonad)
 library(magrittr)
+set.seed(210)
 ```
 
 I will introduce `Rmonad` with a simple sequence of squares

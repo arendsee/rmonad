@@ -37,6 +37,8 @@ build_vignettes()
 vignette("intro", package="rmonad")
 ```
 
+You can also view the vignette [here](inst/doc/intro.html) on github
+
 # How to use Rmonad
 
 
