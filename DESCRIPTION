@@ -9,6 +9,7 @@ Description:
     This library allows pure handling of functions that may fail.
 Depends: R (>= 3.2.0)
 Imports:
+    magrittr,
     methods
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
@@ -18,7 +19,6 @@ Suggests:
     covr,
     knitr,
     rmarkdown,
-    magrittr,
     tibble
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr

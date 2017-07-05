@@ -169,7 +169,7 @@ NULL
 #
 # #' @rdname infix
 # #' @export
-# `%, %` <- function(lhs, rhs) {
+# `%,,%` <- function(lhs, rhs) {
 #     envir <- parent.frame()
 #     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
 # }
