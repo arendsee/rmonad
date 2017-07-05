@@ -200,3 +200,32 @@ call -- for example in reading files:
 read(datafile) %,=% "data"   %,,%
 read(config)   %,=% "config" %,>% dothething
 ```
+
+# Chains of chains
+
+If you want to connect many chains, all with independent inputs, you can do so
+with the `%__%` and `%v__%` operators.
+
+```{r}
+runif(10) %$>% sum %v__%
+rnorm(10) %>>% sum %v__%
+rexp(10)  %>>% sum
+```
+
+The `%v__%` operator records the output of the lhs and evaluates the rhs into
+an Rmonad. If you don't care about the output, you can use `%__%`, which simply
+replaces the rhs value with lhs value (while, of course, propagating state).
+
+If you won't the success of one stage to be dependent on the prior stage, you
+can use the branch operator:
+
+```{r}
+x <- runif(10) %$>% sum %>% record %^__%
+     rnorm(10) %>>% sum %>% record %^__%
+     rexp(10)  %>>% sum
+x@history[[1]]@branch
+```
+
+Note the use of magrittr's `%>%` to perform an operation on the monad itself,
+rather than its value. The `record` function takes the value in the monad adds
+it to the state.

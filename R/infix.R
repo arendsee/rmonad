@@ -134,18 +134,43 @@ NULL
     } else {
       code <- deparse(substitute(rhs))
       rhs <- mrun(rhs, code)
-      rhs@history <- append(lhs@stage, lhs@history)
+      rhs@history <- append(lhs@history, lhs@stage)
       rhs
     }
 }
 
-# #' @rdname infix
-# #' @export
-# `%__%` <- function(lhs, rhs) {
-#     envir <- parent.frame()
-#     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
-# }
-#
+#' @rdname infix
+#' @export
+`%__%` <- function(lhs, rhs) {
+    code <- deparse(substitute(rhs))
+    rhs <- mrun(rhs, code)
+    rhs@history <- append(lhs@history, lhs@stage)
+    rhs
+}
+
+#' @rdname infix
+#' @export
+`%v__%` <- function(lhs, rhs) {
+    code <- deparse(substitute(rhs))
+    rhs <- mrun(rhs, code)
+
+    lhs@stage@x <- lhs@x
+    rhs@history <- append(lhs@history, lhs@stage)
+    rhs
+}
+
+#' @rdname infix
+#' @export
+`%^__%` <- function(lhs, rhs) {
+    code <- deparse(substitute(rhs))
+    rhs <- mrun(rhs, code)
+
+    # store lhs as a branch
+    rhs@stage@branch <- list(lhs)
+
+    rhs
+}
+
 # #' @rdname infix
 # #' @export
 # `%=_%` <- function(lhs, rhs) {

@@ -10,6 +10,9 @@
 \alias{\%>_\%}
 \alias{\%?>\%}
 \alias{\%?<\%}
+\alias{\%__\%}
+\alias{\%v__\%}
+\alias{\%^__\%}
 \title{Infix operators}
 \usage{
 lhs \%$>\% rhs
@@ -27,6 +30,12 @@ lhs \%>_\% rhs
 lhs \%?>\% rhs
 
 lhs \%?<\% rhs
+
+lhs \%__\% rhs
+
+lhs \%v__\% rhs
+
+lhs \%^__\% rhs
 }
 \arguments{
 \item{lhs}{left hand value}
