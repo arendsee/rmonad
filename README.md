@@ -26,18 +26,15 @@ To build the package
 
 ```R
 library(devtools)
-install_github("arendsee/rmonad")
+install_github("arendsee/rmonad", build_vignette=TRUE)
 library(rmonad)
 ```
 
 To build, install, and view the vignettes
 
 ```R
-build_vignettes()
 vignette("intro", package="rmonad")
 ```
-
-You can also view the vignette [here](inst/doc/intro.html) on github
 
 # How to use Rmonad
 

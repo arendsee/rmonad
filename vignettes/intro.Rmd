@@ -2,7 +2,7 @@
 title: "Vignette Title"
 author: "Vignette Author"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: rmarkdown::html_document
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
@@ -12,6 +12,7 @@ vignette: >
 ```{r}
 library(rmonad)
 library(magrittr)
+library(tibble)
 set.seed(210)
 ```
 
@@ -85,9 +86,10 @@ value. It will never use this value, though, unless you use a specific operator
 Here is a more substantial example
 
 ```{r}
-r1 <- read.table("asdfdf") %$>% colSums %>>% mean  # dies on read.table
-r2 <- iris %$>% colSums %>>% mean                  # dies on colSums 
-r3 <- cars %$>% colSums %>>% mean                  # passes
+# convert to tibbles for cleaner printing
+r1 <- read.table("asdfdf") %$>% tibble::as_data_frame %>>% colSums %>>% mean
+r2 <- iris %$>% tibble::as_data_frame %>>% colSums %>>% mean
+r3 <- cars %$>% tibble::as_data_frame %>>% colSums %>>% mean
 ```
 
 You may have noticed that the first operator in each chain is `%$>%`, whereas
@@ -104,7 +106,7 @@ If you want to perform an operation on a value inside the chain, but don't want
 to pass it, you can use the branch operator `%>^%`.
 
 ```{r}
-pass(rnorm(100)) %>^% plot(xlab="index", ylab="value") %>>% mean
+pass(rnorm(30)) %>^% plot(xlab="index", ylab="value") %>>% mean
 ```
 
 This stores the result of `plot` in a branch off the main pipeline. This means
@@ -112,7 +114,7 @@ that `plot` could fail, but the rest of the pipeline could continue. You can
 store multiple branches.
 
 ```{r}
-rnorm(100) %>^% plot(xlab="index", ylab="value") %>^% summary %>>% mean
+rnorm(30) %>^% plot(xlab="index", ylab="value") %>^% summary %>>% mean
 ```
 
 Branches can be used as input, as well.
@@ -133,7 +135,7 @@ the data inside a pipeline.
 
 ```{r}
 is_positive <- function(x) { stopifnot(x > 0) }
-rnorm(100) %>_% is_positive %>>% mean
+rnorm(30) %>_% is_positive %>>% mean
 ```
 
 This can also be used for documentation
@@ -141,7 +143,7 @@ This can also be used for documentation
 ```{r}
 # note is just `function(...) { }`, here I use it to document, since
 # Rmonad shows the functions called via NSE.
-rnorm(100) %>_% note("I am about to take the mean") %>>% mean
+rnorm(30) %>_% note("I am about to take the mean") %>>% mean
 ```
 
 Sometimes failure is not the end of the world. For example, we might want to
@@ -161,8 +163,8 @@ This operator can also be used as a pure try-catch:
 
 ```{r}
 id <- function(x) x
-iris %$>% colSums %?>% id %>>% summary
-cars %$>% colSums %?>% id %>>% summary
+iris %$>% tibble::as_data_frame %>>% colSums %?>% id %>>% summary
+cars %$>% tibble::as_data_frame %>>% colSums %?>% id %>>% summary
 ```
 
 In this way, we can make chains of operations which may fail for some inputs.
@@ -180,45 +182,6 @@ call -- for example in reading files:
 read(datafile) %,=% "data"   %,,%
 read(config)   %,=% "config" %,>% dothething
 ```
-
-
-# What is a monad?
-
-
-`rmonad` offers a pure means to propagate errors, warnings and notes through
-a pipeline.
-
-It is easiest to show using a few examples
-
-```R
-read.table("asdfdf") %$>% colSums %>>% mean
-```
-
-The `%$>%` operator loads the left-hand side into the monad, handling any
-errors, warnings or messages in a pure fashion. The result is then "bound" to
-`colSums`. If the left hand side passed without error, its pure value will be
-passed to `colSums`. If it failed, `colSums`, will not be called, and the
-failed state will propagate.
-
-This pipeline is pure in that there are no side-effects (e.g. nothing is
-written to `stderr`).
-
-If `read.table("asdfdf")` passes but it contains character columns, `colSums`
-will fail. This failure will be recorded and propagated.
-
-```{r}
-r1 <- read.table("asdfdf") %$>% colSums %>>% mean  # dies on read.table
-r2 <- iris %$>% colSums %>>% mean                  # dies on colSums 
-r3 <- cars %$>% colSums %>>% mean                  # passes
-
-r1
-r2
-r3
-```
-
-Though the first two fail, the failure is contained within the monad. So the
-exact location of the failure can be explored.
-
 
 # What is a monad?
 
