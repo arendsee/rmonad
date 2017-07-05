@@ -15,9 +15,8 @@ print.record <- function(x, ...) {
   if(nchar(x@doc) > 0){
     cat(sprintf("\n    %s\n\n", x@doc)) 
   }
-  if(length(x@errors) != 0){
-    cat(" * ERROR: ")
-    cat(paste(unlist(x@errors), collapse="\n * ERROR: "))
+  if(nchar(x@errors) != 0){
+    cat(" * ERROR:", x@errors)
     cat("\n")
   }
   if(length(x@warnings) != 0){
@@ -61,7 +60,7 @@ print.Rmonad <- function(x, ...){
   if(length(x@x) == 1){
     cat("Value: ")
     print(x@x[[1]])
-  } else if(length(x@x > 1)) {
+  } else if(length(x@x) > 1) {
     print(x@x)
   }
 

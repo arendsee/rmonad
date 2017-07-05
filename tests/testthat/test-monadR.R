@@ -1,182 +1,26 @@
 context("rmonad.R")
 
-m1 <- new(
-  "Rmonad",
-  x = list(42),
-  stage = new(
-    "record",
-    code     = "",
-    warnings = list("a", "s"),
-    notes    = list("q", "w")
-  )
-)
 
-e2 <- new(
-  "Rmonad",
-  OK     = FALSE,
-  stage  = new("record", errors = list("Oh no Mr. Wizard!"))
-)
-
-m1e <- new(
-  "Rmonad",
-  OK     = FALSE,
-  history = list(
-    new(
-      "record",
-      warnings = list("a", "s"),
-      notes    = list("q", "w")
-    ),
-    new(
-      "record",
-      errors = list("Oh no Mr. Wizard!")
-    )
-  )
-)
-
-m2 <- new(
-  "Rmonad",
-  x = list(82),
-  stage = new(
-    "record",
-    warnings = list("d", "f"),
-    notes    = list("e", "r")
-  )
-)
-
-m12 <- new(
-  "Rmonad",
-  x = list(42,82),
-  history = list(
-    new(
-      "record",
-      warnings = list("a", "s"),
-      notes    = list("q", "w")
-    ),
-    new(
-      "record",
-      warnings = list("d", "f"),
-      notes    = list("e", "r")
-    )
-  )
-)
-
-m1yolo <- new(
-  "Rmonad",
-  x = list(42,"yolo"),
-  history = list(
-    new(
-      "record",
-      warnings = list("a", "s"),
-      notes    = list("q", "w")
-    ),
-    new(
-      "record",
-      code="x"
-    )
-  )
-)
-
-test_that("combine works", {
-  expect_equal(combine(list(m1, m2)), m12)
-  expect_equal(combine(list(m1, e2)), m1e)
-  expect_equal(combine(list(m1, "yolo")), m1yolo)
+test_that('%$>% and esc work', {
+  expect_equal(1 %$>% '*'(2) %>% esc, 2)
+  expect_equal(1:3 %$>% '*'(2) %>% esc, c(2,4,6))
+  expect_error("3" %$>% '*'(2) %>% esc)
 })
 
-test_that("Monad casting works", {
-  expect_equal(as_rmonad(12), new("Rmonad", x=list(12), stage=new("record", code="x")))
-  expect_equal(as_rmonad(m1), m1)
-  expect_equal(as_rmonad(e2), e2)
+test_that('%>>% works', {
+  expect_equal(1 %$>% '*'(2) %>>% '*'( 4 ) %>>% '*'(3) %>% esc     , 24 )
+  expect_error(1 %$>% '*'(2) %>>% '*'('4') %>>% '*'(3) %>% esc          )
 })
 
-m1b <- new(
-  "Rmonad",
-  OK     = FALSE,
-  stage  = new(
-             "record",
-             errors = list("die!")
-           ),
-  history = list(
-    new(
-      "record",
-      warnings = list("a", "s"),
-      notes    = list("q", "w")
-    )
-  )
-)
+test_that('last passing value propagate', {
+  expect_equal(1 %$>% '*'(2) %>>% '*'('4') %>>% '*'(3) %>% m_value , 2)
+})
 
-m12b <- new(
-  "Rmonad",
-  x = list(84),
-  history = list(
-    new(
-      "record",
-      warnings = list("a", "s"),
-      notes    = list("q", "w")
-    )
-  )
-)
+test_that('function passing works with package labels', {
+  expect_equal(2 %$>% base::'*'(3) %>>% base::'*'(4) %>% esc, 24)
+  expect_equal(4 %$>% base::sqrt %>% esc, 2)
+})
 
-mfp <- function(x) { 2 * x }
-mfe <- function(x) { stop("die!") }
-nf  <- function(x) { 2 * x }
-
-test_that(
-  "bind always propagates failed states",
-  {
-    expect_equal(bind(m1b, mfp), m1b)
-    expect_equal(bind(m1b, mfe), m1b)
-    expect_equal(bind(m1b, nf ), m1b)
-  }
-)
-
-test_that(
-  "bind functions may be monadic or not",
-  {
-    expect_equal(bind(m1, mfp), {m <- m12b; m@stage@code = "mfp"; m })
-    expect_equal(bind(m1, nf ), {m <- m12b; m@stage@code = "nf";  m })
-  }
-)
-
-new_me <- new(
-  "Rmonad",
-  OK    = FALSE,
-  stage = new(
-    "record",
-    errors=list("die!")
-  ),
-  history = list(new("record", code="42"))
-)
-
-new_mp <- new(
-  "Rmonad",
-  x     = list(84),
-  stage = new("record"),
-  history = list(new("record", code="42"))
-)
-
-test_that(
-  "bind works with non-monadic input",
-  {
-    expect_equal(bind(42, mfp), {m <- new_mp; m@stage@code = "mfp"; m })
-    expect_equal(bind(42, mfe), {m <- new_me; m@stage@code = "mfe"; m@x = list(42); m })
-    expect_equal(bind(42,  nf), {m <- new_mp; m@stage@code = "nf";  m })
-  }
-)
-
-test_that(
-  "operators work",
-  {
-    expect_equal( m1e %>>% mfp , m1e )
-    expect_equal( m1e %>>% mfe , m1e )
-    expect_equal( m1e %>>% nf  , m1e )
-    expect_equal( m1  %>>% mfp , {m <- m12b; m@stage@code = "mfp";  m } )
-    expect_equal( m1  %>>% nf  , {m <- m12b; m@stage@code = "nf";   m } )
-    expect_equal( 42  %>>% mfp , { m <- new_mp; m@stage@code = "mfp"; m } )
-    expect_equal( 42  %>>% mfe , { m <- new_me;
-                                   m@x <- list();
-                                   m@stage@code = "mfe";
-                                   m@x = list(42);
-                                   m } )
-    expect_equal( 42  %>>% nf  , { m <- new_mp; m@stage@code = "nf"; m } )
-  }
-)
+test_that('parameterization works', {
+  expect_equal(c(1,4,2) %$>% order(decreasing=TRUE) %>% esc, c(2,3,1) )
+})

@@ -39,8 +39,7 @@ esc <- function(m){
       m@x
     }
   } else {
-    msg <- unlist(m@stage@errors) %>% paste(collapse="\n")
-    msg <- paste0('The call "', m@stage@code, '" failed: \n  ', msg)
+    msg <- paste0('The call "', m@stage@code, '" failed: \n  ', m@stage@errors)
     stop(msg, call.=FALSE)
   }
 }
@@ -55,12 +54,32 @@ forget <- function(m){
 #' @rdname rmonad_meta
 #' @export 
 unbranch <- function(m){
-  bs <- append(forget(m), lapply(m@stage@branch, unbranch) %>% unlist)
+
+  bs <- .unbranch_r(m)
+
+  nfailed <- lapply(bs, m_OK) %>% unlist %>% `!` %>% sum
+  n <- length(bs)
+
+  errors <- if(nfailed > 0) {
+    paste(nfailed, "of", n, "branches failed")
+  } else {
+    "" 
+  }
+
+  mu <- new("Rmonad",
+    x = list(bs),
+    OK = (nfailed == 0),
+    stage = new("record", errors=errors)
+  )
+
+  mu
+}
+.unbranch_r <- function(m){
+  bs <- append(forget(m), lapply(m@stage@branch, .unbranch_r) %>% unlist)
   bs <- append(bs, lapply(m@history, .unbranch_record) %>% unlist)
-  bs
 }
 .unbranch_record <- function(r){
-  lapply(r@branch, unbranch) %>% unlist
+  lapply(r@branch, .unbranch_r) %>% unlist
 }
 
 #' @rdname rmonad_meta

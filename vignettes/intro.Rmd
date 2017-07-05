@@ -78,7 +78,7 @@ letters  %$>%
 The input to the first `sqrt` failed, and was coupled to the resultant error.
 Contrast this with `magrittr`:
 
-```{r, eval=FALSE}
+```{r, error=TRUE}
 letters  %>%
     sqrt %>%
     sqrt %>%
@@ -105,9 +105,9 @@ Here is a more substantial example
 
 ```{r}
 # convert to tibbles for cleaner printing
-r1 <- read.table("asdfdf") %$>% tibble::as_data_frame %>>% colSums %>>% mean
-r2 <- iris %$>% tibble::as_data_frame %>>% colSums %>>% mean
-r3 <- cars %$>% tibble::as_data_frame %>>% colSums %>>% mean
+r1 <- read.table("asdfdf") %$>% tibble::as_tibble %>>% colSums %>>% mean
+r2 <- iris %$>% tibble::as_tibble %>>% colSums %>>% mean
+r3 <- cars %$>% tibble::as_tibble %>>% colSums %>>% mean
 ```
 
 You may have noticed that the first operator in each chain is `%$>%`, whereas
@@ -140,11 +140,12 @@ Branches can be used as input, as well.
 ```{r}
 x <- 1:10 %>^% dgamma(10, 1) %>^% dgamma(10, 5) %^>% pmax()
 x
-x@history[[2]]@branch
+unbranch(x)
 ```
 
 Note the branches could be long monadic chains themselves, which might have
-their own branches.
+their own branches. The `unbranch` function recursively extracts all branches
+from the tree.
 
 The `%>_%` operator is useful when you want to include a function inside a
 pipeline that should be bypassed, but you want the errors, warnings, and
@@ -154,14 +155,6 @@ the data inside a pipeline.
 ```{r}
 is_positive <- function(x) { stopifnot(x > 0) }
 rnorm(30) %>_% is_positive %>>% mean
-```
-
-This can also be used for documentation
-
-```{r}
-# note is just `function(...) { }`, here I use it to document, since
-# Rmonad shows the functions called via NSE.
-rnorm(30) %>_% note("I am about to take the mean") %>>% mean
 ```
 
 Sometimes failure is not the end of the world. For example, we might want to
@@ -180,13 +173,13 @@ fail.
 This operator can also be used as a pure try-catch:
 
 ```{r}
-id <- function(x) x
-iris %$>% tibble::as_data_frame %>>% colSums %?>% id %>>% summary
-cars %$>% tibble::as_data_frame %>>% colSums %?>% id %>>% summary
+iris %$>% tibble::as_data_frame %>>% colSums %?>% ident %>>% summary
+cars %$>% tibble::as_data_frame %>>% colSums %?>% ident %>>% summary
 ```
 
-In this way, we can make chains of operations which may fail for some inputs.
-These failures are recorded in the monad, but don't scream and break things.
+Where `ident` is the identity function. In this way, we can make chains of
+operations which may fail for some inputs. These failures are recorded in the
+monad, but don't scream and break things.
 
 Sometimes you want to ignore the previous failure completely, and make a new
 call -- for example in reading files:

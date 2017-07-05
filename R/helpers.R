@@ -16,10 +16,10 @@ note <- function(...){ }
 #' @export
 #' @examples
 #' # pull a value out of failure
-#' 1:10 %$>% colSums %?>% id
+#' 1:10 %$>% colSums %?>% ident
 #' # here it just does nothing
-#' cars %$>% colSums %?>% id
-id <- function(x){ x }
+#' cars %$>% colSums %?>% ident
+ident <- function(x){ x }
 
 #' Ignore the first input, return the second
 #'

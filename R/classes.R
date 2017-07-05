@@ -10,9 +10,9 @@
 record <- setClass(
   "record",
   representation(
-    x        = "list",
+    x        = "list",      # list just to support polymorphism, should always be of length 1
     code     = "character",
-    errors   = "list",
+    errors   = "character",
     warnings = "list",
     notes    = "list",
     doc      = "character",
@@ -21,7 +21,7 @@ record <- setClass(
   prototype(
     x        = list(),
     code     = "",
-    errors   = list(),
+    errors   = "",
     warnings = list(),
     notes    = list(), 
     doc      = "",

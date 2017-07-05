@@ -38,14 +38,18 @@ bind <- function(
   {
 
     # insert x as first positional in f
-    fs    <- substitute(f)
-    fl    <- as.list(fs)
-    func  <- as.character(fl[[1]])
-    envir <- parent.frame()
-    fargs <- append(m@x, fl[-1])
-    y     <- mrun( do.call(func, fargs, envir=envir) )
+    fs <- substitute(f)
+    fl <- as.list(fs)
 
-    y@stage@code <- deparse(fs)
+    # if the input is of form 'Foo::bar'
+    ff <- if(fl[[1]] == '::' && length(fl) == 3) {
+      append(as.call(fl), m_value(m))
+    } else {
+      append(list(fl[[1]], m_value(m)), fl[-1])
+    }
+
+    envir <- parent.frame()
+    y <- mrun( eval(as.call(ff), envir), desc=deparse(fs) )
 
     # merge notes and warnings, replace value
     if(record_in){ m@stage@x <- m@x }
@@ -82,7 +86,7 @@ mrun <- function(expr, desc=NULL){
 
   value <- NULL 
   warns <- list()
-  fails <- list()
+  fails <- ""
   isOK  <- TRUE
 
   notes <- capture.output(
@@ -91,7 +95,7 @@ mrun <- function(expr, desc=NULL){
         tryCatch(
           expr,
           error = function(e) {
-            fails <<- list(e$message);
+            fails <<- e$message;
             isOK <<- FALSE
           }
         ),
