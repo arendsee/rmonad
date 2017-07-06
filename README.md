@@ -3,22 +3,19 @@
 
 # Rmonad
 
-`rmonad` allows state to be preserved across chains of operations.
+`Rmonad` offers
 
- * errors, warnings and messages are anchored to their expressions
+ * a nuanced way to handle errors
 
- * when an error occurs, the valid data in the node preceding it, is preserved
+ * a means to access results inside a pipeline
 
- * information about each step of the sequence can be stored
+ * handling for effects -- e.g. plotting, caching -- within a pipeline
 
- * data inside a pipeline can be accessed without breaking the chain
+ * access to results preceding an error
 
- * effects -- plotting, caching, writing -- can be inside the chain
+ * tools for branching and combining pipelines
 
- * errors can be handled succinctly, without resort to the tryCatch
-
- * the pipelines can branch freely
-
+ * a strict version of literate programming
 
 # Installation
 
@@ -36,32 +33,54 @@ To build, install, and view the vignettes
 vignette("intro", package="rmonad")
 ```
 
-# How to use Rmonad
+# Examples
 
-
-It is easiest to show using a few examples
-
-```R
-read.table("asdfdf") %$>% colSums %>>% mean
-```
-
-The `%$>%` operator loads the left-hand side into the monad, handling any
-errors, warnings or messages in a pure fashion. The result is then "bound" to
-`colSums`. If the left hand side passed without error, its pure value will be
-passed to `colSums`. If it failed, `colSums`, will not be called, and the
-failed state will propagate.
-
-This pipeline is pure in that there are no side-effects (e.g. nothing is
-written to `stderr`).
-
-If `read.table("asdfdf")` passes but it contains character columns, `colSums`
-will fail. This failure will be recorded and propagated.
+Here are a few excerpts from the vignette
 
 ```R
-r1 <- read.table("asdfdf") %$>% colSums %>>% mean  # dies on read.table
-r2 <- iris %$>% colSums %>>% mean                  # dies on colSums 
-r3 <- cars %$>% colSums %>>% mean                  # passes
+1:5      %>>%
+    sqrt %v>% # record an intermediate value
+    sqrt %>>%
+    sqrt
 ```
 
-Though the first two fail, the failure is contained within the monad. So the
-exact location of the failure can be explored.
+```R
+# Both plots and summarizes an input table
+cars %>_% plot(xlab="index", ylab="value") %>>% summary
+```
+
+```R
+x <- list()
+
+# return first value in a list, otherwise return NULL
+if(length(x) > 0) {
+    x[[1]]
+} else {
+    NULL
+}
+
+# this does the same
+x[[1]] %||% NULL %>% esc
+```
+
+```R
+# chain independent pipelines together, with documentation
+runif(10)  %>>% abs %>% doc(
+
+    "Alternatively, the documentation could go into a text block below the code
+in a knitr document. The advantage of having documentation here, is that it is
+coupled unambiguously to the generating function. This is a monadic
+interpretation of literate programming. These annotations, together with the
+ability to chain chains of monads, allows whole complex workflows to be built,
+with the results collated into a single monad. All errors propagate exactly as
+errors should, only affecting downstream computations. The final monad can be
+converted into a markdown document. A graph of functions can automatically be
+built. Summaries of the locations of errors. The monad could be extended for
+automated benchmarking."
+
+                  ) %>^% sum %^__%
+rnorm(10)  %>>% abs %>^% sum %^__%
+rnorm("a") %>>% abs %>^% sum %^__%
+rexp(10)   %>>% abs %>^% sum %>%
+    unbranch
+```

@@ -15,8 +15,8 @@ print.record <- function(x, ...) {
   if(nchar(x@doc) > 0){
     cat(sprintf("\n    %s\n\n", x@doc)) 
   }
-  if(nchar(x@errors) != 0){
-    cat(" * ERROR:", x@errors)
+  if(nchar(x@error) != 0){
+    cat(" * ERROR:", x@error)
     cat("\n")
   }
   if(length(x@warnings) != 0){
@@ -33,7 +33,7 @@ print.record <- function(x, ...) {
     cat("Has", length(x@branch), "branches\n")
   }
   if(length(x@x) == 1){
-    cat("Value:\n")
+    cat("\n")
     print(x@x[[1]])
   } else if(length(x@x > 1)) {
     print(x@x)
@@ -58,7 +58,6 @@ print.Rmonad <- function(x, ...){
   }
 
   if(length(x@x) == 1){
-    cat("Value: ")
     print(x@x[[1]])
   } else if(length(x@x) > 1) {
     print(x@x)

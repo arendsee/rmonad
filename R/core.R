@@ -132,7 +132,7 @@ mrun <- function(expr, desc=NULL){
     stage = new("record",  
       x        = list(),
       code     = code,
-      errors   = fails,
+      error    = fails,
       warnings = as.list(warns),
       notes    = as.list(notes)
     ),

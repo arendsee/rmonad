@@ -18,7 +18,9 @@ m_OK       <- function(m) m@OK
 
 #' @rdname rmonad_accessors
 #' @export
-m_value    <- function(m) if(length(m@x) > 0) { m@x[[1]] } else { NULL }
+m_value    <- function(m) {
+  m@x[[1]] %||% NULL %>% esc
+}
 
 #' @rdname rmonad_accessors
 #' @export
@@ -28,23 +30,23 @@ m_code     <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_errors   <- function(m) m@stage@errors
+m_error   <- function(m) m@error %||% m@stage@error %>% esc
 
 #' @rdname rmonad_accessors
 #' @export
-m_warnings <- function(m) m@stage@warnings
+m_warnings <- function(m) m@warnings %||% m@stage@warnings %>% esc
 
 #' @rdname rmonad_accessors
 #' @export
-m_notes    <- function(m) m@stage@notes
+m_notes    <- function(m) m@notes %||% m@stage@notes %>% esc
 
 #' @rdname rmonad_accessors
 #' @export
-m_doc      <- function(m) m@stage@doc
+m_doc      <- function(m) m@doc %||% m@stage@doc %>% esc
 
 #' @rdname rmonad_accessors
 #' @export
-m_branch   <- function(m) m@stage@branch
+m_branch   <- function(m) m@branch %||% m@stage@branch %>% esc
 
 
 
@@ -78,8 +80,8 @@ m_branch   <- function(m) m@stage@branch
 
 #' @rdname rmonad_accessors
 #' @export
-`m_errors<-` <- function(m, value) {
-  m@stage@errors <- value
+`m_error<-` <- function(m, value) {
+  m@stage@error <- value
   m
 }
 

@@ -5,10 +5,7 @@
 \alias{store}
 \alias{esc}
 \alias{forget}
-\alias{unbranch}
 \alias{doc}
-\alias{unstore}
-\alias{uncode}
 \title{Functions on monads}
 \usage{
 store(m)
@@ -17,13 +14,7 @@ esc(m)
 
 forget(m)
 
-unbranch(m)
-
 doc(m, ...)
-
-unstore(m)
-
-uncode(m)
 }
 \arguments{
 \item{m}{An Rmonad}
@@ -43,10 +34,5 @@ state, raises on appropriate error.
 
 \code{forget} wipes a monads history.
 
-\code{unbranch} returns a list of monads, one for each branch
-
 \code{doc} adds a documentation section to the monad.
-
-\code{unstore} retrieves all stored values in history (does not recurse into
-branches). Maybe it should.
 }

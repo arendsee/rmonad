@@ -15,13 +15,13 @@ A record of past events
 
 \item{\code{code}}{A string showing the function that created record's report}
 
-\item{\code{errors}}{List of errors accumulated so far}
+\item{\code{error}}{An error in this this record}
 
-\item{\code{warnings}}{List of warnings accumulated so far}
+\item{\code{warnings}}{List of warnings}
 
-\item{\code{notes}}{List of notes accumulated so far}
+\item{\code{notes}}{List of notes}
 
-\item{\code{doc}}{character vector documentation message}
+\item{\code{doc}}{character vector documentation messages}
 
 \item{\code{branch}}{Lost of connected Rmonad objects}
 }}

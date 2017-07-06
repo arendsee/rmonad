@@ -6,7 +6,7 @@
 \alias{m_OK}
 \alias{m_value}
 \alias{m_code}
-\alias{m_errors}
+\alias{m_error}
 \alias{m_warnings}
 \alias{m_notes}
 \alias{m_doc}
@@ -15,7 +15,7 @@
 \alias{m_OK<-}
 \alias{m_value<-}
 \alias{m_code<-}
-\alias{m_errors<-}
+\alias{m_error<-}
 \alias{m_warnings<-}
 \alias{m_notes<-}
 \alias{m_doc<-}
@@ -34,7 +34,7 @@ m_value(m)
 
 m_code(m)
 
-m_errors(m)
+m_error(m)
 
 m_warnings(m)
 
@@ -52,7 +52,7 @@ m_value(m) <- value
 
 m_code(m) <- value
 
-m_errors(m) <- value
+m_error(m) <- value
 
 m_warnings(m) <- value
 

@@ -11,12 +11,7 @@
 #'
 #' \code{forget} wipes a monads history.
 #'
-#' \code{unbranch} returns a list of monads, one for each branch
-#'
 #' \code{doc} adds a documentation section to the monad.
-#'
-#' \code{unstore} retrieves all stored values in history (does not recurse into
-#' branches). Maybe it should.
 #'
 #' @param m An Rmonad
 #' @param ... additional arguments
@@ -42,7 +37,7 @@ esc <- function(m){
       m@x
     }
   } else {
-    msg <- paste0('The call "', m@stage@code, '" failed: \n  ', m@stage@errors)
+    msg <- paste0('The call "', m@stage@code, '" failed: \n  ', m@stage@error)
     stop(msg, call.=FALSE)
   }
 }
@@ -55,51 +50,8 @@ forget <- function(m){
 }
 
 #' @rdname rmonad_meta
-#' @export 
-unbranch <- function(m){
-
-  bs <- .unbranch_r(m)
-
-  nfailed <- lapply(bs, m_OK) %>% unlist %>% `!` %>% sum
-  n <- length(bs)
-
-  errors <- if(nfailed > 0) {
-    paste(nfailed, "of", n, "branches failed")
-  } else {
-    "" 
-  }
-
-  mu <- new("Rmonad",
-    x = list(bs),
-    OK = (nfailed == 0),
-    stage = new("record", errors=errors)
-  )
-
-  mu
-}
-.unbranch_r <- function(m){
-  bs <- append(forget(m), lapply(m@stage@branch, .unbranch_r) %>% unlist)
-  bs <- append(bs, lapply(m@history, .unbranch_record) %>% unlist)
-}
-.unbranch_record <- function(r){
-  lapply(r@branch, .unbranch_r) %>% unlist
-}
-
-#' @rdname rmonad_meta
 #' @export
 doc <- function(m, ...){
   m@stage@doc <- paste(list(...), collapse=" ")
   m
-}
-
-#' @rdname rmonad_meta
-#' @export
-unstore <- function(m) {
-  lapply(m_history(m) %+% m, m_value)
-}
-
-#' @rdname rmonad_meta
-#' @export
-uncode <- function(m) {
-  lapply(m_history(m) %+% m, m_code)
 }

@@ -2,17 +2,17 @@
 #'
 #' @slot x        A list of 0 or 1 elements, containing either nothing or data
 #' @slot code     A string showing the function that created record's report 
-#' @slot errors   List of errors accumulated so far 
-#' @slot warnings List of warnings accumulated so far
-#' @slot notes    List of notes accumulated so far
-#' @slot doc      character vector documentation message
+#' @slot error    An error in this this record
+#' @slot warnings List of warnings
+#' @slot notes    List of notes
+#' @slot doc      character vector documentation messages
 #' @slot branch   Lost of connected Rmonad objects
 record <- setClass(
   "record",
   representation(
     x        = "list",      # list just to support polymorphism, should always be of length 1
     code     = "character",
-    errors   = "character",
+    error    = "character",
     warnings = "list",
     notes    = "list",
     doc      = "character",
@@ -21,7 +21,7 @@ record <- setClass(
   prototype(
     x        = list(),
     code     = "",
-    errors   = "",
+    error    = "",
     warnings = list(),
     notes    = list(), 
     doc      = "",
