@@ -12,25 +12,20 @@
 #' @param f A function of the value contained in x
 #' @param on_entry f(m,x) an action to perform on entry, returns m
 #' @param bind_if f(m) bind rhs to lhs if TRUE
+#' @param bind_else f(m,f) actio to take if bind_if is FALSE
 #' @param emit f(i,o) Emit the input or the output
 #' @param m_on_bind f(m) Action to perform on input monad when binding
-#' @param record_in logical - should the input be recorded?
-#' @param branch Store the output in the branch slot
-#' @param discard_out Ignore the result of the rhs function, passon the left
-#' @param discard_in Ignore the input
-#' @param handle  Operate on a failed state
+#' @param combine f(m,o) weave m and f(m) into final output
 #' @return A monad report
 bind <- function(
   x,
   f,
   on_entry    = ident,
   bind_if     = function(m) m_OK(m),
+  bind_else   = toss,
   emit        = function(i, o) { if(is.null(o)){ i } else { o } },
   m_on_bind   = ident,
-  branch      = FALSE,
-  discard_out = FALSE,
-  discard_in  = FALSE,
-  handle      = FALSE
+  combine     = default_combine
 ){
 
   left_str = deparse(substitute(x))
@@ -52,26 +47,39 @@ bind <- function(
       list(fl[[1]]) %+% m_value(m) %++% fl[-1]
     }
 
-    envir <- parent.frame()
-    o <- mrun( eval(as.call(ff), envir), desc=deparse(fs) )
+    e <- parent.frame()
+    o <- mrun( eval(as.call(ff), envir=e), desc=deparse(fs) )
 
     m <- m_on_bind(m)
 
-    if(branch){
-      m <- app_branch(m, o)
-    } else {
-      if(!m_OK(o) || discard_out){
-        # On failure, propagate the final passing value, this allows
-        # for either degugging or passage to alternative handlers.
-        m_value(o) <- m_value(m)
-      }
-      m_history(o) <- m@history %+% m@stage
-    }
+    combine(m, o)
 
-    o
-  } else { NULL }
+  } else {
+    bind_else(m, f)
+  }
 
   emit(m, o)
+}
+
+branch_combine <- function(m, o){
+  m <- app_branch(m, o)
+  m
+}
+
+default_combine <- function(m, o){
+  if(!m_OK(o)){
+    # On failure, propagate the final passing value, this allows
+    # for either degugging or passage to alternative handlers.
+    m_value(o) <- m_value(m)
+  }
+  m_history(o) <- m@history %+% m@stage
+  o
+}
+
+bypass_combine <- function(m, o){
+  m_value(o) <- m_value(m)
+  m_history(o) <- m@history %+% m@stage
+  o
 }
 
 

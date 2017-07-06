@@ -22,7 +22,9 @@ m_value    <- function(m) if(length(m@x) > 0) { m@x[[1]] } else { NULL }
 
 #' @rdname rmonad_accessors
 #' @export
-m_code     <- function(m) m@stage@code
+m_code     <- function(m) {
+  m@code %||% m@stage@code %>% esc
+}
 
 #' @rdname rmonad_accessors
 #' @export

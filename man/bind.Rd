@@ -5,9 +5,9 @@
 \title{Apply f to the contents of a monad and merge messages}
 \usage{
 bind(x, f, on_entry = ident, bind_if = function(m) m_OK(m),
-  emit = function(i, o) {     if (is.null(o)) {         i     }     else {    
-      o     } }, m_on_bind = ident, branch = FALSE, discard_out = FALSE,
-  discard_in = FALSE, handle = FALSE)
+  bind_else = toss, emit = function(i, o) {     if (is.null(o)) {         i 
+     }     else {         o     } }, m_on_bind = ident,
+  combine = default_combine)
 }
 \arguments{
 \item{x}{The input, may or may not be a monad report}
@@ -18,19 +18,13 @@ bind(x, f, on_entry = ident, bind_if = function(m) m_OK(m),
 
 \item{bind_if}{f(m) bind rhs to lhs if TRUE}
 
+\item{bind_else}{f(m,f) actio to take if bind_if is FALSE}
+
 \item{emit}{f(i,o) Emit the input or the output}
 
 \item{m_on_bind}{f(m) Action to perform on input monad when binding}
 
-\item{branch}{Store the output in the branch slot}
-
-\item{discard_out}{Ignore the result of the rhs function, passon the left}
-
-\item{discard_in}{Ignore the input}
-
-\item{handle}{Operate on a failed state}
-
-\item{record_in}{logical - should the input be recorded?}
+\item{combine}{f(m,o) weave m and f(m) into final output}
 }
 \value{
 A monad report

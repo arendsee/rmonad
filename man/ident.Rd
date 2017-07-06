@@ -16,7 +16,7 @@ The identity function
 }
 \examples{
 # pull a value out of failure
-1:10 \%$>\% colSums \%?>\% ident
+1:10 \%$>\% colSums \%|>\% ident
 # here it just does nothing
-cars \%$>\% colSums \%?>\% ident
+cars \%$>\% colSums \%|>\% ident
 }

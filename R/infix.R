@@ -80,12 +80,7 @@ NULL
 #' @export
 `%v>%` <- function(lhs, rhs) {
     envir <- parent.frame()
-    cmd <- list(
-      bind,
-      substitute(lhs),
-      substitute(rhs),
-      m_on_bind = .store_value
-    )
+    cmd <- list(bind, substitute(lhs), substitute(rhs), m_on_bind=.store_value)
     eval(as.call(cmd), envir=envir)
 }
 
@@ -93,9 +88,37 @@ NULL
 #' @export
 `%>^%` <- function(lhs, rhs) {
     envir <- parent.frame()
-    cmd   <- list(bind, substitute(lhs), substitute(rhs), branch=TRUE)
+    cmd   <- list(bind, substitute(lhs), substitute(rhs), combine=branch_combine)
     eval(as.call(cmd), envir=envir)
 }
+
+#' @rdname infix
+#' @export
+`%|>%` <- function(lhs, rhs) {
+    envir <- parent.frame()
+    bind_if <- function(m) { ! m_OK(m) }
+    cmd   <- list(bind, substitute(lhs), substitute(rhs), bind_if=bind_if)
+    eval(as.call(cmd), envir=envir)
+}
+#' @rdname infix
+#' @export
+`%||%` <- function(lhs, rhs) {
+    envir <- parent.frame()
+    rhs_str <- deparse(substitute(rhs))
+    cmd   <- list(
+      bind,
+      substitute(lhs),
+      substitute(rhs),
+      # skip the bind code
+      bind_if = .false,
+      # and instead just evaluate the rhs
+      bind_else = function(i,o) mrun(o, desc=rhs_str),
+      # if the lhs failed, pass the evaluated rhs
+      emit = function(i,o) if(m_OK(i)){ i } else { o }
+    )
+    eval(as.call(cmd), envir=envir)
+}
+
 
 #' @rdname infix
 #' @export
@@ -119,38 +142,16 @@ NULL
 #' @export
 `%>_%` <- function(lhs, rhs) {
     envir <- parent.frame()
-    cmd   <- list(bind, substitute(lhs), substitute(rhs), discard_out=TRUE)
+    cmd   <- list(
+      bind,
+      substitute(lhs),
+      substitute(rhs),
+      combine = bypass_combine
+    )
     eval(as.call(cmd), envir=envir)
 }
 
-#' @rdname infix
-#' @export
-`%?>%` <- function(lhs, rhs) {
-    envir <- parent.frame()
-    bind_if <- function(m) { ! m_OK(m) }
-    cmd   <- list(bind, substitute(lhs), substitute(rhs), bind_if=bind_if)
-    eval(as.call(cmd), envir=envir)
-}
-
-#' @rdname infix
-#' @export
-`%?<%` <- function(lhs, rhs) {
-
-    bind_if <- function(m) { ! m_OK(m) }
-
-    envir <- parent.frame()
-    cmd   <- list(bind, lhs, rhs, bind_if=bind_if)
-    eval(as.call(cmd), envir=envir)
-    # if(lhs@OK){
-    #   lhs
-    # } else {
-    #   code <- deparse(substitute(rhs))
-    #   rhs <- mrun(rhs, code)
-    #   rhs@history <- append(lhs@history, lhs@stage)
-    #   rhs
-    # }
-}
-
+# TODO: cast as wrapper of bind
 #' @rdname infix
 #' @export
 `%__%` <- function(lhs, rhs) {
@@ -160,6 +161,7 @@ NULL
     rhs
 }
 
+# TODO: cast as wrapper of bind
 #' @rdname infix
 #' @export
 `%v__%` <- function(lhs, rhs) {
@@ -172,6 +174,7 @@ NULL
     rhs
 }
 
+# TODO: cast as wrapper of bind
 #' @rdname infix
 #' @export
 `%^__%` <- function(lhs, rhs) {

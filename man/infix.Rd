@@ -6,10 +6,10 @@
 \alias{\%>>\%}
 \alias{\%v>\%}
 \alias{\%>^\%}
+\alias{\%|>\%}
+\alias{\%||\%}
 \alias{\%^>\%}
 \alias{\%>_\%}
-\alias{\%?>\%}
-\alias{\%?<\%}
 \alias{\%__\%}
 \alias{\%v__\%}
 \alias{\%^__\%}
@@ -23,13 +23,13 @@ lhs \%v>\% rhs
 
 lhs \%>^\% rhs
 
+lhs \%|>\% rhs
+
+lhs \%||\% rhs
+
 lhs \%^>\% rhs
 
 lhs \%>_\% rhs
-
-lhs \%?>\% rhs
-
-lhs \%?<\% rhs
 
 lhs \%__\% rhs
 

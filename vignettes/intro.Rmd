@@ -156,7 +156,7 @@ try several alternatives functions, and use the first that works.
 # Handling error
 
 ```{r}
-1:10 %>>% colSums %?>% sum
+1:10 %>>% colSums %|>% sum
 ```
 
 Here we will do either `colSums` or `sum`. The pipeline fails only if both
@@ -165,8 +165,8 @@ fail.
 This operator can also be used as a pure try-catch:
 
 ```{r}
-iris %>>% tibble::as_data_frame %>>% colSums %?>% ident %>>% summary
-cars %>>% tibble::as_data_frame %>>% colSums %?>% ident %>>% summary
+iris %>>% tibble::as_data_frame %>>% colSums %|>% ident %>>% summary
+cars %>>% tibble::as_data_frame %>>% colSums %|>% ident %>>% summary
 ```
 
 Where `ident` is the identity function. In this way, we can make chains of
@@ -176,14 +176,17 @@ monad, but don't scream and break things.
 Sometimes you want to ignore the previous failure completely, and make a new
 call -- for example in reading files:
 
-```{r}
+```{r, eval=FALSE}
 # try to load a cached file, on failure rerun the analysis
-read.table("analyasis_cache.tab") %?>% the_analysis(x)
+read.table("analyasis_cache.tab") %||% the_analysis(x)
 ```
 
-```{r, eval=FALSE}
-read(datafile) %,=% "data"   %,,%
-read(config)   %,=% "config" %,>% dothething
+Or
+
+```{r, eval=TRUE}
+read.table("sample1.tsv") %||%
+read.table("sample2.tsv") %||%
+iris %>>% summary
 ```
 
 # Chains of chains

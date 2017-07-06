@@ -46,8 +46,8 @@ test_that('function passing works with package labels', {
 
 test_that('input storing works', {
   expect_equal(
-    16 %v>% sqrt %>>% sqrt %v>% sqrt %>% unstore,
-    list(16,NULL,2)
+    256 %v>% sqrt %>>% sqrt %v>% sqrt %>% unstore,
+    list(256,NULL,4,2)
   )
 })
 
@@ -55,6 +55,26 @@ test_that('parameterization works', {
   expect_equal(c(1,4,2) %>>% order(decreasing=TRUE) %>% esc, c(2,3,1) )
 })
 
-test_that('Alteratives (%?>%) work', {
-  expect_equal(1:10 %>>% colSums %?>% sum %>% esc, 55)
+test_that('Alteratives (%|>%) work', {
+  expect_equal(1:10 %>>% colSums %|>% sum %>% esc, 55)
+})
+
+test_that('Alteratives (%||%) work', {
+  expect_equal(1 %||% 5 %>>% sqrt %>% uncode, list("1", "sqrt"))
+  expect_true(1 %||% 5 %>>% sqrt %>% m_OK)
+})
+
+test_that('branching works %>^%', {
+  expect_equal(
+    16 %>^% sqrt %>^% sqrt %>% unbranch %>% esc %>% lapply(m_value),
+    list(16,4,4)
+  )
+})
+
+test_that('output toss works %>_%', {
+  expect_equal(1 %>_% '*'(3) %>>% '*'(2) %>% uncode, list("1", "*3", "*2"))
+  expect_equal(1 %>_% '*'(3) %>>% '*'(2) %>% m_value, 2)
+  expect_true( 1 %>_% '*'(3) %>>% '*'(2) %>% m_OK)
+
+  expect_error( 1 %>_% stop(1) %>>% '*'(2) %>% esc)
 })

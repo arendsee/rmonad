@@ -15,6 +15,9 @@
 #'
 #' \code{doc} adds a documentation section to the monad.
 #'
+#' \code{unstore} retrieves all stored values in history (does not recurse into
+#' branches). Maybe it should.
+#'
 #' @param m An Rmonad
 #' @param ... additional arguments
 #' @name rmonad_meta
@@ -92,5 +95,11 @@ doc <- function(m, ...){
 #' @rdname rmonad_meta
 #' @export
 unstore <- function(m) {
-  lapply(m_history(m), m_value)
+  lapply(m_history(m) %+% m, m_value)
+}
+
+#' @rdname rmonad_meta
+#' @export
+uncode <- function(m) {
+  lapply(m_history(m) %+% m, m_code)
 }
