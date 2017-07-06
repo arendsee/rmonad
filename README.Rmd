@@ -1,14 +1,15 @@
----
-output: github_document
----
-
 [![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=master)](https://travis-ci.org/arendsee/rmonad)
 [![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/master.svg)](https://codecov.io/github/arendsee/rmonad?branch=master)
+
+---
+output: markdown_github 
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 
 ```{r, echo = FALSE}
+set.seed(210)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -46,6 +47,10 @@ devtools::install_github("arendsee/rmonad")
 ## Examples
 
 For details, see the vignette. Here are a few excerpts
+
+```{r}
+library(rmonad)
+```
 
 ```{r}
 1:5      %>>%
@@ -89,7 +94,6 @@ built. Summaries of the locations of errors. The monad could be extended for
 automated benchmarking."
 
                   ) %>^% sum %^__%
-rnorm(10)  %>>% abs %>^% sum %^__%
 rnorm("a") %>>% abs %>^% sum %^__%
 rexp(10)   %>>% abs %>^% sum %>%
     unbranch
