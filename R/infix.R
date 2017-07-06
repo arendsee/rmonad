@@ -80,7 +80,12 @@ NULL
 #' @export
 `%v>%` <- function(lhs, rhs) {
     envir <- parent.frame()
-    cmd   <- list(bind, substitute(lhs), substitute(rhs), record_in=TRUE)
+    cmd <- list(
+      bind,
+      substitute(lhs),
+      substitute(rhs),
+      m_on_bind = .store_value
+    )
     eval(as.call(cmd), envir=envir)
 }
 

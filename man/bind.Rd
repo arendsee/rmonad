@@ -4,8 +4,9 @@
 \alias{bind}
 \title{Apply f to the contents of a monad and merge messages}
 \usage{
-bind(x, f, on_entry = ident, bind_if = function(m) {     m_OK(m) },
-  record_in = FALSE, branch = FALSE, discard_out = FALSE,
+bind(x, f, on_entry = ident, bind_if = function(m) m_OK(m),
+  emit = function(i, o) {     if (is.null(o)) {         i     }     else {    
+      o     } }, m_on_bind = ident, branch = FALSE, discard_out = FALSE,
   discard_in = FALSE, handle = FALSE)
 }
 \arguments{
@@ -17,7 +18,9 @@ bind(x, f, on_entry = ident, bind_if = function(m) {     m_OK(m) },
 
 \item{bind_if}{f(m) bind rhs to lhs if TRUE}
 
-\item{record_in}{logical - should the input be recorded?}
+\item{emit}{f(i,o) Emit the input or the output}
+
+\item{m_on_bind}{f(m) Action to perform on input monad when binding}
 
 \item{branch}{Store the output in the branch slot}
 
@@ -26,6 +29,8 @@ bind(x, f, on_entry = ident, bind_if = function(m) {     m_OK(m) },
 \item{discard_in}{Ignore the input}
 
 \item{handle}{Operate on a failed state}
+
+\item{record_in}{logical - should the input be recorded?}
 }
 \value{
 A monad report

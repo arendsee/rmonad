@@ -7,6 +7,7 @@
 \alias{forget}
 \alias{unbranch}
 \alias{doc}
+\alias{unstore}
 \title{Functions on monads}
 \usage{
 store(m)
@@ -18,6 +19,8 @@ forget(m)
 unbranch(m)
 
 doc(m, ...)
+
+unstore(m)
 }
 \arguments{
 \item{m}{An Rmonad}

@@ -88,3 +88,9 @@ doc <- function(m, ...){
   m@stage@doc <- paste(list(...), collapse=" ")
   m
 }
+
+#' @rdname rmonad_meta
+#' @export
+unstore <- function(m) {
+  lapply(m_history(m), m_value)
+}

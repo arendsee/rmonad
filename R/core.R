@@ -13,6 +13,7 @@
 #' @param on_entry f(m,x) an action to perform on entry, returns m
 #' @param bind_if f(m) bind rhs to lhs if TRUE
 #' @param emit f(i,o) Emit the input or the output
+#' @param m_on_bind f(m) Action to perform on input monad when binding
 #' @param record_in logical - should the input be recorded?
 #' @param branch Store the output in the branch slot
 #' @param discard_out Ignore the result of the rhs function, passon the left
@@ -25,7 +26,7 @@ bind <- function(
   on_entry    = ident,
   bind_if     = function(m) m_OK(m),
   emit        = function(i, o) { if(is.null(o)){ i } else { o } },
-  record_in   = FALSE,
+  m_on_bind   = ident,
   branch      = FALSE,
   discard_out = FALSE,
   discard_in  = FALSE,
@@ -54,8 +55,7 @@ bind <- function(
     envir <- parent.frame()
     o <- mrun( eval(as.call(ff), envir), desc=deparse(fs) )
 
-    # merge notes and warnings, replace value
-    if(record_in){ m <- .store_value(m) }
+    m <- m_on_bind(m)
 
     if(branch){
       m <- app_branch(m, o)
@@ -67,6 +67,7 @@ bind <- function(
       }
       m_history(o) <- m@history %+% m@stage
     }
+
     o
   } else { NULL }
 

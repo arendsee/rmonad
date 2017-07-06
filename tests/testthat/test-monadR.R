@@ -44,6 +44,13 @@ test_that('function passing works with package labels', {
   expect_true( cars %>>% head %>>% base::as.matrix %>% m_OK)
 })
 
+test_that('input storing works', {
+  expect_equal(
+    16 %v>% sqrt %>>% sqrt %v>% sqrt %>% unstore,
+    list(16,NULL,2)
+  )
+})
+
 test_that('parameterization works', {
   expect_equal(c(1,4,2) %>>% order(decreasing=TRUE) %>% esc, c(2,3,1) )
 })

@@ -18,7 +18,7 @@ m_OK       <- function(m) m@OK
 
 #' @rdname rmonad_accessors
 #' @export
-m_value    <- function(m) m@x[[1]]
+m_value    <- function(m) if(length(m@x) > 0) { m@x[[1]] } else { NULL }
 
 #' @rdname rmonad_accessors
 #' @export
