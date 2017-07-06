@@ -157,7 +157,7 @@ rnorm(30) %>_% is_positive %>>% mean
 Or you can cache an intermediate result
 
 
-```{r}
+```{r, eval=FALSE}
 cars %>_% write.csv(file="cars.tab") %>>% summary
 ```
 

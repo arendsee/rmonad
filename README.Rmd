@@ -8,7 +8,13 @@ output: github_document
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 
-
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
 
 # rmonad
 
@@ -32,8 +38,7 @@ output: github_document
 
 You can install rmonad from github with:
 
-
-```r
+```{r gh-installation, eval = FALSE}
 # install.packages("devtools")
 devtools::install_github("arendsee/rmonad")
 ```
@@ -42,24 +47,19 @@ devtools::install_github("arendsee/rmonad")
 
 For details, see the vignette. Here are a few excerpts
 
-
-```r
+```{r}
 1:5      %>>%
     sqrt %v>% # record an intermediate value
     sqrt %>>%
     sqrt
-#> Error in 1:5 %>>% sqrt %v>% sqrt %>>% sqrt: could not find function "%>>%"
 ```
 
-
-```r
+```{r}
 # Both plots and summarizes an input table
 cars %>_% plot(xlab="index", ylab="value") %>>% summary
-#> Error in cars %>_% plot(xlab = "index", ylab = "value") %>>% summary: could not find function "%>>%"
 ```
 
-
-```r
+```{r}
 x <- list()
 
 # return first value in a list, otherwise return NULL
@@ -68,15 +68,12 @@ if(length(x) > 0) {
 } else {
     NULL
 }
-#> NULL
 
 # this does the same
 x[[1]] %||% NULL %>% esc
-#> Error in x[[1]] %||% NULL: could not find function "%||%"
 ```
 
-
-```r
+```{r}
 # chain independent pipelines together, with documentation
 runif(10)  %>>% abs %>% doc(
 
@@ -96,5 +93,4 @@ rnorm(10)  %>>% abs %>^% sum %^__%
 rnorm("a") %>>% abs %>^% sum %^__%
 rexp(10)   %>>% abs %>^% sum %>%
     unbranch
-#> Error in runif(10) %>>% abs %>% doc("Alternatively, the documentation could go into a text block below the code\nin a knitr document. The advantage of having documentation here, is that it is\ncoupled unambiguously to the generating function. This is a monadic\ninterpretation of literate programming. These annotations, together with the\nability to chain chains of monads, allows whole complex workflows to be built,\nwith the results collated into a single monad. All errors propagate exactly as\nerrors should, only affecting downstream computations. The final monad can be\nconverted into a markdown document. A graph of functions can automatically be\nbuilt. Summaries of the locations of errors. The monad could be extended for\nautomated benchmarking.") %>^% : could not find function "%>^%"
 ```

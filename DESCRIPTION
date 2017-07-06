@@ -1,6 +1,6 @@
 Package: rmonad
 Title: A monadic library for handling error
-Version: 0.0.0.9000
+Version: 0.0.1
 Author: Zebulun Arendsee
 Maintainer: Zebulun Arendsee <arendsee@iastate.edu>
 URL: https://github.com/arendsee/rmonad

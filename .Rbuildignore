@@ -1,2 +1,6 @@
 ^\.travis\.yml$
 ^codecov\.yml$
+^README\.Rmd$
+^NEWS\.md$
+^README-.*\.png$
+^cran-comments\.md$
