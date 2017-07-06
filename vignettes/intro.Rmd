@@ -25,7 +25,7 @@ I will introduce `Rmonad` with a simple sequence of squares
 
 ```{r}
 # %>>% corresponds to Haskell's >>=
-1:5      %$>%
+1:5      %>>%
     sqrt %>>%
     sqrt %>>%
     sqrt
@@ -48,7 +48,7 @@ quite different, it uses builds monadic sequences, which preserve state between
 calls. The preserved state allows us to access data internal to the pipeline:
 
 ```{r}
-1:5      %$>%
+1:5      %>>%
     sqrt %v>%
     sqrt %>>%
     sqrt
@@ -59,7 +59,7 @@ The `%v>%` variant of the bind operator stores the results as they are passed.
 Now lets look at warnings handling.
 
 ```{r}
--1:3     %$>%
+-1:3     %>>%
     sqrt %v>%
     sqrt %>>%
     sqrt
@@ -69,7 +69,7 @@ Now lets look at warnings handling.
 function that produced them. Similarly for errors:
 
 ```{r}
-letters  %$>%
+letters  %>>%
     sqrt %v>%
     sqrt %>>%
     sqrt
@@ -93,7 +93,7 @@ If you want to extract the result from the monad, you can use the `esc`
 function:
 
 ```{r}
-1:5 %$>% sqrt %>% esc
+1:5 %>>% sqrt %>% esc
 ```
 
 Note the use of `$>$` not `%>>%`, this is because `esc` acts on the monad, not
@@ -105,18 +105,10 @@ Here is a more substantial example
 
 ```{r}
 # convert to tibbles for cleaner printing
-r1 <- read.table("asdfdf") %$>% tibble::as_tibble %>>% colSums %>>% mean
-r2 <- iris %$>% tibble::as_tibble %>>% colSums %>>% mean
-r3 <- cars %$>% tibble::as_tibble %>>% colSums %>>% mean
+r1 <- read.table("asdfdf") %>>% tibble::as_tibble %>>% colSums %>>% mean
+r2 <- iris %>>% tibble::as_tibble %>>% colSums %>>% mean
+r3 <- cars %>>% tibble::as_tibble %>>% colSums %>>% mean
 ```
-
-You may have noticed that the first operator in each chain is `%$>%`, whereas
-the following operators are `$>>$`. The former operator takes the left hand
-value and wraps it in a monad, and then performs the left hand function on its
-value. The `$>>$` operator, takes a monadic container on the left and applies
-its value (if it didn't fail) to the function on the right, then unifies the
-history.
-
 
 # Branching out
 
@@ -164,7 +156,7 @@ try several alternatives functions, and use the first that works.
 # Handling error
 
 ```{r}
-1:10 %$>% colSums %?>% sum
+1:10 %>>% colSums %?>% sum
 ```
 
 Here we will do either `colSums` or `sum`. The pipeline fails only if both
@@ -173,8 +165,8 @@ fail.
 This operator can also be used as a pure try-catch:
 
 ```{r}
-iris %$>% tibble::as_data_frame %>>% colSums %?>% ident %>>% summary
-cars %$>% tibble::as_data_frame %>>% colSums %?>% ident %>>% summary
+iris %>>% tibble::as_data_frame %>>% colSums %?>% ident %>>% summary
+cars %>>% tibble::as_data_frame %>>% colSums %?>% ident %>>% summary
 ```
 
 Where `ident` is the identity function. In this way, we can make chains of
@@ -186,7 +178,7 @@ call -- for example in reading files:
 
 ```{r}
 # try to load a cached file, on failure rerun the analysis
-"analyasis_cache.tab" %$>% read.table %?<% the_analysis(x)
+"analyasis_cache.tab" %>>% read.table %?<% the_analysis(x)
 ```
 
 ```{r, eval=FALSE}
@@ -200,7 +192,7 @@ If you want to connect many chains, all with independent inputs, you can do so
 with the `%__%` and `%v__%` operators.
 
 ```{r}
-runif(10) %$>% sum %v__%
+runif(10) %>>% sum %v__%
 rnorm(10) %>>% sum %v__%
 rexp(10)  %>>% sum
 ```
@@ -213,7 +205,7 @@ If you won't the success of one stage to be dependent on the prior stage, you
 can use the branch operator:
 
 ```{r}
-x <- runif(10) %$>% sum %^__%
+x <- runif(10) %>>% sum %^__%
      rnorm(10) %>>% sum %^__%
      rexp(10)  %>>% sum
 unbranch(x)
@@ -225,7 +217,7 @@ rather than its value.
 `unbranch` returns a list of all branches in the tree. Here is a more dramatic picture.
 
 ```{r}
-runif(10)  %$>% abs %>^% sum %^__%
+runif(10)  %>>% abs %>^% sum %^__%
 rnorm(10)  %>>% abs %>^% sum %^__%
 rnorm("a") %>>% abs %>^% sum %^__%
 rexp(10)   %>>% abs %>^% sum %>%
@@ -236,7 +228,7 @@ Now it is getting a little hard to remember what is what. It would be nice if
 we could document our data. We can do that as follows:
 
 ```{r}
-runif(10)  %$>% abs %>% doc(
+runif(10)  %>>% abs %>% doc(
     "I take the absolute value of the input here, even though it is already
     guaranteed to be positive(since it is from a uniform distribution on the
     range 0 to 1). This is necessary, because otherwise the vertical lines in

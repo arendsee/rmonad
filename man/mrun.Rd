@@ -15,5 +15,5 @@ mrun(expr, desc = NULL)
 Rmonad object
 }
 \description{
-Run an expression, capture EWM, return Rmonad
+If the value is already an Rmonad, the existing value is returned.
 }

@@ -151,6 +151,7 @@ NULL
 #' @rdname infix
 #' @export
 `%v__%` <- function(lhs, rhs) {
+
     code <- deparse(substitute(rhs))
     rhs <- mrun(rhs, code)
 

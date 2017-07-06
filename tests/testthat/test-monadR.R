@@ -1,26 +1,53 @@
 context("rmonad.R")
 
 
-test_that('%$>% and esc work', {
-  expect_equal(1 %$>% '*'(2) %>% esc, 2)
-  expect_equal(1:3 %$>% '*'(2) %>% esc, c(2,4,6))
-  expect_error("3" %$>% '*'(2) %>% esc)
+test_that('%>>% and esc work (simple)', {
+  expect_equal(1 %>>% '*'(2) %>% esc, 2)
+  expect_true(1 %>>% '*'(2) %>% m_OK)
+
+  expect_equal(cars %>>% head %>% esc, head(cars))
+  expect_true( cars %>>% head %>% m_OK)
+
+  expect_equal(1:3 %>>% '*'(2) %>% esc, c(2,4,6))
+  expect_true(1:3 %>>% '*'(2) %>% m_OK)
+
+  expect_error("3" %>>% '*'(2) %>% esc)
 })
 
-test_that('%>>% works', {
-  expect_equal(1 %$>% '*'(2) %>>% '*'( 4 ) %>>% '*'(3) %>% esc     , 24 )
-  expect_error(1 %$>% '*'(2) %>>% '*'('4') %>>% '*'(3) %>% esc          )
+test_that('%>>% chaining works', {
+  expect_equal(1 %>>% '*'(2) %>>% '*'( 4 ) %>>% '*'(3) %>% esc     , 24 )
+  expect_true( 1 %>>% '*'(2) %>>% '*'( 4 ) %>>% '*'(3) %>% m_OK         )
+
+  expect_equal(cars %>>% head %>>% colSums %>% esc, colSums(head(cars)))
+  expect_true( cars %>>% head %>>% colSums %>% m_OK)
+
+  expect_error(1 %>>% '*'(2) %>>% '*'('4') %>>% '*'(3) %>% esc          )
 })
 
 test_that('last passing value propagate', {
-  expect_equal(1 %$>% '*'(2) %>>% '*'('4') %>>% '*'(3) %>% m_value , 2)
+  expect_equal(1 %>>% '*'(2) %>>% '*'('4') %>>% '*'(3) %>% m_value , 2)
+  expect_false(1 %>>% '*'(2) %>>% '*'('4') %>>% '*'(3) %>% m_OK       )
+
+  expect_equal(iris %>>% head %>>% colSums %>% m_value, head(iris))
+  expect_false(iris %>>% head %>>% colSums %>% m_OK)
 })
 
 test_that('function passing works with package labels', {
-  expect_equal(2 %$>% base::'*'(3) %>>% base::'*'(4) %>% esc, 24)
-  expect_equal(4 %$>% base::sqrt %>% esc, 2)
+  expect_equal(2 %>>% base::'*'(3) %>>% base::'*'(4) %>% esc, 24)
+  expect_true( 2 %>>% base::'*'(3) %>>% base::'*'(4) %>% m_OK   )
+
+  expect_equal(4 %>>% base::sqrt %>% esc, 2)
+  expect_true( 4 %>>% base::sqrt %>% m_OK  )
+
+  # NOTE: keep this test
+  expect_equal(cars %>>% head %>>% base::as.matrix %>% esc, base::as.matrix(head(cars)))
+  expect_true( cars %>>% head %>>% base::as.matrix %>% m_OK)
 })
 
 test_that('parameterization works', {
-  expect_equal(c(1,4,2) %$>% order(decreasing=TRUE) %>% esc, c(2,3,1) )
+  expect_equal(c(1,4,2) %>>% order(decreasing=TRUE) %>% esc, c(2,3,1) )
+})
+
+test_that('Alteratives (%?>%) work', {
+  expect_equal(1:10 %>>% colSums %?>% sum %>% esc, 55)
 })

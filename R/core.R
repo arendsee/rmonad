@@ -29,7 +29,7 @@ bind <- function(
 ){
 
   left_str = deparse(substitute(x))
-  m <- as_rmonad(x, desc=left_str)
+  m <- mrun(x, desc=left_str)
   if(print_in){ print(m_value(m)) }
 
   if(handle && m_OK(m)){ return(m) } 
@@ -43,10 +43,11 @@ bind <- function(
 
     # if the input is of form 'Foo::bar'
     ff <- if(fl[[1]] == '::' && length(fl) == 3) {
-      append(as.call(fl), m_value(m))
+      list(as.call(fl)) %+% m_value(m)
     } else {
-      append(list(fl[[1]], m_value(m)), fl[-1])
+      list(fl[[1]]) %+% m_value(m) %++% fl[-1]
     }
+    foo <<- ff
 
     envir <- parent.frame()
     y <- mrun( eval(as.call(ff), envir), desc=deparse(fs) )
@@ -63,7 +64,7 @@ bind <- function(
         # for either degugging or passage to alternative handlers.
         m_value(y) <- m_value(m)
       }
-      m_history(y) <- append(m@history, m@stage)
+      m_history(y) <- m@history %+% m@stage
       o <- y
     }
   }
@@ -77,6 +78,8 @@ bind <- function(
 
 
 #' Run an expression, capture EWM, return Rmonad
+#'
+#' If the value is already an Rmonad, the existing value is returned.
 #'
 #' @param expr An expression
 #' @param desc A name to assign to the code slot
@@ -108,6 +111,8 @@ mrun <- function(expr, desc=NULL){
     type="message"
   )
 
+  if(class(value) == "Rmonad") { return(value) }
+
   value <- if(isOK) { list(value) } else { list() }
 
   code <- if(is.null(desc)) {
@@ -132,22 +137,6 @@ mrun <- function(expr, desc=NULL){
 }
 
 
-#' Lift a value into the report monad if not in one already
-#'
-#' If you are not a haskeller, ignore the following message. \code{as_rmonad}
-#' is almost a \code{return} function, except that if the input is already an
-#' Rmonad, it is passed unchanged. \code{pass} is the true \code{return}
-#' function.
-#'
-#' @export
-#' @param x A value
-#' @param ... extra state information for \code{pass}
-#' @return Value wrapped in a report monad
-as_rmonad <- function(x, ...){
-  if (class(x) == "Rmonad") { x } else { pass(x, ...) }
-}
-
-
 #' Merge list of reports into one
 #'
 #' @export
@@ -155,7 +144,7 @@ as_rmonad <- function(x, ...){
 #' @param keep_history Merge the histories of all monads
 #' @return A combined report
 combine <- function(ms, keep_history=TRUE){
-  ms <- lapply(ms, as_rmonad)
+  ms <- lapply(ms, mrun)
   rec <- new("record")
   history <- if(keep_history) {
     Reduce( append, lapply(ms, function(m) append(m@history, m@stage)), list() )
