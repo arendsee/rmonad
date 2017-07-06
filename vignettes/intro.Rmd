@@ -238,7 +238,7 @@ rnorm(30) %>^% plot(xlab="index", ylab="value") %>^% summary %>>% mean
 Branches can be used as input, as well.
 
 ```{r}
-x <- 1:10 %>^% dgamma(10, 1) %>^% dgamma(10, 5) %^>% pmax()
+x <- 1:10 %>^% dgamma(10, 1) %>^% dgamma(10, 5) %^>% cor
 x
 unbranch(x)
 ```

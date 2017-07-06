@@ -15,6 +15,7 @@
 #' @param bind_else f(m,f) actio to take if bind_if is FALSE
 #' @param emit f(i,o) Emit the input or the output
 #' @param m_on_bind f(m) Action to perform on input monad when binding
+#' @param bind_args function to retrieve the arguments
 #' @param combine f(m,o) weave m and f(m) into final output
 #' @return A monad report
 bind <- function(
@@ -25,7 +26,8 @@ bind <- function(
   bind_else   = toss,
   emit        = function(i, o) { if(is.null(o)){ i } else { o } },
   m_on_bind   = ident,
-  combine     = default_combine
+  combine     = default_combine,
+  bind_args   = function(m) { list(m_value(m)) }
 ){
 
   left_str = deparse(substitute(x))
@@ -42,9 +44,9 @@ bind <- function(
 
     # if the input is of form 'Foo::bar'
     ff <- if(fl[[1]] == '::' && length(fl) == 3) {
-      list(as.call(fl)) %+% m_value(m)
+      list(as.call(fl)) %++% bind_args(m)
     } else {
-      list(fl[[1]]) %+% m_value(m) %++% fl[-1]
+      list(fl[[1]]) %++% bind_args(m) %++% fl[-1]
     }
 
     e <- parent.frame()
@@ -157,6 +159,7 @@ combine <- function(ms, keep_history=TRUE){
   } else {
     list()
   }
+
   out <- new(
      "Rmonad",
      x        = list(),
@@ -164,9 +167,10 @@ combine <- function(ms, keep_history=TRUE){
      history  = history,
      OK       = FALSE
   )
-  if(all(sapply(ms, function(m) m@OK))){
-    out@x  <- Reduce( append, lapply(ms, function(m) m@x), list() )
-    out@OK <- TRUE
+
+  if(all(sapply(ms, m_OK))){
+    m_value(out) <- lapply(ms, m_value)
+    m_OK(out) <- TRUE
   }
   out 
 }

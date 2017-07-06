@@ -7,7 +7,8 @@
 bind(x, f, on_entry = ident, bind_if = function(m) m_OK(m),
   bind_else = toss, emit = function(i, o) {     if (is.null(o)) {         i 
      }     else {         o     } }, m_on_bind = ident,
-  combine = default_combine)
+  combine = default_combine, bind_args = function(m) {     list(m_value(m))
+  })
 }
 \arguments{
 \item{x}{The input, may or may not be a monad report}
@@ -25,6 +26,8 @@ bind(x, f, on_entry = ident, bind_if = function(m) m_OK(m),
 \item{m_on_bind}{f(m) Action to perform on input monad when binding}
 
 \item{combine}{f(m,o) weave m and f(m) into final output}
+
+\item{bind_args}{function to retrieve the arguments}
 }
 \value{
 A monad report

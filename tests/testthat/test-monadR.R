@@ -71,6 +71,17 @@ test_that('branching works %>^%', {
   )
 })
 
+diff <- function(a,s) { s - a }
+test_that('branching function work %^>%', {
+  expect_equal(
+    1:10 %>^% '*'(2) %>^% '*'(3) %^>% diff %>% esc,
+    -1 * 1:10
+  )
+  expect_true(
+    1:10 %>^% '*'(2) %>^% '*'(3) %^>% diff %>% m_OK,
+  )
+})
+
 test_that('output toss works %>_%', {
   expect_equal(1 %>_% '*'(3) %>>% '*'(2) %>% uncode, list("1", "*3", "*2"))
   expect_equal(1 %>_% '*'(3) %>>% '*'(2) %>% m_value, 2)

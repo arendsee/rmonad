@@ -62,15 +62,6 @@ NULL
 
 #' @rdname infix
 #' @export
-`%$>%` <- function(lhs, rhs) {
-    code <- deparse(substitute(lhs))
-    lhs <- mrun(lhs, code)
-    envir <- parent.frame()
-    eval(as.call(list(bind, lhs, substitute(rhs))), envir=envir)
-}
-
-#' @rdname infix
-#' @export
 `%>>%` <- function(lhs, rhs) {
     envir <- parent.frame()
     eval(as.call(list(bind, substitute(lhs), substitute(rhs))), envir=envir)
@@ -100,6 +91,7 @@ NULL
     cmd   <- list(bind, substitute(lhs), substitute(rhs), bind_if=bind_if)
     eval(as.call(cmd), envir=envir)
 }
+
 #' @rdname infix
 #' @export
 `%||%` <- function(lhs, rhs) {
@@ -120,22 +112,27 @@ NULL
 }
 
 
+.bind_if_fb <- function(m){
+  m_branch(m) %>% sapply(m_OK) %>% all
+}
+.bind_args_fb <- function(m){
+  m_branch(m) %>% lapply(m_value)
+}
+
 #' @rdname infix
 #' @export
 `%^>%` <- function(lhs, rhs) {
+
+    cmd   <- list(
+      bind,
+      lhs,
+      substitute(rhs),
+      bind_args = .bind_args_fb,
+      bind_if   = .bind_if_fb
+    )
     envir <- parent.frame()
+    eval(as.call(cmd), envir=envir)
 
-    # combine branches
-    x <- combine(lhs@stage@branch, keep_history=FALSE)
-    # move history
-    x@history <- append(lhs@stage, lhs@history)
-
-    cmd <- list(bind, x, substitute(rhs))
-    o <- eval(as.call(cmd), envir=envir)
-
-    # Annotate as a branching function
-    o@stage@code <- paste(o@stage@code, " - FUNCTION ON BRANCHES")
-    o
 }
 
 #' @rdname infix

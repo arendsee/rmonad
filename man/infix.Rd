@@ -2,7 +2,6 @@
 % Please edit documentation in R/infix.R
 \name{infix}
 \alias{infix}
-\alias{\%$>\%}
 \alias{\%>>\%}
 \alias{\%v>\%}
 \alias{\%>^\%}
@@ -15,8 +14,6 @@
 \alias{\%^__\%}
 \title{Infix operators}
 \usage{
-lhs \%$>\% rhs
-
 lhs \%>>\% rhs
 
 lhs \%v>\% rhs
