@@ -5,17 +5,19 @@
 
 `Rmonad` offers
 
- * a nuanced way to handle errors
+ * nuanced error handling
 
- * a means to access results inside a pipeline
+ * access to the intermediate results of a pipeline
 
- * handling for effects -- e.g. plotting, caching -- within a pipeline
+ * effects -- e.g. plotting, caching -- within a pipeline
 
  * access to results preceding an error
 
  * tools for branching and combining pipelines
 
- * a strict version of literate programming
+ * a way to almost completely avoid naming things
+
+ * a structured approach to literate programming
 
 # Installation
 
@@ -35,7 +37,7 @@ vignette("intro", package="rmonad")
 
 # Examples
 
-Here are a few excerpts from the vignette
+For details, see the vignette. Here are a few excerpts
 
 ```R
 1:5      %>>%

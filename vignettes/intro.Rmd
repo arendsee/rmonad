@@ -24,18 +24,19 @@ set.seed(210)
 
 `Rmonad` offers
 
- * a nuanced way to handle errors
+ * nuanced error handling
 
- * a means to access results inside a pipeline
+ * access to the intermediate results of a pipeline
 
- * handling for effects -- e.g. plotting, caching -- within a pipeline
+ * effects -- e.g. plotting, caching -- within a pipeline
 
  * access to results preceding an error
 
  * tools for branching and combining pipelines
 
- * a more formal approach to literate programming
+ * a way to almost completely avoid naming things
 
+ * a structured approach to literate programming
 
 
 I will introduce `Rmonad` with a simple sequence of squares
@@ -60,8 +61,8 @@ In `magrittr` you could do something similar:
     sqrt
 ```
 
-`%>%` takes the value on the left and applies it to the function on the right..
-`Rmonad`, takes a monad on the left and a function on the right, then builds a
+`%>%` takes the value on the left and applies it to the function on the right.
+`%>>%`, takes a monad on the left and a function on the right, then builds a
 new monad from them. This new monad holds the computed value, if the
 computation succeeded. It collates all errors, warnings, and messages.  These
 are stored in step-by-step a history of the pipeline.
@@ -69,14 +70,14 @@ are stored in step-by-step a history of the pipeline.
 `%>%` is an application operator, `%>>%` is a *monadic bind* operator. Magrittr
 and Rmonad complement eachother. `%>%` can be used inside a monadic sequence to
 perform operations *on* monads, whereas `%>>%` performs operations *in* them.
-If this sounds too mystical, just hold on, the examples are sensical even
+If this is all too mystical, just hold on, the examples are sensical even
 without an understanding of monads.
 
 Below, we store an intermediate value in the monad:
 
 ```{r}
 1:5      %>>%
-    sqrt %v>%
+    sqrt %v>% # store this result
     sqrt %>>%
     sqrt
 ```
