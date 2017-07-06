@@ -178,7 +178,7 @@ call -- for example in reading files:
 
 ```{r}
 # try to load a cached file, on failure rerun the analysis
-"analyasis_cache.tab" %>>% read.table %?<% the_analysis(x)
+read.table("analyasis_cache.tab") %?>% the_analysis(x)
 ```
 
 ```{r, eval=FALSE}

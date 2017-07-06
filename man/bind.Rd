@@ -4,15 +4,18 @@
 \alias{bind}
 \title{Apply f to the contents of a monad and merge messages}
 \usage{
-bind(x, f, print_in = FALSE, record_in = FALSE, branch = FALSE,
-  discard_out = FALSE, discard_in = FALSE, handle = FALSE)
+bind(x, f, on_entry = ident, bind_if = function(m) {     m_OK(m) },
+  record_in = FALSE, branch = FALSE, discard_out = FALSE,
+  discard_in = FALSE, handle = FALSE)
 }
 \arguments{
 \item{x}{The input, may or may not be a monad report}
 
 \item{f}{A function of the value contained in x}
 
-\item{print_in}{logical - should the input be printed?}
+\item{on_entry}{f(m,x) an action to perform on entry, returns m}
+
+\item{bind_if}{f(m) bind rhs to lhs if TRUE}
 
 \item{record_in}{logical - should the input be recorded?}
 

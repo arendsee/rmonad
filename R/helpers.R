@@ -13,13 +13,14 @@ note <- function(...){ }
 #' The identity function
 #'
 #' @param x anything
+#' @param ... parameters that will be ignored
 #' @export
 #' @examples
 #' # pull a value out of failure
 #' 1:10 %$>% colSums %?>% ident
 #' # here it just does nothing
 #' cars %$>% colSums %?>% ident
-ident <- function(x){ x }
+ident <- function(x, ...){ x }
 
 #' Ignore the first input, return the second
 #'

@@ -12,3 +12,7 @@
 
 # add an element to a vector
 `%+%` <- function(l, r) { l[[length(l)+1]] <- r; l }
+
+# extra functional defaults
+.false <- function(...) { FALSE }
+.true  <- function(...) { TRUE  }

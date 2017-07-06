@@ -122,21 +122,28 @@ NULL
 #' @export
 `%?>%` <- function(lhs, rhs) {
     envir <- parent.frame()
-    cmd   <- list(bind, substitute(lhs), substitute(rhs), handle=TRUE)
+    bind_if <- function(m) { ! m_OK(m) }
+    cmd   <- list(bind, substitute(lhs), substitute(rhs), bind_if=bind_if)
     eval(as.call(cmd), envir=envir)
 }
 
 #' @rdname infix
 #' @export
 `%?<%` <- function(lhs, rhs) {
-    if(lhs@OK){
-      lhs
-    } else {
-      code <- deparse(substitute(rhs))
-      rhs <- mrun(rhs, code)
-      rhs@history <- append(lhs@history, lhs@stage)
-      rhs
-    }
+
+    bind_if <- function(m) { ! m_OK(m) }
+
+    envir <- parent.frame()
+    cmd   <- list(bind, lhs, rhs, bind_if=bind_if)
+    eval(as.call(cmd), envir=envir)
+    # if(lhs@OK){
+    #   lhs
+    # } else {
+    #   code <- deparse(substitute(rhs))
+    #   rhs <- mrun(rhs, code)
+    #   rhs@history <- append(lhs@history, lhs@stage)
+    #   rhs
+    # }
 }
 
 #' @rdname infix

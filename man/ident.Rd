@@ -4,10 +4,12 @@
 \alias{ident}
 \title{The identity function}
 \usage{
-ident(x)
+ident(x, ...)
 }
 \arguments{
 \item{x}{anything}
+
+\item{...}{parameters that will be ignored}
 }
 \description{
 The identity function

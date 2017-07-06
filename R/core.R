@@ -10,7 +10,9 @@
 #' @export
 #' @param x The input, may or may not be a monad report
 #' @param f A function of the value contained in x
-#' @param print_in logical - should the input be printed?
+#' @param on_entry f(m,x) an action to perform on entry, returns m
+#' @param bind_if f(m) bind rhs to lhs if TRUE
+#' @param emit f(i,o) Emit the input or the output
 #' @param record_in logical - should the input be recorded?
 #' @param branch Store the output in the branch slot
 #' @param discard_out Ignore the result of the rhs function, passon the left
@@ -20,7 +22,9 @@
 bind <- function(
   x,
   f,
-  print_in    = FALSE,
+  on_entry    = ident,
+  bind_if     = function(m) m_OK(m),
+  emit        = function(i, o) { if(is.null(o)){ i } else { o } },
   record_in   = FALSE,
   branch      = FALSE,
   discard_out = FALSE,
@@ -30,11 +34,10 @@ bind <- function(
 
   left_str = deparse(substitute(x))
   m <- mrun(x, desc=left_str)
-  if(print_in){ print(m_value(m)) }
 
-  if(handle && m_OK(m)){ return(m) } 
+  m <- on_entry(m, f)
 
-  if(m_OK(m) || handle)
+  o <- if(bind_if(m))
   {
 
     # insert x as first positional in f
@@ -47,33 +50,27 @@ bind <- function(
     } else {
       list(fl[[1]]) %+% m_value(m) %++% fl[-1]
     }
-    foo <<- ff
 
     envir <- parent.frame()
-    y <- mrun( eval(as.call(ff), envir), desc=deparse(fs) )
+    o <- mrun( eval(as.call(ff), envir), desc=deparse(fs) )
 
     # merge notes and warnings, replace value
     if(record_in){ m <- .store_value(m) }
 
     if(branch){
-      m <- app_branch(m, y)
-      o <- m
+      m <- app_branch(m, o)
     } else {
-      if(!m_OK(y) || discard_out){
+      if(!m_OK(o) || discard_out){
         # On failure, propagate the final passing value, this allows
         # for either degugging or passage to alternative handlers.
-        m_value(y) <- m_value(m)
+        m_value(o) <- m_value(m)
       }
-      m_history(y) <- m@history %+% m@stage
-      o <- y
+      m_history(o) <- m@history %+% m@stage
     }
-  }
-  else
-  {
-    # propagate error
-    o <- m
-  }
-  o
+    o
+  } else { NULL }
+
+  emit(m, o)
 }
 
 
