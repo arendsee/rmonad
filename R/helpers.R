@@ -48,8 +48,6 @@ pass <- function(x, desc=NULL) {
   if(class(x) == "Rmonad"){
     x
   } else {
-    desc <- if(is.null(desc)) { deparse(substitute(x)) } else { desc }
-    rec <- new("record", code=desc)
-    new("Rmonad", x=list(x), stage=rec) 
+    mrun(x, desc)
   }
 }

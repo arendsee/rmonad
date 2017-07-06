@@ -30,11 +30,11 @@ bind <- function(
 
   left_str = deparse(substitute(x))
   m <- as_rmonad(x, desc=left_str)
-  if(print_in){ print(m@x) }
+  if(print_in){ print(m_value(m)) }
 
-  if(handle && m@OK){ return(m) } 
+  if(handle && m_OK(m)){ return(m) } 
 
-  if(m@OK || handle)
+  if(m_OK(m) || handle)
   {
 
     # insert x as first positional in f
@@ -52,18 +52,18 @@ bind <- function(
     y <- mrun( eval(as.call(ff), envir), desc=deparse(fs) )
 
     # merge notes and warnings, replace value
-    if(record_in){ m@stage@x <- m@x }
+    if(record_in){ m <- .store_value(m) }
 
     if(branch){
-      m@stage@branch <- append(m@stage@branch, y)
+      m <- app_branch(m, y)
       o <- m
     } else {
-      if(!y@OK || discard_out){
+      if(!m_OK(y) || discard_out){
         # On failure, propagate the final passing value, this allows
         # for either degugging or passage to alternative handlers.
-        y@x <- m@x
+        m_value(y) <- m_value(m)
       }
-      y@history <- append(m@history, m@stage)
+      m_history(y) <- append(m@history, m@stage)
       o <- y
     }
   }

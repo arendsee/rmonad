@@ -24,7 +24,7 @@
 \alias{app_warnings}
 \alias{app_notes}
 \alias{app_branch}
-\title{Get, set, and append Rmonad fields}
+\title{get, set, and append rmonad fields}
 \usage{
 m_history(m)
 
@@ -71,10 +71,10 @@ app_notes(m, value)
 app_branch(m, value)
 }
 \arguments{
-\item{m}{The Rmonad}
+\item{m}{the rmonad}
 
-\item{value}{Value to replace or append current value}
+\item{value}{value to replace or append current value}
 }
 \description{
-Get, set, and append Rmonad fields
+get, set, and append rmonad fields
 }
