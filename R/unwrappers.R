@@ -71,9 +71,9 @@ unbranch <- function(m){
   mu
 }
 .unbranch_r <- function(m){
-  bs <- append(forget(m), lapply(m@stage@branch, .unbranch_r) %>% unlist)
-  bs <- append(bs, lapply(m@history, .unbranch_record) %>% unlist)
+  bs <- append(forget(m), lapply(m_branch(m), .unbranch_r) %>% unlist)
+  bs <- append(bs, lapply(m_history(m), .unbranch_record) %>% unlist)
 }
 .unbranch_record <- function(r){
-  lapply(r@branch, .unbranch_r) %>% unlist
+  lapply(m_branch(r), .unbranch_r) %>% unlist
 }

@@ -74,13 +74,13 @@ default_combine <- function(m, o){
     # for either degugging or passage to alternative handlers.
     m_value(o) <- m_value(m)
   }
-  m_history(o) <- m@history %+% m@stage
+  m_history(o) <- .make_history(m)
   o
 }
 
 bypass_combine <- function(m, o){
   m_value(o) <- m_value(m)
-  m_history(o) <- m@history %+% m@stage
+  m_history(o) <- .make_history(m)
   o
 }
 
@@ -155,7 +155,7 @@ combine <- function(ms, keep_history=TRUE){
   ms <- lapply(ms, mrun)
   rec <- new("record")
   history <- if(keep_history) {
-    Reduce( append, lapply(ms, function(m) append(m@history, m@stage)), list() )
+    Reduce( append, lapply(ms, .make_history), list() )
   } else {
     list()
   }

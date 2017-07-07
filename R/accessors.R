@@ -7,7 +7,6 @@
 NULL
 
 
-
 #' @rdname rmonad_accessors
 #' @export
 m_history  <- function(m) m@history
@@ -19,7 +18,12 @@ m_OK       <- function(m) m@OK
 #' @rdname rmonad_accessors
 #' @export
 m_value    <- function(m) {
-  m@x[[1]] %||% NULL %>% esc
+  # note: don't use esc here
+  if(length(m@x) == 1){
+    m@x[[1]]
+  } else {
+    NULL 
+  }
 }
 
 #' @rdname rmonad_accessors

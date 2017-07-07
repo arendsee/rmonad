@@ -114,17 +114,14 @@ letters  %>%
 ```
 
 Also note that a value was still produced. `Rmonad` stores the last successful
-value. It will never use this value, though, unless you use a specific operator
-(which we will see in a bit).
-
-If you want to extract the result from the monad, you can use the `esc`
-function:
+value. It will never use this value, though. If you want to extract the result
+from the monad, you can use the `esc` function:
 
 ```{r}
 1:5 %>>% sqrt %>% esc
 ```
 
-Note the use of `$>$` not `%>>%`, this is because `esc` acts on the monad, not
+Note the use of `%>%` not `%>>%`, this is because `esc` acts on the monad, not
 the value the monad stores. If the monad is in a failed state, `esc` will raise
 an error.
 
@@ -173,8 +170,8 @@ de-clutter the output.
 
 # Handling error
 
-Sometimes failure is not the end of the world. For example, we might want to
-try several alternatives functions, and use the first that works. 
+Errors needn't be viewed as abnormal. For example, we might want to try several
+alternatives functions, and use the first that works. 
 
 ```{r}
 1:10 %>>% colSums %|>% sum
@@ -216,6 +213,11 @@ Or maybe you want to support multiple extensions for an input file
 ```{r, eval=FALSE}
 read.table("a.tab") %||% read.table("a.tsv") %>>% dostuff
 ```
+
+Overall, in Rmonad, errors are well-behaved. It is reasonable to write
+functions that return an error rather than one of the myriad default values
+(`NULL`, `NA`, `logical(0)`, `list()`, `FALSE`). This is unambiguous. Rmonad
+can catch the error and allow allow the programmer to deal with it accordingly.
 
 
 # Branching Out

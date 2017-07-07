@@ -23,21 +23,17 @@ NULL
 #' @rdname rmonad_meta
 #' @export 
 store <- function(m){
-  m@stage@x <- m@x 
-  m
+  # NOTE: this is the public API to an internal function
+  .store(m)
 }
 
 #' @rdname rmonad_meta
 #' @export 
 esc <- function(m){
-  if(m@OK){
-    if(length(m@x) == 1){
-      m@x[[1]]
-    } else {
-      m@x
-    }
+  if(m_OK(m)){
+    m_value(m)
   } else {
-    msg <- paste0('The call "', m@stage@code, '" failed: \n  ', m@stage@error)
+    msg <- paste0('The call "', m_code(m), '" failed: \n  ', m_error(m))
     stop(msg, call.=FALSE)
   }
 }
@@ -45,13 +41,13 @@ esc <- function(m){
 #' @rdname rmonad_meta
 #' @export 
 forget <- function(m){
-  m@history <- list()
+  m_history(m) <- list()
   m
 }
 
 #' @rdname rmonad_meta
 #' @export
 doc <- function(m, ...){
-  m@stage@doc <- paste(list(...), collapse=" ")
+  m_doc(m) <- paste(list(...), collapse=" ")
   m
 }
