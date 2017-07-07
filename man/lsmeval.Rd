@@ -18,5 +18,5 @@ A list of Rmonads
 Safely builds a list of monads from a list of data
 }
 \examples{
-lsmeval( list(1:10, stop(1)) )
+lsmeval( 1:10, stop(1) )
 }

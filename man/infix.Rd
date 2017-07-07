@@ -46,57 +46,7 @@ lhs \%^__\% rhs
 Infix monadic sequence operators
 }
 \details{
-\strong{Monadic bind operators}
-
-\tabular{ll}{
-
-\%>>\%    monadic bind
-
-\%v>\%    monadic bind and print input
-
-\%^>\%    monadic bind and record input in monad
-
-\%>^\%    bind as a new branch, pass input on main
-
-\%*>\#    bind lhs list as arguments to right
-
-\%?>\%    if input is error, run rhs on last passing result
-
-\%<?\%    if input is error, use rhs value instead
-
-\%__\%    ignore the input, replacing the value with the rhs
-
-\%=_\%    assign input to a variable (lfs) and clear
-
-\%=>\%    assign input to a variable (lfs) and pass
-
-}
-
-\strong{Monadic list operators}
-
-\tabular{ll}{
-
-\%,,\%    merges rhs and lhs monads
-
-\%,?\%    if last list element failed, use this one instead
-
-\%,=\%    assign a name the last element in the list
-
-\%,>\%    run rhs function with lhs list of arguments
-
-\%,@\%    curry lhs list of paramters into rhs function
-
-}
-
-\strong{Utility operators}
-
-\tabular{ll}{
-
-\%.\%     compose two functions (math order)
-
-\%|\%     compose two functions (pipeline order)
-
-\%>\%     pass lhs into rhs (from magrittr)
-
-}
+This page contains a list of all operators, including experimental ones. See
+the main package help page (\code{?rmonad}) for a discussion of the
+operators that are really supported.
 }

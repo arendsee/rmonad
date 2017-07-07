@@ -67,7 +67,7 @@ mrun <- function(expr, desc=NULL){
 #' @param keep_history Merge the histories of all monads
 #' @return A list of Rmonads
 #' @examples
-#' lsmeval( list(1:10, stop(1)) )
+#' lsmeval( 1:10, stop(1) )
 lsmeval <- function(..., keep_history=TRUE){
 
   instr <- sprintf("lsmeval(%s)",
