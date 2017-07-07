@@ -4,12 +4,12 @@
 \alias{lsmeval}
 \title{Safely builds a list of monads from a list of data}
 \usage{
-lsmeval(xs, ...)
+lsmeval(..., keep_history = TRUE)
 }
 \arguments{
-\item{xs}{An unevaluated list of data}
+\item{...}{expressions to be wrapped into monads}
 
-\item{...}{Additional arguments for combine}
+\item{keep_history}{Merge the histories of all monads}
 }
 \value{
 A list of Rmonads

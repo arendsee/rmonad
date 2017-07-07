@@ -52,6 +52,9 @@ For details, see the vignette. Here are a few excerpts
 library(rmonad)
 ```
 
+
+### Record history and access inner values
+
 ```{r}
 1:5      %>>%
     sqrt %v>% # record an intermediate value
@@ -59,10 +62,16 @@ library(rmonad)
     sqrt
 ```
 
+
+### Add effects inside a pipeline
+
 ```{r}
 # Both plots and summarizes an input table
 cars %>_% plot(xlab="index", ylab="value") %>>% summary
 ```
+
+
+### Use first successful result
 
 ```{r}
 x <- list()
@@ -78,8 +87,33 @@ if(length(x) > 0) {
 x[[1]] %||% NULL %>% esc
 ```
 
+
+### Independent evaluation of multiple expressions
+
 ```{r}
-# chain independent pipelines together, with documentation
+lsmeval(
+    runif(5),
+    stop("stop, drop and die"),
+    runif("df"),
+    1:10
+)
+```
+
+
+### Build branching pipelines
+
+```{r, eval=FALSE}
+lsmeval(
+    read.csv("a.csv") %>>% do_analysis_a,
+    read.csv("b.csv") %>>% do_analysis_b,
+    k = 5
+) %*>% joint_analysis
+```
+
+
+### Chain independent pipelines, with documentation
+
+```{r}
 runif(10)  %>>% abs %>% doc(
 
     "Alternatively, the documentation could go into a text block below the code

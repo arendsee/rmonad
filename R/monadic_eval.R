@@ -62,25 +62,21 @@ mrun <- function(expr, desc=NULL){
 #' Safely builds a list of monads from a list of data
 #'
 #' @export
-#' @param xs  An unevaluated list of data
-#' @param ... Additional arguments for combine
+#' @param ... expressions to be wrapped into monads
+#' @param keep_history Merge the histories of all monads
 #' @return A list of Rmonads
 #' @examples
 #' lsmeval( list(1:10, stop(1)) )
-lsmeval <- function(xs, ...){
+lsmeval <- function(..., keep_history=TRUE){
 
-  ll <- as.list(substitute(xs))
+  instr <- sprintf("lsmeval(%s)",
+    lapply(substitute(alist(...))[-1], deparse) %>% unlist %>% paste0(collapse=", "))
 
-  if(ll[[1]] != "list"){
-    msg <- "combine requires an unevaluated list as input\n%s"
-    stop(sprintf(msg))
-  }
-
-  ll <- ll[-1]
+  ll <- as.list(substitute(alist(...)))[-1]
 
   ms <- lapply(ll, function(x) mrun(eval(x), desc=deparse(x)))
 
-  combine(ms, ...)
+  combine(ms, keep_history=keep_history, desc=instr)
 
 }
 

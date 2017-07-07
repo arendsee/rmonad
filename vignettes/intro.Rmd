@@ -296,7 +296,12 @@ we want to be able to catch errors resulting from evaluation of each member of
 the list. We can do this with `list_meval`.
 
 ```{r}
-lsmeval( list( "yolo", stop("stop, drop, and die"), runif("simon"), 2) )
+lsmeval(
+    "yolo",
+    stop("stop, drop, and die"),
+    runif("simon"),
+    k = 2
+)
 ```
 
 This returns a monad which fails if any of the components evaluate to an error.
@@ -312,13 +317,13 @@ list( "yolo", stop("stop, drop, and die"), runif("simon"), 2)
 This approach can also be used with the infix operator `%*>%`.
 
 ```{r, eval=FALSE}
-list(read.csv("a.csv"), read.csv("b.csv")) %*>% merge
+lsmeval(read.csv("a.csv"), read.csv("b.csv")) %*>% merge
 ```
 
 Now, of course, we can add monads to the mix 
 
 ```{r, eval=FALSE}
-list(
+lsmeval(
     a = read.csv("a.csv") %>>% do_analysis_a,
     b = read.csv("b.csv") %>>% do_analysis_b,
     k = 5
