@@ -33,18 +33,19 @@ record <- setClass(
   )
 )
 
-# create a record with a global id
-.indexed_record <- function(...){
-  r <- record(...)
-  r@id <- if(exists(".rmonad_id")){
-    get(".rmonad_id")
-  } else {
-    .rmonad_id <<- 1L
-    1L 
+
+.__indexed_record__ <- function(){
+  rmonad_id <- 1L
+  function(){
+    r <- record()
+    r@id <- rmonad_id 
+    rmonad_id <<- rmonad_id + 1L
+    r
   }
-  .rmonad_id <<- .rmonad_id + 1L
-  r
 }
+# create a record with a global id
+.indexed_record <- .__indexed_record__()
+
 
 #' The eponymous monad type
 #'
@@ -59,11 +60,16 @@ Rmonad <- setClass(
     stage   = "record",
     history = "list",
     OK      = "logical"
-  ),
-  prototype(
+  )
+)
+
+# This is the only constructor that should be used
+# TODO: add arguments, for now I just use m_* functions
+new_rmonad <- function(){
+  new("Rmonad",
     x       = list(),
     stage   = .indexed_record(),
     history = list(),
     OK      = TRUE
   )
-)
+}

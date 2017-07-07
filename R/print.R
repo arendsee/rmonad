@@ -1,6 +1,7 @@
 #' Special rmonad_printerss
 #'
 #' @param x An object to print
+#' @param verbose logical print verbose output (include benchmarking)
 #' @param ... Additional arguments going to God knows where
 #' @name rmonad_printers
 

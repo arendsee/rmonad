@@ -14,7 +14,7 @@ tutorial: ["functors, applicatives, and monads in
 pictures"](http://adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html)
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 library(rmonad)
 library(magrittr)
 library(tibble)
@@ -97,7 +97,7 @@ Warnings are caught and stored
 Similarly for errors
 
 ```{r}
-letters  %>>%
+"wrench" %>>%
     sqrt %v>%
     sqrt %>>%
     sqrt
@@ -107,7 +107,7 @@ The first `sqrt` failed, and this step was coupled to the resultant error.
 Contrast this with `magrittr`, where the location of the error is lost:
 
 ```{r, error=TRUE}
-letters  %>%
+"wrench" %>>%
     sqrt %>%
     sqrt %>%
     sqrt
@@ -127,7 +127,17 @@ an error.
 
 
 ```{r, error=TRUE}
-letters %>>% sqrt %>>% sqrt %>% esc
+"wrench" %>>% sqrt %>>% sqrt %>% esc
+```
+
+If you prefer a tabular summary of your results, you can pipe the monad into
+the `mtabulate` function.
+
+```{r}
+1:5      %>>%
+    sqrt %v>%
+    sqrt %>>%
+    sqrt %>% mtabulate
 ```
 
 Here is a more substantial example

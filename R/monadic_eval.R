@@ -45,7 +45,7 @@ mrun <- function(expr, desc=NULL){
     desc
   }
 
-  m <- Rmonad()
+  m <- new_rmonad()
 
   # These accessors do the right thing (don't mess with them)
   m_value(m)    <- value

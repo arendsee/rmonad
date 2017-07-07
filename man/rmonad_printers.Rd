@@ -13,6 +13,8 @@
 \arguments{
 \item{x}{An object to print}
 
+\item{verbose}{logical print verbose output (include benchmarking)}
+
 \item{...}{Additional arguments going to God knows where}
 }
 \description{

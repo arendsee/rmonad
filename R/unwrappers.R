@@ -68,7 +68,7 @@ unbranch <- function(m){
     NULL
   }
 
-  mu <- Rmonad()
+  mu <- new_rmonad()
   m_value(mu) <- bs
   m_OK(mu)    <- nfailed == 0
   m_error(mu) <- error

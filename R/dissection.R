@@ -3,8 +3,8 @@
 #' @param m An Rmonad
 #' @export
 mtabulate <- function(m){
-  do.call(rbind, lapply(m_history(m) %+% m, .mtabulate)) %>%
-    as.data.frame(stringsAsFactors=FALSE)
+  do.call(rbind.data.frame, lapply(m_history(m) %+% m, .mtabulate)) %>%
+    as.data.frame
 }
 .mtabulate <- function(m){
   list(
@@ -16,8 +16,8 @@ mtabulate <- function(m){
     nbranch   = length(m_branch(m)),
     nnotes    = length(m_notes(m)),
     nwarnings = length(m_warnings(m)),
-    error     = m_error(m),
-    doc       = m_doc(m)
+    error     = length(m_error(m)),
+    doc       = length(m_doc(m))
   )
 }
 
@@ -27,7 +27,9 @@ mtabulate <- function(m){
 #' @export
 missues <- function(m){
   do.call(rbind.data.frame, lapply(m_history(m) %+% m, .missues)) %>%
-    as.data.frame(stringsAsFactors=FALSE)
+    as.data.frame  # NOTE: this cast is required, since the above code
+                   # silently mishandles the case or a zero-row data
+                   # frame (it returns a list).
 }
 .missues <- function(m) {
   type <- c(

@@ -41,7 +41,7 @@ m_value    <- function(m) .maybe_vector_get(m@x)
 #' @rdname rmonad_accessors
 #' @export
 m_code     <- function(m) {
-  code <- if(class(m) == "Rmonad"){
+  if(class(m) == "Rmonad"){
     m@stage@code
   } else {
     m@code
@@ -51,7 +51,7 @@ m_code     <- function(m) {
 #' @rdname rmonad_accessors
 #' @export
 m_id       <- function(m) {
-  id <- if(class(m) == "Rmonad"){
+  if(class(m) == "Rmonad"){
     m@stage@id
   } else {
     m@id

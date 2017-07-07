@@ -13,7 +13,7 @@ context("accessor methods")
 # m_value
 # m_warnings
 
-m <- Rmonad()
+m <- new_rmonad()
 
 test_that("The .has_* correctly return false", {
   expect_equal(.has_id(m),       TRUE )
