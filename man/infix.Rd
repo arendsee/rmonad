@@ -8,6 +8,7 @@
 \alias{\%|>\%}
 \alias{\%||\%}
 \alias{\%^>\%}
+\alias{\%*>\%}
 \alias{\%>_\%}
 \alias{\%__\%}
 \alias{\%v__\%}
@@ -25,6 +26,8 @@ lhs \%|>\% rhs
 lhs \%||\% rhs
 
 lhs \%^>\% rhs
+
+lhs \%*>\% rhs
 
 lhs \%>_\% rhs
 
@@ -54,6 +57,8 @@ Infix monadic sequence operators
 \%^>\%    monadic bind and record input in monad
 
 \%>^\%    bind as a new branch, pass input on main
+
+\%*>\#    bind lhs list as arguments to right
 
 \%?>\%    if input is error, run rhs on last passing result
 

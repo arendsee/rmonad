@@ -4,18 +4,18 @@
 \alias{bind}
 \title{Apply f to the contents of a monad and merge messages}
 \usage{
-bind(x, f, on_entry = ident, bind_if = function(m) m_OK(m),
-  bind_else = toss, emit = function(i, o) {     if (is.null(o)) {         i 
-     }     else {         o     } }, m_on_bind = ident,
-  combine = default_combine, bind_args = function(m) {     list(m_value(m))
-  })
+bind(x, f, entry_lhs_transform = function(m, f, ...) {     mrun(m, ...) },
+  bind_if = function(m) m_OK(m), bind_else = toss, emit = function(i, o) {
+      if (is.null(o)) {         i     }     else {         o     } },
+  m_on_bind = ident, io_combine = default_combine, bind_args = function(m)
+  {     list(m_value(m)) })
 }
 \arguments{
 \item{x}{The input, may or may not be a monad report}
 
 \item{f}{A function of the value contained in x}
 
-\item{on_entry}{f(m,x) an action to perform on entry, returns m}
+\item{entry_lhs_transform}{f(m,x,...) a transform of the lhs called on entry}
 
 \item{bind_if}{f(m) bind rhs to lhs if TRUE}
 
@@ -25,7 +25,7 @@ bind(x, f, on_entry = ident, bind_if = function(m) m_OK(m),
 
 \item{m_on_bind}{f(m) Action to perform on input monad when binding}
 
-\item{combine}{f(m,o) weave m and f(m) into final output}
+\item{io_combine}{f(m,o) weave m and f(m) into final output}
 
 \item{bind_args}{function to retrieve the arguments}
 }

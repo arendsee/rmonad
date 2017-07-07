@@ -1,4 +1,4 @@
-context("rmonad.R")
+context("monadic-operators")
 
 
 test_that('%>>% and esc work (simple)', {
@@ -88,4 +88,15 @@ test_that('output toss works %>_%', {
   expect_true( 1 %>_% '*'(3) %>>% '*'(2) %>% m_OK)
 
   expect_error( 1 %>_% stop(1) %>>% '*'(2) %>% esc)
+})
+
+test_that('%*>% safely evaluates failing lists', {
+  # works for passing case
+  expect_equal( list(3,5,2) %*>% max %>% m_value, 5 )
+  # catches error in list
+  expect_silent( list(stop(1),5,2) %*>% max )
+  # passes on last valid input
+  expect_equal( list(stop(1),5,2) %*>% max %>% m_value, list(NULL, 5, 2) )
+  # but knows the input is failing
+  expect_false( list(stop(1),5,2) %*>% max %>% m_OK )
 })

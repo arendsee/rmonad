@@ -288,10 +288,50 @@ rexp(10)   %>>% abs %>^% sum %>%
     unbranch
 ```
 
+# Multiple inputs
+
+So far our pipelines have been limited to either linear paths or the somewhat
+awkward branch merging. An easier approach is to read inputs from a list. But
+we want to be able to catch errors resulting from evaluation of each member of
+the list. We can do this with `list_meval`.
+
+```{r}
+lsmeval( list( "yolo", stop("stop, drop, and die"), runif("simon"), 2) )
+```
+
+This returns a monad which fails if any of the components evaluate to an error.
+But it does not toss the rest of the inputs, instead returning a clean list
+with a NULL filling in missing pieces. Constrast this with normal list evaluation:
+
+```{r, error=TRUE}
+list( "yolo", stop("stop, drop, and die"), runif("simon"), 2)
+```
+
+`lsmeval` records each failure in each element of the list independently.
+
+This approach can also be used with the infix operator `%*>%`.
+
+```{r, eval=FALSE}
+list(read.csv("a.csv"), read.csv("b.csv")) %*>% merge
+```
+
+Now, of course, we can add monads to the mix 
+
+```{r, eval=FALSE}
+list(
+    a = read.csv("a.csv") %>>% do_analysis_a,
+    b = read.csv("b.csv") %>>% do_analysis_b,
+    k = 5
+) %*>% joint_analysis
+```
+
+Monadic list evaluation is the natural way to build large programs from smaller
+pieces.
+
 # Annotating steps
 
-Now it is getting a little hard to remember what is what. It would be nice if
-we could document our data. We can do that as follows:
+As our pipelines become more complex, it becomes essential to document them. We
+can do that as follows:
 
 ```{r}
 runif(10)  %>>% abs %>% doc(

@@ -15,6 +15,8 @@
 #'
 #'  \%>^\%    bind as a new branch, pass input on main
 #'
+#'  \%*>\#    bind lhs list as arguments to right
+#'
 #'  \%?>\%    if input is error, run rhs on last passing result
 #'
 #'  \%<?\%    if input is error, use rhs value instead
@@ -79,7 +81,7 @@ NULL
 #' @export
 `%>^%` <- function(lhs, rhs) {
   envir <- parent.frame()
-  cmd   <- list(bind, substitute(lhs), substitute(rhs), combine=branch_combine)
+  cmd   <- list(bind, substitute(lhs), substitute(rhs), io_combine=branch_combine)
   eval(as.call(cmd), envir=envir)
 }
 
@@ -136,13 +138,36 @@ NULL
 
 #' @rdname infix
 #' @export
+`%*>%` <- function(lhs, rhs) {
+  envir <- parent.frame()
+  lexp <- as.list(substitute(lhs))[-1]
+  on_entry <- function(x, f, desc) {
+    .lsmeval_sub(
+      lexp,
+      env=envir,
+      keep_history = TRUE,
+      desc         = paste(desc, " # as argument list")
+    )
+  }
+  cmd   <- list(
+    bind,
+    substitute(lhs),
+    substitute(rhs),
+    bind_args=m_value,
+    entry_lhs_transform=on_entry
+  )
+  eval(as.call(cmd), envir=envir)
+}
+
+#' @rdname infix
+#' @export
 `%>_%` <- function(lhs, rhs) {
   envir <- parent.frame()
   cmd   <- list(
     bind,
     substitute(lhs),
     substitute(rhs),
-    combine = bypass_combine
+    io_combine = bypass_combine
   )
   eval(as.call(cmd), envir=envir)
 }
