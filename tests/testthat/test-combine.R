@@ -1,4 +1,4 @@
-context("monadic_eval.R")
+context("combine and lsmeval")
 
 l <- list("hi", 42)
 test_that('combine works with lists given as variables', {

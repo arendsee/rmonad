@@ -146,7 +146,7 @@ NULL
       lexp,
       env=envir,
       keep_history = TRUE,
-      desc         = paste(desc, " # as argument list")
+      desc         = paste(desc)
     )
   }
   cmd   <- list(

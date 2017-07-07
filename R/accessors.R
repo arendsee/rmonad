@@ -6,6 +6,25 @@
 
 NULL
 
+.maybe_vector_get <- function(x){
+  if(length(x) == 0){
+    NULL   # Nothing
+  } else {
+    x[[1]] # a
+  }
+}
+
+.maybe_vector_set <- function(x, is_not_empty, expected_type=.true){
+  if(is_not_empty(x)){
+    if(!expected_type(x)){
+      stop("Type error")
+    }
+    list(x) # Just a
+  } else {
+    list()  # Nothing
+  }
+}
+
 
 #' @rdname rmonad_accessors
 #' @export
@@ -17,40 +36,112 @@ m_OK       <- function(m) m@OK
 
 #' @rdname rmonad_accessors
 #' @export
-m_value    <- function(m) {
-  # note: don't use esc here
-  if(length(m@x) == 1){
-    m@x[[1]]
+m_value    <- function(m) .maybe_vector_get(m@x)
+
+#' @rdname rmonad_accessors
+#' @export
+m_code     <- function(m) {
+  code <- if(class(m) == "Rmonad"){
+    m@stage@code
   } else {
-    NULL 
+    m@code
   }
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_code     <- function(m) {
-  m@code %||% m@stage@code %>% esc
+m_id       <- function(m) {
+  id <- if(class(m) == "Rmonad"){
+    m@stage@id
+  } else {
+    m@id
+  }
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_error   <- function(m) m@error %||% m@stage@error %>% esc
+m_error   <- function(m) {
+  x <- if(class(m) == "Rmonad"){
+    m@stage@error
+  } else {
+    m@error
+  }
+  .maybe_vector_get(x)
+}
 
 #' @rdname rmonad_accessors
 #' @export
-m_warnings <- function(m) m@warnings %||% m@stage@warnings %>% esc
+m_warnings <- function(m) {
+  x <- if(class(m) == "Rmonad"){
+    m@stage@warnings
+  } else {
+    m@warnings
+  }
+  .maybe_vector_get(x)
+}
 
 #' @rdname rmonad_accessors
 #' @export
-m_notes    <- function(m) m@notes %||% m@stage@notes %>% esc
+m_notes    <- function(m) {
+  x <- if(class(m) == "Rmonad"){
+    m@stage@notes
+  } else {
+    m@notes
+  } 
+  .maybe_vector_get(x)
+}
 
 #' @rdname rmonad_accessors
 #' @export
-m_doc      <- function(m) m@doc %||% m@stage@doc %>% esc
+m_doc      <- function(m) {
+  x <- if(class(m) == "Rmonad"){
+    m@stage@doc
+  } else {
+    m@doc
+  }
+  .maybe_vector_get(x)
+}
 
 #' @rdname rmonad_accessors
 #' @export
-m_branch   <- function(m) m@branch %||% m@stage@branch %>% esc
+m_time     <- function(m) {
+  time <- if(class(m) == "Rmonad"){
+    m@stage@other$time
+  } else {
+    m@other$time
+  }
+  if(is.null(time)){
+    NA_real_
+  } else {
+    time
+  }
+}
+
+
+#' @rdname rmonad_accessors
+#' @export
+m_mem      <- function(m) {
+  mem <- if(class(m) == "Rmonad"){
+    m@stage@other$mem
+  } else {
+    m@other$mem
+  }
+  if(is.null(mem)){
+    NA_real_
+  } else {
+    mem 
+  }
+}
+
+#' @rdname rmonad_accessors
+#' @export
+m_branch   <- function(m) {
+  if(class(m) == "Rmonad"){
+    m@stage@branch
+  } else {
+    m@branch
+  }
+}
 
 
 
@@ -70,8 +161,15 @@ m_branch   <- function(m) m@branch %||% m@stage@branch %>% esc
 
 #' @rdname rmonad_accessors
 #' @export
+`m_id<-` <- function(m, value) {
+  m@stage@id <- value
+  m
+}
+
+#' @rdname rmonad_accessors
+#' @export
 `m_value<-` <- function(m, value) {
-  m@x <- list(value)
+  m@x <- .maybe_vector_set(value, .not_empty)
   m
 }
 
@@ -85,28 +183,43 @@ m_branch   <- function(m) m@branch %||% m@stage@branch %>% esc
 #' @rdname rmonad_accessors
 #' @export
 `m_error<-` <- function(m, value) {
-  m@stage@error <- value
+  m@stage@error <- .maybe_vector_set(value, .is_valid_string, expected_type=is.character)
   m
 }
+
 
 #' @rdname rmonad_accessors
 #' @export
 `m_warnings<-` <- function(m, value) {
-  m@stage@warnings <- value
+  m@stage@warnings <- .maybe_vector_set(value, .is_valid_string, expected_type=is.character)
   m
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_notes<-` <- function(m, value) {
-  m@stage@notes <- value
+  m@stage@notes <- .maybe_vector_set(value, .is_valid_string, expected_type=is.character)
   m
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_doc<-` <- function(m, value) {
-  m@stage@doc <- value
+  m@stage@doc <- .maybe_vector_set(value, .is_valid_string, expected_type=is.character)
+  m
+}
+
+#' @rdname rmonad_accessors
+#' @export
+`m_time<-` <- function(m, value) {
+  m@stage@other$time <- value
+  m
+}
+
+#' @rdname rmonad_accessors
+#' @export
+`m_mem<-` <- function(m, value) {
+  m@stage@other$mem <- value
   m
 }
 

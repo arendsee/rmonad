@@ -1,5 +1,4 @@
-context("monadic-operators")
-
+context("binary operators")
 
 test_that('%>>% and esc work (simple)', {
   expect_equal(1 %>>% '*'(2) %>% esc, 2)

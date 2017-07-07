@@ -6,9 +6,9 @@
 \alias{print.Rmonad}
 \title{Special rmonad_printerss}
 \usage{
-\method{print}{record}(x, ...)
+\method{print}{record}(x, verbose = FALSE, ...)
 
-\method{print}{Rmonad}(x, ...)
+\method{print}{Rmonad}(x, verbose = FALSE, ...)
 }
 \arguments{
 \item{x}{An object to print}

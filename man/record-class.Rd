@@ -17,9 +17,9 @@ A record of past events
 
 \item{\code{error}}{An error in this this record}
 
-\item{\code{warnings}}{List of warnings}
+\item{\code{warnings}}{Character vector of warnings}
 
-\item{\code{notes}}{List of notes}
+\item{\code{notes}}{Character vector of notes}
 
 \item{\code{doc}}{character vector documentation messages}
 

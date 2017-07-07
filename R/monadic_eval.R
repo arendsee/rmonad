@@ -1,4 +1,4 @@
- #' Run an expression, capture EWM, return Rmonad
+#' Run an expression, capture EWM, return Rmonad
 #'
 #' If the value is already an Rmonad, the existing value is returned.
 #'
@@ -10,8 +10,8 @@ mrun <- function(expr, desc=NULL){
 # TODO: rename to as_monad
 
   value <- NULL 
-  warns <- list()
-  fails <- ""
+  warns <- NULL
+  fails <- NULL
   isOK  <- TRUE
 
   notes <- capture.output(
@@ -35,7 +35,9 @@ mrun <- function(expr, desc=NULL){
 
   if(class(value) == "Rmonad") { return(value) }
 
-  value <- if(isOK) { list(value) } else { list() }
+  if(!isOK) {
+    value = NULL
+  }
 
   code <- if(is.null(desc)) {
     deparse(substitute(expr))
@@ -43,18 +45,17 @@ mrun <- function(expr, desc=NULL){
     desc
   }
 
-  new("Rmonad",
-    x = value,
-    stage = new("record",  
-      x        = list(),
-      code     = code,
-      error    = fails,
-      warnings = as.list(warns),
-      notes    = as.list(notes)
-    ),
-    history = list(),
-    OK = isOK
-  )
+  m <- Rmonad()
+
+  # These accessors do the right thing (don't mess with them)
+  m_value(m)    <- value
+  m_code(m)     <- code
+  m_error(m)    <- fails
+  m_warnings(m) <- warns
+  m_notes(m)    <- notes
+  m_OK(m)       <- isOK
+
+  m
 
 }
 
@@ -103,7 +104,8 @@ combine <- function(ms, keep_history=TRUE, desc=NULL){
 
   ms <- lapply(ms, mrun)
 
-  rec <- new("record")
+  rec <- .indexed_record()
+
   history <- if(keep_history) {
     lapply(ms, .make_history)
   } else {

@@ -8,6 +8,7 @@
 \alias{unwarnings}
 \alias{unnotes}
 \alias{undoc}
+\alias{untime}
 \alias{unbranch}
 \title{Functions for extracting information from Rmonad history}
 \usage{
@@ -22,6 +23,8 @@ unwarnings(m)
 unnotes(m)
 
 undoc(m)
+
+untime(m)
 
 unbranch(m)
 }

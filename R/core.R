@@ -48,7 +48,15 @@ bind <- function(
     }
 
     e <- parent.frame()
-    o <- mrun( eval(as.call(ff), envir=e), desc=deparse(fs) )
+
+    st <- system.time(
+      {
+        o <- mrun( eval(as.call(ff), envir=e), desc=deparse(fs) )
+      },
+      gcFirst=FALSE # this kills performance when TRUE
+    )
+    m_time(o) <- signif(unname(st[1]), 2)
+    m_mem(o) <- as.integer(object.size(m_value(o)))
 
     m <- m_on_bind(m)
 

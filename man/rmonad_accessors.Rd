@@ -6,19 +6,25 @@
 \alias{m_OK}
 \alias{m_value}
 \alias{m_code}
+\alias{m_id}
 \alias{m_error}
 \alias{m_warnings}
 \alias{m_notes}
 \alias{m_doc}
+\alias{m_time}
+\alias{m_mem}
 \alias{m_branch}
 \alias{m_history<-}
 \alias{m_OK<-}
+\alias{m_id<-}
 \alias{m_value<-}
 \alias{m_code<-}
 \alias{m_error<-}
 \alias{m_warnings<-}
 \alias{m_notes<-}
 \alias{m_doc<-}
+\alias{m_time<-}
+\alias{m_mem<-}
 \alias{m_branch<-}
 \alias{app_history}
 \alias{app_warnings}
@@ -34,6 +40,8 @@ m_value(m)
 
 m_code(m)
 
+m_id(m)
+
 m_error(m)
 
 m_warnings(m)
@@ -42,11 +50,17 @@ m_notes(m)
 
 m_doc(m)
 
+m_time(m)
+
+m_mem(m)
+
 m_branch(m)
 
 m_history(m) <- value
 
 m_OK(m) <- value
+
+m_id(m) <- value
 
 m_value(m) <- value
 
@@ -59,6 +73,10 @@ m_warnings(m) <- value
 m_notes(m) <- value
 
 m_doc(m) <- value
+
+m_time(m) <- value
+
+m_mem(m) <- value
 
 m_branch(m) <- value
 

@@ -48,6 +48,12 @@ undoc <- function(m) {
 }
 
 #' @rdname rmonad_unwrap
+#' @export
+untime <- function(m) {
+  lapply(m_history(m) %+% m, m_time)
+}
+
+#' @rdname rmonad_unwrap
 #' @export 
 unbranch <- function(m){
 
@@ -59,14 +65,13 @@ unbranch <- function(m){
   error <- if(nfailed > 0) {
     paste(nfailed, "of", n, "branches failed")
   } else {
-    "" 
+    NULL
   }
 
-  mu <- new("Rmonad",
-    x = list(bs),
-    OK = (nfailed == 0),
-    stage = new("record", error=error)
-  )
+  mu <- Rmonad()
+  m_value(mu) <- bs
+  m_OK(mu)    <- nfailed == 0
+  m_error(mu) <- error
 
   mu
 }

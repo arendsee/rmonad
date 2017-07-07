@@ -11,9 +11,15 @@ NULL
 
 #' @rdname rmonad_printers
 #' @export 
-print.record <- function(x, ...) {
+print.record <- function(x, verbose=FALSE, ...) {
 
   .scat("R> %s", m_code(x))
+
+  if(verbose && (.has_time(x) || .has_mem(x))){
+    cat("\n  ")
+    if(.has_mem(x))  { .scat(" size: %s", m_mem(x))  }
+    if(.has_time(x)) { .scat(" time: %s", m_time(x)) }
+  }
 
   if(.has_doc(x)){
     .scat("\n\n    %s\n\n", m_doc(x))
@@ -23,12 +29,12 @@ print.record <- function(x, ...) {
   }
   if(.has_warnings(x)){
     .scat("\n * WARNING: %s",
-      paste(unlist(m_warnings(x)), collapse="\n * WARNING: ")
+      paste(m_warnings(x), collapse="\n * WARNING: ")
     )
   }
   if(.has_notes(x)){
     .scat("\n * NOTE: %s",
-      paste(unlist(m_notes(x)), collapse="\n * NOTE: ")
+      paste(m_notes(x), collapse="\n * NOTE: ")
     )
   }
   if(.has_branch(x)){
@@ -45,13 +51,13 @@ setMethod("show", "record",
 
 #' @rdname rmonad_printers
 #' @export 
-print.Rmonad <- function(x, ...){
+print.Rmonad <- function(x, verbose=FALSE, ...){
 
   if(.has_history(x)){
     f <- lapply(m_history(x), function(x) {print(x); cat("\n")})
   }
 
-  print(x@stage)
+  print(x@stage, verbose=verbose)
 
   if(.has_history(x)){
     cat("\n\n ----------------- \n\n")

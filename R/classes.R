@@ -3,31 +3,48 @@
 #' @slot x        A list of 0 or 1 elements, containing either nothing or data
 #' @slot code     A string showing the function that created record's report 
 #' @slot error    An error in this this record
-#' @slot warnings List of warnings
-#' @slot notes    List of notes
+#' @slot warnings Character vector of warnings
+#' @slot notes    Character vector of notes
 #' @slot doc      character vector documentation messages
 #' @slot branch   Lost of connected Rmonad objects
 record <- setClass(
   "record",
   representation(
-    x        = "list",      # list just to support polymorphism, should always be of length 1
+    x        = "list", # Maybe a
+    id       = "integer",
     code     = "character",
-    error    = "character",
-    warnings = "list",
-    notes    = "list",
-    doc      = "character",
+    error    = "list", # Maybe [String]
+    warnings = "list", # Maybe [String]
+    notes    = "list", # Maybe [String]
+    doc      = "list", # Maybe [String]
+    other    = "list",
     branch   = "list"
   ),
   prototype(
     x        = list(),
-    code     = "",
-    error    = "",
+    id       = -1L,
+    code     = NA_character_,
+    error    = list(),
     warnings = list(),
-    notes    = list(), 
-    doc      = "",
+    notes    = list(),
+    doc      = list(),
+    other    = list(),
     branch   = list()
   )
 )
+
+# create a record with a global id
+.indexed_record <- function(...){
+  r <- record(...)
+  r@id <- if(exists(".rmonad_id")){
+    get(".rmonad_id")
+  } else {
+    .rmonad_id <<- 1L
+    1L 
+  }
+  .rmonad_id <<- .rmonad_id + 1L
+  r
+}
 
 #' The eponymous monad type
 #'
@@ -45,7 +62,7 @@ Rmonad <- setClass(
   ),
   prototype(
     x       = list(),
-    stage   = new("record"),
+    stage   = .indexed_record(),
     history = list(),
     OK      = TRUE
   )
