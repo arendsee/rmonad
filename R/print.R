@@ -12,29 +12,30 @@ NULL
 #' @rdname rmonad_printers
 #' @export 
 print.record <- function(x, ...) {
-  if(.has_code(x)){
-    .scat("R> %s\n", m_code(x))
-  }
+
+  .scat("R> %s", m_code(x))
+
   if(.has_doc(x)){
-    .scat("\n    %s\n\n", m_doc(x))
+    .scat("\n\n    %s\n\n", m_doc(x))
   }
   if(.has_error(x)){
-    .scat(" * ERROR: %s", m_error(x))
+    .scat("\n * ERROR: %s", m_error(x))
   }
   if(.has_warnings(x)){
-    .scat(" * WARNING: %s\n",
+    .scat("\n * WARNING: %s",
       paste(unlist(m_warnings(x)), collapse="\n * WARNING: ")
     )
   }
   if(.has_notes(x)){
-    .scat(" * NOTE: %s\n",
+    .scat("\n * NOTE: %s",
       paste(unlist(m_notes(x)), collapse="\n * NOTE: ")
     )
   }
   if(.has_branch(x)){
-    .scat("Has %s branches\n", length(.has_branch(x)))
+    .scat("\nHas %s branches", length(.has_branch(x)))
   }
   if(.has_value(x)){
+    cat("\n")
     print(m_value(x))
   }
 }
@@ -53,7 +54,7 @@ print.Rmonad <- function(x, ...){
   print(x@stage)
 
   if(.has_history(x)){
-    cat("\n ----------------- \n\n")
+    cat("\n\n ----------------- \n\n")
   }
 
   if(.has_value(x)){
@@ -61,7 +62,7 @@ print.Rmonad <- function(x, ...){
   }
 
   if(!m_OK(x)){
-    cat("\n *** FAILURE *** \n")
+    cat(" *** FAILURE *** \n")
   }
 }
 setMethod("show", "Rmonad",
