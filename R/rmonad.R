@@ -16,9 +16,13 @@ NULL
 #'
 #'  \%>>\%    monadic bind
 #'
-#'  \%*>\#    bind lhs list as arguments to right
+#'  \code{cars \%>>\% colSums}
 #'
 #'  \%v>\%    monadic bind and record input
+#'
+#'  \code{cars \%>>\% colSums}
+#'
+#'  \%*>\%    bind lhs list as arguments to right
 #'
 #'  \%^>\%    monadic bind and record input in monad
 #'
@@ -30,9 +34,10 @@ NULL
 #'
 #'  \%||\%    if input is error, use rhs value instead
 #'
-#'  \%__\%    ignore the input, replacing the value with the rhs
+#'  \%__\%    transfer only history from the lhs (errors ignored)
+#'  \%v__\%   record lhs value and transfer history to rhs (errors ignored)
 #'
-#'  \%^__\%   ignore the input, replacing the value with the rhs
+#'  \code{cars \%>>\% colSums \%v__\% cars \%>>\% lapply(sd) \%>>\% unlist}
 #'
 #' @section x to monad functions:
 #'

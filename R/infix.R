@@ -133,23 +133,9 @@ NULL
 #' @rdname infix
 #' @export
 `%v__%` <- function(lhs, rhs) {
-
   code <- deparse(substitute(rhs))
   rhs <- mrun(rhs, code)
-
   lhs@stage@x <- lhs@x
   m_history(rhs) <- .make_history(lhs)
-  rhs
-}
-
-#' @rdname infix
-#' @export
-`%^__%` <- function(lhs, rhs) {
-  code <- deparse(substitute(rhs))
-  rhs <- mrun(rhs, code)
-
-  # store lhs as a branch
-  rhs@stage@branch <- list(lhs)
-
   rhs
 }
