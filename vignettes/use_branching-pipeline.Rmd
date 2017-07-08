@@ -1,155 +1,17 @@
 ---
-title: "Rmonad: running with monads"
+title: "Rmonad: branching pipelines"
 author: "Zebulun Arendsee"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_document
+output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Running with monads}
+  %\VignetteIndexEntry{Branching Pipelines}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  \usepackage[utf8]{inputenc}
 ---
 
-If you are not already familiar with monads, you might first reference this
-tutorial: ["functors, applicatives, and monads in
-pictures"](http://adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html)
+There are several levels at which a pipeline may branch
 
-
-```{r, echo=FALSE, message=FALSE}
-library(rmonad)
-library(magrittr)
-library(tibble)
-library(ggplot2)
-set.seed(210)
-```
-
-`Rmonad` offers
-
- * nuanced error handling
-
- * access to the intermediate results of a pipeline
-
- * effects -- e.g. plotting, caching -- within a pipeline
-
- * access to results preceding an error
-
- * tools for branching and combining pipelines
-
- * a way to almost completely avoid naming things
-
- * a structured approach to literate programming
-
-
-I will introduce `Rmonad` with a simple sequence of squares
-
-```{r}
-# %>>% corresponds to Haskell's >>=
-1:5      %>>%
-    sqrt %>>%
-    sqrt %>>%
-    sqrt
-```
-
-So what exactly did Rmonad do with your data? It is still there, sitting
-happily inside the monad.
-
-In `magrittr` you could do something similar:
-
-```{r}
-1:5      %>%
-    sqrt %>%
-    sqrt %>%
-    sqrt
-```
-
-`%>%` takes the value on the left and applies it to the function on the right.
-`%>>%`, takes a monad on the left and a function on the right, then builds a
-new monad from them. This new monad holds the computed value, if the
-computation succeeded. It collates all errors, warnings, and messages.  These
-are stored in step-by-step a history of the pipeline.
-
-`%>%` is an application operator, `%>>%` is a *monadic bind* operator. Magrittr
-and Rmonad complement eachother. `%>%` can be used inside a monadic sequence to
-perform operations *on* monads, whereas `%>>%` performs operations *in* them.
-If this is all too mystical, just hold on, the examples are sensical even
-without an understanding of monads.
-
-Below, we store an intermediate value in the monad:
-
-```{r}
-1:5      %>>%
-    sqrt %v>% # store this result
-    sqrt %>>%
-    sqrt
-```
-
-The `%v>%` variant of the *monadic bind* operator stores the results as they
-are passed.
-
-Warnings are caught and stored
-
-```{r}
--1:3     %>>%
-    sqrt %v>%
-    sqrt %>>%
-    sqrt
-```
-
-Similarly for errors
-
-```{r}
-"wrench" %>>%
-    sqrt %v>%
-    sqrt %>>%
-    sqrt
-```
-
-The first `sqrt` failed, and this step was coupled to the resultant error.
-Contrast this with `magrittr`, where the location of the error is lost:
-
-```{r, error=TRUE}
-"wrench" %>>%
-    sqrt %>%
-    sqrt %>%
-    sqrt
-```
-
-Also note that a value was still produced. `Rmonad` stores the last successful
-value. It will never use this value, though. If you want to extract the result
-from the monad, you can use the `esc` function:
-
-```{r}
-1:5 %>>% sqrt %>% esc
-```
-
-Note the use of `%>%` not `%>>%`, this is because `esc` acts on the monad, not
-the value the monad stores. If the monad is in a failed state, `esc` will raise
-an error.
-
-
-```{r, error=TRUE}
-"wrench" %>>% sqrt %>>% sqrt %>% esc
-```
-
-If you prefer a tabular summary of your results, you can pipe the monad into
-the `mtabulate` function.
-
-```{r}
-1:5      %>>%
-    sqrt %v>%
-    sqrt %>>%
-    sqrt %>% mtabulate
-```
-
-Here is a more substantial example
-
-```{r}
-# convert to tibbles for cleaner printing
-r1 <- read.table("asdfdf") %>>% tibble::as_tibble %>>% colSums %>>% mean
-r2 <- iris %>>% tibble::as_tibble %>>% colSums %>>% mean
-r3 <- cars %>>% tibble::as_tibble %>>% colSums %>>% mean
-```
-
-# Adding effects
+# Calling single functions for effects
 
 The `%>_%` operator is useful when you want to include a function inside a
 pipeline that should be bypassed, but you want the errors, warnings, and
@@ -178,57 +40,14 @@ I pipe the final monad into `forget`, which is (like `esc`) a function for
 operating on monads. `forget` removes history from a monad. I do this just to
 de-clutter the output.
 
-# Handling error
-
-Errors needn't be viewed as abnormal. For example, we might want to try several
-alternatives functions, and use the first that works. 
-
-```{r}
-1:10 %>>% colSums %|>% sum
-```
-
-Here we will do either `colSums` or `sum`. The pipeline fails only if both
-fail.
-
-This operator can also be used as a pure try-catch:
-
-```{r}
-iris %>>% tibble::as_data_frame %>>% colSums %|>% ident %>>% summary
-cars %>>% tibble::as_data_frame %>>% colSums %|>% ident %>>% summary
-```
-
-Where `ident` is the identity function. In this way, we can make chains of
-operations which may fail for some inputs.
-
-Sometimes you want to ignore the previous failure completely, and make a new
-call -- for example in reading files:
+You can call multiple effects
 
 ```{r, eval=FALSE}
-# try to load a cached file, on failure rerun the analysis
-read.table("analyasis_cache.tab") %||% run_analysis(x)
+cars                                 %>_%
+    plot(xlab="index", ylab="value") %>_%
+    write.csv(file="cars.tab")       %>>%
+    summary %>% forget
 ```
-
-This can also be used to replace if-else if-else strings
-
-```{r}
-x <- list()
-# compare
-if(length(x) > 0) { x[[1]] } else { NULL }
-# to 
-x[[1]] %||% NULL %>% esc
-```
-
-Or maybe you want to support multiple extensions for an input file
-
-```{r, eval=FALSE}
-read.table("a.tab") %||% read.table("a.tsv") %>>% dostuff
-```
-
-Overall, in Rmonad, errors are well-behaved. It is reasonable to write
-functions that return an error rather than one of the myriad default values
-(`NULL`, `NA`, `logical(0)`, `list()`, `FALSE`). This is unambiguous. Rmonad
-can catch the error and allow allow the programmer to deal with it accordingly.
-
 
 # Branching Out
 

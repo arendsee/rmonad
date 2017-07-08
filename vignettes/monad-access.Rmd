@@ -1,0 +1,9 @@
+---
+title: "Rmonad: monad access"
+author: "Zebulun Arendsee"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Monad Access}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---

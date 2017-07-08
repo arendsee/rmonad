@@ -2,11 +2,11 @@
 title: "What is this 'monad' thing?"
 author: "Zebulun Arendsee"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_document
+output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{What is this 'monad' thing?}
+  %\VignetteIndexEntry{What is a monad?}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  \usepackage[utf8]{inputenc}
 ---
 
 What does `sqrt` do? You may answer, "return the square root of an input". But

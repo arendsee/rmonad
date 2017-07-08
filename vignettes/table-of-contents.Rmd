@@ -1,0 +1,23 @@
+---
+title: "Rmonad: running with monads"
+author: "Zebulun Arendsee"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Table Of Contents}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+[Introduction](introduction.Rmd)
+
+[What is a monad?](theory_monad.Rmd)
+
+[Building linear pipelines](linear-pipelines.Rmd)
+
+[Accessing data in monads](monad-access.Rmd)
+
+[Branching and chaining pipelines](use_branching-pipeline.Rmd)
+
+[Pure error handling](use_error-handling.Rmd)
+
+[Missings features](missing_features.Rmd)

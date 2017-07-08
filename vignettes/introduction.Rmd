@@ -1,0 +1,33 @@
+---
+title: "Rmonad: running with monads"
+author: "Zebulun Arendsee"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Running with monads}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r, echo=FALSE, message=FALSE}
+library(rmonad)
+library(magrittr)
+library(tibble)
+library(ggplot2)
+set.seed(210)
+```
+
+`Rmonad` offers
+
+ * nuanced error handling
+
+ * access to the intermediate results of a pipeline
+
+ * effects -- e.g. plotting, caching -- within a pipeline
+
+ * access to results preceding an error
+
+ * tools for branching and combining pipelines
+
+ * a way to almost completely avoid naming things
+
+ * a structured approach to literate programming

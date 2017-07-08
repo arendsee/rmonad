@@ -1,0 +1,61 @@
+---
+title: "Rmonad: error handling"
+author: "Zebulun Arendsee"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Error Handling}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+Errors needn't be viewed as abnormal. For example, we might want to try several
+alternatives functions, and use the first that works. 
+
+```{r}
+1:10 %>>% colSums %|>% sum
+```
+
+Here we will do either `colSums` or `sum`. The pipeline fails only if both
+fail.
+
+This operator can also be used as a pure try-catch:
+
+```{r}
+iris %>>% tibble::as_data_frame %>>% colSums %|>% ident %>>% summary
+cars %>>% tibble::as_data_frame %>>% colSums %|>% ident %>>% summary
+```
+
+Where `ident` is the identity function. In this way, we can make chains of
+operations which may fail for some inputs.
+
+Sometimes you want to ignore the previous failure completely, and make a new
+call -- for example in reading files:
+
+```{r, eval=FALSE}
+# try to load a cached file, on failure rerun the analysis
+read.table("analyasis_cache.tab") %||% run_analysis(x)
+```
+
+This can also be used to replace if-else if-else strings
+
+```{r}
+x <- list()
+# compare
+if(length(x) > 0) { x[[1]] } else { NULL }
+# to 
+x[[1]] %||% NULL %>% esc
+```
+
+Or maybe you want to support multiple extensions for an input file
+
+```{r, eval=FALSE}
+read.table("a.tab") %||% read.table("a.tsv") %>>% dostuff
+```
+
+Overall, in Rmonad, errors are well-behaved. It is reasonable to write
+functions that return an error rather than one of the myriad default values
+(`NULL`, `NA`, `logical(0)`, `list()`, `FALSE`). This is unambiguous. Rmonad
+can catch the error and allow allow the programmer to deal with it accordingly.
+
+

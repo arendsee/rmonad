@@ -4,12 +4,12 @@
 \alias{infix}
 \alias{\%>>\%}
 \alias{\%v>\%}
-\alias{\%>^\%}
-\alias{\%|>\%}
-\alias{\%||\%}
-\alias{\%^>\%}
 \alias{\%*>\%}
 \alias{\%>_\%}
+\alias{\%>^\%}
+\alias{\%^>\%}
+\alias{\%|>\%}
+\alias{\%||\%}
 \alias{\%__\%}
 \alias{\%v__\%}
 \title{Infix operators}
@@ -18,17 +18,17 @@ lhs \%>>\% rhs
 
 lhs \%v>\% rhs
 
+lhs \%*>\% rhs
+
+lhs \%>_\% rhs
+
 lhs \%>^\% rhs
+
+lhs \%^>\% rhs
 
 lhs \%|>\% rhs
 
 lhs \%||\% rhs
-
-lhs \%^>\% rhs
-
-lhs \%*>\% rhs
-
-lhs \%>_\% rhs
 
 lhs \%__\% rhs
 
