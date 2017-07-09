@@ -1,14 +1,28 @@
+# TODO: settle on a set of helper functions for export
+
 #' Take input and do nothing with it
 #'
+#' @family helper_functions
 #' @param ... whatever
-#' @export
 toss <- function(...){ }
+
+#' Return false for all input
+#'
+#' @family helper_functions
+#' @param ... whatever
+false <- function(...) { FALSE }
+
+#' Return true for all input
+#'
+#' @family helper_functions
+#' @param ... whatever
+true  <- function(...) { TRUE  }
 
 #' The identity function
 #'
+#' @family helper_functions
 #' @param x anything
 #' @param ... parameters that will be ignored
-#' @export
 #' @examples
 #' # pull a value out of failure
 #' 1:10 %$>% colSums %|>% ident
@@ -21,14 +35,25 @@ ident <- function(x, ...){ x }
 #' This function can be used to change the value in the lhs of a monadic
 #' sequence
 #'
+#' @family helper_functions
 #' @param x ignored value
 #' @param r replacing value
-#' @export
 const <- function(x, r){ r }
 
 #' Make NULL values an error
 #'
+#' Currently not exported.
+#'
+#' @family helper_functions
 #' @param x Input value
 null_as_error <- function(x){
+  stopifnot(! is.null(x))
+}
+
+#' Make NULL values an error
+#'
+#' @family helper_functions
+#' @param x Input value
+false_as_error <- function(x){
   stopifnot(! is.null(x))
 }

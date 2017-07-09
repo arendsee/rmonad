@@ -31,4 +31,3 @@ doc <- function(m, ...){
   m_doc(m) <- paste(list(...), collapse=" ")
   m
 }
-

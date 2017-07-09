@@ -20,3 +20,9 @@ The identity function
 # here it just does nothing
 cars \%$>\% colSums \%|>\% ident
 }
+\seealso{
+Other helper_functions: \code{\link{const}},
+  \code{\link{false_as_error}}, \code{\link{false}},
+  \code{\link{null_as_error}}, \code{\link{toss}},
+  \code{\link{true}}
+}

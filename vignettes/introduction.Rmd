@@ -208,6 +208,7 @@ fail.
 This operator can also be used as a pure try-catch:
 
 ```{r}
+ident <- function(x) x
 iris %>>% tibble::as_data_frame %>>% colSums %|>% ident %>>% summary
 cars %>>% tibble::as_data_frame %>>% colSums %|>% ident %>>% summary
 ```

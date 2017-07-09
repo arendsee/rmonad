@@ -22,7 +22,7 @@ NULL
 #' @export
 `%v>%` <- function(lhs, rhs) {
   envir <- parent.frame()
-  cmd <- list(bind, substitute(lhs), substitute(rhs), m_on_bind=.store_value)
+  cmd <- list(bind, substitute(lhs), substitute(rhs), m_on_bind=.store)
   eval(as.call(cmd), envir=envir)
 }
 
@@ -116,7 +116,7 @@ NULL
     substitute(lhs),
     substitute(rhs),
     # skip the bind code
-    bind_if = .false,
+    bind_if = false,
     # and instead just evaluate the rhs
     bind_else = function(i,o) as_monad(o, desc=rhs_str),
     # if the lhs failed, pass the evaluated rhs
