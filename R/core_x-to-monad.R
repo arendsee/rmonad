@@ -126,16 +126,13 @@ combine <- function(ms, keep_history=TRUE, desc=NULL){
      "Rmonad",
      x        = list(),
      stage    = rec,
-     history  = history,
-     OK       = FALSE
+     history  = history
   )
 
   # store all values (even if failing, in which case should be NULL)
   m_value(out) <- lapply(ms, m_value)
 
-  if(all(sapply(ms, m_OK))){
-    m_OK(out) <- TRUE
-  }
+  m_OK(out) <- all(sapply(ms, m_OK))
 
   if(!is.null(desc)){
     m_code(out) <- desc 

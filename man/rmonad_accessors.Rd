@@ -3,8 +3,8 @@
 \name{rmonad_accessors}
 \alias{rmonad_accessors}
 \alias{m_history}
-\alias{m_OK}
 \alias{m_value}
+\alias{m_OK}
 \alias{m_code}
 \alias{m_id}
 \alias{m_error}
@@ -34,9 +34,9 @@
 \usage{
 m_history(m)
 
-m_OK(m)
-
 m_value(m)
+
+m_OK(m)
 
 m_code(m)
 

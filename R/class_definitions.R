@@ -11,6 +11,7 @@ record <- setClass(
   "record",
   representation(
     x        = "list", # Maybe a
+    OK       = "logical",
     id       = "integer",
     code     = "character",
     error    = "list", # Maybe [String]
@@ -22,6 +23,7 @@ record <- setClass(
   ),
   prototype(
     x        = list(),
+    OK       = TRUE,
     id       = -1L,
     code     = NA_character_,
     error    = list(),
@@ -58,8 +60,7 @@ Rmonad <- setClass(
   representation(
     x       = "list",
     stage   = "record",
-    history = "list",
-    OK      = "logical"
+    history = "list"
   )
 )
 
@@ -69,7 +70,6 @@ new_rmonad <- function(){
   new("Rmonad",
     x       = list(),
     stage   = .indexed_record(),
-    history = list(),
-    OK      = TRUE
+    history = list()
   )
 }

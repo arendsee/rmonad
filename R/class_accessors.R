@@ -32,11 +32,17 @@ m_history  <- function(m) m@history
 
 #' @rdname rmonad_accessors
 #' @export
-m_OK       <- function(m) m@OK
+m_value    <- function(m) .maybe_vector_get(m@x)
 
 #' @rdname rmonad_accessors
 #' @export
-m_value    <- function(m) .maybe_vector_get(m@x)
+m_OK <- function(m) {
+  if(class(m) == "Rmonad"){
+    m@stage@OK
+  } else {
+    m@OK
+  }
+}
 
 #' @rdname rmonad_accessors
 #' @export
@@ -155,7 +161,7 @@ m_branch   <- function(m) {
 #' @rdname rmonad_accessors
 #' @export
 `m_OK<-` <- function(m, value) {
-  m@OK <- value
+  m@stage@OK <- value
   m
 }
 

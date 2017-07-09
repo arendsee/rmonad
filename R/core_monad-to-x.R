@@ -11,6 +11,7 @@ mtabulate <- function(m){
   list(
     id        = m_id(m),
     code      = paste(m_code(m), collapse="\n"),
+    OK        = m_OK(m),
     cached    = !is.null(m_value(m)),
     time      = signif(m_time(m)[1], 2),
     space     = m_mem(m),
