@@ -43,7 +43,7 @@ NULL
 #'
 #' @section x to monad functions:
 #'
-#' mrun - evaulate an expression into a monad (capturing error)
+#' as_monad - evaulate an expression into a monad (capturing error)
 #'
 #' lsmeval - evaluate expressions into a list inside a monad
 #'
@@ -86,7 +86,7 @@ NULL
 #' cars %>>% colSums %v__% cars %>>% lapply(sd) %>>% unlist
 #'
 #' # load an expression into a monad, catching errors
-#' mrun(stop("instant death"))
+#' as_monad(stop("instant death"))
 #'
 #' # convert multiple expressions into a list inside a monad
 #' lsmeval(stop("oh no"), runif(5), sqrt(-1))

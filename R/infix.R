@@ -118,7 +118,7 @@ NULL
     # skip the bind code
     bind_if = .false,
     # and instead just evaluate the rhs
-    bind_else = function(i,o) mrun(o, desc=rhs_str),
+    bind_else = function(i,o) as_monad(o, desc=rhs_str),
     # if the lhs failed, pass the evaluated rhs
     emit = function(i,o) if(m_OK(i)){ i } else { o }
   )
@@ -129,7 +129,7 @@ NULL
 #' @export
 `%__%` <- function(lhs, rhs) {
   code <- deparse(substitute(rhs))
-  rhs <- mrun(rhs, code)
+  rhs <- as_monad(rhs, code)
   m_history(rhs) <- .make_history(lhs)
   rhs
 }
@@ -138,7 +138,7 @@ NULL
 #' @export
 `%v__%` <- function(lhs, rhs) {
   code <- deparse(substitute(rhs))
-  rhs <- mrun(rhs, code)
+  rhs <- as_monad(rhs, code)
   lhs@stage@x <- lhs@x
   m_history(rhs) <- .make_history(lhs)
   rhs

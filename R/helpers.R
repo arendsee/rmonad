@@ -49,6 +49,6 @@ pass <- function(x, desc=NULL) {
   if(class(x) == "Rmonad"){
     x
   } else {
-    mrun(x, desc)
+    as_monad(x, desc)
   }
 }

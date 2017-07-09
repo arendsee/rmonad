@@ -7,11 +7,10 @@
 #' @return Rmonad object 
 #' @export
 #' @examples
-#' mrun(stop(1))
-#' mrun(1:10)
-#' mrun(5 %>>% sqrt)
-mrun <- function(expr, desc=NULL){
-# TODO: rename to as_monad
+#' as_monad(stop(1))
+#' as_monad(1:10)
+#' as_monad(5 %>>% sqrt)
+as_monad <- function(expr, desc=NULL){
 
   value <- NULL 
   warns <- NULL
@@ -79,7 +78,7 @@ lsmeval <- function(..., keep_history=TRUE){
 
   ll <- as.list(substitute(alist(...)))[-1]
 
-  ms <- lapply(ll, function(x) mrun(eval(x), desc=deparse(x)))
+  ms <- lapply(ll, function(x) as_monad(eval(x), desc=deparse(x)))
 
   combine(ms, keep_history=keep_history, desc=instr)
 
@@ -88,7 +87,7 @@ lsmeval <- function(..., keep_history=TRUE){
 # internal function, for building from a list of expressions
 .lsmeval_sub <- function(es, env=parent.frame(), ...){
 
-  ms <- lapply(es, function(x) mrun(eval(x, env), desc=deparse(x)))
+  ms <- lapply(es, function(x) as_monad(eval(x, env), desc=deparse(x)))
 
   combine(ms, ...)
 }
@@ -113,7 +112,7 @@ lsmeval <- function(..., keep_history=TRUE){
 #' combine(z)
 combine <- function(ms, keep_history=TRUE, desc=NULL){
 
-  ms <- lapply(ms, mrun)
+  ms <- lapply(ms, as_monad)
 
   rec <- .indexed_record()
 

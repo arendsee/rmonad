@@ -41,13 +41,13 @@ These are probably not the operators you are looking for
 
  \%__\%    transfer only history from the lhs (errors ignored)
 
- \%v__\%   record lhs value and transfer history to rhs (errors ignored)
+ \%v__\%   like \%__\% but store lhs result
 }
 
 \section{x to monad functions}{
 
 
-mrun - evaulate an expression into a monad (capturing error)
+as_monad - evaulate an expression into a monad (capturing error)
 
 lsmeval - evaluate expressions into a list inside a monad
 }
@@ -93,7 +93,7 @@ cars \%>_\% plot \%>>\% colSums
 cars \%>>\% colSums \%v__\% cars \%>>\% lapply(sd) \%>>\% unlist
 
 # load an expression into a monad, catching errors
-mrun(stop("instant death"))
+as_monad(stop("instant death"))
 
 # convert multiple expressions into a list inside a monad
 lsmeval(stop("oh no"), runif(5), sqrt(-1))

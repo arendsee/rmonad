@@ -21,7 +21,7 @@
 bind <- function(
   x,
   f,
-  entry_lhs_transform = function(m, f, ...) { mrun(m, ...) } ,
+  entry_lhs_transform = function(m, f, ...) { as_monad(m, ...) } ,
   bind_if = function(m) m_OK(m),
   bind_else = toss,
   emit = function(i, o) { if(is.null(o)){ i } else { o } },
@@ -60,7 +60,7 @@ bind <- function(
 
     st <- system.time(
       {
-        o <- mrun( eval(expr, envir=e), desc=deparse(fs) )
+        o <- as_monad( eval(expr, envir=e), desc=deparse(fs) )
       },
       gcFirst=FALSE # this kills performance when TRUE
     )
