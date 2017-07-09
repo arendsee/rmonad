@@ -10,8 +10,15 @@ esc(m)
 \item{m}{An Rmonad}
 }
 \description{
-If the monad is in the passing state, this will bee a pure value. If the
-monad is in the failing state, it will raise an appropriate error.
+If the monad is in the passing state, return the wrapped value. Otherwise,
+raise an appropriate error.
+}
+\details{
+Regardless of pass/fail status, \code{esc} raises all collected warnings and
+prints all messages. Terminating a monadic sequence with \code{esc} should
+obtain a result very close to running the same code outside the monad. The
+main difference is that Rmonad appends the toplevel code that generated the
+error.
 }
 \seealso{
 Other monad-to-x: \code{\link{missues}},

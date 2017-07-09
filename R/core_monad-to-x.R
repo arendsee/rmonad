@@ -1,20 +1,3 @@
-#' Returns the value of a monad holds
-#'
-#' If the monad is in the passing state, return the wrapped value. Otherwise,
-#' raise an appropriate error.
-#'
-#' @family monad-to-x
-#' @param m An Rmonad
-#' @export 
-esc <- function(m){
-  if(m_OK(m)){
-    m_value(m)
-  } else {
-    msg <- paste0('The call "', m_code(m), '" failed: \n  ', m_error(m))
-    stop(msg, call.=FALSE)
-  }
-}
-
 #' Make tabular summary of a monadic chain
 #'
 #' @family monad-to-x
@@ -27,7 +10,7 @@ mtabulate <- function(m){
 .mtabulate <- function(m){
   list(
     id        = m_id(m),
-    code      = m_code(m),
+    code      = paste(m_code(m), collapse="\n"),
     cached    = !is.null(m_value(m)),
     time      = signif(m_time(m)[1], 2),
     space     = m_mem(m),
@@ -54,13 +37,46 @@ missues <- function(m){
   type <- c(
             rep.int("error",   length(m_error(m))    ),
             rep.int("warning", length(m_warnings(m)) ),
-            rep.int("notes",   length(m_notes(m))    )
+            rep.int("note",   length(m_notes(m))    )
            )
   issue <- as.character(c(m_error(m), m_warnings(m), m_notes(m)))
   id <- rep(m_id(m), length(type))
   list(id=id, type=type, issue=issue) 
 }
 
+#' Returns the value of a monad holds
+#'
+#' If the monad is in the passing state, return the wrapped value. Otherwise,
+#' raise an appropriate error.
+#'
+#' Regardless of pass/fail status, \code{esc} raises all collected warnings and
+#' prints all messages. Terminating a monadic sequence with \code{esc} should
+#' obtain a result very close to running the same code outside the monad. The
+#' main difference is that Rmonad appends the toplevel code that generated the
+#' error.
+#'
+#' @family monad-to-x
+#' @param m An Rmonad
+#' @export 
+esc <- function(m){
+  issues <- merge(mtabulate(m), missues(m))[, c("id", "code", "type", "issue")]
+  for(i in seq_len(nrow(issues))){
+    # raise warnings, with contextual information
+    if(issues[i, "type"] == "warning"){
+      warning("in '", issues[i, "code"], "': ", issues[i, "issue"], call.=FALSE)
+    }
+    # pass messages verbatim
+    if(issues[i, "type"] == "note"){
+      message(issues[i, "issue"])
+    }
+  }
+  if(! m_OK(m)){
+    # if the final state is failing, raise error with contextual info
+    msg <- paste0('in "', m_code(m), '":\n  ', m_error(m))
+    stop(msg, call.=FALSE)
+  }
+  m_value(m)
+}
 
 
 
