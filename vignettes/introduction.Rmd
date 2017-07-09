@@ -33,7 +33,7 @@ set.seed(210)
  * a structured approach to literate programming
 
 
-# Monadic pipelines
+## Monadic pipelines
 
 I will introduce `Rmonad` with a simple sequence of squares
 
@@ -115,7 +115,7 @@ However it, and all other information in the monad, can be easily accessed.
 
 
 
-# Extracting data from an Rmonad
+## Extracting data from an Rmonad
 
 If you want to extract the terminal result from the monad, you can use the `esc`
 function:
@@ -147,7 +147,7 @@ the `mtabulate` function.
 
 
 
-# Handling effects
+## Handling effects
 
 The `%>_%` operator is useful when you want to include a function inside a
 pipeline that should be bypassed, but you want the errors, warnings, and
@@ -193,7 +193,7 @@ functions of `.` (as in `magrittr`). The final expression `%|>%` catches an
 error and performs `head` on the last valid input (`iris`).
 
 
-# Error handling
+## Error handling
 
 Errors needn't be viewed as abnormal. For example, we might want to try several
 alternatives functions, and use the first that works. 
@@ -247,7 +247,7 @@ can catch the error and allow allow the programmer to deal with it accordingly.
 
 
 
-#Branching pipelines
+## Branching pipelines
 
 If you want to perform an operation on a value inside the chain, but don't want
 to pass it, you can use the branch operator `%>^%`.
@@ -277,7 +277,7 @@ their own branches. The `unbranch` function recursively extracts all branches
 from the tree.
 
 
-# Chains of chains
+## Chains of chains
 
 If you want to connect many chains, all with independent inputs, you can do so
 with the `%__%` and `%v__%` operators.
@@ -292,30 +292,9 @@ The `%v__%` operator records the output of the lhs and evaluates the rhs into
 an Rmonad. If you don't care about the output, you can use `%__%`, which simply
 replaces the rhs value with lhs value (while, of course, propagating state).
 
-If you won't the success of one stage to be dependent on the prior stage, you
-can use the branch operator:
 
-```{r}
-x <- runif(10) %>>% sum %^__%
-     rnorm(10) %>>% sum %^__%
-     rexp(10)  %>>% sum
-unbranch(x)
-```
 
-Note the use of magrittr's `%>%` to perform an operation on the monad itself,
-rather than its value.
-
-`unbranch` returns a list of all branches in the tree. Here is a more dramatic picture.
-
-```{r}
-runif(10)  %>>% abs %>^% sum %^__%
-rnorm(10)  %>>% abs %>^% sum %^__%
-rnorm("a") %>>% abs %>^% sum %^__%
-rexp(10)   %>>% abs %>^% sum %>%
-    unbranch
-```
-
-# Multiple inputs
+## Multiple inputs
 
 So far our pipelines have been limited to either linear paths or the somewhat
 awkward branch merging. An easier approach is to read inputs from a list. But
@@ -360,7 +339,7 @@ lsmeval(
 Monadic list evaluation is the natural way to build large programs from smaller
 pieces.
 
-# Annotating steps
+## Annotating steps
 
 As our pipelines become more complex, it becomes essential to document them. We
 can do that as follows:

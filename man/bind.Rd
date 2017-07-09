@@ -19,7 +19,7 @@ bind(x, f, entry_lhs_transform = function(m, f, ...) {     as_monad(m, ...) },
 
 \item{bind_if}{f(m) bind rhs to lhs if TRUE}
 
-\item{bind_else}{f(m,f) actio to take if bind_if is FALSE}
+\item{bind_else}{f(m,f) action to take if bind_if is FALSE}
 
 \item{emit}{f(i,o) Emit the input or the output}
 

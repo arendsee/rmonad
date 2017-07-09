@@ -45,6 +45,7 @@ print.record <- function(x, verbose=FALSE, ...) {
     cat("\n")
     print(m_value(x))
   }
+  cat("\n")
 }
 setMethod("show", "record",
   function(object) print(object)
@@ -54,14 +55,14 @@ setMethod("show", "record",
 #' @export 
 print.Rmonad <- function(x, verbose=FALSE, ...){
 
-  if(.has_history(x)){
-    f <- lapply(m_history(x), function(x) {print(x); cat("\n")})
+  for(h in m_history(x)){
+    print(h)
   }
 
   print(x@stage, verbose=verbose)
 
   if(.has_history(x)){
-    cat("\n\n ----------------- \n\n")
+    cat("\n ----------------- \n\n")
   }
 
   if(.has_value(x)){

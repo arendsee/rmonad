@@ -38,5 +38,5 @@ Each of these functions returns a list of the values for the eponymous slot
 \details{
 \code{unbranch} is recursive, returning a monad for each branch. The other
 functions are currently not recursive (do not look into branches). I will
-change this eventualy.
+change this eventually.
 }

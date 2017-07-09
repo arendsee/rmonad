@@ -4,7 +4,7 @@
 \alias{rmonad_printers}
 \alias{print.record}
 \alias{print.Rmonad}
-\title{Special rmonad_printerss}
+\title{Special rmonad printers}
 \usage{
 \method{print}{record}(x, verbose = FALSE, ...)
 
@@ -18,5 +18,5 @@
 \item{...}{Additional arguments going to God knows where}
 }
 \description{
-Special rmonad_printerss
+Special rmonad printers
 }

@@ -19,7 +19,7 @@ sections.
 
 
 
-# The R cryptomonad
+## The R cryptomonad
 
 What does `sqrt` do? You may answer, "return the square root of an input". But
 this is not quite right. The function `sqrt` maps to a set of possible values.
@@ -92,7 +92,7 @@ Haskell's `>>=`).
 
 
 
-# Rmonad
+## Rmonad
 
 The goal of Rmonad is to ditch the existing impure R cryptomonad and replace it
 with a clean formal monad.
@@ -122,12 +122,12 @@ In Rmonad, the `m` is an object, that catches all undefined behavior.
 
 
 
-# Rmonad versus magrittr
+## Rmonad versus magrittr
 
 contrast with magrittr (the identity monad)
 
 
-# Rmonad for Haskellers
+## Rmonad for Haskellers
 
 Only a few R expressions are pure. If a function is given an invalid input at
 runtime (e.g. `sqrt("wtf")`), it will die with a message printed to stderr.

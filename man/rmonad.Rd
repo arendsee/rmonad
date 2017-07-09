@@ -19,7 +19,7 @@ vignettes.
 
  \%v>\%    monadic bind and record input
 
- \%>_\%    perorm rhs action, discard result, pass the lhs
+ \%>_\%    perform rhs action, discard result, pass the lhs
 
  \%||\%    if input is error, use rhs value instead
 
@@ -47,7 +47,7 @@ These are probably not the operators you are looking for
 \section{x to monad functions}{
 
 
-as_monad - evaulate an expression into a monad (capturing error)
+as_monad - evaluate an expression into a monad (capturing error)
 
 lsmeval - evaluate expressions into a list inside a monad
 }
