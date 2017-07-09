@@ -1,12 +1,14 @@
 Package: rmonad
-Title: A monadic library for handling error
+Title: A monadic system for pipeline development
 Version: 0.0.1
 Author: Zebulun Arendsee
 Maintainer: Zebulun Arendsee <arendsee@iastate.edu>
 URL: https://github.com/arendsee/rmonad
 BugReports: https://github.com/arendsee/rmonad/issues
 Description:
-    This library allows pure handling of functions that may fail.
+    Rmonad offers monadic pipelines with nuanced error handling, access to
+    intermediate results, and automatic benchmarking. It complements, rather
+    than competes with, non-monadic pipeline programs like magrittr or pipeR.
 Depends: R (>= 3.2.0)
 Imports:
     magrittr,

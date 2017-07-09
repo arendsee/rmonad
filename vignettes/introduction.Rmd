@@ -1,9 +1,9 @@
 ---
-title: "Rmonad: running with monads"
+title: "Rmonad: an introduction"
 author: "Zebulun Arendsee"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Running with monads}
+  %\VignetteIndexEntry{Introduction}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -18,6 +18,8 @@ set.seed(210)
 
 `Rmonad` offers
 
+ * a stateful pipeline framework
+
  * nuanced error handling
 
  * access to the intermediate results of a pipeline
@@ -26,8 +28,363 @@ set.seed(210)
 
  * access to results preceding an error
 
- * tools for branching and combining pipelines
-
- * a way to almost completely avoid naming things
+ * branching and chaining of pipelines
 
  * a structured approach to literate programming
+
+
+# Monadic pipelines
+
+I will introduce `Rmonad` with a simple sequence of squares
+
+```{r}
+# %>>% corresponds to Haskell's >>=
+1:5      %>>%
+    sqrt %>>%
+    sqrt %>>%
+    sqrt
+```
+
+So what exactly did Rmonad do with your data? It is still there, sitting
+happily inside the monad.
+
+In `magrittr` you could do something similar:
+
+```{r}
+1:5      %>%
+    sqrt %>%
+    sqrt %>%
+    sqrt
+```
+
+`%>%` takes the value on the left and applies it to the function on the right.
+`%>>%`, takes a monad on the left and a function on the right, then builds a
+new monad from them. This new monad holds the computed value, if the
+computation succeeded. It collates all errors, warnings, and messages.  These
+are stored in step-by-step a history of the pipeline.
+
+`%>%` is an application operator, `%>>%` is a *monadic bind* operator. Magrittr
+and Rmonad complement eachother. `%>%` can be used inside a monadic sequence to
+perform operations *on* monads, whereas `%>>%` performs operations *in* them.
+If this is all too mystical, just hold on, the examples are sensical even
+without an understanding of monads.
+
+Below, we store an intermediate value in the monad:
+
+```{r}
+1:5      %>>%
+    sqrt %v>% # store this result
+    sqrt %>>%
+    sqrt
+```
+
+The `%v>%` variant of the *monadic bind* operator stores the results as they
+are passed.
+
+Warnings are caught and stored
+
+```{r}
+-1:3     %>>%
+    sqrt %v>%
+    sqrt %>>%
+    sqrt
+```
+
+Similarly for errors
+
+```{r}
+"wrench" %>>%
+    sqrt %v>%
+    sqrt %>>%
+    sqrt
+```
+
+The first `sqrt` failed, and this step was coupled to the resultant error.
+Contrast this with `magrittr`, where the location of the error is lost:
+
+```{r, error=TRUE}
+"wrench" %>>%
+    sqrt %>%
+    sqrt %>%
+    sqrt
+```
+
+Also note that a value was still produced. This value will never be used in the
+downstream monadic sequence (except when explicitly doing error handling).
+However it, and all other information in the monad, can be easily accessed. 
+
+
+
+# Extracting data from an Rmonad
+
+If you want to extract the terminal result from the monad, you can use the `esc`
+function:
+
+```{r}
+1:5 %>>% sqrt %>% esc
+```
+
+`esc` is our first example of a class of functions that work on monads, rather
+than the values they wrap. We use `magrittr`'s application operator `%>%` here,
+rather than the monadic bind operator `%>>%`, because we are passing a literal
+monad to `esc`.
+
+If the monad is in a failed state, `esc` will raise an error.
+
+```{r, error=TRUE}
+"wrench" %>>% sqrt %>>% sqrt %>% esc
+```
+
+If you prefer a tabular summary of your results, you can pipe the monad into
+the `mtabulate` function.
+
+```{r}
+1:5      %>>%
+    sqrt %v>%
+    sqrt %>>%
+    sqrt %>% mtabulate
+```
+
+
+
+# Handling effects
+
+The `%>_%` operator is useful when you want to include a function inside a
+pipeline that should be bypassed, but you want the errors, warnings, and
+messages to pass along with the main.
+
+You can cache an intermediate result
+
+```{r, eval=FALSE}
+cars %>_% write.csv(file="cars.tab") %>>% summary
+```
+
+Or plot a value along with a summary
+
+```{r}
+cars %>_% plot(xlab="index", ylab="value") %>>% summary %>% forget
+```
+
+I pipe the final monad into `forget`, which is (like `esc`) a function for
+operating on monads. `forget` removes history from a monad. I do this just to
+de-clutter the output.
+
+You can call multiple effects
+
+```{r, eval=FALSE}
+cars                                 %>_%
+    plot(xlab="index", ylab="value") %>_%
+    write.csv(file="cars.tab")       %>>%
+    summary %>% forget
+```
+
+Since state is passed,  assertions about the data inside a pipeline.
+
+```{r}
+iris                                    %>_%
+    { stopifnot(is.data.frame(.))     } %>_%
+    { stopifnot(sapply(.,is.numeric)) } %>>%
+    colSums %|>% head
+```
+
+The above code will enter a failed state if the input is either not a data
+frame or the columns are not all numeric. The braced expressions are anonymous
+functions of `.` (as in `magrittr`). The final expression `%|>%` catches an
+error and performs `head` on the last valid input (`iris`).
+
+
+# Error handling
+
+Errors needn't be viewed as abnormal. For example, we might want to try several
+alternatives functions, and use the first that works. 
+
+```{r}
+1:10 %>>% colSums %|>% sum
+```
+
+Here we will do either `colSums` or `sum`. The pipeline fails only if both
+fail.
+
+This operator can also be used as a pure try-catch:
+
+```{r}
+iris %>>% tibble::as_data_frame %>>% colSums %|>% ident %>>% summary
+cars %>>% tibble::as_data_frame %>>% colSums %|>% ident %>>% summary
+```
+
+Where `ident` is the identity function. In this way, we can make chains of
+operations which may fail for some inputs.
+
+Sometimes you want to ignore the previous failure completely, and make a new
+call -- for example in reading files:
+
+```{r, eval=FALSE}
+# try to load a cached file, on failure rerun the analysis
+read.table("analyasis_cache.tab") %||% run_analysis(x)
+```
+
+This can also be used to replace if-else if-else strings
+
+```{r}
+x <- list()
+# compare
+if(length(x) > 0) { x[[1]] } else { NULL }
+# to 
+x[[1]] %||% NULL %>% esc
+```
+
+Or maybe you want to support multiple extensions for an input file
+
+```{r, eval=FALSE}
+read.table("a.tab") %||% read.table("a.tsv") %>>% dostuff
+```
+
+Overall, in Rmonad, errors are well-behaved. It is reasonable to write
+functions that return an error rather than one of the myriad default values
+(`NULL`, `NA`, `logical(0)`, `list()`, `FALSE`). This is unambiguous. Rmonad
+can catch the error and allow allow the programmer to deal with it accordingly.
+
+
+
+
+
+#Branching pipelines
+
+If you want to perform an operation on a value inside the chain, but don't want
+to pass it, you can use the branch operator `%>^%`.
+
+```{r}
+rnorm(30) %>^% qplot(xlab="index", ylab="value") %>>% mean %>% unbranch
+```
+
+This stores the result of `qplot` in a branch off the main pipeline. This means
+that `plot` could fail, but the rest of the pipeline could continue. You can
+store multiple branches.
+
+```{r}
+rnorm(30) %>^% plot(xlab="index", ylab="value") %>^% summary %>>% mean
+```
+
+Branches can be used as input, as well.
+
+```{r}
+x <- 1:10 %>^% dgamma(10, 1) %>^% dgamma(10, 5) %^>% cor
+x
+unbranch(x)
+```
+
+Note the branches could be long monadic chains themselves, which might have
+their own branches. The `unbranch` function recursively extracts all branches
+from the tree.
+
+
+# Chains of chains
+
+If you want to connect many chains, all with independent inputs, you can do so
+with the `%__%` and `%v__%` operators.
+
+```{r}
+runif(10) %>>% sum %v__%
+rnorm(10) %>>% sum %v__%
+rexp(10)  %>>% sum
+```
+
+The `%v__%` operator records the output of the lhs and evaluates the rhs into
+an Rmonad. If you don't care about the output, you can use `%__%`, which simply
+replaces the rhs value with lhs value (while, of course, propagating state).
+
+If you won't the success of one stage to be dependent on the prior stage, you
+can use the branch operator:
+
+```{r}
+x <- runif(10) %>>% sum %^__%
+     rnorm(10) %>>% sum %^__%
+     rexp(10)  %>>% sum
+unbranch(x)
+```
+
+Note the use of magrittr's `%>%` to perform an operation on the monad itself,
+rather than its value.
+
+`unbranch` returns a list of all branches in the tree. Here is a more dramatic picture.
+
+```{r}
+runif(10)  %>>% abs %>^% sum %^__%
+rnorm(10)  %>>% abs %>^% sum %^__%
+rnorm("a") %>>% abs %>^% sum %^__%
+rexp(10)   %>>% abs %>^% sum %>%
+    unbranch
+```
+
+# Multiple inputs
+
+So far our pipelines have been limited to either linear paths or the somewhat
+awkward branch merging. An easier approach is to read inputs from a list. But
+we want to be able to catch errors resulting from evaluation of each member of
+the list. We can do this with `list_meval`.
+
+```{r}
+lsmeval(
+    "yolo",
+    stop("stop, drop, and die"),
+    runif("simon"),
+    k = 2
+)
+```
+
+This returns a monad which fails if any of the components evaluate to an error.
+But it does not toss the rest of the inputs, instead returning a clean list
+with a NULL filling in missing pieces. Constrast this with normal list evaluation:
+
+```{r, error=TRUE}
+list( "yolo", stop("stop, drop, and die"), runif("simon"), 2)
+```
+
+`lsmeval` records each failure in each element of the list independently.
+
+This approach can also be used with the infix operator `%*>%`.
+
+```{r, eval=FALSE}
+lsmeval(read.csv("a.csv"), read.csv("b.csv")) %*>% merge
+```
+
+Now, of course, we can add monads to the mix 
+
+```{r, eval=FALSE}
+lsmeval(
+    a = read.csv("a.csv") %>>% do_analysis_a,
+    b = read.csv("b.csv") %>>% do_analysis_b,
+    k = 5
+) %*>% joint_analysis
+```
+
+Monadic list evaluation is the natural way to build large programs from smaller
+pieces.
+
+# Annotating steps
+
+As our pipelines become more complex, it becomes essential to document them. We
+can do that as follows:
+
+```{r}
+runif(5) %>>% abs %>% doc(
+
+    "Alternatively, the documentation could go into a text block below the code
+    in a knitr document. The advantage of having documentation here, is that it
+    is coupled unambiguously to the generating function. This is a monadic
+    interpretation of literate programming. These annotations, together with
+    the ability to chain chains of monads, allows whole complex workflows to be
+    built, with the results collated into a single monad. All errors propagate
+    exactly as errors should, only affecting downstream computations. The final
+    monad can be converted into a markdown document and automatically generated
+    function graphs."
+
+                  ) %>^% sum %__%
+rnorm(6)   %>>% abs %>^% sum %v__%
+rnorm("a") %>>% abs %>^% sum %__%
+rexp(6)    %>>% abs %>^% sum %T>%
+  {print(mtabulate(.)) } %>% missues
+```
+
+Note `%T>%` is a `magrittr` operator. It allows execution of the rhs function
+on the lhs *monad* and bypasses the result.

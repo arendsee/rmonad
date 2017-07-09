@@ -1,7 +1,6 @@
 ---
-title: "What is this 'monad' thing?"
+title: "Rmonad: Where's the monad?"
 author: "Zebulun Arendsee"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{What is a monad?}

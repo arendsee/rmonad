@@ -1,9 +1,0 @@
----
-title: "Rmonad: missing features"
-author: "Zebulun Arendsee"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Missing Features}
-  %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
----
