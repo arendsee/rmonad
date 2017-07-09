@@ -88,7 +88,7 @@ esc <- function(m){
 #'
 #' \code{unbranch} is recursive, returning a monad for each branch. The other
 #' functions are currently not recursive (do not look into branches). I will
-#' change this eventualy.
+#' change this eventually.
 #'
 #' @param m An Rmonad
 #' @name rmonad_unwrap

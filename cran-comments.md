@@ -1,6 +1,7 @@
 ## Test environments
 
 * local archlinux 4.11.6-1, R 3.4.0
+* local MAC xxx
 * ubuntu 12.04 (on travis-ci), R 3.4.0
 * win-builder (devel and release)
 

@@ -12,7 +12,7 @@
 #' @param f A function of the value contained in x
 #' @param entry_lhs_transform f(m,x,...) a transform of the lhs called on entry
 #' @param bind_if f(m) bind rhs to lhs if TRUE
-#' @param bind_else f(m,f) actio to take if bind_if is FALSE
+#' @param bind_else f(m,f) action to take if bind_if is FALSE
 #' @param emit f(i,o) Emit the input or the output
 #' @param m_on_bind f(m) Action to perform on input monad when binding
 #' @param bind_args function to retrieve the arguments

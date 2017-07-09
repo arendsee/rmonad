@@ -247,8 +247,6 @@ can catch the error and allow allow the programmer to deal with it accordingly.
 
 
 
-
-
 #Branching pipelines
 
 If you want to perform an operation on a value inside the chain, but don't want
