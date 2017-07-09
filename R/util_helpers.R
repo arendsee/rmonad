@@ -4,12 +4,6 @@
 #' @export
 toss <- function(...){ }
 
-#' A dirty hack for documentation
-#'
-#' @param ... whatever
-#' @export
-note <- function(...){ }
-
 #' The identity function
 #'
 #' @param x anything
@@ -37,18 +31,4 @@ const <- function(x, r){ r }
 #' @param x Input value
 null_as_error <- function(x){
   stopifnot(! is.null(x))
-}
-
-#' Load a value into the report monad
-#'
-#' @export
-#' @param x  The result of a successful computation
-#' @param desc An optional description of the source
-#' @return  The result wrapped in the report monad
-pass <- function(x, desc=NULL) {
-  if(class(x) == "Rmonad"){
-    x
-  } else {
-    as_monad(x, desc)
-  }
 }
