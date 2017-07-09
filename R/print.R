@@ -14,7 +14,7 @@ NULL
 #' @export 
 print.record <- function(x, verbose=FALSE, ...) {
 
-  .scat("R> %s", m_code(x))
+  .scat("R> %s", paste(m_code(x), collapse="\n"))
 
   if(verbose && (.has_time(x) || .has_mem(x))){
     cat("\n  ")

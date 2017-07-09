@@ -35,23 +35,32 @@ bind <- function(
 
   o <- if(bind_if(m))
   {
+    e <- parent.frame()
 
     # insert x as first positional in f
     fs <- substitute(f)
     fl <- as.list(fs)
 
-    # if the input is of form 'Foo::bar'
-    ff <- if(fl[[1]] == '::' && length(fl) == 3) {
-      list(as.call(fl)) %++% bind_args(m)
-    } else {
-      list(fl[[1]]) %++% bind_args(m) %++% fl[-1]
-    }
+    # TODO: my implementation is garbage, make it not
 
-    e <- parent.frame()
+      # If the expressions is of form 'x %>>% Foo::bar'
+      # Package names are supported fine if arguments are given
+      expr <- if(fl[[1]] == '::' && length(fl) == 3) {
+        as.call( list(as.call(fl)) %++% bind_args(m) )
+      }
+      # Evaluate '.' inside an anonymous function, e.g. 'x %>>% { 2 * . }'
+      else if(fl[[1]] == '{'){
+        a_function <- eval(call("function", as.pairlist(alist(. =)), fs), envir=e)
+        e = environment()
+        as.call( list(quote(a_function), .=m_value(m)) )
+      }
+      else {
+        as.call( list(fl[[1]]) %++% bind_args(m) %++% fl[-1] )
+      }
 
     st <- system.time(
       {
-        o <- mrun( eval(as.call(ff), envir=e), desc=deparse(fs) )
+        o <- mrun( eval(expr, envir=e), desc=deparse(fs) )
       },
       gcFirst=FALSE # this kills performance when TRUE
     )

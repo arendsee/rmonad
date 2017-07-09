@@ -99,3 +99,18 @@ test_that('%*>% safely evaluates failing lists', {
   # but knows the input is failing
   expect_false( list(stop(1),5,2) %*>% max %>% m_OK )
 })
+
+test_that('anonymous expressions can be run', {
+  expect_equal( 1:10 %>>% { 4 } %>% esc  , 4 )
+  expect_true(  1:10 %>>% { 4 } %>% m_OK     )
+})
+
+test_that('dot substitution is performed in anonymous expressions', {
+  expect_equal( 1:10 %>>% { . * 2 } %>% esc  , (1:10)*2 )
+  expect_true(  1:10 %>>% { . * 2 } %>% m_OK            )
+
+  expect_true(  cars %>>% { sapply(., is.numeric) %>% all } %>% esc  )
+  expect_true(  cars %>>% { sapply(., is.numeric) %>% all } %>% m_OK )
+  expect_false( iris %>>% { sapply(., is.numeric) %>% all } %>% esc  )
+  expect_true(  iris %>>% { sapply(., is.numeric) %>% all } %>% m_OK )
+})
