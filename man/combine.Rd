@@ -20,3 +20,10 @@ If any of the monads are failing, the resulting one will also
 Any non-monadic values will be converted to monads. However, combine will
 NOT catch errors. To safely build monadic lists, use lsmeval.
 }
+\examples{
+z <- list(
+  x = rnorm(10) \%>>\% sqrt,
+  y = 1 \%>>\% colSums
+)
+combine(z)
+}

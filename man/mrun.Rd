@@ -2,7 +2,7 @@
 % Please edit documentation in R/monadic_eval.R
 \name{mrun}
 \alias{mrun}
-\title{Run an expression, capture EWM, return Rmonad}
+\title{Evaluate an expression into an Rmonad, capturing events}
 \usage{
 mrun(expr, desc = NULL)
 }
@@ -16,4 +16,9 @@ Rmonad object
 }
 \description{
 If the value is already an Rmonad, the existing value is returned.
+}
+\examples{
+mrun(stop(1))
+mrun(1:10)
+mrun(5 \%>>\% sqrt)
 }

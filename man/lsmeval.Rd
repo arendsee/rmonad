@@ -2,7 +2,7 @@
 % Please edit documentation in R/monadic_eval.R
 \name{lsmeval}
 \alias{lsmeval}
-\title{Safely builds a list of monads from a list of data}
+\title{Safely builds a list of monads from an argument list of expressions}
 \usage{
 lsmeval(..., keep_history = TRUE)
 }
@@ -15,8 +15,8 @@ lsmeval(..., keep_history = TRUE)
 A list of Rmonads
 }
 \description{
-Safely builds a list of monads from a list of data
+Safely builds a list of monads from an argument list of expressions
 }
 \examples{
-lsmeval( 1:10, stop(1) )
+lsmeval( 1:10, stop(1), sqrt(-3:3) )
 }

@@ -10,17 +10,26 @@ NULL
 #' The Rmonad package consists mainly of a set of monadic bind operators for
 #' controlling a pipeline and handling error. It also contains functions for
 #' operating on monads and evaluating expressions into monads. I will briefly
-#' introduce all of these here. For more information see the vignettes.
+#' introduce the most useful of these here. For more information see the
+#' vignettes.
 #'
-#' @section Operators:
+#' @section Basic Operators:
 #'
 #'  \%>>\%    monadic bind
 #'
-#'  \code{cars \%>>\% colSums}
-#'
 #'  \%v>\%    monadic bind and record input
 #'
-#'  \code{cars \%>>\% colSums}
+#'  \%>_\%    perorm rhs action, discard result, pass the lhs
+#'
+#'  \%||\%    if input is error, use rhs value instead
+#'
+#'  \%|>\%    if input is error, run rhs on last passing result
+#'
+#'  \code{read.csv("a.csv") \%||\% iris \%>>\% head}
+#'
+#' @section Advanced operators:
+#'
+#' These are probably not the operators you are looking for
 #'
 #'  \%*>\%    bind lhs list as arguments to right
 #'
@@ -28,44 +37,58 @@ NULL
 #'
 #'  \%>^\%    bind as a new branch, pass input on main
 #'
-#'  \%>_\%    perorm rhs action, discard result, pass the lhs
-#'
-#'  \%|>\%    if input is error, run rhs on last passing result
-#'
-#'  \%||\%    if input is error, use rhs value instead
-#'
 #'  \%__\%    transfer only history from the lhs (errors ignored)
-#'  \%v__\%   record lhs value and transfer history to rhs (errors ignored)
 #'
-#'  \code{cars \%>>\% colSums \%v__\% cars \%>>\% lapply(sd) \%>>\% unlist}
+#'  \%v__\%   like \%__\% but store lhs result
 #'
 #' @section x to monad functions:
 #'
-#' lsmeval
+#' mrun - evaulate an expression into a monad (capturing error)
 #'
-#' mrun
+#' lsmeval - evaluate expressions into a list inside a monad
 #'
 #' @section monad to monad functions:
 #'
-#' forget
+#' forget - erase history from a monad
 #'
-#' doc
+#' doc - add a documentation string to a monad
 #'
-#' combine
+#' combine - combine a list of monads into a list in a monad
 #'
 #' @section monad to x functions:
 #'
-#' mtabulate
+#' esc - extract the result from a computation
 #'
-#' missues
+#' mtabulate - summarize all steps in a pipeline into a table
 #'
-#' esc
+#' missues - tabulate all warnings and errors from a pipeline 
 #'
-#' un*
+#' unstore - get list of all stored intermediate values
 #'
 #' @docType package
 #' @name rmonad
 #' @examples
 #'
-#' 5 %>>% sqrt %>>% sqrt
+#' # chain operations
+#' cars %>>% colSums
+#'
+#' # chain operations with intermediate storing
+#' cars %v>% colSums
+#'
+#' # handle failing monad
+#' iris %>>% colSums %|>% head
+#' cars %>>% colSums %|>% head
+#'
+#' # run an effect
+#' cars %>_% plot %>>% colSums
+#'
+#' # join two independent pipelines, preserving history
+#' cars %>>% colSums %v__% cars %>>% lapply(sd) %>>% unlist
+#'
+#' # load an expression into a monad, catching errors
+#' mrun(stop("instant death"))
+#'
+#' # convert multiple expressions into a list inside a monad
+#' lsmeval(stop("oh no"), runif(5), sqrt(-1))
+
 NULL

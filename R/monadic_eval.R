@@ -1,4 +1,4 @@
-#' Run an expression, capture EWM, return Rmonad
+#' Evaluate an expression into an Rmonad, capturing events
 #'
 #' If the value is already an Rmonad, the existing value is returned.
 #'
@@ -6,6 +6,10 @@
 #' @param desc A name to assign to the code slot
 #' @return Rmonad object 
 #' @export
+#' @examples
+#' mrun(stop(1))
+#' mrun(1:10)
+#' mrun(5 %>>% sqrt)
 mrun <- function(expr, desc=NULL){
 # TODO: rename to as_monad
 
@@ -60,14 +64,14 @@ mrun <- function(expr, desc=NULL){
 }
 
 
-#' Safely builds a list of monads from a list of data
+#' Safely builds a list of monads from an argument list of expressions
 #'
 #' @export
 #' @param ... expressions to be wrapped into monads
 #' @param keep_history Merge the histories of all monads
 #' @return A list of Rmonads
 #' @examples
-#' lsmeval( 1:10, stop(1) )
+#' lsmeval( 1:10, stop(1), sqrt(-3:3) )
 lsmeval <- function(..., keep_history=TRUE){
 
   instr <- sprintf("lsmeval(%s)",
@@ -100,6 +104,13 @@ lsmeval <- function(..., keep_history=TRUE){
 #' @param ms  A list of monads
 #' @param keep_history Merge the histories of all monads
 #' @param desc A description of the monad (usually the producing code)
+#' @export
+#' @examples
+#' z <- list(
+#'   x = rnorm(10) %>>% sqrt,
+#'   y = 1 %>>% colSums
+#' )
+#' combine(z)
 combine <- function(ms, keep_history=TRUE, desc=NULL){
 
   ms <- lapply(ms, mrun)
