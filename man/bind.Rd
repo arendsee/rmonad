@@ -41,3 +41,4 @@ This function uses non-standard evaluation to insert x into f as the first
 positional argument. This allows specialization of f, but also prevents
 higher-order voodoo from being performed.
 }
+\keyword{internal}

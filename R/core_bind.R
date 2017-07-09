@@ -17,6 +17,7 @@
 #' @param m_on_bind f(m) Action to perform on input monad when binding
 #' @param bind_args function to retrieve the arguments
 #' @param io_combine f(m,o) weave m and f(m) into final output
+#' @keywords internal
 #' @return A monad report
 bind <- function(
   x,
@@ -29,6 +30,7 @@ bind <- function(
   io_combine = default_combine,
   bind_args = function(m) { list(m_value(m)) }
 ){
+  # FIXME: cleanup this implementation
 
   left_str = deparse(substitute(x))
   m <- entry_lhs_transform(x, f, desc=left_str)
@@ -40,8 +42,6 @@ bind <- function(
     # insert x as first positional in f
     fs <- substitute(f)
     fl <- as.list(fs)
-
-    # TODO: my implementation is garbage, make it not
 
       # If the expressions is of form 'x %>>% Foo::bar'
       # Package names are supported fine if arguments are given
@@ -65,7 +65,6 @@ bind <- function(
       gcFirst=FALSE # this kills performance when TRUE
     )
     m_time(o) <- signif(unname(st[1]), 2)
-    m_mem(o) <- as.integer(object.size(m_value(o)))
 
     m <- m_on_bind(m)
 
@@ -75,7 +74,9 @@ bind <- function(
     bind_else(m, f)
   }
 
-  emit(m, o)
+  o <- emit(m, o)
+  m_mem(o) <- as.integer(object.size(m_value(o)))
+  o
 }
 
 branch_combine <- function(m, o){
