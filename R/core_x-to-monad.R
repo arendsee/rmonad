@@ -65,10 +65,10 @@ as_monad <- function(expr, desc=NULL){
 
 #' Safely builds a list of monads from an argument list of expressions
 #'
-#' @export
 #' @param ... expressions to be wrapped into monads
 #' @param keep_history Merge the histories of all monads
 #' @return A list of Rmonads
+#' @export
 #' @examples
 #' lsmeval( 1:10, stop(1), sqrt(-3:3) )
 lsmeval <- function(..., keep_history=TRUE){

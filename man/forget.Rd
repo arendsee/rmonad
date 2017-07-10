@@ -16,6 +16,5 @@ The input Rmonad with all parents erased
 Clear an rmonad's parents
 }
 \seealso{
-Other monad-to-monad: \code{\link{doc}},
-  \code{\link{store}}
+Other monad-to-monad: \code{\link{doc}}
 }

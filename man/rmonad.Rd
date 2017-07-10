@@ -6,32 +6,29 @@
 \alias{rmonad-package}
 \title{rmonad: handling pipes, errors, and everything with monads}
 \description{
-The Rmonad package consists mainly of a set of monadic bind operators for
-controlling a pipeline and handling error. It also contains functions for
-operating on monads and evaluating expressions into monads. I will briefly
-introduce the most useful of these here. For more information see the
-vignettes.
+Rmonad merges blocks of code into a graph containing the history of all past
+operations, and optionally their values. It consists mainly of a set of
+monadic bind operators for controlling a pipeline and handling error. It
+also contains functions for operating on monads, evaluating expressions into
+monads, and extracting values from them. I will briefly introduce the most
+useful of these here. For more information see the vignette.
 }
 \section{Basic Operators}{
 
 
- \%>>\%    monadic bind
+ \%>>\%    monadic bind: applies rhs function to the lhs value
 
- \%v>\%    monadic bind and record input
+ \%v>\%    monadic bind: store intermediate result
 
  \%>_\%    perform rhs action, discard result, pass the lhs
 
  \%||\%    if input is error, use rhs value instead
 
  \%|>\%    if input is error, run rhs on last passing result
-
- \code{read.csv("a.csv") \%||\% iris \%>>\% head}
 }
 
 \section{Advanced operators}{
 
-
-These are probably not the operators you are looking for
 
  \%*>\%    bind lhs list as arguments to right
 
@@ -71,7 +68,7 @@ mtabulate - summarize all steps in a pipeline into a table
 
 missues - tabulate all warnings and errors from a pipeline 
 
-unstore - get list of all stored intermediate values
+unbranch - extract all branches from the pipeline
 }
 
 \examples{
@@ -88,6 +85,9 @@ cars \%>>\% colSums \%|>\% head
 
 # run an effect
 cars \%>_\% plot \%>>\% colSums
+
+# return first successful operation
+read.csv("a.csv") \%||\% iris \%>>\% head
 
 # join two independent pipelines, preserving history
 cars \%>>\% colSums \%v__\% cars \%>>\% lapply(sd) \%>>\% unlist

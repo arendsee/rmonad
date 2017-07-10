@@ -1,6 +1,6 @@
 Package: rmonad
 Title: A monadic system for pipeline development
-Version: 0.0.1
+Version: 0.1.0
 Author: Zebulun Arendsee
 Maintainer: Zebulun Arendsee <arendsee@iastate.edu>
 URL: https://github.com/arendsee/rmonad

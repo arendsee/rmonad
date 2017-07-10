@@ -4,11 +4,10 @@
 \alias{bind}
 \title{Apply f to the contents of a monad and merge messages}
 \usage{
-bind(x, f, entry_lhs_transform = function(m, f, ...) {     as_monad(m, ...) },
-  bind_if = function(m) m_OK(m), bind_else = toss, emit = function(i, o) {
-      if (is.null(o)) {         i     }     else {         o     } },
+bind(x, f, entry_lhs_transform = function(m, f, ...) as_monad(m, ...),
+  bind_if = function(m) m_OK(m), bind_else = toss, emit = emit_default,
   m_on_bind = ident, io_combine = default_combine, bind_args = function(m)
-  {     list(m_value(m)) })
+  list(m_value(m)))
 }
 \arguments{
 \item{x}{The input, may or may not be a monad report}
@@ -33,12 +32,12 @@ bind(x, f, entry_lhs_transform = function(m, f, ...) {     as_monad(m, ...) },
 A monad report
 }
 \description{
-This function should not usually be used directly. Rather you should use the
-infix operators. They all wrap this function.
+This function should not be used directly. Rather you should use the infix
+operators. They all wrap this function.
 }
 \details{
-This function uses non-standard evaluation to insert x into f as the first
-positional argument. This allows specialization of f, but also prevents
-higher-order voodoo from being performed.
+Non-standard evaluation to insert x into f as the first positional argument.
+This allows specialization of f, but also prevents higher-order voodoo from
+being performed.
 }
 \keyword{internal}

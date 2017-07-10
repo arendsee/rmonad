@@ -1,14 +1,3 @@
-#' Store a monad's value
-#'
-#' @param m An Rmonad
-#' @return The input Rmonad with its value tagged for storage
-#' @keywords internal
-#' @family monad-to-monad
-#' @export 
-store <- function(m){
-  .store(m)
-}
-
 #' Clear an rmonad's parents
 #'
 #' @family monad-to-monad

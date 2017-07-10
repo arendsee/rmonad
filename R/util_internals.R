@@ -1,5 +1,3 @@
-# TODO: delete or repurpose this file
-
 # Internal functions for manipulating Rmonad objects
 
 # join two vectors
@@ -10,3 +8,95 @@
 `%+%` <- function(l, r) { l[[length(l)+1]] <- r; l }
 
 .not_empty <- function(x) length(x) > 0
+
+.is_valid_string <- function(x) {
+  !is.null(x)     &&
+  !is.na(x)       &&
+  is.character(x) &&
+  (
+    length(x) > 1 ||
+    (length(x) == 1 && nchar(x) > 0)
+  )
+}
+
+.is_valid_integer <- function(x) {
+  !is.null(x) && !is.na(x) && is.integer(x) && length(x) != 0
+}
+
+.is_valid_real <- function(x) {
+  !is.null(x) && !is.na(x) && is.numeric(x) && length(x) != 0
+}
+
+.has_code     <- function(m) .is_valid_string(m_code(m))
+.has_error    <- function(m) length(m_error(m))    != 0
+.has_doc      <- function(m) length(m_doc(m))      != 0
+.has_warnings <- function(m) length(m_warnings(m)) != 0
+.has_notes    <- function(m) length(m_notes(m))    != 0
+.has_parents  <- function(m) length(m_parents(m))  != 0
+.has_branch   <- function(m) length(m_branch(m))   != 0
+.has_time     <- function(m) .is_valid_real(m_time(m))
+.has_mem      <- function(m) .is_valid_integer(m_mem(m))
+.has_value    <- function(m) .m_stored(m) || !is.null(m_value(m))
+
+.maybe_vector_get <- function(x){
+  if(length(x) == 0){
+    NULL   # Nothing
+  } else {
+    x[[1]] # a
+  }
+}
+
+.maybe_vector_set <- function(x, is_not_empty, expected_type=true){
+  if(is_not_empty(x)){
+    if(!expected_type(x)){
+      stop("Type error")
+    }
+    list(x) # Just a
+  } else {
+    list()  # Nothing
+  }
+}
+
+.m_stored <- function(m) {
+  m@.stored
+}
+`.m_stored<-` <- function(m, value) { m@.stored <- value ; m }
+# preserve value upon future bind
+.store <- function(m) { .m_stored(m) <- TRUE ; m }
+
+.rm_value_if <- function(m, force_keep=FALSE){
+  if(!force_keep && !.m_stored(m)){
+    m_value(m) <- NULL
+    .m_stored(m) <- FALSE
+  } else {
+    .m_stored(m) <- TRUE
+  }
+  m
+}
+
+# Function is central to bind. It determines how past context is passed to the
+# new value.
+.m_inherit <- function(
+  child,
+  parents,
+  inherit_value = FALSE,
+  inherit_OK    = FALSE,
+  force_keep    = FALSE
+) {
+  if(class(parents) == "Rmonad"){
+    if(inherit_value)
+      m_value(child) <- m_value(parents)
+    if(inherit_OK)
+      m_OK(child) <- m_OK(parents)
+    parents <- .rm_value_if(parents, force_keep=force_keep)
+    m_parents(child) <- list(parents)
+  } else {
+    if(inherit_value)
+      m_value(child) <- lapply(parents, m_value)
+    if(inherit_OK)
+      m_OK(m) <- all(lapply(parents, m_OK))
+    parents <- lapply(parents, .rm_value_if, force_keep=force_keep)
+    m_parents(child) <- parents
+  }
+  child
+}

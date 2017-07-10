@@ -1,4 +1,3 @@
-# sugar!
 .scat <- function(s, ...) cat(sprintf(s, ...)) 
 
 .print_record <- function(x, verbose=FALSE, print_value=TRUE, ...) {

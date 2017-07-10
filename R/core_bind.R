@@ -1,11 +1,11 @@
 #' Apply f to the contents of a monad and merge messages 
 #'
-#' This function should not usually be used directly. Rather you should use the
-#' infix operators. They all wrap this function.
+#' This function should not be used directly. Rather you should use the infix
+#' operators. They all wrap this function.
 #'
-#' This function uses non-standard evaluation to insert x into f as the first
-#' positional argument. This allows specialization of f, but also prevents
-#' higher-order voodoo from being performed.
+#' Non-standard evaluation to insert x into f as the first positional argument.
+#' This allows specialization of f, but also prevents higher-order voodoo from
+#' being performed.
 #'
 #' @export
 #' @param x The input, may or may not be a monad report
@@ -22,13 +22,13 @@
 bind <- function(
   x,
   f,
-  entry_lhs_transform = function(m, f, ...) { as_monad(m, ...) } ,
-  bind_if = function(m) m_OK(m),
-  bind_else = toss,
-  emit = function(i, o) { if(is.null(o)){ i } else { o } },
-  m_on_bind = ident,
-  io_combine = default_combine,
-  bind_args = function(m) { list(m_value(m)) }
+  entry_lhs_transform = function(m, f, ...) as_monad(m, ...),
+  bind_if             = function(m) m_OK(m),
+  bind_else           = toss,
+  emit                = emit_default,
+  m_on_bind           = ident,
+  io_combine          = default_combine,
+  bind_args           = function(m) list(m_value(m))
 ){
   # FIXME: cleanup this implementation
 
@@ -77,6 +77,14 @@ bind <- function(
   o <- emit(m, o)
   m_mem(o) <- as.integer(object.size(m_value(o)))
   o
+}
+
+emit_default <- function(i , o) {
+  if(is.null(o)){
+    i
+  } else {
+    o
+  }
 }
 
 branch_combine <- function(m, o){
