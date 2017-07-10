@@ -17,27 +17,32 @@ knitr::opts_chunk$set(
 )
 ```
 
-# rmonad
+# `rmonad`
 
-`rmonad` offers
+Chain monadic sequences into stateful, branching pipelines.
 
- * nuanced error handling
+You may use `rmonad` to
 
- * access to the intermediate results of a pipeline
+ * build linear pipelines, as with `magrittr`
 
- * effects -- e.g. plotting, caching -- within a pipeline
+ * access results at any step within the pipeline
 
- * access to results preceding an error
+ * access results preceding an error
 
- * tools for branching and combining pipelines
+ * handle errors naturally
 
- * a way to almost completely avoid naming things
+ * call effects -- e.g. plotting, caching -- within a pipeline
 
- * a structured approach to literate programming
+ * branch or merge pipelines, while preserving their history
+
+ * annotate nodes in the graph
+
+ * benchmark a pipeline to find bottleknecks in time and space 
+
 
 ## Installation
 
-You can install rmonad from github with:
+You can install from github with:
 
 ```{r gh-installation, eval = FALSE}
 # install.packages("devtools")
@@ -130,5 +135,5 @@ automated benchmarking."
                   ) %>^% sum %^__%
 rnorm("a") %>>% abs %>^% sum %^__%
 rexp(10)   %>>% abs %>^% sum %>%
-    unbranch
+    mtabulate
 ```

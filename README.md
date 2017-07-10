@@ -1,23 +1,33 @@
 [![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=master)](https://travis-ci.org/arendsee/rmonad)
 [![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/master.svg)](https://codecov.io/github/arendsee/rmonad?branch=master)
 
-# rmonad
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
-`rmonad` offers
 
- * nuanced error handling
 
- * access to the intermediate results of a pipeline
 
- * effects -- e.g. plotting, caching -- within a pipeline
+# `rmonad`
 
- * access to results preceding an error
+Chain monadic sequences into stateful, branching pipelines.
 
- * tools for branching and combining pipelines
+You may use `rmonad` to
 
- * a way to almost completely avoid naming things
+ * build linear pipelines, as with `magrittr`
 
- * a structured approach to literate programming
+ * access results at any step within the pipeline
+
+ * access results preceding an error
+
+ * handle errors naturally
+
+ * call effects -- e.g. plotting, caching -- within a pipeline
+
+ * branch or merge pipelines, while preserving their history
+
+ * annotate nodes in the graph
+
+ * benchmark a pipeline to find bottleknecks in time and space 
+
 
 ## Installation
 
@@ -184,42 +194,6 @@ automated benchmarking."
                   ) %>^% sum %^__%
 rnorm("a") %>>% abs %>^% sum %^__%
 rexp(10)   %>>% abs %>^% sum %>%
-    unbranch
-#> R> 
-#>  * ERROR: 1 of 5 branches failed[[1]]
-#> R> abs
-#> Has 1 branches [1] 2.37983916 0.80289295 3.00812549 0.83245564 0.79721365 0.09018712
-#>  [7] 0.23475768 0.13468316 1.45156614 0.25794007
-#> 
-#> [[2]]
-#> R> sum[1] 9.989661
-#> 
-#> [[3]]
-#> R> rnorm("a")
-#>  * ERROR: invalid arguments
-#>  * WARNING: NAs introduced by coercion
-#> Has 1 branches *** FAILURE *** 
-#> 
-#> [[4]]
-#> R> abs
-#> 
-#>     Alternatively, the documentation could go into a text block below the code
-#> in a knitr document. The advantage of having documentation here, is that it is
-#> coupled unambiguously to the generating function. This is a monadic
-#> interpretation of literate programming. These annotations, together with the
-#> ability to chain chains of monads, allows whole complex workflows to be built,
-#> with the results collated into a single monad. All errors propagate exactly as
-#> errors should, only affecting downstream computations. The final monad can be
-#> converted into a markdown document. A graph of functions can automatically be
-#> built. Summaries of the locations of errors. The monad could be extended for
-#> automated benchmarking.
-#> 
-#> 
-#> Has 1 branches [1] 0.01171422 0.53546450 0.43620233 0.03106170 0.41434776 0.69737532
-#>  [7] 0.43274143 0.19149697 0.38299909 0.64114223
-#> 
-#> [[5]]
-#> R> sum[1] 3.774546
-#> 
-#>  *** FAILURE ***
+    mtabulate
+#> Error in (function (..., deparse.level = 1, make.row.names = TRUE, stringsAsFactors = default.stringsAsFactors()) : invalid list argument: all variables should have the same length
 ```
