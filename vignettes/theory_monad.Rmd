@@ -37,8 +37,10 @@ a -> m b
 ```
 
 Where `a` is the pure input value, `b` is the pure output value, and `m`
-represents the context. The `sqrt` function can be described as `number -> m
-number`.
+represents the context. The `sqrt` function can be described as `number* -> m
+number`. Where `number*` represents a value that *should* be a number, but,
+since R is dynamic, may be anything. `m numeric` represents a context that
+holds 1) either a number or an error and 2) any other effects that arise.
 
 When we build a pipeline, we chain many functions together. Say, for example,
 we have the expression:
@@ -50,18 +52,19 @@ sqrt(sum(x))
 Borrowing a bit of Haskell syntax
 
 ```
-sqrt :: numeric* -> m numeric*
-sum  :: numeric* -> m numeric*
+sqrt :: numeric* -> m numeric
+sum  :: numeric* -> m numeric
 ```
 
-`numeric*` represents something that should be numeric. Since R is dynamically
-typed, we have no guaranttees that the input actually is numeric. The important
-thing to note is that each function takes a pure value and maps to a value
-wrapped in a context. `sum(x)` outputs `m numeric*`, but `sqrt` wants a
-`numeric*`. We need a function to mediate this. We need a function of the form:
+`numeric*` represents something that should be numeric. Again, since R is
+dynamically typed, we have no guaranttees that the input actually is numeric.
+The important thing to note is that each function takes a pure value and maps
+to a value wrapped in a context. `sum(x)` outputs `m numeric*`, but `sqrt`
+wants a `numeric*`. We need a function to mediate this. A function with the
+form:
 
 ```
-bind :: (m numeric*) -> (numeric* -> m numeric*) -> (m numeric*) 
+bind :: (m numeric*) -> (numeric* -> m numeric*) -> (m numeric) 
            ^                ^                           ^
           /                /                           /
       sum(x)            sqrt                   sqrt(sum(x))

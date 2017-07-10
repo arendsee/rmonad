@@ -36,13 +36,16 @@ doc <- function(m, ...){
 #'
 #' If the id is not found, an error is raised
 #'
+#' NOTE: This function will likely be deprecated and replaced with something
+#' better in the near future.
+#'
 #' @family monad-to-monad
 #' @param m An Rmonad
 #' @param id a single integer ID
 #' @param isolate logical, should the context of the returned monad be removed
 #' @return a single Rmonad
 #' @export
-mfind <- function(m, id, isolate=FALSE){
+extract_by_id <- function(m, id, isolate=FALSE){
   stopifnot(length(id) == 1)
   .id_equal <- function(x) {
     m_id(x) == id
