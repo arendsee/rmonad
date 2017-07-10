@@ -192,7 +192,8 @@ cars                                 %>_%
     summary %>% forget
 ```
 
-Since state is passed,  assertions about the data inside a pipeline.
+Since state is passed, you can make assertions about the data inside a
+pipeline.
 
 ```{r}
 iris                                    %>_%
@@ -203,7 +204,7 @@ iris                                    %>_%
 
 The above code will enter a failed state if the input is either not a data
 frame or the columns are not all numeric. The braced expressions are anonymous
-functions of `.` (as in `magrittr`). The final expression `%|>%` catches an
+functions of '.' (as in `magrittr`). The final expression `%|>%` catches an
 error and performs `head` on the last valid input (`iris`).
 
 
@@ -252,8 +253,9 @@ letters[1:10] %v>% colSums %|>% sum %||% message("Can't process this")
 
 Overall, in Rmonad, errors are well-behaved. It is reasonable to write
 functions that return an error rather than one of the myriad default values
-(`NULL`, `NA`, `logical(0)`, `list()`, `FALSE`). This is unambiguous. Rmonad
-can catch the error and allow allow the programmer to deal with it accordingly.
+(`NULL`, `NA`, `logical(0)`, `list()`, `FALSE`). This approach is unambiguous.
+Rmonad can catch the error and allow allow the programmer to deal with it
+accordingly.
 
 
 
@@ -262,16 +264,16 @@ can catch the error and allow allow the programmer to deal with it accordingly.
 If you want to perform an operation on a value inside the chain, but don't want
 to pass it, you can use the branch operator `%>^%`.
 
-```{r}
-rnorm(30) %>^% qplot(xlab="index", ylab="value") %>>% mean %>% unbranch
+```{r, eval=FALSE}
+rnorm(30) %>^% qplot(xlab="index", ylab="value") %>>% mean
 ```
 
 This stores the result of `qplot` in a branch off the main pipeline. This means
 that `plot` could fail, but the rest of the pipeline could continue. You can
 store multiple branches.
 
-```{r}
-rnorm(30) %>^% plot(xlab="index", ylab="value") %>^% summary %>>% mean
+```{r, eval=FALSE}
+rnorm(30) %>^% qplot(xlab="index", ylab="value") %>^% summary %>>% mean
 ```
 
 Branches can be used as input, as well.

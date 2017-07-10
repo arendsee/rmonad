@@ -139,15 +139,15 @@ NULL
 #' @rdname infix
 #' @export
 `%__%` <- function(lhs, rhs) {
-  code <- deparse(substitute(rhs))
-  rhs <- as_monad(rhs, code)
+  lhs <- as_monad(lhs, desc=deparse(substitute(lhs)))
+  rhs <- as_monad(rhs, desc=deparse(substitute(rhs)))
   .m_inherit(child=rhs, parents=lhs, force_keep=FALSE)
 }
 
 #' @rdname infix
 #' @export
 `%v__%` <- function(lhs, rhs) {
-  code <- deparse(substitute(rhs))
-  rhs <- as_monad(rhs, code)
+  lhs <- as_monad(lhs, desc=deparse(substitute(lhs)))
+  rhs <- as_monad(rhs, desc=deparse(substitute(rhs)))
   .m_inherit(child=rhs, parents=lhs, force_keep=TRUE)
 }
