@@ -119,21 +119,20 @@ lsmeval(
 ### Chain independent pipelines, with documentation
 
 ```{r}
-runif(10)  %>>% abs %>% doc(
+runif(5) %>>% abs %>% doc(
 
     "Alternatively, the documentation could go into a text block below the code
-in a knitr document. The advantage of having documentation here, is that it is
-coupled unambiguously to the generating function. This is a monadic
-interpretation of literate programming. These annotations, together with the
-ability to chain chains of monads, allows whole complex workflows to be built,
-with the results collated into a single monad. All errors propagate exactly as
-errors should, only affecting downstream computations. The final monad can be
-converted into a markdown document. A graph of functions can automatically be
-built. Summaries of the locations of errors. The monad could be extended for
-automated benchmarking."
+    in a knitr document. The advantage of having documentation here, is that it
+    is coupled unambiguously to the generating function. These annotations,
+    together with the ability to chain chains of monads, allows whole complex
+    workflows to be built, with the results collated into a single object. All
+    errors propagate exactly as errors should, only affecting downstream
+    computations. The final object can be converted into a markdown document
+    and automatically generated function graphs."
 
-                  ) %>^% sum %^__%
-rnorm("a") %>>% abs %>^% sum %^__%
-rexp(10)   %>>% abs %>^% sum %>%
-    mtabulate
+                  ) %>^% sum %__%
+rnorm(6)   %>>% abs %>^% sum %v__%
+rnorm("a") %>>% abs %>^% sum %__%
+rexp(6)    %>>% abs %>^% sum %T>%
+  { print(mtabulate(.)) } %>% missues
 ```

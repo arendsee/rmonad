@@ -391,13 +391,12 @@ runif(5) %>>% abs %>% doc(
 
     "Alternatively, the documentation could go into a text block below the code
     in a knitr document. The advantage of having documentation here, is that it
-    is coupled unambiguously to the generating function. This is a monadic
-    interpretation of literate programming. These annotations, together with
-    the ability to chain chains of monads, allows whole complex workflows to be
-    built, with the results collated into a single monad. All errors propagate
-    exactly as errors should, only affecting downstream computations. The final
-    monad can be converted into a markdown document and automatically generated
-    function graphs."
+    is coupled unambiguously to the generating function. These annotations,
+    together with the ability to chain chains of monads, allows whole complex
+    workflows to be built, with the results collated into a single object. All
+    errors propagate exactly as errors should, only affecting downstream
+    computations. The final object can be converted into a markdown document
+    and automatically generated function graphs."
 
                   ) %>^% sum %__%
 rnorm(6)   %>>% abs %>^% sum %v__%

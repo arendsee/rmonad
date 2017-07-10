@@ -1,10 +1,6 @@
 [![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=master)](https://travis-ci.org/arendsee/rmonad)
 [![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/master.svg)](https://codecov.io/github/arendsee/rmonad?branch=master)
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-
-
 
 # `rmonad`
 
@@ -31,7 +27,7 @@ You may use `rmonad` to
 
 ## Installation
 
-You can install rmonad from github with:
+You can install from github with:
 
 
 ```r
@@ -57,12 +53,12 @@ library(rmonad)
     sqrt %v>% # record an intermediate value
     sqrt %>>%
     sqrt
-#> R> 1:5
-#> R> sqrt
+#> R> "1:5"
+#> R> "sqrt"
 #> [1] 1.000000 1.414214 1.732051 2.000000 2.236068
 #> 
-#> R> sqrt
-#> R> sqrt
+#> R> "sqrt"
+#> R> "sqrt"
 #> 
 #>  ----------------- 
 #> 
@@ -81,9 +77,9 @@ cars %>_% plot(xlab="index", ylab="value") %>>% summary
 ![plot of chunk unnamed-chunk-4](README-unnamed-chunk-4-1.png)
 
 ```
-#> R> cars
-#> R> plot(xlab = "index", ylab = "value")
-#> R> summary
+#> R> "cars"
+#> R> "plot(xlab = "index", ylab = "value")"
+#> R> "summary"
 #> 
 #>  ----------------- 
 #> 
@@ -127,22 +123,14 @@ lsmeval(
     runif("df"),
     1:10
 )
-#> [[1]]
-#> R> runif(5)
-#> 
-#> [[1]]
-#> R> stop("stop, drop and die")
-#>  * ERROR: stop, drop and die
-#> 
-#> [[1]]
-#> R> runif("df")
+#> R> "1:10"
+#> R> "runif("df")"
 #>  * ERROR: invalid arguments
 #>  * WARNING: NAs introduced by coercion
-#> 
-#> [[1]]
-#> R> 1:10
-#> 
-#> R> lsmeval(runif(5), stop("stop, drop and die"), runif("df"), 1:10)
+#> R> "stop("stop, drop and die")"
+#>  * ERROR: stop, drop and die
+#> R> "runif(5)"
+#> R> "lsmeval(runif(5), stop("stop, drop and die"), runif("df"), 1:10)"
 #> 
 #>  ----------------- 
 #> 
@@ -178,22 +166,34 @@ lsmeval(
 
 
 ```r
-runif(10)  %>>% abs %>% doc(
+runif(5) %>>% abs %>% doc(
 
     "Alternatively, the documentation could go into a text block below the code
-in a knitr document. The advantage of having documentation here, is that it is
-coupled unambiguously to the generating function. This is a monadic
-interpretation of literate programming. These annotations, together with the
-ability to chain chains of monads, allows whole complex workflows to be built,
-with the results collated into a single monad. All errors propagate exactly as
-errors should, only affecting downstream computations. The final monad can be
-converted into a markdown document. A graph of functions can automatically be
-built. Summaries of the locations of errors. The monad could be extended for
-automated benchmarking."
+    in a knitr document. The advantage of having documentation here, is that it
+    is coupled unambiguously to the generating function. These annotations,
+    together with the ability to chain chains of monads, allows whole complex
+    workflows to be built, with the results collated into a single object. All
+    errors propagate exactly as errors should, only affecting downstream
+    computations. The final object can be converted into a markdown document
+    and automatically generated function graphs."
 
-                  ) %>^% sum %^__%
-rnorm("a") %>>% abs %>^% sum %^__%
-rexp(10)   %>>% abs %>^% sum %>%
-    mtabulate
-#> Error in (function (..., deparse.level = 1, make.row.names = TRUE, stringsAsFactors = default.stringsAsFactors()) : invalid list argument: all variables should have the same length
+                  ) %>^% sum %__%
+rnorm(6)   %>>% abs %>^% sum %v__%
+rnorm("a") %>>% abs %>^% sum %__%
+rexp(6)    %>>% abs %>^% sum %T>%
+  { print(mtabulate(.)) } %>% missues
+#>          code    OK cached  time space nbranch nnotes nwarnings error doc
+#> 2    runif(5)  TRUE  FALSE    NA    NA       0      0         0     0   0
+#> 21        sum  TRUE   TRUE 0.001    NA       0      0         0     0   0
+#> 3         abs  TRUE  FALSE 0.001    88       1      0         0     0   1
+#> 4    rnorm(6)  TRUE  FALSE    NA    NA       0      0         0     0   0
+#> 5         sum  TRUE   TRUE 0.001    NA       0      0         0     0   0
+#> 6         abs  TRUE   TRUE 0.001    88       1      0         0     0   0
+#> 7  rnorm("a") FALSE  FALSE    NA     0       0      0         1     1   0
+#> 8     rexp(6)  TRUE  FALSE    NA    NA       0      0         0     0   0
+#> 9         sum  TRUE   TRUE 0.000    NA       0      0         0     0   0
+#> 10        abs  TRUE   TRUE 0.000    88       1      0         0     0   0
+#>   id    type                      issue
+#> 1  7   error          invalid arguments
+#> 2  7 warning NAs introduced by coercion
 ```
