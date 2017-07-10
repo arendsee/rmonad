@@ -1,18 +1,9 @@
-#' Special rmonad printers
-#'
-#' @param x An object to print
-#' @param verbose logical print verbose output (include benchmarking)
-#' @param ... Additional arguments going to God knows where
-#' @name rmonad_printers
-
-NULL
-
 # sugar!
 .scat <- function(s, ...) cat(sprintf(s, ...)) 
 
 .print_record <- function(x, verbose=FALSE, print_value=TRUE, ...) {
 
-  .scat('#%s> "%s"', m_id(x), paste(m_code(x), collapse="\n"))
+  .scat('R> "%s"', paste(m_code(x), collapse="\n"))
 
   if(verbose && (.has_time(x) || .has_mem(x))){
     cat("\n  ")
@@ -46,11 +37,15 @@ NULL
   cat("\n")
 }
 
-#' @rdname rmonad_printers
-#' @export 
+#' Rmonad print generic function
+#'
+#' @param x An Rmonad object
+#' @param verbose logical print verbose output (include benchmarking)
+#' @param ... Additional arguments (unused)
+#' @export
 print.Rmonad <- function(x, verbose=FALSE, ...){
 
-  ms <- monad_to_list(x)
+  ms <- as.list(x)
 
   for(i in seq_len(length(ms)-1)){
     .print_record(ms[[i]], print_value=TRUE)
@@ -70,3 +65,19 @@ print.Rmonad <- function(x, verbose=FALSE, ...){
 setMethod("show", "Rmonad",
   function(object) print(object)
 )
+
+#' Convert an rmonad object to a list of monads
+#'
+#' @param x An Rmonad object
+#' @param ... Additional arguments (unused)
+#' @export
+as.list.Rmonad <- function(x, ...){
+  ms <- list(x)
+  for(b in m_branch(x)){
+    ms <- append(as.list(b), ms)
+  }
+  for(p in m_parents(x)){
+    ms <- append(as.list(p), ms)
+  }
+  unique(ms)
+}

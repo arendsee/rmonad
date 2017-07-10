@@ -143,10 +143,9 @@ the `mtabulate` function.
     sqrt %>% mtabulate
 ```
 
-The `id` colum holds a unique id for each step in the monadic sequence. These
-can be extracted with the `extract_by_id`. This function is given such a long
-awkward name because it is not stable yet, and will soon be replaced with
-something better.
+An internal states can be accessed by converting the monad to a list of past
+states and simple indexing out the ones you want.
+
 
 All errors, warnings and notes can be extracted with the `missues` command
 
@@ -154,6 +153,13 @@ All errors, warnings and notes can be extracted with the `missues` command
 -2:2 %>>% sqrt %>>% colSums %>% missues
 ```
 
+The `id` column refers to row numbers in the `mtabulate` output. Internal
+values can be extracted by converting the monad to a list and indexing:
+
+```{r}
+result <- 1:5 %v>% sqrt %v>% sqrt %v>% sqrt
+as.list(result)[[2]] %>% esc
+```
 
 ## Handling effects
 

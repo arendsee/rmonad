@@ -18,6 +18,6 @@ The input Rmonad with an added doc string
 Add documentation to a monad
 }
 \seealso{
-Other monad-to-monad: \code{\link{extract_by_id}},
-  \code{\link{forget}}, \code{\link{store}}
+Other monad-to-monad: \code{\link{forget}},
+  \code{\link{store}}
 }

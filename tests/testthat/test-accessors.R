@@ -1,9 +1,8 @@
 context("accessor methods")
 
-m <- new_rmonad()
+m <- Rmonad()
 
 test_that("The .has_* correctly return false", {
-  expect_equal(.has_id(m),       TRUE )
   expect_equal(.has_branch(m),   FALSE)
   expect_equal(.has_doc(m),      FALSE)
   expect_equal(.has_error(m),    FALSE)

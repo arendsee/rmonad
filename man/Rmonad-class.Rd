@@ -15,8 +15,6 @@ The eponymous monad type
 
 \item{\code{OK}}{logical Is the monad passing?}
 
-\item{\code{id}}{integer A unique ID for the object}
-
 \item{\code{code}}{A string showing the function that created record's report}
 
 \item{\code{error}}{An error in this this record}

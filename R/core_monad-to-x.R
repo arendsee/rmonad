@@ -4,13 +4,13 @@
 #' @param m An Rmonad
 #' @export
 mtabulate <- function(m){
-  ms <- monad_to_list(m)
-  do.call(rbind.data.frame, lapply(ms, .mtabulate)) %>%
+  ms <- as.list(m)
+  d <- do.call(rbind.data.frame, lapply(ms, .mtabulate)) %>%
     as.data.frame
+  d
 }
 .mtabulate <- function(m){
   list(
-    id        = m_id(m),
     code      = paste(m_code(m), collapse="\n"),
     OK        = m_OK(m),
     cached    = !is.null(m_value(m)),
@@ -30,21 +30,23 @@ mtabulate <- function(m){
 #' @param m An Rmonad
 #' @export
 missues <- function(m){
-  ms <- monad_to_list(m)
+  ms <- as.list(m)
+  cid <- 1L
+  .missues <- function(m) {
+    type <- c(
+              rep.int("error",   length(m_error(m))    ),
+              rep.int("warning", length(m_warnings(m)) ),
+              rep.int("note",    length(m_notes(m))    )
+             )
+    issue <- as.character(c(m_error(m), m_warnings(m), m_notes(m)))
+    idcol <- rep(cid, length(type))
+    cid <<- cid + 1
+    list(id=idcol, type=type, issue=issue) 
+  }
   do.call(rbind.data.frame, lapply(ms, .missues)) %>%
     as.data.frame  # NOTE: this cast is required, since the above code
                    # silently mishandles the case or a zero-row data
                    # frame (it returns a list).
-}
-.missues <- function(m) {
-  type <- c(
-            rep.int("error",   length(m_error(m))    ),
-            rep.int("warning", length(m_warnings(m)) ),
-            rep.int("note",   length(m_notes(m))    )
-           )
-  issue <- as.character(c(m_error(m), m_warnings(m), m_notes(m)))
-  id <- rep(m_id(m), length(type))
-  list(id=id, type=type, issue=issue) 
 }
 
 #' Returns the value of a monad holds
@@ -99,68 +101,54 @@ NULL
 #' @rdname rmonad_unwrap
 #' @export
 unstore <- function(m) {
-  lapply(monad_to_list(m), m_value)
+  lapply(as.list(m), m_value)
 }
 
 #' @rdname rmonad_unwrap
 #' @export
 uncode <- function(m) {
-  lapply(monad_to_list(m), m_code)
+  lapply(as.list(m), m_code)
 }
 
 #' @rdname rmonad_unwrap
 #' @export
 unerror <- function(m) {
-  lapply(monad_to_list(m), m_error)
+  lapply(as.list(m), m_error)
 }
 
 #' @rdname rmonad_unwrap
 #' @export
 unwarnings <- function(m) {
-  lapply(monad_to_list(m), m_warnings)
+  lapply(as.list(m), m_warnings)
 }
 
 #' @rdname rmonad_unwrap
 #' @export
 unnotes <- function(m) {
-  lapply(monad_to_list(m), m_notes)
+  lapply(as.list(m), m_notes)
 }
 
 #' @rdname rmonad_unwrap
 #' @export
 undoc <- function(m) {
-  lapply(monad_to_list(m), m_doc)
+  lapply(as.list(m), m_doc)
 }
 
 #' @rdname rmonad_unwrap
 #' @export
 untime <- function(m) {
-  lapply(monad_to_list(m), m_time)
+  lapply(as.list(m), m_time)
 }
 
 #' @rdname rmonad_unwrap
 #' @export 
 unbranch <- function(m){
 
-  ms <- monad_to_list(m)
+  as.list(m)               %>%
+    Filter(f=.has_branch)  %>%
+    lapply(m_branch)       %>%
+    lapply(rev)            %>%
+    unlist                 %>%
+    append(x=list(m))
 
-  bs <- lapply(ms, m_branch) %>% unlist
-
-  bs <- unique(list(m) %++% bs)
-
-  nfailed <- lapply(bs, m_OK) %>% unlist %>% `!` %>% sum
-  n <- length(bs)
-
-  error <- if(nfailed > 0) {
-    paste(nfailed, "of", n, "branches failed")
-  } else {
-    NULL
-  }
-
-  mu <- new_rmonad()
-  m_value(mu) <- bs
-  m_OK(mu)    <- nfailed == 0
-  m_error(mu) <- error
-
-  mu
 }

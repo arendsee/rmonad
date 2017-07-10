@@ -8,8 +8,8 @@ test_that('combine works with lists given as variables', {
 
 test_that('combine and lsmeval store history in list', {
 
-  expect_equal( length(monad_to_list(combine(l))[-1]),        2 )
-  expect_equal( length(monad_to_list(lsmeval("hi", 42))[-1]), 2 )
+  expect_equal( length(as.list(combine(l))[-1]),        2 )
+  expect_equal( length(as.list(lsmeval("hi", 42))[-1]), 2 )
 
 })
 

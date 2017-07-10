@@ -65,19 +65,23 @@ test_that('Alteratives (%||%) work', {
 
 test_that('branching works %>^%', {
   expect_equal(
-    16 %>^% sqrt %>^% sqrt %>% unbranch %>% esc %>% lapply(m_value),
-    list(16,4,4)
+    16 %>^% sqrt %>^% '*'(2) %>% unbranch %>% lapply(m_value),
+    list(16,4,32)
+  )
+  expect_equal(
+    16 %>^% stop(1) %>^% '*'(2) %>% unbranch %>% lapply(m_value),
+    list(16,NULL,32)
   )
 })
 
-diff <- function(a,s) { s - a }
+foo <- function(x,y) { x - y }
 test_that('branching function work %^>%', {
   expect_equal(
-    1:10 %>^% '*'(2) %>^% '*'(3) %^>% diff %>% esc,
+    1:10 %>^% '*'(3) %>^% '*'(2) %^>% foo %>% esc,
     -1 * 1:10
   )
   expect_true(
-    1:10 %>^% '*'(2) %>^% '*'(3) %^>% diff %>% m_OK,
+    1:10 %>^% '*'(3) %>^% '*'(2) %^>% foo %>% m_OK,
   )
 })
 

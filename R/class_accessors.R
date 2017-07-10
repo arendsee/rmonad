@@ -25,7 +25,6 @@ NULL
   !is.null(x) && !is.na(x) && is.numeric(x) && length(x) != 0
 }
 
-.has_id       <- function(m) m_id(m) > 0
 .has_code     <- function(m) .is_valid_string(m_code(m))
 .has_error    <- function(m) length(m_error(m))    != 0
 .has_doc      <- function(m) length(m_doc(m))      != 0
@@ -122,10 +121,6 @@ m_code     <- function(m) m@code
 
 #' @rdname rmonad_accessors
 #' @export
-m_id       <- function(m) m@id
-
-#' @rdname rmonad_accessors
-#' @export
 m_error   <- function(m) .maybe_vector_get(m@error)
 
 #' @rdname rmonad_accessors
@@ -173,13 +168,6 @@ m_branch   <- function(m) m@branch
 #' @export
 `m_OK<-` <- function(m, value) {
   m@OK <- value
-  m
-}
-
-#' @rdname rmonad_accessors
-#' @export
-`m_id<-` <- function(m, value) {
-  m@id <- value
   m
 }
 

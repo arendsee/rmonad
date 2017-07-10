@@ -17,5 +17,5 @@ Clear an rmonad's parents
 }
 \seealso{
 Other monad-to-monad: \code{\link{doc}},
-  \code{\link{extract_by_id}}, \code{\link{store}}
+  \code{\link{store}}
 }

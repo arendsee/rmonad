@@ -6,7 +6,6 @@
 \alias{m_value}
 \alias{m_OK}
 \alias{m_code}
-\alias{m_id}
 \alias{m_error}
 \alias{m_warnings}
 \alias{m_notes}
@@ -15,7 +14,6 @@
 \alias{m_mem}
 \alias{m_branch}
 \alias{m_OK<-}
-\alias{m_id<-}
 \alias{m_value<-}
 \alias{m_parents<-}
 \alias{m_code<-}
@@ -39,8 +37,6 @@ m_OK(m)
 
 m_code(m)
 
-m_id(m)
-
 m_error(m)
 
 m_warnings(m)
@@ -56,8 +52,6 @@ m_mem(m)
 m_branch(m)
 
 m_OK(m) <- value
-
-m_id(m) <- value
 
 m_value(m) <- value
 
