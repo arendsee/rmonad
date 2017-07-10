@@ -79,6 +79,13 @@ Below, we store an intermediate value in the monad:
 The `%v>%` variant of the *monadic bind* operator stores the results as they
 are passed.
 
+Following the example of `magrittr`, arbirary anonymous functions of '.' are
+supported
+
+```{r}
+1:5 %>>% { o <- . * 2 ; { o + . } %>% { . + o } }
+```
+
 Warnings are caught and stored
 
 ```{r}
@@ -303,6 +310,27 @@ rexp(10)  %>>% sum
 The `%v__%` operator records the output of the lhs and evaluates the rhs into
 an Rmonad. If you don't care about the output, you can use `%__%`, which simply
 replaces the rhs value with lhs value (while, of course, propagating state).
+
+The `%__%` operator is a little like a ';', in that it demarcates independent
+statements. Each statement, though, is wrapped into a graph of operations. This
+graph is itself data, and can be computed on. You could take any analysis and
+recompose it as `%v__%` delimited blocks. The result of running the analysis
+would be a data structure containing all results and errors.
+
+```{r, eval=FALSE}
+program <-
+{
+    x = 2
+    y = 5
+    x * y
+} %v__% {
+    letters %>% sqrt
+} %v__% {
+    10 * x
+}
+```
+
+You can link chunks of code, with their results, and performance information.
 
 
 
