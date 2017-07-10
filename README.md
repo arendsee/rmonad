@@ -1,7 +1,3 @@
-[![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=master)](https://travis-ci.org/arendsee/rmonad)
-[![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/master.svg)](https://codecov.io/github/arendsee/rmonad?branch=master)
-
-
 # `rmonad`
 
 Chain monadic sequences into stateful, branching pipelines.
@@ -72,24 +68,6 @@ library(rmonad)
 ```r
 # Both plots and summarizes an input table
 cars %>_% plot(xlab="index", ylab="value") %>>% summary
-```
-
-![plot of chunk unnamed-chunk-4](README-unnamed-chunk-4-1.png)
-
-```
-#> R> "cars"
-#> R> "plot(xlab = "index", ylab = "value")"
-#> R> "summary"
-#> 
-#>  ----------------- 
-#> 
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
 ```
 
 
@@ -191,7 +169,7 @@ rexp(6)    %>>% abs %>^% sum %T>%
 #> 6         abs  TRUE   TRUE 0.001    88       1      0         0     0   0
 #> 7  rnorm("a") FALSE  FALSE    NA     0       0      0         1     1   0
 #> 8     rexp(6)  TRUE  FALSE    NA    NA       0      0         0     0   0
-#> 9         sum  TRUE   TRUE 0.000    NA       0      0         0     0   0
+#> 9         sum  TRUE   TRUE 0.001    NA       0      0         0     0   0
 #> 10        abs  TRUE   TRUE 0.000    88       1      0         0     0   0
 #>   id    type                      issue
 #> 1  7   error          invalid arguments

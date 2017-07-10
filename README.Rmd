@@ -70,7 +70,7 @@ library(rmonad)
 
 ### Add effects inside a pipeline
 
-```{r}
+```{r, eval=FALSE}
 # Both plots and summarizes an input table
 cars %>_% plot(xlab="index", ylab="value") %>>% summary
 ```
