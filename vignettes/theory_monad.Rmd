@@ -33,7 +33,7 @@ undefined behavior and side effects. We can describe the action of a function
 abstractly as
 
 ```
-    a -> m b
+a -> m b
 ```
 
 Where `a` is the pure input value, `b` is the pure output value, and `m`

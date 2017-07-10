@@ -90,12 +90,12 @@ default_combine <- function(m, o){
     # for either degugging or passage to alternative handlers.
     m_value(o) <- m_value(m)
   }
-  m_history(o) <- .make_history(m)
-  o
+
+  .m_inherit(child=o, parents=m)
 }
 
 bypass_combine <- function(m, o){
-  m_value(o) <- m_value(m)
-  m_history(o) <- .make_history(m)
-  o
+  # the new value inherits the old value, losing whatever it had
+  # but the pass/fail state of the child is preserved
+  .m_inherit(child=o, parents=m, inherit_value=TRUE, inherit_OK=FALSE)
 }

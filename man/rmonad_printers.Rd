@@ -2,12 +2,9 @@
 % Please edit documentation in R/class_print.R
 \name{rmonad_printers}
 \alias{rmonad_printers}
-\alias{print.record}
 \alias{print.Rmonad}
 \title{Special rmonad printers}
 \usage{
-\method{print}{record}(x, verbose = FALSE, ...)
-
 \method{print}{Rmonad}(x, verbose = FALSE, ...)
 }
 \arguments{

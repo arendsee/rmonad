@@ -103,7 +103,7 @@ The first `sqrt` failed, and this step was coupled to the resultant error.
 Contrast this with `magrittr`, where the location of the error is lost:
 
 ```{r, error=TRUE}
-"wrench" %>>%
+"wrench" %>%
     sqrt %>%
     sqrt %>%
     sqrt
@@ -145,6 +145,11 @@ the `mtabulate` function.
     sqrt %>% mtabulate
 ```
 
+All errors, warnings and notes can be extracted with the `missues` command
+
+```{r}
+-2:2 %>>% sqrt %>>% colSums %>% missues
+```
 
 
 ## Handling effects
@@ -338,6 +343,8 @@ lsmeval(
 
 Monadic list evaluation is the natural way to build large programs from smaller
 pieces.
+
+
 
 ## Annotating steps
 

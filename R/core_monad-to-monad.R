@@ -9,14 +9,14 @@ store <- function(m){
   .store(m)
 }
 
-#' Wipe a monad's history
+#' Clear an rmonad's parents
 #'
 #' @family monad-to-monad
 #' @param m An Rmonad
-#' @return The input Rmonad with history erased
+#' @return The input Rmonad with all parents erased
 #' @export 
 forget <- function(m){
-  m_history(m) <- list()
+  m_parents(m) <- list()
   m
 }
 
@@ -30,4 +30,33 @@ forget <- function(m){
 doc <- function(m, ...){
   m_doc(m) <- paste(list(...), collapse=" ")
   m
+}
+
+#' Extract a monad by ID
+#'
+#' If the id is not found, an error is raised
+#'
+#' @family monad-to-monad
+#' @param m An Rmonad
+#' @param id a single integer ID
+#' @param isolate logical, should the context of the returned monad be removed
+#' @return a single Rmonad
+#' @export
+mfind <- function(m, id, isolate=FALSE){
+  stopifnot(length(id) == 1)
+  .id_equal <- function(x) {
+    m_id(x) == id
+  }
+  ms <- monad_to_list(m) %>%
+    Filter(f=.id_equal)  %>%
+    unique               %>%
+    unlist
+  x <- if(length(ms) != 1){
+    as_monad(stop("id not found"))
+  } else {
+    ms[[1]]
+  }
+  if(isolate)
+    x <- forget(x)
+  x
 }

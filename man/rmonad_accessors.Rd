@@ -2,7 +2,7 @@
 % Please edit documentation in R/class_accessors.R
 \name{rmonad_accessors}
 \alias{rmonad_accessors}
-\alias{m_history}
+\alias{m_parents}
 \alias{m_value}
 \alias{m_OK}
 \alias{m_code}
@@ -14,10 +14,10 @@
 \alias{m_time}
 \alias{m_mem}
 \alias{m_branch}
-\alias{m_history<-}
 \alias{m_OK<-}
 \alias{m_id<-}
 \alias{m_value<-}
+\alias{m_parents<-}
 \alias{m_code<-}
 \alias{m_error<-}
 \alias{m_warnings<-}
@@ -26,13 +26,12 @@
 \alias{m_time<-}
 \alias{m_mem<-}
 \alias{m_branch<-}
-\alias{app_history}
 \alias{app_warnings}
 \alias{app_notes}
 \alias{app_branch}
 \title{get, set, and append rmonad fields}
 \usage{
-m_history(m)
+m_parents(m)
 
 m_value(m)
 
@@ -56,13 +55,13 @@ m_mem(m)
 
 m_branch(m)
 
-m_history(m) <- value
-
 m_OK(m) <- value
 
 m_id(m) <- value
 
 m_value(m) <- value
+
+m_parents(m) <- value
 
 m_code(m) <- value
 
@@ -79,8 +78,6 @@ m_time(m) <- value
 m_mem(m) <- value
 
 m_branch(m) <- value
-
-app_history(m, value)
 
 app_warnings(m, value)
 

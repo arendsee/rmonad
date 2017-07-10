@@ -1,18 +1,5 @@
 context("accessor methods")
 
-# TODO: add full testing for each
-# m_OK
-# m_branch
-# m_code
-# m_doc
-# m_error
-# m_history
-# m_mem
-# m_notes
-# m_time
-# m_value
-# m_warnings
-
 m <- new_rmonad()
 
 test_that("The .has_* correctly return false", {
@@ -25,7 +12,6 @@ test_that("The .has_* correctly return false", {
   expect_equal(.has_time(m),     FALSE)
   expect_equal(.has_value(m),    FALSE)
   expect_equal(.has_warnings(m), FALSE)
-  expect_equal(.has_history(m),  FALSE)
 })
 
 test_that("You get out what you put in", {

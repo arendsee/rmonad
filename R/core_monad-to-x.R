@@ -4,7 +4,8 @@
 #' @param m An Rmonad
 #' @export
 mtabulate <- function(m){
-  do.call(rbind.data.frame, lapply(m_history(m) %+% m, .mtabulate)) %>%
+  ms <- monad_to_list(m)
+  do.call(rbind.data.frame, lapply(ms, .mtabulate)) %>%
     as.data.frame
 }
 .mtabulate <- function(m){
@@ -29,7 +30,8 @@ mtabulate <- function(m){
 #' @param m An Rmonad
 #' @export
 missues <- function(m){
-  do.call(rbind.data.frame, lapply(m_history(m) %+% m, .missues)) %>%
+  ms <- monad_to_list(m)
+  do.call(rbind.data.frame, lapply(ms, .missues)) %>%
     as.data.frame  # NOTE: this cast is required, since the above code
                    # silently mishandles the case or a zero-row data
                    # frame (it returns a list).
@@ -97,50 +99,54 @@ NULL
 #' @rdname rmonad_unwrap
 #' @export
 unstore <- function(m) {
-  lapply(m_history(m) %+% m, m_value)
+  lapply(monad_to_list(m), m_value)
 }
 
 #' @rdname rmonad_unwrap
 #' @export
 uncode <- function(m) {
-  lapply(m_history(m) %+% m, m_code)
+  lapply(monad_to_list(m), m_code)
 }
 
 #' @rdname rmonad_unwrap
 #' @export
 unerror <- function(m) {
-  lapply(m_history(m) %+% m, m_error)
+  lapply(monad_to_list(m), m_error)
 }
 
 #' @rdname rmonad_unwrap
 #' @export
 unwarnings <- function(m) {
-  lapply(m_history(m) %+% m, m_warnings)
+  lapply(monad_to_list(m), m_warnings)
 }
 
 #' @rdname rmonad_unwrap
 #' @export
 unnotes <- function(m) {
-  lapply(m_history(m) %+% m, m_notes)
+  lapply(monad_to_list(m), m_notes)
 }
 
 #' @rdname rmonad_unwrap
 #' @export
 undoc <- function(m) {
-  lapply(m_history(m) %+% m, m_doc)
+  lapply(monad_to_list(m), m_doc)
 }
 
 #' @rdname rmonad_unwrap
 #' @export
 untime <- function(m) {
-  lapply(m_history(m) %+% m, m_time)
+  lapply(monad_to_list(m), m_time)
 }
 
 #' @rdname rmonad_unwrap
 #' @export 
 unbranch <- function(m){
 
-  bs <- .unbranch_r(m)
+  ms <- monad_to_list(m)
+
+  bs <- lapply(ms, m_branch) %>% unlist
+
+  bs <- unique(list(m) %++% bs)
 
   nfailed <- lapply(bs, m_OK) %>% unlist %>% `!` %>% sum
   n <- length(bs)
@@ -157,11 +163,4 @@ unbranch <- function(m){
   m_error(mu) <- error
 
   mu
-}
-.unbranch_r <- function(m){
-  bs <- append(forget(m), lapply(m_branch(m), .unbranch_r) %>% unlist)
-  bs <- append(bs, lapply(m_history(m), .unbranch_record) %>% unlist)
-}
-.unbranch_record <- function(r){
-  lapply(m_branch(r), .unbranch_r) %>% unlist
 }

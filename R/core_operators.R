@@ -130,8 +130,7 @@ NULL
 `%__%` <- function(lhs, rhs) {
   code <- deparse(substitute(rhs))
   rhs <- as_monad(rhs, code)
-  m_history(rhs) <- .make_history(lhs)
-  rhs
+  .m_inherit(child=rhs, parents=lhs, force_keep=FALSE)
 }
 
 #' @rdname infix
@@ -139,7 +138,5 @@ NULL
 `%v__%` <- function(lhs, rhs) {
   code <- deparse(substitute(rhs))
   rhs <- as_monad(rhs, code)
-  lhs@stage@x <- lhs@x
-  m_history(rhs) <- .make_history(lhs)
-  rhs
+  .m_inherit(child=rhs, parents=lhs, force_keep=TRUE)
 }

@@ -10,11 +10,9 @@ NULL
 # sugar!
 .scat <- function(s, ...) cat(sprintf(s, ...)) 
 
-#' @rdname rmonad_printers
-#' @export 
-print.record <- function(x, verbose=FALSE, ...) {
+.print_record <- function(x, verbose=FALSE, print_value=TRUE, ...) {
 
-  .scat("R> %s", paste(m_code(x), collapse="\n"))
+  .scat('#%s> "%s"', m_id(x), paste(m_code(x), collapse="\n"))
 
   if(verbose && (.has_time(x) || .has_mem(x))){
     cat("\n  ")
@@ -41,33 +39,29 @@ print.record <- function(x, verbose=FALSE, ...) {
   if(.has_branch(x)){
     .scat("\nHas %s branches", length(.has_branch(x)))
   }
-  if(.has_value(x)){
+  if(.m_stored(x) && print_value){
     cat("\n")
     print(m_value(x))
   }
   cat("\n")
 }
-setMethod("show", "record",
-  function(object) print(object)
-)
 
 #' @rdname rmonad_printers
 #' @export 
 print.Rmonad <- function(x, verbose=FALSE, ...){
 
-  for(h in m_history(x)){
-    print(h)
+  ms <- monad_to_list(x)
+
+  for(i in seq_len(length(ms)-1)){
+    .print_record(ms[[i]], print_value=TRUE)
   }
+  .print_record(x, print_value=FALSE)
 
-  print(x@stage, verbose=verbose)
-
-  if(.has_history(x)){
+  if(length(ms) > 1){
     cat("\n ----------------- \n\n")
   }
 
-  if(.has_value(x)){
-    print(m_value(x))
-  }
+  print(m_value(x))
 
   if(!m_OK(x)){
     cat(" *** FAILURE *** \n")

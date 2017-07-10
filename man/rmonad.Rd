@@ -39,7 +39,7 @@ These are probably not the operators you are looking for
 
  \%>^\%    bind as a new branch, pass input on main
 
- \%__\%    transfer only history from the lhs (errors ignored)
+ \%__\%    keep parents from the lhs (errors ignored)
 
  \%v__\%   like \%__\% but store lhs result
 }
@@ -55,7 +55,7 @@ lsmeval - evaluate expressions into a list inside a monad
 \section{monad to monad functions}{
 
 
-forget - erase history from a monad
+forget - erase parents from a monad
 
 doc - add a documentation string to a monad
 

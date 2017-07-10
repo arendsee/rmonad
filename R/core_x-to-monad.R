@@ -36,7 +36,7 @@ as_monad <- function(expr, desc=NULL){
     type="message"
   )
 
-  if(class(value) == "Rmonad") { return(value) }
+  if(length(value) == 1 && class(value) == "Rmonad") { return(value) }
 
   if(!isOK) {
     value = NULL
@@ -114,24 +114,14 @@ combine <- function(ms, keep_history=TRUE, desc=NULL){
 
   ms <- lapply(ms, as_monad)
 
-  rec <- .indexed_record()
-
-  history <- if(keep_history) {
-    lapply(ms, .make_history)
-  } else {
-    list()
-  }
-
-  out <- new(
-     "Rmonad",
-     x        = list(),
-     stage    = rec,
-     history  = history
-  )
+  # make a new monad that is the child of all monads in the input list
+  out <- new_rmonad()
+  m_parents(out) <- ms
 
   # store all values (even if failing, in which case should be NULL)
   m_value(out) <- lapply(ms, m_value)
 
+  # monad is passing if all parents care cool
   m_OK(out) <- all(sapply(ms, m_OK))
 
   if(!is.null(desc)){

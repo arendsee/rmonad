@@ -17,6 +17,6 @@ Store a monad's value
 }
 \seealso{
 Other monad-to-monad: \code{\link{doc}},
-  \code{\link{forget}}
+  \code{\link{forget}}, \code{\link{mfind}}
 }
 \keyword{internal}

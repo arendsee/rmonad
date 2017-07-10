@@ -19,5 +19,5 @@ Add documentation to a monad
 }
 \seealso{
 Other monad-to-monad: \code{\link{forget}},
-  \code{\link{store}}
+  \code{\link{mfind}}, \code{\link{store}}
 }

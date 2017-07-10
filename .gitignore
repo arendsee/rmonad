@@ -2,3 +2,4 @@
 .RData
 .build.timestamp
 inst/doc
+tags

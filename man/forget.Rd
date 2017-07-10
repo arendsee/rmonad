@@ -2,7 +2,7 @@
 % Please edit documentation in R/core_monad-to-monad.R
 \name{forget}
 \alias{forget}
-\title{Wipe a monad's history}
+\title{Clear an rmonad's parents}
 \usage{
 forget(m)
 }
@@ -10,12 +10,12 @@ forget(m)
 \item{m}{An Rmonad}
 }
 \value{
-The input Rmonad with history erased
+The input Rmonad with all parents erased
 }
 \description{
-Wipe a monad's history
+Clear an rmonad's parents
 }
 \seealso{
 Other monad-to-monad: \code{\link{doc}},
-  \code{\link{store}}
+  \code{\link{mfind}}, \code{\link{store}}
 }

@@ -31,10 +31,11 @@ NULL
 .has_doc      <- function(m) length(m_doc(m))      != 0
 .has_warnings <- function(m) length(m_warnings(m)) != 0
 .has_notes    <- function(m) length(m_notes(m))    != 0
-.has_history  <- function(m) length(m_history(m))  != 0
+.has_parents  <- function(m) length(m_parents(m))  != 0
 .has_branch   <- function(m) length(m_branch(m))   != 0
 .has_time     <- function(m) .is_valid_real(m_time(m))
 .has_mem      <- function(m) .is_valid_integer(m_mem(m))
+.has_value    <- function(m) .m_stored(m) || !is.null(m_value(m))
 
 .maybe_vector_get <- function(x){
   if(length(x) == 0){
@@ -55,13 +56,49 @@ NULL
   }
 }
 
-## The `store` slot is likely to be reimplemented in the future
-## Also, the user should never directly access of change it
-## So I do not export these accessors
-.m_stored_value <- function(m) m@stage@x[[1]]
-`.m_stored_value<-` <- function(m, value) { m@stage@x <- list(value) ; m }
-# store a value
-.store <- function(m) { .m_stored_value(m) <- m_value(m) ; m }
+.m_stored <- function(m) {
+  m@.stored
+}
+`.m_stored<-` <- function(m, value) { m@.stored <- value ; m }
+# preserve value upon future bind
+.store <- function(m) { .m_stored(m) <- TRUE ; m }
+
+.rm_value_if <- function(m, force_keep=FALSE){
+  if(!force_keep && !.m_stored(m)){
+    m_value(m) <- NULL
+    .m_stored(m) <- FALSE
+  } else {
+    .m_stored(m) <- TRUE
+  }
+  m
+}
+
+# Function is central to bind. It determines how past context is passed to the
+# new value.
+.m_inherit <- function(
+  child,
+  parents,
+  inherit_value = FALSE,
+  inherit_OK    = FALSE,
+  force_keep    = FALSE
+) {
+  if(class(parents) == "Rmonad"){
+    if(inherit_value)
+      m_value(child) <- m_value(parents)
+    if(inherit_OK)
+      m_OK(child) <- m_OK(parents)
+    parents <- .rm_value_if(parents, force_keep=force_keep)
+    m_parents(child) <- list(parents)
+  } else {
+    if(inherit_value)
+      m_value(child) <- lapply(parents, m_value)
+    if(inherit_OK)
+      m_OK(m) <- all(lapply(parents, m_OK))
+    parents <- lapply(parents, .rm_value_if, force_keep=force_keep)
+    m_parents(child) <- parents
+  }
+  child
+}
 
 
 
@@ -69,7 +106,7 @@ NULL
 
 #' @rdname rmonad_accessors
 #' @export
-m_history  <- function(m) m@history
+m_parents  <- function(m) .maybe_vector_get(m@parents)
 
 #' @rdname rmonad_accessors
 #' @export
@@ -77,86 +114,36 @@ m_value    <- function(m) .maybe_vector_get(m@x)
 
 #' @rdname rmonad_accessors
 #' @export
-m_OK <- function(m) {
-  if(class(m) == "Rmonad"){
-    m@stage@OK
-  } else {
-    m@OK
-  }
-}
+m_OK <- function(m) m@OK
 
 #' @rdname rmonad_accessors
 #' @export
-m_code     <- function(m) {
-  if(class(m) == "Rmonad"){
-    m@stage@code
-  } else {
-    m@code
-  }
-}
+m_code     <- function(m) m@code
 
 #' @rdname rmonad_accessors
 #' @export
-m_id       <- function(m) {
-  if(class(m) == "Rmonad"){
-    m@stage@id
-  } else {
-    m@id
-  }
-}
+m_id       <- function(m) m@id
 
 #' @rdname rmonad_accessors
 #' @export
-m_error   <- function(m) {
-  x <- if(class(m) == "Rmonad"){
-    m@stage@error
-  } else {
-    m@error
-  }
-  .maybe_vector_get(x)
-}
+m_error   <- function(m) .maybe_vector_get(m@error)
 
 #' @rdname rmonad_accessors
 #' @export
-m_warnings <- function(m) {
-  x <- if(class(m) == "Rmonad"){
-    m@stage@warnings
-  } else {
-    m@warnings
-  }
-  .maybe_vector_get(x)
-}
+m_warnings <- function(m) .maybe_vector_get(m@warnings)
 
 #' @rdname rmonad_accessors
 #' @export
-m_notes    <- function(m) {
-  x <- if(class(m) == "Rmonad"){
-    m@stage@notes
-  } else {
-    m@notes
-  } 
-  .maybe_vector_get(x)
-}
+m_notes <- function(m) .maybe_vector_get(m@notes)
 
 #' @rdname rmonad_accessors
 #' @export
-m_doc      <- function(m) {
-  x <- if(class(m) == "Rmonad"){
-    m@stage@doc
-  } else {
-    m@doc
-  }
-  .maybe_vector_get(x)
-}
+m_doc <- function(m) .maybe_vector_get(m@doc)
 
 #' @rdname rmonad_accessors
 #' @export
-m_time     <- function(m) {
-  time <- if(class(m) == "Rmonad"){
-    m@stage@other$time
-  } else {
-    m@other$time
-  }
+m_time <- function(m) {
+  time <- m@other$time
   if(is.null(time)){
     NA_real_
   } else {
@@ -167,12 +154,8 @@ m_time     <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_mem      <- function(m) {
-  mem <- if(class(m) == "Rmonad"){
-    m@stage@other$mem
-  } else {
-    m@other$mem
-  }
+m_mem <- function(m) {
+  mem <- m@other$mem
   if(is.null(mem)){
     NA_real_
   } else {
@@ -182,34 +165,21 @@ m_mem      <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_branch   <- function(m) {
-  if(class(m) == "Rmonad"){
-    m@stage@branch
-  } else {
-    m@branch
-  }
-}
+m_branch   <- function(m) m@branch
 
 
-
-#' @rdname rmonad_accessors
-#' @export
-`m_history<-`  <- function(m, value) {
-  m@history <- value
-  m
-}
 
 #' @rdname rmonad_accessors
 #' @export
 `m_OK<-` <- function(m, value) {
-  m@stage@OK <- value
+  m@OK <- value
   m
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_id<-` <- function(m, value) {
-  m@stage@id <- value
+  m@id <- value
   m
 }
 
@@ -222,15 +192,22 @@ m_branch   <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
+`m_parents<-` <- function(m, value) {
+  m@parents <- .maybe_vector_set(value, .not_empty)
+  m
+}
+
+#' @rdname rmonad_accessors
+#' @export
 `m_code<-` <- function(m, value) {
-  m@stage@code <- value
+  m@code <- value
   m
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_error<-` <- function(m, value) {
-  m@stage@error <- .maybe_vector_set(value, .is_valid_string, expected_type=is.character)
+  m@error <- .maybe_vector_set(value, .is_valid_string, expected_type=is.character)
   m
 }
 
@@ -238,53 +215,46 @@ m_branch   <- function(m) {
 #' @rdname rmonad_accessors
 #' @export
 `m_warnings<-` <- function(m, value) {
-  m@stage@warnings <- .maybe_vector_set(value, .is_valid_string, expected_type=is.character)
+  m@warnings <- .maybe_vector_set(value, .is_valid_string, expected_type=is.character)
   m
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_notes<-` <- function(m, value) {
-  m@stage@notes <- .maybe_vector_set(value, .is_valid_string, expected_type=is.character)
+  m@notes <- .maybe_vector_set(value, .is_valid_string, expected_type=is.character)
   m
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_doc<-` <- function(m, value) {
-  m@stage@doc <- .maybe_vector_set(value, .is_valid_string, expected_type=is.character)
+  m@doc <- .maybe_vector_set(value, .is_valid_string, expected_type=is.character)
   m
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_time<-` <- function(m, value) {
-  m@stage@other$time <- value
+  m@other$time <- value
   m
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_mem<-` <- function(m, value) {
-  m@stage@other$mem <- value
+  m@other$mem <- value
   m
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_branch<-` <- function(m, value) {
-  m@stage@branch <- value
+  m@branch <- value
   m
 }
 
 
-
-#' @rdname rmonad_accessors
-#' @export
-app_history <- function(m, value) {
-  m_history(m) <- append(m@history, append(value@stage, value@history))
-  m
-}
 
 #' @rdname rmonad_accessors
 #' @export
