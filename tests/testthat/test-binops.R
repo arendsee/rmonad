@@ -14,8 +14,8 @@ test_that('%>>% and esc work (simple)', {
 })
 
 test_that('%>>% chaining works', {
-  expect_equal(1 %>>% '*'(2) %>>% '*'( 4 ) %>>% '*'(3) %>% esc     , 24 )
-  expect_true( 1 %>>% '*'(2) %>>% '*'( 4 ) %>>% '*'(3) %>% m_OK         )
+  expect_equal(1 %>>% '*'(2) %>>% '*'(4) %>>% '*'(3) %>% esc  , 24 )
+  expect_true( 1 %>>% '*'(2) %>>% '*'(4) %>>% '*'(3) %>% m_OK      )
 
   expect_equal(cars %>>% head %>>% colSums %>% esc, colSums(head(cars)))
   expect_true( cars %>>% head %>>% colSums %>% m_OK)

@@ -111,6 +111,18 @@ NULL
 `%||%` <- function(lhs, rhs) {
   envir <- parent.frame()
   rhs_str <- deparse(substitute(rhs))
+
+  emit <- function(i,o) {
+    # if the lhs failed, pass the evaluated rhs
+    if(m_OK(i)){
+      i
+    }
+    # else link the rhs to lhs input, and replace the lhs
+    else {
+      .m_inherit(child=o, parents=i)
+    }
+  }
+
   cmd   <- list(
     bind,
     substitute(lhs),
@@ -119,8 +131,7 @@ NULL
     bind_if = false,
     # and instead just evaluate the rhs
     bind_else = function(i,o) as_monad(o, desc=rhs_str),
-    # if the lhs failed, pass the evaluated rhs
-    emit = function(i,o) if(m_OK(i)){ i } else { o }
+    emit = emit
   )
   eval(as.call(cmd), envir=envir)
 }

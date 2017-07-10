@@ -11,8 +11,6 @@ vignette: >
 ```{r, echo=FALSE, message=FALSE}
 library(rmonad)
 library(magrittr)
-library(tibble)
-library(ggplot2)
 set.seed(210)
 ```
 
@@ -215,17 +213,6 @@ alternatives functions, and use the first that works.
 Here we will do either `colSums` or `sum`. The pipeline fails only if both
 fail.
 
-This operator can also be used as a pure try-catch:
-
-```{r}
-ident <- function(x) x
-iris %>>% tibble::as_data_frame %>>% colSums %|>% ident %>>% summary
-cars %>>% tibble::as_data_frame %>>% colSums %|>% ident %>>% summary
-```
-
-Where `ident` is the identity function. In this way, we can make chains of
-operations which may fail for some inputs.
-
 Sometimes you want to ignore the previous failure completely, and make a new
 call -- for example in reading files:
 
@@ -249,6 +236,13 @@ Or maybe you want to support multiple extensions for an input file
 ```{r, eval=FALSE}
 read.table("a.tab") %||% read.table("a.tsv") %>>% dostuff
 ```
+
+Used together with `%|>%` we can build full error handling pipelines
+
+```{r}
+letters[1:10] %v>% colSums %|>% sum %||% message("Can't process this")
+```
+
 
 Overall, in Rmonad, errors are well-behaved. It is reasonable to write
 functions that return an error rather than one of the myriad default values
