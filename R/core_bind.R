@@ -31,18 +31,21 @@ bind <- function(
   bind_args           = function(m) list(m_value(m))
 ){
   # FIXME: cleanup this implementation
+  # FIXME: !!!!!!!
 
   fdecon <- extract_docstring(substitute(f))
-  f <- fdecon$expr
-  fdoc <- fdecon$docstring
+  rhs_str <- deparse(fdecon$expr)
+  rhs_doc <- fdecon$docstring
 
   xdecon <- extract_docstring(substitute(x))
-  left_str <- deparse(xdecon$expr)
-  xdoc <- xdecon$docstring
+  lhs_str <- deparse(xdecon$expr)
+  lhs_doc <- xdecon$docstring
 
-  m <- entry_lhs_transform(x, f, desc=left_str)
+  m <- entry_lhs_transform(x, f, desc=lhs_str)
 
-  m_doc(m) <- xdoc
+  if(!.has_doc(m)){
+    m_doc(m) <- lhs_doc
+  }
 
   o <- if(bind_if(m))
   {
@@ -69,7 +72,7 @@ bind <- function(
 
     st <- system.time(
       {
-        o <- as_monad( eval(expr, envir=e), desc=deparse(fs) )
+        o <- as_monad( eval(expr, envir=e) )
       },
       gcFirst=FALSE # this kills performance when TRUE
     )
@@ -84,12 +87,13 @@ bind <- function(
   }
 
   if(!is.null(o)){
-    m_doc(o) <- fdoc
+    m_doc(o) <- rhs_doc
+    m_code(o) <- rhs_str
   }
 
-  o <- emit(m, o)
-  m_mem(o) <- as.integer(object.size(m_value(o)))
-  o
+  result <- emit(m, o)
+  m_mem(result) <- as.integer(object.size(m_value(result)))
+  result
 }
 
 emit_default <- function(i , o) {

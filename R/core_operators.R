@@ -123,7 +123,7 @@ NULL
     }
   }
 
-  cmd   <- list(
+  cmd <- list(
     bind,
     substitute(lhs),
     substitute(rhs),
@@ -136,18 +136,40 @@ NULL
   eval(as.call(cmd), envir=envir)
 }
 
+
+
 #' @rdname infix
 #' @export
 `%__%` <- function(lhs, rhs) {
-  lhs <- as_monad(lhs, desc=deparse(substitute(lhs)))
-  rhs <- as_monad(rhs, desc=deparse(substitute(rhs)))
-  .m_inherit(child=rhs, parents=lhs, force_keep=FALSE)
+
+  envir <- parent.frame()
+  .chain(substitute(lhs), substitute(rhs), FALSE, envir)
+
 }
 
 #' @rdname infix
 #' @export
 `%v__%` <- function(lhs, rhs) {
-  lhs <- as_monad(lhs, desc=deparse(substitute(lhs)))
-  rhs <- as_monad(rhs, desc=deparse(substitute(rhs)))
-  .m_inherit(child=rhs, parents=lhs, force_keep=TRUE)
+
+  envir <- parent.frame()
+  .chain(substitute(lhs), substitute(rhs), TRUE, envir)
+
+}
+
+.chain <- function(lhs, rhs, force_keep, envir) {
+
+  emit <- function(i,o) {
+    .m_inherit(child=o, parents=i, force_keep=force_keep)
+  }
+
+  envir <- parent.frame()
+  cmd <- list(
+    bind,
+    lhs,
+    rhs,
+    bind_if   = false,
+    bind_else = function(...){as_monad(eval(rhs, envir))},
+    emit      = emit
+  )
+  eval(as.call(cmd), envir=envir)
 }

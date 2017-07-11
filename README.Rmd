@@ -1,5 +1,5 @@
-[![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=master)](https://travis-ci.org/arendsee/rmonad)
-[![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/master.svg)](https://codecov.io/github/arendsee/rmonad?branch=master)
+[![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=dev)](https://travis-ci.org/arendsee/rmonad)
+[![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/dev.svg)](https://codecov.io/github/arendsee/rmonad?branch=dev)
 
 ---
 output: markdown_github 
@@ -119,20 +119,30 @@ lsmeval(
 ### Chain independent pipelines, with documentation
 
 ```{r}
-runif(5) %>>% abs %>% doc(
+analysis <- 
+{
+    "This analysis begins with 5 uniform random variables"
 
-    "Alternatively, the documentation could go into a text block below the code
-    in a knitr document. The advantage of having documentation here, is that it
-    is coupled unambiguously to the generating function. These annotations,
-    together with the ability to chain chains of monads, allows whole complex
-    workflows to be built, with the results collated into a single object. All
-    errors propagate exactly as errors should, only affecting downstream
-    computations. The final object can be converted into a markdown document
-    and automatically generated function graphs."
+    runif(5)
 
-                  ) %>^% sum %__%
-rnorm(6)   %>>% abs %>^% sum %v__%
-rnorm("a") %>>% abs %>^% sum %__%
-rexp(6)    %>>% abs %>^% sum %T>%
-  { print(mtabulate(.)) } %>% missues
+} %>>% '^'(2) %>>% sum %__%
+{
+    "The next step is to take 6 normal random variables"
+
+    rnorm(6)  
+} %>>% '^'(2) %>>% sum %v__%
+{
+    'And this is were the magic happens, we take "a" random normal variables'
+
+    rnorm("a")
+
+} %>>% '^'(2) %>>% sum %__%
+{
+    'Then, just for good measure, we toss in six exponentials'
+
+    rexp(6)
+
+} %>>% '^'(2) %>>% sum
+
+mtabulate(analysis)
 ```

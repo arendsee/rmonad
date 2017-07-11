@@ -6,6 +6,20 @@
 #' @param ... whatever
 toss <- function(...){ }
 
+#' Given two arguments, return the first
+#'
+#' @family help_functions
+#' @param x anything
+#' @param y anything
+first <- function(x, y) x
+
+#' Given two arguments, return the second
+#'
+#' @family help_functions
+#' @param x anything
+#' @param y anything
+second <- function(x, y) y
+
 #' Return false for all input
 #'
 #' @family helper_functions

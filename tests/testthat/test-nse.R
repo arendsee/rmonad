@@ -58,3 +58,12 @@ test_that("docstrings work on lhs", {
   expect_true( {"adsf"; 4} %>>% sqrt %>% m_OK)
   expect_equal({"adsf"; 4} %>>% sqrt %>% lapply(m_doc), list("adsf", NULL))
 })
+
+test_that("docstrings work with %__%", {
+  expect_equal(
+    {"qwer"; 5} %__%
+    {"asdf"; 4} %>>%
+    sqrt        %>% lapply(m_doc),
+    list("qwer", "asdf", NULL)
+  )
+})
