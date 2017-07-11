@@ -4,13 +4,14 @@
 #'
 #' @param expr An expression
 #' @param desc A name to assign to the code slot
+#' @param doc A docstring to associate with the monad
 #' @return Rmonad object 
 #' @export
 #' @examples
 #' as_monad(stop(1))
 #' as_monad(1:10)
 #' as_monad(5 %>>% sqrt)
-as_monad <- function(expr, desc=NULL){
+as_monad <- function(expr, desc=NULL, doc=NULL){
 
   value <- NULL 
   warns <- NULL
@@ -57,6 +58,7 @@ as_monad <- function(expr, desc=NULL){
   m_warnings(m) <- warns
   m_notes(m)    <- notes
   m_OK(m)       <- isOK
+  m_doc(m)      <- doc
 
   m
 

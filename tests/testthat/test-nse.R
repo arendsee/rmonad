@@ -3,13 +3,13 @@ context("non-standard evaluation")
 strlambda <- substitute({
   "this is not a docstring"
 })
-strlambda_out <- list(expr=strlambda, docstring="")
+strlambda_out <- list(expr=strlambda, docstring=NULL)
 
 expr <- substitute({
   2 * 2
   5 * x
 })
-expr_out <- list(expr=expr, docstring="")
+expr_out <- list(expr=expr, docstring=NULL)
 
 expr_doc <- substitute({
   "this is a docstring"
@@ -23,12 +23,12 @@ expr_doc_mag <- substitute({
   2 * 2
   5 * x
 })
-expr_doc_mag_out <- list(expr=expr_doc_mag, docstring="")
+expr_doc_mag_out <- list(expr=expr_doc_mag, docstring=NULL)
 
 test_that("when expression is not a lambda", {
-  expect_equal(extract_docstring(2), list(expr=2, docstring=""))
-  expect_equal(extract_docstring("adsf"), list(expr="adsf", docstring=""))
-  expect_equal(extract_docstring(c("adsf", "df")), list(expr=c("adsf", "df"), docstring=""))
+  expect_equal(extract_docstring(2), list(expr=2, docstring=NULL))
+  expect_equal(extract_docstring("adsf"), list(expr="adsf", docstring=NULL))
+  expect_equal(extract_docstring(c("adsf", "df")), list(expr=c("adsf", "df"), docstring=NULL))
 })
 
 test_that("when lambda is only a string", {
@@ -45,4 +45,16 @@ test_that("when lambda has docstring", {
 
 test_that("when lambda starts with string that is part of an expression", {
   expect_equal(extract_docstring(expr_doc_mag), expr_doc_mag_out)
+})
+
+test_that("docstrings work on rhs", {
+  expect_equal(4 %>>% {"hi"; sqrt(.)} %>% esc, 2)
+  expect_true( 4 %>>% {"hi"; sqrt(.)} %>% m_OK)
+  expect_equal(4 %>>% {"hi"; sqrt(.)} %>% m_doc, "hi")
+})
+
+test_that("docstrings work on lhs", {
+  expect_equal({"adsf"; 4} %>>% sqrt %>% esc, 2)
+  expect_true( {"adsf"; 4} %>>% sqrt %>% m_OK)
+  expect_equal({"adsf"; 4} %>>% sqrt %>% lapply(m_doc), list("adsf", NULL))
 })

@@ -32,8 +32,17 @@ bind <- function(
 ){
   # FIXME: cleanup this implementation
 
-  left_str = deparse(substitute(x))
+  fdecon <- extract_docstring(substitute(f))
+  f <- fdecon$expr
+  fdoc <- fdecon$docstring
+
+  xdecon <- extract_docstring(substitute(x))
+  left_str <- deparse(xdecon$expr)
+  xdoc <- xdecon$docstring
+
   m <- entry_lhs_transform(x, f, desc=left_str)
+
+  m_doc(m) <- xdoc
 
   o <- if(bind_if(m))
   {
@@ -72,6 +81,10 @@ bind <- function(
 
   } else {
     bind_else(m, f)
+  }
+
+  if(!is.null(o)){
+    m_doc(o) <- fdoc
   }
 
   o <- emit(m, o)

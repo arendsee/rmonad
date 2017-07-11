@@ -17,15 +17,16 @@ extract_docstring <- function(expr){
   es <- as.list(expr) 
 
   has_docstring <-
-    es[[1]] == "{"                && # the input is a code block
-    class(es[[2]]) == "character" && # the first element is a string
-    length(es) > 2                   # the string is not the only element
+    is.call(expr)                 && # input must be call
+    es[[1]] == "{"                && # input is a code block
+    class(es[[2]]) == "character" && # first element is a string
+    length(es) > 2                   # string is not the only element
 
   if(has_docstring){
     docstring <- es[[2]]
     expr <- as.call(es[-2])
   } else {
-    docstring <- ""
+    docstring <- NULL
   }
   list(expr=expr, docstring=docstring)
 }

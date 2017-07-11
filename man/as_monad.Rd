@@ -4,12 +4,14 @@
 \alias{as_monad}
 \title{Evaluate an expression into an Rmonad, capturing events}
 \usage{
-as_monad(expr, desc = NULL)
+as_monad(expr, desc = NULL, doc = NULL)
 }
 \arguments{
 \item{expr}{An expression}
 
 \item{desc}{A name to assign to the code slot}
+
+\item{doc}{A docstring to associate with the monad}
 }
 \value{
 Rmonad object
