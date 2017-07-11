@@ -1,0 +1,173 @@
+---
+title: "Rmonad: Where's the monad?"
+author: "Zebulun Arendsee"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{What is a monad?}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+This vignette consists of four parts. First I will illuminate the cryptomonad
+hidden in the R runtime. Second, I will describe how Rmonad can serve as a
+replacement. Third, I will contrast the monadic pipelines of Rmonad with the
+compositional pipelines of `magrittr`. Finally, I will discuss Rmonad from the
+Haskell perspective.
+
+I will introduce the concept of a monad incrementally through the first three
+sections.
+
+
+
+## The R cryptomonad
+
+What does `sqrt` do? You may answer, "return the square root of an input". But
+this is not quite right. The function `sqrt` maps to a set of possible values.
+
+ * when x is numeric and $x > 0$ : $\sqrt{x}$ 
+ * when x is numeric and $x \le 0$ : `NA` and a warning effect
+ * when x is not numeric : an error effect that propagates downstream
+
+Every R function maps a pure value to a computational context with possible
+undefined behavior and side effects. We can describe the action of a function
+abstractly as
+
+```
+a -> m b
+```
+
+Where `a` is the pure input value, `b` is the pure output value, and `m`
+represents the context. The `sqrt` function can be described as `number* -> m
+number`. Where `number*` represents a value that *should* be a number, but,
+since R is dynamic, may be anything. `m numeric` represents a context that
+holds 1) either a number or an error and 2) any other effects that arise.
+
+When we build a pipeline, we chain many functions together. Say, for example,
+we have the expression:
+
+```
+sqrt(sum(x))
+```
+
+Borrowing a bit of Haskell syntax
+
+```
+sqrt :: numeric* -> m numeric
+sum  :: numeric* -> m numeric
+```
+
+`numeric*` represents something that should be numeric. Again, since R is
+dynamically typed, we have no guaranttees that the input actually is numeric.
+The important thing to note is that each function takes a pure value and maps
+to a value wrapped in a context. `sum(x)` outputs `m numeric*`, but `sqrt`
+wants a `numeric*`. We need a function to mediate this. A function with the
+form:
+
+```
+bind :: (m numeric*) -> (numeric* -> m numeric*) -> (m numeric) 
+           ^                ^                           ^
+          /                /                           /
+      sum(x)            sqrt                   sqrt(sum(x))
+```
+
+We can express this more generally as
+
+```
+bind :: m1 a -> (a -> m2 b) -> m3 b
+```
+
+Where `a` and `b` are data types. `m1`, `m2` and `m3` are contexts. Every bind
+operation takes 1) a value in a context (`m1 a`) and 2) a function that maps
+that value to `m2 b`. The prior state `m1`, as well as the intermediate state
+`m2`, are in the scope of the `bind` function. This allows contextual
+information to propagate from the `m1` to `m2`.
+
+A monad is a pattern consisting of a context `m`, two functions, and three
+laws. The functions are `bind` and `return` (not to be confused with the
+`return` used to terminate a function). `bind` we have already seen. `return`
+takes a pure value and lifts it into a context. `return` has the form `a -> m
+a`.
+
+Before we cover the monad laws, and before we learn exactly what the monad is
+in the Rmonad context, we will walk step by step through one example. Rmonad
+uses the infix operator `%>>%` as `bind` (Rmonad's `%>>%` corresponds to
+Haskell's `>>=`).
+
+
+
+## Rmonad
+
+The goal of Rmonad is to ditch the existing impure R cryptomonad and replace it
+with a clean formal monad.
+
+```
+x %>>% sum %>>% sqrt
+```
+
+In place of a `return` statement 
+
+
+The initial %>>% operators acts as both a `return` and `bind` function. It first evaluates the  
+
+`m b` is dependent on `m a`, not just on `a`. The `bind` function can pass
+information from one step in the pipeline `m a` to the next `m b`.
+
+`m2 b` is equal to `m3 b` only for the trivial case where the context is
+`identity`.  
+
+R users normally rely on the R session to automatically perform these binds. 
+
+But what exactly is `m`? In an R session, the R runtime handles errors. If one
+function raises an error, the error is propagated to functions that use its
+input.
+
+In Rmonad, the `m` is an object, that catches all undefined behavior.
+
+
+
+## Rmonad versus magrittr
+
+contrast with magrittr (the identity monad)
+
+
+## Rmonad for Haskellers
+
+Only a few R expressions are pure. If a function is given an invalid input at
+runtime (e.g. `sqrt("wtf")`), it will die with a message printed to stderr.
+Rmonad wraps all R calls in a monad, intercepting all messages, so that the
+result of a computation is returned as a pure object.
+
+The 'R monad' is one monad to rule the all. There is no monad stack and no
+support for monad transformers. In addition to error handling, The monad stores
+the history of every previous operation. It also performs basic benchmarking,
+recording the time required for each operation and the size of the returned
+object. All this weight might seem like a performance killer, but R programmers
+are used to function calls being slow, so if they care about performance, they
+wouldn't use a function in a tight loop anyways.
+
+The `return` function is a little complex in Rmonad. It is a special case of
+the `as_monad` function:
+
+```
+as_monad = a -> m b
+```
+
+Where `a` can be one of three types
+
+ 1. an unevaluated R expression - `as_monad` evaluates the expression.
+    `as_monad` is used inside the `bind` function in this capacity.
+
+ 2. a pure R value - acts as `return`
+
+ 3. a monad - returns the monad unchanged
+
+
+```
+%__% == >>
+%>>% :: m a -> (a -> m b) -> m b
+      | a -> (a -> m b) -> m b
+      | (a -> r b) -> (a -> m b) -> m b
+```
+
+`%>>%` differs from `>>=` in that `%>>%` automatically loads the left-hand-side
+value into a monad.
