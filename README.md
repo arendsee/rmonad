@@ -1,3 +1,7 @@
+[![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=dev)](https://travis-ci.org/arendsee/rmonad)
+[![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/dev.svg)](https://codecov.io/github/arendsee/rmonad?branch=dev)
+
+
 # `rmonad`
 
 Chain monadic sequences into stateful, branching pipelines.
@@ -144,34 +148,72 @@ lsmeval(
 
 
 ```r
-runif(5) %>>% abs %>% doc(
+analysis <- 
+{
+    "This analysis begins with 5 uniform random variables"
 
-    "Alternatively, the documentation could go into a text block below the code
-    in a knitr document. The advantage of having documentation here, is that it
-    is coupled unambiguously to the generating function. These annotations,
-    together with the ability to chain chains of monads, allows whole complex
-    workflows to be built, with the results collated into a single object. All
-    errors propagate exactly as errors should, only affecting downstream
-    computations. The final object can be converted into a markdown document
-    and automatically generated function graphs."
+    runif(5)
 
-                  ) %>^% sum %__%
-rnorm(6)   %>>% abs %>^% sum %v__%
-rnorm("a") %>>% abs %>^% sum %__%
-rexp(6)    %>>% abs %>^% sum %T>%
-  { print(mtabulate(.)) } %>% missues
-#>          code    OK cached  time space nbranch nnotes nwarnings error doc
-#> 2    runif(5)  TRUE  FALSE    NA    NA       0      0         0     0   0
-#> 21        sum  TRUE   TRUE 0.001    NA       0      0         0     0   0
-#> 3         abs  TRUE  FALSE 0.001    88       1      0         0     0   1
-#> 4    rnorm(6)  TRUE  FALSE    NA    NA       0      0         0     0   0
-#> 5         sum  TRUE   TRUE 0.001    NA       0      0         0     0   0
-#> 6         abs  TRUE   TRUE 0.001    88       1      0         0     0   0
-#> 7  rnorm("a") FALSE  FALSE    NA     0       0      0         1     1   0
-#> 8     rexp(6)  TRUE  FALSE    NA    NA       0      0         0     0   0
-#> 9         sum  TRUE   TRUE 0.001    NA       0      0         0     0   0
-#> 10        abs  TRUE   TRUE 0.000    88       1      0         0     0   0
-#>   id    type                      issue
-#> 1  7   error          invalid arguments
-#> 2  7 warning NAs introduced by coercion
+} %>>% '^'(2) %>>% sum %__%
+{
+    "The next step is to take 6 normal random variables"
+
+    rnorm(6)  
+} %>>% '^'(2) %>>% sum %v__%
+{
+    "And this is were the magic happens, we take 'a' random normal variables"
+
+    rnorm("a")
+
+} %>>% '^'(2) %>>% sum %__%
+{
+    "Then, just for good measure, we toss in six exponentials"
+
+    rexp(6)
+
+} %>>% '^'(2) %>>% sum
+
+analysis
+#> 
+#> 
+#>     This analysis begins with 5 uniform random variables
+#> 
+#> R> "{
+#>     runif(5)
+#> }"
+#> R> "`^`(2)"
+#> R> "sum"
+#> 
+#> 
+#>     The next step is to take 6 normal random variables
+#> 
+#> R> "{
+#>     rnorm(6)
+#> }"
+#> R> "`^`(2)"
+#> R> "sum"
+#> [1] 10.78472
+#> 
+#> 
+#> 
+#>     And this is were the magic happens, we take 'a' random normal variables
+#> 
+#> R> "{
+#>     rnorm("a")
+#> }"
+#>  * ERROR: invalid arguments
+#>  * WARNING: NAs introduced by coercion
+#> 
+#> 
+#>     Then, just for good measure, we toss in six exponentials
+#> 
+#> R> "{
+#>     rexp(6)
+#> }"
+#> R> "`^`(2)"
+#> R> "sum"
+#> 
+#>  ----------------- 
+#> 
+#> [1] 29.97433
 ```

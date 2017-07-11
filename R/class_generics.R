@@ -2,16 +2,15 @@
 
 .print_record <- function(x, verbose=FALSE, print_value=TRUE, ...) {
 
+  if(.has_doc(x)){
+    .scat("\n\n    %s\n\n", m_doc(x))
+  }
   .scat('R> "%s"', paste(m_code(x), collapse="\n"))
 
   if(verbose && (.has_time(x) || .has_mem(x))){
     cat("\n  ")
     if(.has_mem(x))  { .scat(" size: %s", m_mem(x))  }
     if(.has_time(x)) { .scat(" time: %s", m_time(x)) }
-  }
-
-  if(.has_doc(x)){
-    .scat("\n\n    %s\n\n", m_doc(x))
   }
   if(.has_error(x)){
     .scat("\n * ERROR: %s", m_error(x))
