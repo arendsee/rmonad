@@ -101,11 +101,12 @@ To test our solution, I use the `gff_str` rmonad dataset.
 Before using `rmonad`, I will use a more conventional approach.
 
 ```{r}
-require(rmonad)
-require(readr)
-require(stringr)
-require(dplyr)
-require(tibble)
+library(rmonad)
+library(readr)
+library(stringr)
+library(dplyr)
+library(tibble)
+library(tidyr)
 
 data(gff_str)
 
