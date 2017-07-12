@@ -40,7 +40,7 @@ missues <- function(m){
              )
     issue <- as.character(c(m_error(m), m_warnings(m), m_notes(m)))
     idcol <- rep(cid, length(type))
-    cid <<- cid + 1
+    cid <<- cid + 1L
     list(id=idcol, type=type, issue=issue) 
   }
   do.call(rbind.data.frame, lapply(ms, .missues)) %>%
@@ -62,26 +62,56 @@ missues <- function(m){
 #'
 #' @family monad-to-x
 #' @param m An Rmonad
+#' @param quiet If TRUE, print the exact messages that are raised, without
+#'        extra context. 
 #' @export 
-esc <- function(m){
-  issues <- merge(mtabulate(m), missues(m))[, c("id", "code", "type", "issue")]
+esc <- function(m, quiet=FALSE){
+  mtab <- mtabulate(m)
+  mtab$id <- seq_len(nrow(mtab))
+
+  issues <- merge(mtab, missues(m))[, c("code", "type", "issue")]
+
+  if(quiet){
+    fw <- .quiet_warning
+    fn <- .quiet_note
+    fe <- .quiet_error
+  } else {
+    fw <- .unquiet_warning
+    fn <- .unquiet_note
+    fe <- .unquiet_error
+  }
+
   for(i in seq_len(nrow(issues))){
     # raise warnings, with contextual information
     if(issues[i, "type"] == "warning"){
-      warning("in '", issues[i, "code"], "': ", issues[i, "issue"], call.=FALSE)
+      fw(issues[i, "code"], issues[i, "issue"])
     }
     # pass messages verbatim
     if(issues[i, "type"] == "note"){
-      message(issues[i, "issue"])
+      fn(issues[i, "code"], issues[i, "issue"])
     }
   }
   if(! m_OK(m)){
-    # if the final state is failing, raise error with contextual info
-    msg <- paste0('in "', m_code(m), '":\n  ', m_error(m))
-    stop(msg, call.=FALSE)
+    fe(m_code(m), m_error(m))
   }
+
   m_value(m)
 }
+
+.quiet_warning <- function(code, msg) warning(msg, call.=FALSE)
+.quiet_note    <- function(code, msg) message(msg)
+.quiet_error   <- function(code, msg) stop(msg, call.=FALSE)
+
+.unquiet_warning <- function(code, msg) {
+  warning("in '", code, "': ", msg, call.=FALSE)
+}
+.unquiet_note <- function(code, msg) {
+  message(msg)
+}
+.unquiet_error <- function(code, msg) {
+  stop(paste0('in "', code, '":\n  ', msg), call.=FALSE)
+}
+
 
 #' Return each independent branch of the pipeline
 #'

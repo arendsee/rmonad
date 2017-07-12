@@ -4,10 +4,13 @@
 \alias{esc}
 \title{Returns the value of a monad holds}
 \usage{
-esc(m)
+esc(m, quiet = FALSE)
 }
 \arguments{
 \item{m}{An Rmonad}
+
+\item{quiet}{If TRUE, print the exact messages that are raised, without
+extra context.}
 }
 \description{
 If the monad is in the passing state, return the wrapped value. Otherwise,
