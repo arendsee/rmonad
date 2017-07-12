@@ -14,9 +14,7 @@
 
 In this resubmission I have
 
-* removed the LICENSE file
-
-* changed 'GPL-3 + LICENSE' to 'GPL-3'
+* quoted package names in DESCRIPTION and the vignette
 
 ## Reverse dependencies
 

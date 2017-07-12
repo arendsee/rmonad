@@ -61,7 +61,7 @@ new monad from them. This new monad holds the computed value, if the
 computation succeeded. It collates all errors, warnings, and messages.  These
 are stored in step-by-step a history of the pipeline.
 
-`%>%` is an application operator, `%>>%` is a *monadic bind* operator. Magrittr
+`%>%` is an application operator, `%>>%` is a *monadic bind* operator. `magrittr`
 and Rmonad complement eachother. `%>%` can be used inside a monadic sequence to
 perform operations *on* monads, whereas `%>>%` performs operations *in* them.
 If this is all too mystical, just hold on, the examples are sensical even
