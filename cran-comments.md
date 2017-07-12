@@ -10,6 +10,14 @@
 
 * This is a new package.
 
+## Resubmission
+
+In this resubmission I have
+
+* removed the LICENSE file
+
+* changed 'GPL-3 + LICENSE' to 'GPL-3'
+
 ## Reverse dependencies
 
 This is a new release, so there are no reverse dependencies.
