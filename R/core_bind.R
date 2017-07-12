@@ -70,13 +70,7 @@ bind <- function(
         as.call( list(fl[[1]]) %++% bind_args(m) %++% fl[-1] )
       }
 
-    st <- system.time(
-      {
-        o <- as_monad( eval(expr, envir=e) )
-      },
-      gcFirst=FALSE # this kills performance when TRUE
-    )
-    m_time(o) <- signif(unname(st[1]), 2)
+    o <- .eval(expr=expr, env=e)
 
     m <- m_on_bind(m)
 
@@ -107,6 +101,18 @@ emit_default <- function(i , o) {
 branch_combine <- function(m, o){
   m <- app_branch(m, o)
   m
+}
+
+# Evaluate the expression, load timing info into resultant object
+.eval <- function(expr, env){
+  st <- system.time(
+    {
+      o <- as_monad( eval(expr, envir=env) )
+    },
+    gcFirst=FALSE # this kills performance when TRUE
+  )
+  m_time(o) <- signif(unname(st[1]), 2)
+  o
 }
 
 default_combine <- function(m, o){
