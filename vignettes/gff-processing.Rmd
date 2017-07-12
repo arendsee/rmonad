@@ -1,0 +1,525 @@
+---
+title: "Case Study: GFF processing"
+author: "Zebulun Arendsee"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Case Study: GFF processing}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r, echo=FALSE, message=FALSE}
+library(rmonad)
+library(magrittr)
+set.seed(210)
+```
+
+## The problem
+
+Gene Feature Format (GFF) is used to annotate intervals on a genome. Loading
+and validating a GFF is a common first step in a bioinformatics analysis.
+Mistakes at this step can cause major problems later, so it is important to
+validate the GFF and report good diagnostics when problems arise. Here I will
+show how such a pipeline can be written using standard methods, and then show
+how `rmonad` can be used to organize and annotate such a pipeline.
+
+GFF files are TAB-delimited where each row corresponds to a single interval.
+These intervals, though, may be ontologically related. For example a gene is
+the parent of an mRNA, which in turn is a parent of a set of exons and a set of
+coding sequences (CDS). These relations are specified in the attribute column
+(column 9). Here is an example (with TABs replaced with space) that introduces
+the main format and the variants we need to support: 
+
+```
+# this is a comment, they can appear anywhere in the GFF
+# also note, empty lines can appear anywhere in the file
+
+# This is a simple mono-exonic gene
+I   .   gene   11565   11951   .   -   .   ID=gene0
+I   .   mRNA   11565   11951   .   -   .   ID=mrna0;Parent=gene0
+I   .   exon   11565   11951   .   -   .   Parent=mrna0
+I   .   CDS    11565   11951   .   -   0   Parent=mrna0
+
+# this is a gene with two splicing variants:
+I   .   gene   61931   83591   .   +   .   ID=gene1
+
+I   .   mRNA   61931   83591   .   +   .   ID=rna1;Parent=gene1
+I   .   exon   61931   62344   .   +   .   Parent=rna1
+I   .   exon   81616   82209   .   +   .   Parent=rna1
+I   .   exon   82211   83591   .   +   .   Parent=rna1
+I   .   CDS   61931   62344   .   +   0   Parent=rna1
+I   .   CDS   81616   82209   .   +   0   Parent=rna1
+I   .   CDS   82211   82681   .   +   0   Parent=rna1
+
+I   .   mRNA   61931   83591   .   +   .   ID=rna2;Parent=gene1
+I   .   exon   61931   62344   .   +   .   Parent=rna2
+I   .   exon   81616   82209   .   +   .   Parent=rna2
+I   .   exon   82211   83591   .   +   .   Parent=rna2
+I   .   CDS   61931   62344   .   +   0   Parent=rna2
+I   .   CDS   82211   82681   .   +   0   Parent=rna2
+
+# Below are a few variants that occur (unforunately) in the wild
+
+# V1: CDS directly descending from a gene.
+b   .   gene   7235   9016   .   -   .   ID=gene2
+b   .   CDS    7235   9016   .   -   0   Parent=gene2
+
+# V2: 'Parent=-' when feature has no parent
+I   .   gene   11565   11951   .   -   .   ID=gene3;Parent=-
+
+# V3: Elements with no tags that need to be treated as IDs
+I   .   gene   11565   11951   .   -   .   gene3
+I   .   mRNA   11565   11951   .   -   .   ID=mrna3;Parent=gene3
+I   .   exon   11565   11951   .   -   .   Parent=mrna3
+I   .   CDS    11565   11951   .   -   0   Parent=mrna3
+```
+
+Another issues we need to account for is type synonyms. The feature type
+(column 3) is required to be valid Sequence Ontology (SO) terms. For the
+purposes of this vignette, I will just handle the following sets of synonyms:
+
+ * gene := `gene` | `SO:0000704`
+
+ * mRNA := `mRNA` | `messenger RNA` | `messenger_RNA` | `SO:0000234`
+            | `transcript` | `SO:0000673`
+
+ * CDS  := `CDS` | `coding_sequence` | `coding sequence` | `SO:0000316`
+
+ * exon := `exon` | `SO:0000147` | `coding_exon` | `coding exon` |`SO:0000195` 
+
+For mRNA and exon, I am merging to ontology terms (mRNA and transcript; exon
+and coding exon). Formally, this is incorrect, but pratically it is probably
+the right thing. Since these transformations may be wrong, they need to be
+noted.
+
+## Solution
+
+To test our solution, I use the `gff_str` rmonad dataset.
+
+### Conventional approach
+
+Before using `rmonad`, I will use a more conventional approach.
+
+```{r}
+require(rmonad)
+require(readr)
+require(stringr)
+require(dplyr)
+require(tibble)
+
+data(gff_str)
+
+read_gff <- function(file){
+  readr::read_tsv(
+    file,
+    col_names = c(
+        "seqid",
+        "source",
+        "type",
+        "start",
+        "stop",
+        "score",
+        "strand",
+        "phase",
+        "attr"
+    ),
+    na        = ".",
+    comment   = "#",
+    col_types = "ccciidcic"
+  )
+}
+
+read_gff(gff_str$good)
+```
+
+This is a nice start, also, `readr` will pick up on any deviations from the
+specified column number and type, warning of problems:
+
+```{r}
+read_gff(gff_str$invalid_type)
+read_gff(gff_str$not_a_gff1)
+```
+
+R uses `NA` to indicate missing values. The R 'numeric' type corresponds to
+Haskell `[Maybe Num]`, i.e. an array of possibly empty values. In a GFF,
+columns 2,6,7,8 and 9 may be missing, the others may not. So we need an
+additional assertion that these are complete.
+
+```{r}
+g <- read_gff(gff_str$good)
+for(col in c("seqid", "type", "start", "stop")){
+  if(any(is.na(g[[col]]))){
+    stop("GFFError: Column '", col, "' may not have missing values")
+  }
+}
+```
+
+Now we need to account for type synonyms
+
+```{r}
+gene_synonyms <- 'SO:0000704'
+mRNA_synonyms <- c('messenger_RNA', 'messenger RNA', 'SO:0000234')
+CDS_synonyms  <- c('coding_sequence', 'coding sequence', 'SO:0000316')
+exon_synonyms <- 'SO:0000147'
+
+g$type <- ifelse(g$type %in% gene_synonyms, 'gene', g$type)
+g$type <- ifelse(g$type %in% mRNA_synonyms, 'mRNA', g$type)
+g$type <- ifelse(g$type %in% CDS_synonyms,  'CDS',  g$type)
+g$type <- ifelse(g$type %in% exon_synonyms, 'exon', g$type)
+
+mRNA_near_synonyms <- c('transcript', 'SO:0000673')
+exon_near_synonyms <- c('SO:0000147', 'coding_exon', 'coding exon', 'SO:0000195')
+
+if(any(g$type %in% mRNA_near_synonyms)){
+    g$type <- ifelse(g$type %in% mRNA_near_synonyms, 'mRNA', g$type)
+    warning("Substituting transcript types for mRNA types, this is probably OK")
+}
+
+if(any(g$type %in% exon_near_synonyms)){
+    g$type <- ifelse(g$type %in% exon_near_synonyms, 'exon', g$type)
+    warning("Substituting transcript types for exon types, this is probably OK")
+}
+```
+
+Now we need to evaluate the attribute column.
+
+```{r}
+
+tags <- c("ID", "Parent")
+
+data_frame(
+    attr  = stringr::str_split(g$attr, ";"),
+    order = 1:nrow(g)
+  ) %>%
+  dplyr::mutate(ntags = sapply(attr, length)) %>%
+  tidyr::unnest(attr) %>%
+  dplyr::mutate(attr = ifelse(grepl('=', attr), attr, paste(".U", attr, sep="="))) %>%
+  tidyr::separate_(
+    col   = "attr",
+    into  = c("tag", "value"),
+    sep   = "=",
+    extra = "merge"
+  ) %>%
+  dplyr::filter(tag %in% c(tags, ".U")) %>%
+  {
+    if(nrow(.) > 0){
+      tidyr::spread(., key="tag", value="value")
+    } else {
+      .$tag   = NULL
+      .$value = NULL
+      .
+    }
+  } %>%
+  {
+    if("Parent" %in% names(.)){
+      .$Parent <- ifelse(.$Parent == "-", NA, .$Parent)
+    }
+    .
+  } %>% {
+    for(tag in c(tags, ".U")){
+      if(! tag %in% names(.))
+        .[[tag]] = NA_character_
+    }
+    .
+  } %>%
+  {
+    if("ID" %in% names(.))
+      .$ID <- ifelse(is.na(.$ID) & !is.na(.$.U) & .$ntags == 1, .$.U, .$ID)
+    .
+  } %>%
+  merge(data_frame(order=1:nrow(g)), all=TRUE) %>%
+  dplyr::arrange(order) %>%
+  { cbind(g, .) } %>%
+  dplyr::select(-.U, -order, -ntags, -attr) %>%
+  {
+    if(all(c("ID", "Parent") %in% names(.))){
+      parents <- subset(., type %in% c("CDS", "exon"))$Parent
+      parent_types <- subset(., ID %in% parents)$type
+
+      if(any(parent_types == "gene"))
+        warning("Found CDS or exon directly inheriting from a gene, this may be fine.") 
+
+      if(! all(parent_types %in% c("gene", "mRNA")))
+        stop("Found CDS or exon with illegal parent")
+
+      if( any(is.na(parents)) )
+        stop("Found CDS or exon with no parent")
+
+      if(! any(duplicated(.$ID, incomparables=NA)))
+        warning("IDs are not unique, this is probably bad")
+    }
+    .
+  }
+
+```
+
+The beauty of this chain is that it requires few temporary variables (just `g`,
+and `tags`), it is a pure flow of data. It is an elegant sequence of functions
+operating on a single thread of data.
+
+But there are a few problems.
+
+First, it is in dire need of documentation. We could add in comments. But
+comments cannot be formatted well. A better approach is some form of literate
+programming, such as rewriting the program in Rmarkdown. But this 1) breaks the
+pipeline (since we can't pipe between chunks), 2) results in an object we can't
+compute on, 3) makes debugging even more difficult, because our code is spread
+out. 
+
+### `rmonad` approach
+
+With `rmonad` we can mingle documentation and code in a computable object.
+
+```{r}
+
+read_gff <- function(file, tags){
+
+  # globals - rmonad will eventually have a better way of handling this
+  # rmonad's branching and joining handling is still a little awkward
+  # also I don't fully understand what I have created yet
+  globals <- list()
+
+  {
+
+    "Rmonad supports docstrings. If an block begins with a string, this string
+    is extracted and stored. Python has something similar, where the first
+    string in a function is cast as documentation."
+
+    readr::read_tsv(
+      file,
+      col_names = c(
+          "seqid",
+          "source",
+          "type",
+          "start",
+          "stop",
+          "score",
+          "strand",
+          "phase",
+          "attr"
+      ),
+      na        = ".",
+      comment   = "#",
+      col_types = "ccciidcic"
+    )
+
+  } %>>% {
+
+    "The %>>% operator applies the function described in this block to the
+    input on the left-hand-side. This corresponds to the UNIX '|' or magrittr's
+    '%>%'. It differs from them in that it is a monadic bind operator, rather
+    than an application operator. It carries a context along with the
+    computations. The context can store past values, performance information,
+    this docstring, and links to the parent chunk. The context is a directed
+    graph of code chunks and their metadata."
+
+    globals$gff <<- .
+    for(col in c("seqid", "type", "start", "stop")){
+      if(any(is.na(.[[col]]))){
+        stop("GFFError: Column '", col, "' may not have missing values")
+      }
+    }
+    .
+  } %>>% {
+
+    "Note that these blocks of code are copied verbatim from above, only using
+    '.' in place of 'g'."
+
+    gene_synonyms <- 'SO:0000704'
+    mRNA_synonyms <- c('messenger_RNA', 'messenger RNA', 'SO:0000234')
+    CDS_synonyms  <- c('coding_sequence', 'coding sequence', 'SO:0000316')
+    exon_synonyms <- 'SO:0000147'
+
+    .$type <- ifelse(.$type %in% gene_synonyms, 'gene', .$type)
+    .$type <- ifelse(.$type %in% mRNA_synonyms, 'mRNA', .$type)
+    .$type <- ifelse(.$type %in% CDS_synonyms,  'CDS',  .$type)
+    .$type <- ifelse(.$type %in% exon_synonyms, 'exon', .$type)
+
+    .
+  } %>_% {
+
+    "The %>_% operator lets this chunk of code be run for its effects, which
+    are emitting warnings if we replace the type with a questionable synonym.
+    We could alternatively just use %>>% and add a terminal '.' to this chunk.
+    The use of this operator, though, signals an interdependent branch. Where
+    failure of this branch triggers failure downstream."
+
+    mRNA_near_synonyms <- c('transcript', 'SO:0000673')
+    exon_near_synonyms <- c('SO:0000147', 'coding_exon', 'coding exon', 'SO:0000195')
+
+    if(any(.$type %in% mRNA_near_synonyms)){
+        .$type <- ifelse(.$type %in% mRNA_near_synonyms, 'mRNA', .$type)
+        warning("Substituting transcript types for mRNA types, this is probably OK")
+    }
+
+    if(any(.$type %in% exon_near_synonyms)){
+        .$type <- ifelse(.$type %in% exon_near_synonyms, 'exon', .$type)
+        warning("Substituting transcript types for exon types, this is probably OK")
+    }
+
+  } %>>% {
+
+    "Notice here that I use the magrittr operator '%>%' inside the rmonad
+    pipeline. When to pipe with rmonad and when to pipe with magrittr is a
+    matter of granularity. This chunk of code perhpas should form one
+    documentation unit. And perhaps I don't expect it to fail. If I break this
+    chunk into several, the failures are more localized, and I can access
+    intermediate values for debugging. On the other hand, putting every little
+    operation in a new chunk will clutter the graph and reports generated from
+    it."
+
+    data_frame(
+        attr  = stringr::str_split(.$attr, ";"),
+        order = 1:nrow(.)
+      ) %>%
+      dplyr::mutate(ntags = sapply(attr, length)) %>%
+      tidyr::unnest(attr) %>%
+      dplyr::mutate(attr = ifelse(grepl('=', attr), attr, paste(".U", attr, sep="="))) %>%
+      tidyr::separate_(
+        col   = "attr",
+        into  = c("tag", "value"),
+        sep   = "=",
+        extra = "merge"
+      )
+
+  } %v>% {
+
+    "The %v>% operator stores the input value. We could replace every %>>%
+    operator with %v>%. This would let us inspect every step of an analysis at
+    the cost of high memory usage. For brevity, I won't break this following
+    block down any further."
+
+    dplyr::filter(., tag %in% c(tags, ".U")) %>%
+    {
+      if(nrow(.) > 0){
+        tidyr::spread(., key="tag", value="value")
+      } else {
+        .$tag   = NULL
+        .$value = NULL
+        .
+      }
+    } %>%
+    {
+      if("Parent" %in% names(.)){
+        .$Parent <- ifelse(.$Parent == "-", NA, .$Parent)
+      }
+      .
+    } %>% {
+      for(tag in c(tags, ".U")){
+        if(! tag %in% names(.))
+          .[[tag]] = NA_character_
+      }
+      .
+    } %>%
+    {
+      if("ID" %in% names(.))
+        .$ID <- ifelse(is.na(.$ID) & !is.na(.$.U) & .$ntags == 1, .$.U, .$ID)
+      .
+    } %>%
+    merge(data_frame(order=1:nrow(globals$gff)), all=TRUE) %>%
+    dplyr::arrange(order) %>%
+    { cbind(g, .) } %>%
+    dplyr::select(-.U, -order, -ntags, -attr)
+
+  } %>_% {
+
+    "And make the last few assertions."
+
+    if(all(c("ID", "Parent") %in% names(.))){
+      parents <- subset(., type %in% c("CDS", "exon"))$Parent
+      parent_types <- subset(., ID %in% parents)$type
+
+      if(any(parent_types == "gene"))
+        warning("Found CDS or exon directly inheriting from a gene, this may be fine.") 
+
+      if(! all(parent_types %in% c("gene", "mRNA")))
+        stop("Found CDS or exon with illegal parent")
+
+      if( any(is.na(parents)) )
+        stop("Found CDS or exon with no parent")
+
+      if(! any(duplicated(.$ID, incomparables=NA)))
+        warning("IDs are not unique, this is probably bad")
+    }
+
+  } %>_% {
+
+    "I could post some closing comments here. The %>_% operator can be chained
+    and the output does not affect the output of the main chain. The NULL is
+    required to distinguish this block from an anonymous function that returns
+    a string."
+
+    NULL
+  }
+  # End Rmonad chain
+}
+
+```
+
+That is the whole GFF program in an rmonad framework
+
+```{r}
+result <- read_gff(file=gff_str$good, tags=c("ID", "Parent"))
+```
+
+`esc` will extract the final result, and raise all errors, warnings and
+messages that where extracted
+
+```{r}
+esc(result)
+```
+
+Now we see why we might want a little more granularity in our pipeline. To
+summarize the results we can use the `mtabulate` functions.
+
+```{r}
+# remove the first column, which contains the code blocks as strings
+mtabulate(result)[-1]
+```
+
+We can also get a summary of issues
+
+```{r}
+missues(result)
+```
+
+The `id` column corresponds to a row number in the `mtabulate` result.
+
+To extract particular values, we can use the `m_*` family of getters
+
+```{r, eval=FALSE}
+# get a list of every stored value
+lapply(as.list(result), m_value)
+# get a list of every docstring
+lapply(as.list(result), m_doc)
+```
+
+The generic `as.list` function extracts every node from an rmonad object. Here
+is a list of all currently supported getter functions.
+
+ * `m_parents`  - list of node parents
+ * `m_value`    - the value stored in the object, if any
+ * `m_ok`       - is the node in a passing state?
+ * `m_code`     - the code chunk (minus the docstring)
+ * `m_error`    - any errors that were raised
+ * `m_warnings` - any warnings that were raised
+ * `m_notes`    - any messages that were printed
+ * `m_doc`      - the docstring
+ * `m_time`     - the time required to evaluate the chunk
+ * `m_mem`      - the size of the resulting value, in bytes
+ * `m_branch`   - nodes branching from this node (not used in this pipeline)
+
+
+If the pipeline fails, the last valid result is saved,
+
+```{r}
+read_gff(gff_str$not_a_gff1)
+```
+
+This makes debugging much simpler. We don't need to jump back and rerun small
+parts of the pipeline. The failing object, and all intermediate data, could be
+saved. This could also allow for much richer bug reporting.
+
+Overall, in `rmonad`, the output of a pipeline is not just the effluent of the
+last pipeline, but the collection of all the nodes along the way. The pipeline
+itself becomes data that can be computed upon. 
