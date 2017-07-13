@@ -42,11 +42,17 @@ You may use `rmonad` to
 
 ## Installation
 
-You can install from github with:
+You can install from CRAN with:
+
+```{r gh-installation, eval = FALSE}
+install.packages("rmonad")
+```
+
+Or you can install the dev branch from github
 
 ```{r gh-installation, eval = FALSE}
 # install.packages("devtools")
-devtools::install_github("arendsee/rmonad")
+devtools::install_github("arendsee/rmonad",ref="dev")
 ```
 
 ## Examples
@@ -96,7 +102,7 @@ x[[1]] %||% NULL %>% esc
 ### Independent evaluation of multiple expressions
 
 ```{r}
-lsmeval(
+funnel(
     runif(5),
     stop("stop, drop and die"),
     runif("df"),
@@ -108,11 +114,49 @@ lsmeval(
 ### Build branching pipelines
 
 ```{r, eval=FALSE}
-lsmeval(
+funnel(
     read.csv("a.csv") %>>% do_analysis_a,
     read.csv("b.csv") %>>% do_analysis_b,
     k = 5
 ) %*>% joint_analysis
+```
+
+```{r, eval=FALSE}
+foo <- {
+
+  "This is nothing"
+
+  NA
+
+} %>>% {
+
+  "This the length of nothing"
+
+  length(.) 
+}
+
+bar <- {
+
+  "These are cars"
+
+  cars
+
+} %>>% {
+
+  "There are this many of them"
+
+  length(.)
+}
+
+
+baz <- "oz" %>>%
+  funnel(x, f=foo, b=bar) %*>%
+  (function(x,f,b){
+
+     "This definitely won't work"
+     
+     b - f - x - f
+  })
 ```
 
 
@@ -147,6 +191,7 @@ analysis <-
 analysis
 ```
 
+<<<<<<< Updated upstream
 ## Contributing
 
 I am looking for collaborators. There are enough unsolved problems on the
