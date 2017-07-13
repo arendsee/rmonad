@@ -8,6 +8,8 @@
 
  * Rename `lsmeval` as `funnel`.
 
+ * Add support for multivariate anonymous functions
+
 ## Minor
 
  * Update README

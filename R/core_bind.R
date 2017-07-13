@@ -66,6 +66,16 @@ bind <- function(
         e = environment()
         as.call( list(quote(a_function), .=m_value(m)) )
       }
+      else if(fl[[1]] == "function"){
+        # as in magrittr
+        # without the parentheses, the infix operators act on the function body
+        stop("Anonymous functions must be parenthesized", call.=FALSE)
+      }
+      else if(fl[[1]] == "(" && fl[[2]][[1]] == "function"){
+        a_function <- eval(f, envir=e)
+        e = environment()
+        as.call( list(quote(a_function)) %++% bind_args(m) )
+      }
       else {
         as.call( list(fl[[1]]) %++% bind_args(m) %++% fl[-1] )
       }

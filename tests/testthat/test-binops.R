@@ -8,9 +8,12 @@ test_that('%>>% and esc work (simple)', {
   expect_true( cars %>>% head %>% m_OK)
 
   expect_equal(1:3 %>>% '*'(2) %>% esc, c(2,4,6))
-  expect_true(1:3 %>>% '*'(2) %>% m_OK)
+  expect_true( 1:3 %>>% '*'(2) %>% m_OK)
 
   expect_error("3" %>>% '*'(2) %>% esc)
+
+  expect_equal(1:3 %>>% (function(x){x^2}) %>>% '*'(2) %>% esc, 2*((1:3)^2) )
+  expect_equal(1:3 %>>% (function(x){x^2})             %>% esc,   ((1:3)^2) )
 })
 
 test_that('%>>% chaining works', {
