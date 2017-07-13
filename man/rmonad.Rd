@@ -30,7 +30,8 @@ useful of these here. For more information see the vignette.
 \section{Advanced operators}{
 
 
- \%*>\%    bind lhs list as arguments to right
+ \%*>\%    bind lhs list as arguments to right. The lhs may be a literal
+           list or a monad bound list.
 
  \%^>\%    monadic bind and record input in monad
 
@@ -46,7 +47,7 @@ useful of these here. For more information see the vignette.
 
 as_monad - evaluate an expression into a monad (capturing error)
 
-lsmeval - evaluate expressions into a list inside a monad
+funnel - evaluate expressions into a list inside a monad
 }
 
 \section{monad to monad functions}{
@@ -96,5 +97,5 @@ cars \%>>\% colSums \%v__\% cars \%>>\% lapply(sd) \%>>\% unlist
 as_monad(stop("instant death"))
 
 # convert multiple expressions into a list inside a monad
-lsmeval(stop("oh no"), runif(5), sqrt(-1))
+funnel(stop("oh no"), runif(5), sqrt(-1))
 }

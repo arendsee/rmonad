@@ -4,11 +4,15 @@
 
  * Add docstrings to anonymous functions
 
+ * Allow `%*>%` to take monad bound lists
+
+ * Rename `lsmeval` as `funnel`.
+
 ## Minor
 
  * Update README
 
- * Put doc first in the printed output 
+ * Put docstring first in the printed output 
 
 
 

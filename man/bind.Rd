@@ -4,7 +4,7 @@
 \alias{bind}
 \title{Apply f to the contents of a monad and merge messages}
 \usage{
-bind(x, f, entry_lhs_transform = function(m, f, ...) as_monad(m, ...),
+bind(x, f, entry_lhs_transform = entry_lhs_transform_default,
   bind_if = function(m) m_OK(m), bind_else = toss, emit = emit_default,
   m_on_bind = ident, io_combine = default_combine, bind_args = function(m)
   list(m_value(m)))

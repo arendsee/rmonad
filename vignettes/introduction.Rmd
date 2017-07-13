@@ -342,7 +342,7 @@ we want to be able to catch errors resulting from evaluation of each member of
 the list. We can do this with `list_meval`.
 
 ```{r}
-lsmeval(
+funnel(
     "yolo",
     stop("stop, drop, and die"),
     runif("simon"),
@@ -358,18 +358,18 @@ with a NULL filling in missing pieces. Constrast this with normal list evaluatio
 list( "yolo", stop("stop, drop, and die"), runif("simon"), 2)
 ```
 
-`lsmeval` records each failure in each element of the list independently.
+`funnel` records each failure in each element of the list independently.
 
 This approach can also be used with the infix operator `%*>%`.
 
 ```{r, eval=FALSE}
-lsmeval(read.csv("a.csv"), read.csv("b.csv")) %*>% merge
+funnel(read.csv("a.csv"), read.csv("b.csv")) %*>% merge
 ```
 
 Now, of course, we can add monads to the mix 
 
 ```{r, eval=FALSE}
-lsmeval(
+funnel(
     a = read.csv("a.csv") %>>% do_analysis_a,
     b = read.csv("b.csv") %>>% do_analysis_b,
     k = 5

@@ -22,7 +22,7 @@
 bind <- function(
   x,
   f,
-  entry_lhs_transform = function(m, f, ...) as_monad(m, ...),
+  entry_lhs_transform = entry_lhs_transform_default,
   bind_if             = function(m) m_OK(m),
   bind_else           = toss,
   emit                = emit_default,
@@ -89,6 +89,8 @@ bind <- function(
   m_mem(result) <- as.integer(object.size(m_value(result)))
   result
 }
+
+entry_lhs_transform_default <- function(m, f, ...) as_monad(m, ...)
 
 emit_default <- function(i , o) {
   if(is.null(o)){

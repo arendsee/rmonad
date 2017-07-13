@@ -30,18 +30,28 @@ NULL
 #' @export
 `%*>%` <- function(lhs, rhs) {
   envir <- parent.frame()
-  lexp <- as.list(substitute(lhs))[-1]
-  on_entry <- function(x, f, desc) {
-    .lsmeval_sub(
-      lexp,
-      env=envir,
-      keep_history = TRUE,
-      desc         = paste(desc)
-    )
+
+  lhs_expr <- substitute(lhs)
+
+  lexp <- as.list(lhs_expr)
+
+  if(lexp[[1]] == "list"){
+    lhs_expr <- lexp[-1]
+    on_entry <- function(x, f, desc) {
+      .funnel_sub(
+        lhs_expr,
+        env=envir,
+        keep_history = TRUE,
+        desc         = paste(desc)
+      )
+    }
+  } else {
+    on_entry <- entry_lhs_transform_default
   }
+
   cmd   <- list(
     bind,
-    substitute(lhs),
+    lhs_expr,
     substitute(rhs),
     bind_args=m_value,
     entry_lhs_transform=on_entry

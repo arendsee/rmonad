@@ -13,21 +13,21 @@ test_that("missues finds the correct errors and warnings", {
   expect_warning(warning("foo") %__% 5 %>% esc, "foo") 
   expect_equal(
     lapply(
-      lsmeval({warning("goo"); warning("roo")} %__% warning("poo") %>% esc(quiet=TRUE)),
+      funnel({warning("goo"); warning("roo")} %__% warning("poo") %>% esc(quiet=TRUE)),
       m_warnings
     )[[1]],
     c("goo", "roo", "poo")
   )
   expect_equal(
     lapply(
-      lsmeval(warning("goo") %__% warning("roo") %>% esc(quiet=TRUE)),
+      funnel(warning("goo") %__% warning("roo") %>% esc(quiet=TRUE)),
       m_warnings
     )[[1]],
     c("goo", "roo")
   )
   expect_equal(
     lapply(
-      lsmeval(-2:3 %>>% sqrt %>>% sum %>% esc(quiet=TRUE)),
+      funnel(-2:3 %>>% sqrt %>>% sum %>% esc(quiet=TRUE)),
       m_warnings
     )[[1]],
     "NaNs produced"
