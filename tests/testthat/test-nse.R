@@ -73,4 +73,10 @@ test_that("as_monad handles docstrings", {
   expect_equal(as_monad({"asdf"; 5}) %>% esc, 5)
   # no funny business is going on ...
   expect_equal(as_monad({"asdf"; 5}) %>>% '*'(6) %>% esc, 30)
+  expect_equal(as_monad({}) %>% esc, NULL)
+})
+
+test_that("anonymous functions handle docstrings", {
+  expect_equal(16 %>>% (function(x){"asdf"; sqrt(x)}) %>% m_doc, "asdf")
+  expect_equal(16 %>>% (function(x){"asdf"; sqrt(x)}) %>% esc, 4)
 })
