@@ -67,3 +67,10 @@ test_that("docstrings work with %__%", {
     list("qwer", "asdf", NULL)
   )
 })
+
+test_that("as_monad handles docstrings", {
+  expect_equal(as_monad({"asdf"; 5}) %>% m_doc, "asdf")
+  expect_equal(as_monad({"asdf"; 5}) %>% esc, 5)
+  # no funny business is going on ...
+  expect_equal(as_monad({"asdf"; 5}) %>>% '*'(6) %>% esc, 30)
+})

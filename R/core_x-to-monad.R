@@ -56,11 +56,16 @@ as_monad <- function(expr, desc=NULL, doc=NULL){
   fails <- NULL
   isOK  <- TRUE
 
+  env <- parent.frame()
+  ed <- extract_docstring(substitute(expr))
+  expr <- ed$expr
+  doc <- ed$docstring
+
   notes <- capture.output(
     {
       value <- withCallingHandlers(
         tryCatch(
-          expr,
+          eval(expr, envir=env),
           error = function(e) {
             fails <<- e$message;
             isOK <<- FALSE
