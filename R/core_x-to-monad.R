@@ -114,11 +114,13 @@ funnel <- function(..., keep_history=TRUE){
 # funnel :: [Rexpr] -> m [*]
   desc <- deparse(match.call())
 
+  e <- parent.frame()
+
   # don't linearize with magrittr, thar lie dragons
   combine(
     lapply(
       as.list(substitute(alist(...)))[-1],
-      function(x) as_monad(eval(x), desc=deparse(x))
+      function(x) as_monad(eval(x, envir=e), desc=deparse(x))
     ),
     keep_history=keep_history,
     desc=desc

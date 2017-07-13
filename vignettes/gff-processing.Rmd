@@ -8,12 +8,6 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-```{r, echo=FALSE, message=FALSE}
-library(rmonad)
-library(magrittr)
-set.seed(210)
-```
-
 ## The problem
 
 Gene Feature Format (GFF) is used to annotate intervals on a genome. Loading
@@ -101,12 +95,14 @@ To test our solution, I use the `gff_str` rmonad dataset.
 Before using `rmonad`, I will use a more conventional approach.
 
 ```{r}
-library(rmonad)
 library(readr)
 library(stringr)
 library(dplyr)
 library(tibble)
 library(tidyr)
+library(magrittr)
+library(rmonad)
+set.seed(210)
 
 data(gff_str)
 
