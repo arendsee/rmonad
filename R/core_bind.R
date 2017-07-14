@@ -36,15 +36,20 @@ bind <- function(
   fdecon <- extract_metadata(substitute(f))
   rhs_str <- deparse(fdecon$expr)
   rhs_doc <- fdecon$docstring
+  rhs_met <- fdecon$metadata
 
   xdecon <- extract_metadata(substitute(x))
   lhs_str <- deparse(xdecon$expr)
   lhs_doc <- xdecon$docstring
+  lhs_met <- xdecon$metadata
 
   m <- entry_lhs_transform(x, f, desc=lhs_str)
 
   if(!.has_doc(m)){
     m_doc(m) <- lhs_doc
+  }
+  if(!.has_meta(m)){
+    m_meta(m) <- lhs_met
   }
 
   o <- if(bind_if(m))
@@ -91,7 +96,8 @@ bind <- function(
   }
 
   if(!is.null(o)){
-    m_doc(o) <- rhs_doc
+    m_doc(o)  <- rhs_doc
+    m_meta(o) <- rhs_met
     m_code(o) <- rhs_str
   }
 

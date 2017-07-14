@@ -34,6 +34,7 @@
 .has_notes    <- function(m) length(m_notes(m))    != 0
 .has_parents  <- function(m) length(m_parents(m))  != 0
 .has_branch   <- function(m) length(m_branch(m))   != 0
+.has_meta     <- function(m) length(m_meta(m))     != 0
 .has_time     <- function(m) .is_valid_real(m_time(m))
 .has_mem      <- function(m) .is_valid_integer(m_mem(m))
 .has_value    <- function(m) .m_stored(m) || !is.null(m_value(m))

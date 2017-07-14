@@ -111,8 +111,10 @@ extract_metadata <- function(expr){
       metadata <- eval(expr[[2]][[3]][[2]])
       # remove the docstring from the expression
       expr[[2]][[3]] <- expr[[2]][[3]][-2]
-      # reset the srcref
-      expr[[2]][[4]] <- NULL
+      if(length(expr[[2]]) == 4){
+        # reset the srcref
+        expr[[2]][[4]] <- NULL
+      }
     }
   }
 

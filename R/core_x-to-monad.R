@@ -60,6 +60,7 @@ as_monad <- function(expr, desc=NULL, doc=NULL){
   ed <- extract_metadata(substitute(expr))
   expr <- ed$expr
   doc <- ed$docstring
+  met <- ed$metadata
 
   notes <- capture.output(
     {
@@ -102,6 +103,7 @@ as_monad <- function(expr, desc=NULL, doc=NULL){
   m_notes(m)    <- notes
   m_OK(m)       <- isOK
   m_doc(m)      <- doc
+  m_meta(m)     <- met
 
   m
 

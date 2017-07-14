@@ -87,11 +87,30 @@ test_that("as_monad handles docstrings", {
   # no funny business is going on ...
   expect_equal(as_monad({"asdf"; 5}) %>>% '*'(6) %>% esc, 30)
   expect_equal(as_monad({}) %>% esc, NULL)
+
+  expect_true(
+    {
+      x <- as_monad({"asdf"; list(k=1); 5})
+      m_doc(x) == "asdf" && identical(m_meta(x), list(k=1))
+    }
+  )
+
 })
 
-test_that("anonymous functions handle docstrings", {
+test_that("anonymous functions handle docstrings and metadata", {
   expect_equal(16 %>>% (function(x){"asdf"; sqrt(x)}) %>% m_doc, "asdf")
   expect_equal(16 %>>% (function(x){"asdf"; sqrt(x)}) %>% esc, 4)
+
+  expect_equal(16 %>>% (function(x){list(k=1); sqrt(x)}) %>% m_meta, list(k=1))
+  expect_equal(16 %>>% (function(x){list(k=1); sqrt(x)}) %>% esc, 4)
+
+  expect_true(
+    {
+      x <- 16 %>>% (function(x){"asdf"; list(k=1); sqrt(x)})
+      m_doc(x) == "asdf" && identical(m_meta(x), list(k=1))
+    }
+  )
+
 })
 
 test_that("metadata is extracted", {
