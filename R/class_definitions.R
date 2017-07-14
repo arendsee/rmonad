@@ -14,6 +14,7 @@ Rmonad <- setClass(
   "Rmonad",
   representation(
     x        = "list", # Maybe a
+    id       = "integer",
     OK       = "logical",
     code     = "character",
     error    = "list", # Maybe [String]
@@ -41,3 +42,14 @@ Rmonad <- setClass(
     parents  = list()
   )
 )
+
+.make_new_monad <- function(){
+  id <- 1L
+  function(){
+    m <- Rmonad()
+    m_id(m) <- id
+    id <<- id + 1L
+    m
+  }
+}
+new_monad <- .make_new_monad()

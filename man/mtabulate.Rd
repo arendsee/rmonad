@@ -13,6 +13,7 @@ mtabulate(m)
 Make tabular summary of a monadic chain
 }
 \seealso{
-Other monad-to-x: \code{\link{esc}}, \code{\link{missues}},
+Other monad-to-x: \code{\link{as_dgr_graph}},
+  \code{\link{esc}}, \code{\link{missues}},
   \code{\link{mreport}}
 }

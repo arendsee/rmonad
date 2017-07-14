@@ -7,11 +7,15 @@ NULL
 
 #' @rdname rmonad_accessors
 #' @export
-m_parents  <- function(m) .maybe_vector_get(m@parents)
+m_parents <- function(m) .maybe_vector_get(m@parents)
 
 #' @rdname rmonad_accessors
 #' @export
-m_value    <- function(m) .maybe_vector_get(m@x)
+m_value <- function(m) .maybe_vector_get(m@x)
+
+#' @rdname rmonad_accessors
+#' @export
+m_id <- function(m) m@id
 
 #' @rdname rmonad_accessors
 #' @export
@@ -19,11 +23,11 @@ m_OK <- function(m) m@OK
 
 #' @rdname rmonad_accessors
 #' @export
-m_code     <- function(m) m@code
+m_code <- function(m) m@code
 
 #' @rdname rmonad_accessors
 #' @export
-m_error   <- function(m) .maybe_vector_get(m@error)
+m_error <- function(m) .maybe_vector_get(m@error)
 
 #' @rdname rmonad_accessors
 #' @export
@@ -68,7 +72,12 @@ m_mem <- function(m) {
 #' @export
 m_branch   <- function(m) m@branch
 
-
+#' @rdname rmonad_accessors
+#' @export
+`m_id<-` <- function(m, value) {
+  m@id <- value
+  m
+}
 
 #' @rdname rmonad_accessors
 #' @export

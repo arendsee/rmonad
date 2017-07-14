@@ -4,6 +4,8 @@
 
  * Allow generation of Markdown reports from pipelines with `mreport`
 
+ * Add `as_dgr_graph` for converting to a pipeline to a DiagrammeR graph.
+
  * Add docstrings to anonymous functions
 
  * Add metadata lists to anonymous functions

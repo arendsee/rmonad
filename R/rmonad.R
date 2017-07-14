@@ -35,7 +35,8 @@ NULL
 #'
 #'  \%>^\%    bind as a new branch, pass input on main
 #'
-#'  \%__\%    keep parents from the lhs (errors ignored)
+#'  \%__\%    keep parents from the lhs (errors ignored). This allows chaining
+#'            of independent operations.
 #'
 #'  \%v__\%   like \%__\% but store lhs result
 #'

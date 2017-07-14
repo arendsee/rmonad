@@ -1,6 +1,6 @@
 context("accessor methods")
 
-m <- Rmonad()
+m <- new_monad()
 
 test_that("The .has_* correctly return false", {
   expect_equal(.has_branch(m),   FALSE)

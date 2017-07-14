@@ -4,6 +4,7 @@
 \alias{rmonad_accessors}
 \alias{m_parents}
 \alias{m_value}
+\alias{m_id}
 \alias{m_OK}
 \alias{m_code}
 \alias{m_error}
@@ -14,6 +15,7 @@
 \alias{m_time}
 \alias{m_mem}
 \alias{m_branch}
+\alias{m_id<-}
 \alias{m_OK<-}
 \alias{m_value<-}
 \alias{m_parents<-}
@@ -35,6 +37,8 @@ m_parents(m)
 
 m_value(m)
 
+m_id(m)
+
 m_OK(m)
 
 m_code(m)
@@ -54,6 +58,8 @@ m_time(m)
 m_mem(m)
 
 m_branch(m)
+
+m_id(m) <- value
 
 m_OK(m) <- value
 

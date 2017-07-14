@@ -92,7 +92,7 @@ as_monad <- function(expr, desc=NULL, doc=NULL){
     desc
   }
 
-  m <- Rmonad()
+  m <- new_monad()
 
   # These accessors do the right thing (don't mess with them)
   m_value(m)    <- value
@@ -144,7 +144,7 @@ combine <- function(xs, keep_history=TRUE, desc=NULL){
   xs <- lapply(xs, as_monad)
 
   # make a new monad that is the child of all monads in the input list
-  out <- Rmonad()
+  out <- new_monad()
   m_parents(out) <- xs
 
   # store all values (even if failing, in which case should be NULL)

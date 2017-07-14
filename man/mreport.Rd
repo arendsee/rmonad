@@ -13,6 +13,7 @@ mreport(m)
 This is currently a stub. It only pastes the docstrings and code blocks.
 }
 \seealso{
-Other monad-to-x: \code{\link{esc}}, \code{\link{missues}},
+Other monad-to-x: \code{\link{as_dgr_graph}},
+  \code{\link{esc}}, \code{\link{missues}},
   \code{\link{mtabulate}}
 }

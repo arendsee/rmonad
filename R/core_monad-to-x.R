@@ -69,6 +69,70 @@ mreport <- function(m){
   ) %>% unlist %>% paste(collapse="\n")
 }
 
+#' Convert a pipeline to DiagrammeR graph
+#'
+#' WARNING: this pipeline handles parent/child relationships, but not the
+#' subtly different 'branch' relationship. These should be resolvable to
+#' parent/child relations.
+#'
+#' @family monad-to-x
+#' @param m An Rmonad
+#' @param type a function that will produce the type column for DiagrammeR
+#' @param label a function that will produce the label column for DiagrammeR
+#' @param ... named functions that act on a monad to produce a scalar. These
+#' functions will produce the attributes used in the graph object.
+#' @export
+#' @examples
+#'
+#' data(gff)
+#' as_dgr_graph(gff$good_result, mem=m_mem, time=m_time)
+as_dgr_graph <- function(m, type=NULL, label=NULL, ...){
+  ms <- as.list(m)
+  funcs <- list(...)
+  cols <- lapply(funcs, function(f) sapply(ms, f))
+  if(!is.null(type))
+    type <- sapply(ms, type)
+  if(!is.null(label))
+    label <- sapply(ms, label)
+
+  # build the node data frame
+  nodes_df <- do.call(
+    DiagrammeR::create_node_df,
+    append(
+      list(
+        n     = length(ms),
+        type  = type,
+        label = label
+      ),
+      cols
+    )
+  )
+  nodes_df$id <- sapply(ms, m_id)
+
+  # FIXME: this ignores branches
+  # build the edges data frame, linking child to parent
+  # TODO: add classifications for relationships
+  #  %__% creates 'follow' edges, that errors do not propagate past.
+  #  %>>% creates 'depend' edges, where errors to propagate
+  #  %>_% creates two 'depend' edges
+  #  %||% 'reverse-follow'
+  #  %|>% 'reverse-depend'
+  #  Or perhaps %__% should create separate graphs?
+  edges_df <- DiagrammeR::create_edge_df(
+    from = lapply(ms, function(x) rep.int(m_id(x), length(m_parents(x)))) %>% unlist,
+    to   = lapply(ms, function(x) sapply(m_parents(x), m_id)) %>% unlist,
+    rel  = NULL
+  )
+
+  # Create graph from node and edge dataframes.
+  DiagrammeR::create_graph(
+    nodes_df = nodes_df,
+    edges_df = edges_df,
+    directed = TRUE,
+    graph_name = NULL
+  ) 
+}
+
 #' Returns the value of a monad holds
 #'
 #' If the monad is in the passing state, return the wrapped value. Otherwise,
