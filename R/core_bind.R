@@ -80,7 +80,7 @@ bind <- function(
         as.call( list(fl[[1]]) %++% bind_args(m) %++% fl[-1] )
       }
 
-    o <- .eval(expr=expr, env=e)
+    o <- .eval(expr=expr, env=e, desc=rhs_str)
 
     m <- m_on_bind(m)
 
@@ -116,10 +116,10 @@ branch_combine <- function(m, o){
 }
 
 # Evaluate the expression, load timing info into resultant object
-.eval <- function(expr, env){
+.eval <- function(expr, env, desc){
   st <- system.time(
     {
-      o <- as_monad( eval(expr, envir=env) )
+      o <- as_monad( eval(expr, envir=env), desc=desc )
     },
     gcFirst=FALSE # this kills performance when TRUE
   )
