@@ -206,6 +206,44 @@ analysis
 }
 ```
 
+### Build Markdown report from a pipeline
+
+Handling for this is currently extremely rudimentary. The `mreport` function
+will concatenate all the code run in the pipeline along with the docstrings.
+
+```{r}
+x <- 
+{
+  "# Report
+
+  This is a pipeline report
+  "
+
+} %__% {
+  
+  "this is a docstring"
+  
+  5
+
+} %>>% {
+  
+  "this is too"
+  
+  sqrt(.)
+
+} %>_% {
+
+   "# Conclusion
+
+   optional closing remarks
+   "
+
+  NULL
+
+}
+mreport(x)
+```
+
 ## Contributing
 
 I am looking for collaborators. There are enough unsolved problems on the

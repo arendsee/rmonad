@@ -49,6 +49,26 @@ missues <- function(m){
                    # frame (it returns a list).
 }
 
+#' Convert a pipeline to Rmarkdown
+#'
+#' This is currently a stub. It only pastes the docstrings and code blocks.
+#'
+#' @family monad-to-x
+#' @param m An Rmonad
+#' @export
+mreport <- function(m){
+  lapply(as.list(m),
+    function(x) {
+      template <- "%s\n```{r, eval=FALSE}\n%s\n```\n"
+      paste(sprintf(
+        template,
+        paste(m_doc(x), collapse="\n"),
+        paste(m_code(x), collapse="\n")
+      ))
+    }
+  ) %>% unlist %>% paste(collapse="\n")
+}
+
 #' Returns the value of a monad holds
 #'
 #' If the monad is in the passing state, return the wrapped value. Otherwise,

@@ -1,6 +1,7 @@
 [![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=dev)](https://travis-ci.org/arendsee/rmonad)
 [![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/dev.svg)](https://codecov.io/github/arendsee/rmonad?branch=dev)
 
+
 # `rmonad`
 
 Chain monadic sequences into stateful, branching pipelines. As nodes in the
@@ -277,6 +278,46 @@ analysis
   # this is the actual thing computed
   1 + 1
 }
+```
+
+### Build Markdown report from a pipeline
+
+Handling for this is currently extremely rudimentary. The `mreport` function
+will concatenate all the code run in the pipeline along with the docstrings.
+
+
+```r
+x <- 
+{
+  "# Report
+
+  This is a pipeline report
+  "
+
+} %__% {
+  
+  "this is a docstring"
+  
+  5
+
+} %>>% {
+  
+  "this is too"
+  
+  sqrt(.)
+
+} %>_% {
+
+   "# Conclusion
+
+   optional closing remarks
+   "
+
+  NULL
+
+}
+mreport(x)
+#> [1] "\n```{r, eval=FALSE}\n{\n    \"# Report\\n\\n  This is a pipeline report\\n  \"\n}\n```\n\nthis is a docstring\n```{r, eval=FALSE}\n{\n    5\n}\n```\n\nthis is too\n```{r, eval=FALSE}\n{\n    sqrt(.)\n}\n```\n\n# Conclusion\n\n   optional closing remarks\n   \n```{r, eval=FALSE}\n{\n    NULL\n}\n```\n"
 ```
 
 ## Contributing

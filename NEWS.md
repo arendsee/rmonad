@@ -2,6 +2,8 @@
 
 ## Major
 
+ * Allow generation of Markdown reports from pipelines with `mreport`
+
  * Add docstrings to anonymous functions
 
  * Add metadata lists to anonymous functions

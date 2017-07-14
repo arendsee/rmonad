@@ -25,5 +25,5 @@ error.
 }
 \seealso{
 Other monad-to-x: \code{\link{missues}},
-  \code{\link{mtabulate}}
+  \code{\link{mreport}}, \code{\link{mtabulate}}
 }

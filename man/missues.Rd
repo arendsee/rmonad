@@ -13,6 +13,6 @@ missues(m)
 Tabulates all errors, warnings and notes
 }
 \seealso{
-Other monad-to-x: \code{\link{esc}},
+Other monad-to-x: \code{\link{esc}}, \code{\link{mreport}},
   \code{\link{mtabulate}}
 }

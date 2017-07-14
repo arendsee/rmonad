@@ -88,7 +88,7 @@ noted.
 
 ## Solution
 
-To test our solution, I use the `gff_str` rmonad dataset.
+To test our solution, I use the `gff` rmonad dataset.
 
 ### Conventional approach
 
@@ -104,7 +104,7 @@ library(magrittr)
 library(rmonad)
 set.seed(210)
 
-data(gff_str)
+data(gff)
 
 read_gff <- function(file){
   readr::read_tsv(
@@ -126,15 +126,15 @@ read_gff <- function(file){
   )
 }
 
-read_gff(gff_str$good)
+read_gff(gff$good)
 ```
 
 This is a nice start, also, `readr` will pick up on any deviations from the
 specified column number and type, warning of problems:
 
 ```{r}
-read_gff(gff_str$invalid_type)
-read_gff(gff_str$not_a_gff1)
+read_gff(gff$invalid_type)
+read_gff(gff$not_a_gff1)
 ```
 
 R uses `NA` to indicate missing values. The R 'numeric' type corresponds to
@@ -143,7 +143,7 @@ columns 2,6,7,8 and 9 may be missing, the others may not. So we need an
 additional assertion that these are complete.
 
 ```{r}
-g <- read_gff(gff_str$good)
+g <- read_gff(gff$good)
 for(col in c("seqid", "type", "start", "stop")){
   if(any(is.na(g[[col]]))){
     stop("GFFError: Column '", col, "' may not have missing values")
@@ -442,7 +442,7 @@ read_gff <- function(file, tags){
       } %>%
       merge(data_frame(order=1:nrow(raw_gff)), all=TRUE) %>%
       dplyr::arrange(order) %>%
-      { cbind(g, .) } %>%
+      { cbind(raw_gff, .) } %>%
       dplyr::select(-.U, -order, -ntags, -attr)
 
   }) %>_% {
@@ -488,7 +488,7 @@ read_gff <- function(file, tags){
 That is the whole GFF program in an rmonad framework
 
 ```{r}
-result <- read_gff(file=gff_str$good, tags=c("ID", "Parent"))
+result <- read_gff(file=gff$good, tags=c("ID", "Parent"))
 ```
 
 `esc` will extract the final result, and raise all errors, warnings and
@@ -542,7 +542,7 @@ is a list of all currently supported getter functions.
 If the pipeline fails, the last valid result is saved,
 
 ```{r}
-read_gff(gff_str$not_a_gff1)
+read_gff(gff$not_a_gff1)
 ```
 
 This makes debugging much simpler. We don't need to jump back and rerun small
