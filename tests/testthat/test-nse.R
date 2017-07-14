@@ -1,50 +1,63 @@
 context("non-standard evaluation")
 
-strlambda <- substitute({
-  "this is not a docstring"
-})
-strlambda_out <- list(expr=strlambda, docstring=NULL)
-
-expr <- substitute({
-  2 * 2
-  5 * x
-})
-expr_out <- list(expr=expr, docstring=NULL)
-
-expr_doc <- substitute({
-  "this is a docstring"
-  2 * 2
-  5 * x
-})
-expr_doc_out <- list(expr=expr, docstring="this is a docstring")
-
-expr_doc_mag <- substitute({
-  "this is not a docstring" %>% toupper
-  2 * 2
-  5 * x
-})
-expr_doc_mag_out <- list(expr=expr_doc_mag, docstring=NULL)
 
 test_that("when expression is not a lambda", {
-  expect_equal(extract_docstring(2), list(expr=2, docstring=NULL))
-  expect_equal(extract_docstring("adsf"), list(expr="adsf", docstring=NULL))
-  expect_equal(extract_docstring(c("adsf", "df")), list(expr=c("adsf", "df"), docstring=NULL))
+  expect_equal(
+    extract_metadata(2),
+    list(expr=2, docstring=NULL, metadata=list())
+  )
+  expect_equal(
+    extract_metadata("adsf"),
+    list(expr="adsf", docstring=NULL, metadata=list())
+  )
+  expect_equal(
+    extract_metadata(c("adsf", "df")),
+    list(expr=c("adsf", "df"), docstring=NULL, metadata=list())
+  )
 })
 
 test_that("when lambda is only a string", {
-  expect_equal(extract_docstring(strlambda), strlambda_out)
+  expect_equal(
+    extract_metadata(substitute({"this is not a docstring"})),
+    list(
+      expr      = substitute({"this is not a docstring"}),
+      docstring = NULL,
+      metadata  = list()
+    )
+  )
 })
 
 test_that("when lambda has no docstring", {
-  expect_equal(extract_docstring(expr), expr_out)
+  expect_equal(
+    extract_metadata(substitute({2*2;5*x})),
+    list(
+      expr=substitute({2*2;5*x}),
+      docstring=NULL,
+      metadata=list()
+    )
+  )
 })
 
 test_that("when lambda has docstring", {
-  expect_equal(extract_docstring(expr_doc), expr_doc_out)
+  expect_equal(
+    extract_metadata(substitute({"this is a docstring";NULL})),
+    list(
+      expr=substitute({NULL}),
+      docstring="this is a docstring",
+      metadata=list()
+    )
+  )
 })
 
 test_that("when lambda starts with string that is part of an expression", {
-  expect_equal(extract_docstring(expr_doc_mag), expr_doc_mag_out)
+  expect_equal(
+    extract_metadata(substitute({"this is not a docstring" %>% foo;NULL})),
+    list(
+      expr=substitute({"this is not a docstring" %>% foo;NULL}),
+      docstring=NULL,
+      metadata=list()
+    )
+  )
 })
 
 test_that("docstrings work on rhs", {
@@ -79,4 +92,23 @@ test_that("as_monad handles docstrings", {
 test_that("anonymous functions handle docstrings", {
   expect_equal(16 %>>% (function(x){"asdf"; sqrt(x)}) %>% m_doc, "asdf")
   expect_equal(16 %>>% (function(x){"asdf"; sqrt(x)}) %>% esc, 4)
+})
+
+test_that("metadata is extracted", {
+  expect_equal(
+    extract_metadata(substitute({list(k=1); NULL})),
+    list(
+      expr      = substitute({NULL}),
+      docstring = NULL,
+      metadata  = list(k=1)
+    )
+  )
+  expect_equal(
+    extract_metadata(substitute({"asdf"; list(k=1); x + y})),
+    list(
+      expr      = substitute({x + y}),
+      docstring = "asdf",
+      metadata  = list(k=1)
+    )
+  )
 })

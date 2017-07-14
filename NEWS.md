@@ -4,6 +4,8 @@
 
  * Add docstrings to anonymous functions
 
+ * Add metadata lists to anonymous functions
+
  * Allow `%*>%` to take monad bound lists
 
  * Rename `lsmeval` as `funnel`.

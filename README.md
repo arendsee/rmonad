@@ -1,6 +1,15 @@
 [![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=dev)](https://travis-ci.org/arendsee/rmonad)
 [![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/dev.svg)](https://codecov.io/github/arendsee/rmonad?branch=dev)
 
+---
+output: markdown_github 
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+
+
+
 # `rmonad`
 
 Chain monadic sequences into stateful, branching pipelines.
@@ -26,12 +35,19 @@ You may use `rmonad` to
 
 ## Installation
 
-You can install from github with:
+You can install from CRAN with:
+
+
+```r
+install.packages("rmonad")
+```
+
+Or you can install the dev branch from github
 
 
 ```r
 # install.packages("devtools")
-devtools::install_github("arendsee/rmonad")
+devtools::install_github("arendsee/rmonad",ref="dev")
 ```
 
 ## Examples
@@ -98,7 +114,7 @@ x[[1]] %||% NULL %>% esc
 
 
 ```r
-lsmeval(
+funnel(
     runif(5),
     stop("stop, drop and die"),
     runif("df"),
@@ -111,7 +127,7 @@ lsmeval(
 #> R> "stop("stop, drop and die")"
 #>  * ERROR: stop, drop and die
 #> R> "runif(5)"
-#> R> "lsmeval(runif(5), stop("stop, drop and die"), runif("df"), 1:10)"
+#> R> "funnel(runif(5), stop("stop, drop and die"), runif("df"), 1:10)"
 #> 
 #>  ----------------- 
 #> 
@@ -135,11 +151,50 @@ lsmeval(
 
 
 ```r
-lsmeval(
+funnel(
     read.csv("a.csv") %>>% do_analysis_a,
     read.csv("b.csv") %>>% do_analysis_b,
     k = 5
 ) %*>% joint_analysis
+```
+
+
+```r
+foo <- {
+
+  "This is nothing"
+
+  NA
+
+} %>>% {
+
+  "This the length of nothing"
+
+  length(.) 
+}
+
+bar <- {
+
+  "These are cars"
+
+  cars
+
+} %>>% {
+
+  "There are this many of them"
+
+  length(.)
+}
+
+
+baz <- "oz" %>>%
+  funnel(x, f=foo, b=bar) %*>%
+  (function(x,f,b){
+
+     "This definitely won't work"
+     
+     b - f - x - f
+  })
 ```
 
 
@@ -217,6 +272,25 @@ analysis
 #> [1] 29.97433
 ```
 
+### Add metadata to chunk
+
+
+```r
+{
+  "This is data describing a chunk"
+
+  list(
+    foo = "this is metadata, you can put anything you want in here",
+    bar = "maybe can pass parameters to an Rmarkdown chunk",
+    baz = "or store stuff in state, for example:"
+    sysinfo = session_info()
+  )
+
+  # this is the actual thing computed
+  1 + 1
+}
+```
+
 ## Contributing
 
 I am looking for collaborators. There are enough unsolved problems on the
@@ -237,40 +311,40 @@ Here are my goals for the v0.2.0 release.
  - [ ] Benchmark rmonad, speed it up as much as is reasonable
 
  - [ ] Improve documentation
-      
-       - [ ] Detailed documentation for each infix operator
+
+   - [ ] Detailed documentation for each infix operator
 
  - [ ] Better examples (my current examples are highly contrived)
 
-       - [ ] A monad theory vignette
+   - [ ] A monad theory vignette
 
-       - [ ] One of two detailed case study vignettes
+   - [ ] One of two detailed case study vignettes
 
-       - [ ] Improved examples in the introduction vignette and README
+   - [ ] Improved examples in the introduction vignette and README
 
  - [ ] Reimplement the underlying graph structure with igraph (or some similar
    dedicated graph library). This is a major task. Currently `rmonad` builds
    directed graphs, but can do little with them. This should allow:
 
-       - [ ] Plotting of the function graph
+   - [ ] Plotting of the function graph
 
-       - [ ] Faster, more elegant traversal algorithms
+   - [ ] Faster, more elegant traversal algorithms
 
-       - [ ] Preserve all operations in the graph, even those that were not run
-         or that trail after failed states.
+   - [ ] Preserve all operations in the graph, even those that were not run
+     or that trail after failed states.
 
-       - [ ] Find a way to deal with lists of graphs
+   - [ ] Find a way to deal with lists of graphs
 
-       - [ ] Check for infinite loops
+   - [ ] Check for infinite loops
 
  - [ ] Functions for converting the pipeline data structure into an Rmd. There
    are a lot of details to work out here.
 
-       - [ ] Set docstring to caption if the chunk emits a graph
+   - [ ] Set docstring to caption if the chunk emits a graph
 
-       - [ ] Else make it a block of text underneath the chunk (or something)
+   - [ ] Else make it a block of text underneath the chunk (or something)
 
-       - [ ] ...
+   - [ ] ...
 
  - [ ] Add some system for caching, a global option system perhaps
 

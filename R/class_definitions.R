@@ -21,6 +21,7 @@ Rmonad <- setClass(
     notes    = "list", # Maybe [String]
     doc      = "list", # Maybe [String]
     other    = "list",
+    meta     = "list",
     branch   = "list",
     parents  = "list",
     .stored  = "logical"
@@ -34,6 +35,7 @@ Rmonad <- setClass(
     notes    = list(),
     doc      = list(),
     other    = list(),
+    meta     = list(),
     branch   = list(),
     .stored  = FALSE, # is an x stored here
     parents  = list()

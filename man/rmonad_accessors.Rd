@@ -10,6 +10,7 @@
 \alias{m_warnings}
 \alias{m_notes}
 \alias{m_doc}
+\alias{m_meta}
 \alias{m_time}
 \alias{m_mem}
 \alias{m_branch}
@@ -21,6 +22,7 @@
 \alias{m_warnings<-}
 \alias{m_notes<-}
 \alias{m_doc<-}
+\alias{m_meta<-}
 \alias{m_time<-}
 \alias{m_mem<-}
 \alias{m_branch<-}
@@ -45,6 +47,8 @@ m_notes(m)
 
 m_doc(m)
 
+m_meta(m)
+
 m_time(m)
 
 m_mem(m)
@@ -66,6 +70,8 @@ m_warnings(m) <- value
 m_notes(m) <- value
 
 m_doc(m) <- value
+
+m_meta(m) <- value
 
 m_time(m) <- value
 

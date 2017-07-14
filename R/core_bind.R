@@ -33,11 +33,11 @@ bind <- function(
   # FIXME: cleanup this implementation
   # FIXME: !!!!!!!
 
-  fdecon <- extract_docstring(substitute(f))
+  fdecon <- extract_metadata(substitute(f))
   rhs_str <- deparse(fdecon$expr)
   rhs_doc <- fdecon$docstring
 
-  xdecon <- extract_docstring(substitute(x))
+  xdecon <- extract_metadata(substitute(x))
   lhs_str <- deparse(xdecon$expr)
   lhs_doc <- xdecon$docstring
 

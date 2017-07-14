@@ -44,7 +44,7 @@ You may use `rmonad` to
 
 You can install from CRAN with:
 
-```{r gh-installation, eval = FALSE}
+```{r cran-installation, eval = FALSE}
 install.packages("rmonad")
 ```
 
@@ -191,7 +191,24 @@ analysis <-
 analysis
 ```
 
-<<<<<<< Updated upstream
+### Add metadata to chunk
+
+```{r, eval=FALSE}
+{
+  "This is data describing a chunk"
+
+  list(
+    foo = "this is metadata, you can put anything you want in here",
+    bar = "maybe can pass parameters to an Rmarkdown chunk",
+    baz = "or store stuff in state, for example:"
+    sysinfo = session_info()
+  )
+
+  # this is the actual thing computed
+  1 + 1
+}
+```
+
 ## Contributing
 
 I am looking for collaborators. There are enough unsolved problems on the
@@ -212,7 +229,7 @@ Here are my goals for the v0.2.0 release.
  - [ ] Benchmark rmonad, speed it up as much as is reasonable
 
  - [ ] Improve documentation
-      
+
    - [ ] Detailed documentation for each infix operator
 
  - [ ] Better examples (my current examples are highly contrived)

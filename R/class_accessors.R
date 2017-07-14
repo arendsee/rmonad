@@ -39,6 +39,10 @@ m_doc <- function(m) .maybe_vector_get(m@doc)
 
 #' @rdname rmonad_accessors
 #' @export
+m_meta <- function(m) m@meta
+
+#' @rdname rmonad_accessors
+#' @export
 m_time <- function(m) {
   time <- m@other$time
   if(is.null(time)){
@@ -120,6 +124,13 @@ m_branch   <- function(m) m@branch
 #' @export
 `m_doc<-` <- function(m, value) {
   m@doc <- .maybe_vector_set(value, .is_valid_string, expected_type=is.character)
+  m
+}
+
+#' @rdname rmonad_accessors
+#' @export
+`m_meta<-` <- function(m, value) {
+  m@meta <- value
   m
 }
 
