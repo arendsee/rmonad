@@ -1,14 +1,15 @@
 Type: Package
 Package: rmonad
-Version: 0.2.0.9002
+Version: 0.2.0.9003
 Title: A Monadic Pipeline System
 Description:
     A monadic solution to pipeline analysis. All operations -- and the errors,
     warnings and messages they emit -- are merged into a directed graph. Infix
     binary operators mediate when values are stored, how exceptions are
     handled, and where pipelines branch and merge. The resulting structure may
-    be queried for debugging or report generation. rmonad complements, rather
-    than competes with, non-monadic pipeline packages like magrittr or pipeR.
+    be queried for debugging or report generation. 'rmonad' complements, rather
+    than competes with, non-monadic pipeline packages like 'magrittr' or
+    'pipeR'.
 Authors@R: person("Zebulun", "Arendsee", email="zbwrnz@gmail.com", role=c("aut","cre"))
 URL: https://github.com/arendsee/rmonad
 BugReports: https://github.com/arendsee/rmonad/issues
@@ -31,4 +32,4 @@ Suggests:
 VignetteBuilder: knitr
 LazyData: yes
 RoxygenNote: 6.0.1
-License: GPL-3 + file LICENSE
+License: GPL-3

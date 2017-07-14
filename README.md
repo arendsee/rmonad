@@ -1,37 +1,19 @@
 [![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=dev)](https://travis-ci.org/arendsee/rmonad)
 [![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/dev.svg)](https://codecov.io/github/arendsee/rmonad?branch=dev)
 
----
-output: markdown_github 
----
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-
-
-
 # `rmonad`
 
-Chain monadic sequences into stateful, branching pipelines.
+Chain monadic sequences into stateful, branching pipelines. As nodes in the
+pipeline are run, they are merged into a graph of all past operations. The
+resulting structure can be computed on to access not only the final results,
+but also node documentation, intermediate data, performance stats, and any raised
+messages, warnings or errors. `rmonad` intercepts all exceptions, which allows
+for pure error handling.
 
-You may use `rmonad` to
-
- * build linear pipelines, as with `magrittr`
-
- * access results at any step within the pipeline
-
- * access results preceding an error
-
- * handle errors naturally
-
- * call effects -- e.g. plotting, caching -- within a pipeline
-
- * branch or merge pipelines, while preserving their history
-
- * annotate nodes in the graph
-
- * benchmark a pipeline to find bottleknecks in time and space 
-
+`rmond` complements, rather than competes with non-monadic pipelines packages
+such as `magrittr` or `pipeR`. These can be used to perform operations where
+preservation of state is not desired. Also they are needed to operate on
+monadic containers themselves.
 
 ## Installation
 
@@ -42,13 +24,19 @@ You can install from CRAN with:
 install.packages("rmonad")
 ```
 
-Or you can install the dev branch from github
+You can install from the github dev branch with:
 
 
 ```r
 # install.packages("devtools")
-devtools::install_github("arendsee/rmonad",ref="dev")
+devtools::install_github("arendsee/rmonad", ref="dev")
 ```
+
+## On obsolescence and collaboration
+
+Some of the material in `master` is already slated for deprecation. See `dev`
+for the newest material. `rmonad` is experimental at this point.  If you are
+interested in collaborating, shoot me an email. Also see the `dev` README.
 
 ## Examples
 
