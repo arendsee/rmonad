@@ -330,10 +330,7 @@ library(DiagrammeR)
 #> 
 #>     add_path
 
-ab <- "a" %v>% paste("b")
-cd <- "b" %v>% paste("c")
-abcd <- funnel(ab, cd) %*>% paste
-
+# make labels for the DiagrammeR object
 make_labels <- function(m){
   v <- m_value(m)
   if(is.null(v))
@@ -341,9 +338,20 @@ make_labels <- function(m){
   v
 }
 
-g <- as_dgr_graph(abcd, label=make_labels)
-# DiagrammeR::vivagraph(g)
-DiagrammeR::grViz(DiagrammeR::generate_dot(g))
+# here I use the `->` operator, which is the little known twin of `<-`.
+funnel(
+  "a" %v>% paste("b"), # %v>% stores the input (%>>% doesn't)
+  "c" %v>% paste("d")
+) %*>% # %*>% bind argument list from funnel to paste
+  paste %>%  # funnel joins monads, so we pass in the full monad here, with
+  funnel(    # '%>%', rather than use '%>>'% to get the wrapped value
+    "e" %v>% paste("f"),
+    "g" %v>% paste("h")
+  ) %*>%
+  paste %>% # the remaining steps are all operating _on_ the monad
+  as_dgr_graph(label=make_labels) %>%
+  DiagrammeR::generate_dot() %>%
+  DiagrammeR::grViz()
 ```
 
 ![plot of chunk workflow-plot](README-workflow-plot-1.png)
