@@ -1,7 +1,6 @@
 [![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=dev)](https://travis-ci.org/arendsee/rmonad)
 [![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/dev.svg)](https://codecov.io/github/arendsee/rmonad?branch=dev)
 
-
 # `rmonad`
 
 Chain monadic sequences into stateful, branching pipelines. As nodes in the
@@ -272,7 +271,7 @@ analysis
     foo = "this is metadata, you can put anything you want in here",
     bar = "maybe can pass parameters to an Rmarkdown chunk",
     baz = "or store stuff in state, for example:"
-    sysinfo = session_info()
+    sysinfo = devtools::session_info()
   )
 
   # this is the actual thing computed
@@ -319,6 +318,35 @@ x <-
 mreport(x)
 #> [1] "\n```{r, eval=FALSE}\n{\n    \"# Report\\n\\n  This is a pipeline report\\n  \"\n}\n```\n\nthis is a docstring\n```{r, eval=FALSE}\n{\n    5\n}\n```\n\nthis is too\n```{r, eval=FALSE}\n{\n    sqrt(.)\n}\n```\n\n# Conclusion\n\n   optional closing remarks\n   \n```{r, eval=FALSE}\n{\n    NULL\n}\n```\n"
 ```
+
+### Graphing pipelines
+
+
+```r
+library(DiagrammeR)
+#> 
+#> Attaching package: 'DiagrammeR'
+#> The following object is masked from 'package:devtools':
+#> 
+#>     add_path
+
+ab <- "a" %v>% paste("b")
+cd <- "b" %v>% paste("c")
+abcd <- funnel(ab, cd) %*>% paste
+
+make_labels <- function(m){
+  v <- m_value(m)
+  if(is.null(v))
+    v <- "."
+  v
+}
+
+g <- as_dgr_graph(abcd, label=make_labels)
+# DiagrammeR::vivagraph(g)
+DiagrammeR::grViz(DiagrammeR::generate_dot(g))
+```
+
+![plot of chunk workflow-plot](README-workflow-plot-1.png)
 
 ## Contributing
 

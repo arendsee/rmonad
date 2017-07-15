@@ -25,6 +25,11 @@ parent/child relations.
 
 data(gff)
 as_dgr_graph(gff$good_result, mem=m_mem, time=m_time)
+
+ab <- "a" \%v>\% paste("b")
+cd <- "c" \%v>\% paste("d")
+abcd <- funnel(ab, cd) \%*>\% paste
+g <- as_dgr_graph(abcd, label=m_value)
 }
 \seealso{
 Other monad-to-x: \code{\link{esc}}, \code{\link{missues}},

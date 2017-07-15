@@ -198,7 +198,7 @@ analysis
     foo = "this is metadata, you can put anything you want in here",
     bar = "maybe can pass parameters to an Rmarkdown chunk",
     baz = "or store stuff in state, for example:"
-    sysinfo = session_info()
+    sysinfo = devtools::session_info()
   )
 
   # this is the actual thing computed
@@ -242,6 +242,27 @@ x <-
 
 }
 mreport(x)
+```
+
+### Graphing pipelines
+
+```{r workflow-plot, results="asis"}
+library(DiagrammeR)
+
+ab <- "a" %v>% paste("b")
+cd <- "b" %v>% paste("c")
+abcd <- funnel(ab, cd) %*>% paste
+
+make_labels <- function(m){
+  v <- m_value(m)
+  if(is.null(v))
+    v <- "."
+  v
+}
+
+g <- as_dgr_graph(abcd, label=make_labels)
+# DiagrammeR::vivagraph(g)
+DiagrammeR::grViz(DiagrammeR::generate_dot(g))
 ```
 
 ## Contributing
