@@ -22,6 +22,7 @@
 #' @param doc A docstring to associate with the monad
 #' @param desc A description of the monad (usually the producing code)
 #' @param keep_history Merge the histories of all monads
+#' @param env Evaluation environment
 #' @param ... multiple expressions
 #' @name x_to_monad
 #' @examples
@@ -112,18 +113,13 @@ as_monad <- function(expr, desc=NULL, doc=NULL){
 
 #' @rdname x_to_monad
 #' @export
-funnel <- function(..., keep_history=TRUE){
+funnel <- function(..., env=parent.frame(), keep_history=TRUE){
 # funnel :: [Rexpr] -> m [*]
   desc <- deparse(match.call())
 
-  e <- parent.frame()
-
-  # don't linearize with magrittr, thar lie dragons
-  combine(
-    lapply(
-      as.list(substitute(alist(...)))[-1],
-      function(x) as_monad(eval(x, envir=e), desc=deparse(x))
-    ),
+  .funnel_sub(
+    es = as.list(substitute(alist(...)))[-1],
+    env=env,
     keep_history=keep_history,
     desc=desc
   )
@@ -132,7 +128,15 @@ funnel <- function(..., keep_history=TRUE){
 # internal function, for building from a list of expressions
 .funnel_sub <- function(es, env=parent.frame(), ...){
 
-  ms <- lapply(es, function(x) as_monad(eval(x, env), desc=deparse(x)))
+  ms <- lapply(
+    es,
+    function(x) {
+      as_monad(
+        eval(x, env),
+        desc=deparse(x)
+      )
+    }
+  )
 
   combine(ms, ...)
 }

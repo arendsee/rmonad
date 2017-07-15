@@ -9,7 +9,7 @@
 \usage{
 as_monad(expr, desc = NULL, doc = NULL)
 
-funnel(..., keep_history = TRUE)
+funnel(..., env = parent.frame(), keep_history = TRUE)
 
 combine(xs, keep_history = TRUE, desc = NULL)
 }
@@ -21,6 +21,8 @@ combine(xs, keep_history = TRUE, desc = NULL)
 \item{doc}{A docstring to associate with the monad}
 
 \item{...}{multiple expressions}
+
+\item{env}{Evaluation environment}
 
 \item{keep_history}{Merge the histories of all monads}
 

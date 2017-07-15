@@ -24,9 +24,9 @@ bind <- function(
   f,
   entry_lhs_transform = entry_lhs_transform_default,
   bind_if             = function(m) m_OK(m),
-  bind_else           = toss,
+  bind_else           = function(...){NULL},
   emit                = emit_default,
-  m_on_bind           = ident,
+  m_on_bind           = function(x, ...){x},
   io_combine          = default_combine,
   bind_args           = function(m) list(m_value(m))
 ){

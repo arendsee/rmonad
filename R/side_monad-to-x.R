@@ -83,14 +83,8 @@ mreport <- function(m){
 #' functions will produce the attributes used in the graph object.
 #' @export
 #' @examples
-#'
 #' data(gff)
 #' as_dgr_graph(gff$good_result, mem=m_mem, time=m_time)
-#'
-#' ab <- "a" %v>% paste("b")
-#' cd <- "c" %v>% paste("d")
-#' abcd <- funnel(ab, cd) %*>% paste
-#' g <- as_dgr_graph(abcd, label=m_value)
 as_dgr_graph <- function(m, type=NULL, label=NULL, ...){
   ms <- as.list(m)
   funcs <- list(...)
