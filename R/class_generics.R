@@ -72,10 +72,10 @@ setMethod("show", "Rmonad",
 as.list.Rmonad <- function(x, ...){
   ms <- list(x)
   for(b in m_branch(x)){
-    ms <- append(as.list(b), ms)
+    ms <- as.list(b) %++% ms
   }
   for(p in m_parents(x)){
-    ms <- append(as.list(p), ms)
+    ms <- as.list(p) %++% ms
   }
   unique(ms)
 }

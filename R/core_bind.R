@@ -106,13 +106,22 @@ bind <- function(
   result
 }
 
+## m_on_bind options
+
+# preserve value upon future bind
+store_value <- function(m) { .m_stored(m) <- TRUE ; m }
+
+
+
 entry_lhs_transform_default <- function(m, f, ...) as_monad(m, ...)
 
-emit_default <- function(i , o) {
-  if(is.null(o)){
-    i
+emit_default <- function(input, output) {
+  # NOTE: output here is an Rmonad, not a value. It will be NULL only if no
+  # bind operation was performed. It may wrap a NULL value.
+  if(is.null(output)){
+    input
   } else {
-    o
+    output
   }
 }
 

@@ -2,6 +2,7 @@
 % Please edit documentation in R/class_accessors.R
 \name{rmonad_accessors}
 \alias{rmonad_accessors}
+\alias{m_delete_value}
 \alias{m_parents}
 \alias{m_value}
 \alias{m_id}
@@ -33,6 +34,8 @@
 \alias{app_branch}
 \title{get, set, and append rmonad fields}
 \usage{
+m_delete_value(m)
+
 m_parents(m)
 
 m_value(m)

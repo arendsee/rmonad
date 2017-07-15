@@ -73,7 +73,7 @@ as_monad <- function(expr, desc=NULL, doc=NULL){
           }
         ),
         warning = function(w){
-          warns <<- append(warns, w$message)
+          warns <<- warns %++% w$message
           invokeRestart("muffleWarning")
         }
       )

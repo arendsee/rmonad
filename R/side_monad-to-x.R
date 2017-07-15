@@ -98,14 +98,11 @@ as_dgr_graph <- function(m, type=NULL, label=NULL, ...){
   # build the node data frame
   nodes_df <- do.call(
     DiagrammeR::create_node_df,
-    append(
-      list(
-        n     = length(ms),
-        type  = type,
-        label = label
-      ),
-      cols
-    )
+    list(
+      n     = length(ms),
+      type  = type,
+      label = label
+    ) %++% cols
   )
   nodes_df$id <- sapply(ms, m_id)
 

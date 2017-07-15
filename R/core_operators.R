@@ -22,7 +22,7 @@ NULL
 #' @export
 `%v>%` <- function(lhs, rhs) {
   envir <- parent.frame()
-  cmd <- list(bind, substitute(lhs), substitute(rhs), m_on_bind=.store)
+  cmd <- list(bind, substitute(lhs), substitute(rhs), m_on_bind=store_value)
   eval(as.call(cmd), envir=envir)
 }
 
@@ -35,6 +35,8 @@ NULL
 
   lexp <- as.list(lhs_expr)
 
+  # FIXME: This is really sneaky. I am ignoring x and y and replacing them with
+  # variables defined in this foreign environment. Not good practice.
   if(lexp[[1]] == "list"){
     lhs_expr <- lexp[-1]
     on_entry <- function(x, f, desc) {
@@ -122,14 +124,14 @@ NULL
   envir <- parent.frame()
   rhs_str <- deparse(substitute(rhs))
 
-  emit <- function(i,o) {
+  emit <- function(input,output) {
     # if the lhs failed, pass the evaluated rhs
-    if(m_OK(i)){
-      i
+    if(m_OK(input)){
+      input
     }
     # else link the rhs to lhs input, and replace the lhs
     else {
-      .m_inherit(child=o, parents=i)
+      .m_inherit(child=output, parents=input)
     }
   }
 

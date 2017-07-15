@@ -38,8 +38,8 @@ Rmonad <- setClass(
     other    = list(),
     meta     = list(),
     branch   = list(),
-    .stored  = FALSE, # is an x stored here
-    parents  = list()
+    parents  = list(),
+    .stored  = FALSE  # is an x stored here
   )
 )
 
