@@ -104,6 +104,7 @@ as_monad <- function(expr, desc=NULL, doc=NULL){
   m_notes(m)    <- notes
   m_OK(m)       <- isOK
   m_doc(m)      <- doc
+  m_mem(m)      <- object.size(value)
   m_meta(m)     <- met
 
   m
