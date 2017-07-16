@@ -4,10 +4,18 @@
 \alias{extract_metadata}
 \title{Extract docstring and meta data from an anonymous function}
 \usage{
-extract_metadata(expr)
+extract_metadata(expr, env = parent.frame(), skip_name = TRUE)
 }
 \arguments{
 \item{expr}{an expression with an optional docstring as the first statement}
+
+\item{env}{environment in which to evaluate functions}
+
+\item{skip_name}{Do not attempt to find function matching expressions of
+type 'name'. If FALSE, then a function will by searched for with name
+\code{expr} if \code{expr} is a name. This leads to \code{expr} being
+evaluated, which raises errors outside the purview of Rmonad. For example,
+\code{extract_metadata(stop("dying"))}.}
 }
 \value{
 a list of three elements, the expression with the docstring and
@@ -19,6 +27,7 @@ second. Both must preceed any other code in the function. These constraints
 may be relaxed in the future.
 }
 \examples{
+## extract metadata from a block 
 expr <- substitute(
   {
     "this is the docstring"
@@ -27,5 +36,16 @@ expr <- substitute(
   }
 )
 extract_metadata(expr)
+
+foo <- function(x,y){
+  "docstring"
+  list(meta="data")
+  x + y
+}
+## extract metadata from a function name
+extract_metadata(substitute(foo), skip_name=FALSE)
+
+## extract from a partially applied function
+extract_metadata(substitute(foo(y=2)))
 }
 \keyword{internal}

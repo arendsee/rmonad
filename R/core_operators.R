@@ -143,7 +143,8 @@ NULL
     bind_if = false,
     # and instead just evaluate the rhs
     bind_else = function(i,o) as_monad(o, desc=rhs_str),
-    emit = emit
+    emit = emit,
+    expect_rhs_function = FALSE
   )
   eval(as.call(cmd), envir=envir)
 }
@@ -181,7 +182,8 @@ NULL
     rhs,
     bind_if   = false,
     bind_else = function(...){as_monad(eval(rhs, envir))},
-    emit      = emit
+    emit      = emit,
+    expect_rhs_function = FALSE
   )
   eval(as.call(cmd), envir=envir)
 }

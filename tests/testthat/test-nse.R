@@ -1,6 +1,5 @@
 context("non-standard evaluation")
 
-
 test_that("when expression is not a lambda", {
   expect_equal(
     extract_metadata(2),
@@ -15,6 +14,21 @@ test_that("when expression is not a lambda", {
     list(expr=c("adsf", "df"), docstring=NULL, metadata=list())
   )
 })
+
+
+foo <- function(x, y) { "foofoo"; list(k=1); x + y }
+e=environment()
+test_that("when expression is a named function", {
+  expect_equal(
+    extract_metadata(substitute(foo), env=e, skip_name=FALSE),
+    list(expr=substitute(foo), docstring="foofoo", metadata=list(k=1))
+  )
+  expect_equal(
+    extract_metadata(substitute(foo(y=2)), env=e),
+    list(expr=substitute(foo(y=2)), docstring="foofoo", metadata=list(k=1))
+  )
+})
+
 
 test_that("when lambda is only a string", {
   expect_equal(

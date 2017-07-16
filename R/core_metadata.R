@@ -5,11 +5,17 @@
 #' may be relaxed in the future.
 #'
 #' @param expr an expression with an optional docstring as the first statement
+#' @param skip_name Do not attempt to find function matching expressions of
+#' type 'name'. If FALSE, then a function will by searched for with name
+#' \code{expr} if \code{expr} is a name. This leads to \code{expr} being
+#' evaluated, which raises errors outside the purview of Rmonad. For example,
+#' \code{extract_metadata(stop("dying"))}.
 #' @return a list of three elements, the expression with the docstring and
 #' metadata removed, the docstring itself, and the metadata.
 #' @keywords internal
 #' @export
 #' @examples
+#' ## extract metadata from a block 
 #' expr <- substitute(
 #'   {
 #'     "this is the docstring"
@@ -18,7 +24,18 @@
 #'   }
 #' )
 #' extract_metadata(expr)
-extract_metadata <- function(expr){
+#'
+#' foo <- function(x,y){
+#'   "docstring"
+#'   list(meta="data")
+#'   x + y
+#' }
+#' ## extract metadata from a function name
+#' extract_metadata(substitute(foo), skip_name=FALSE)
+#'
+#' ## extract from a partially applied function
+#' extract_metadata(substitute(foo(y=2)))
+extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
 
   metadata <- list()
   docstring <- NULL
@@ -60,11 +77,12 @@ extract_metadata <- function(expr){
     }
   }
 
-  # The code below isn't pretty, but here is what it is doing:
-  #
   # I want to match an expression like:
   #
   #  (function(x){"asdf" ; y})
+  #
+  # The body of the function is the same as what was processed above. So I can
+  # just recurse on the body.
   #
   # This has the ast (with the help of 'pryr')
   # \- ()
@@ -86,37 +104,41 @@ extract_metadata <- function(expr){
   # I require
   #   1) expression matches this general template
   #   2) there is at least one expression following the docstring
-  if(
+  else if(
     is.call(expr) &&
     expr[[1]] == "(" &&
     expr[[2]][[1]] == "function"
   ){
-    if(
-      length(expr[[2]][[3]]) > 2 &&
-      class(expr[[2]][[3]][[2]]) == "character"
-    ){
-      # extract the docstring
-      docstring <- expr[[2]][[3]][[2]]
-      # remove the docstring from the expression
-      expr[[2]][[3]] <- expr[[2]][[3]][-2]
-      # reset the srcref
-      expr[[2]][[4]] <- NULL
-    }
-    if(
-      length(expr[[2]][[3]]) > 2 &&
-      class(expr[[2]][[3]][[2]][[1]]) == "name" &&
-      as.character(expr[[2]][[3]][[2]][[1]]) == "list"
-    ){
-      # extract the docstring
-      metadata <- eval(expr[[2]][[3]][[2]])
-      # remove the docstring from the expression
-      expr[[2]][[3]] <- expr[[2]][[3]][-2]
-      if(length(expr[[2]]) == 4){
-        # reset the srcref
-        expr[[2]][[4]] <- NULL
-      }
+    bod <- extract_metadata(expr[[2]][[3]], env=env)
+    docstring <- bod$docstring    
+    metadata <- bod$metadata
+    expr[[2]][[3]] <- bod$expr
+  }
+
+  else if(
+    is.call(expr) &&
+    length(expr[[1]]) == 1 && # i.e. not in a namespace (foo::bar)
+    methods::existsFunction(as.character(expr[[1]]), where=env)
+  ) {
+    meta <- extract_metadata(expr[[1]], env=env, skip_name=FALSE)
+    docstring <- meta$docstring
+    metadata <- meta$metadata
+  }
+
+  # Handle named functions
+  else if (
+    ! skip_name &&
+    is.name(expr) &&
+    methods::existsFunction(as.character(expr), where=env)
+  ){
+    x <- get( as.character(expr), envir=env )
+    if(!is.null(body(x))){
+      bod <- extract_metadata(body(x), env=env)
+      docstring <- bod$docstring
+      metadata <- bod$metadata
     }
   }
+
 
   list(expr=expr, docstring=docstring, metadata=metadata)
 }

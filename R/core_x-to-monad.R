@@ -58,7 +58,7 @@ as_monad <- function(expr, desc=NULL, doc=NULL){
   isOK  <- TRUE
 
   env <- parent.frame()
-  ed <- extract_metadata(substitute(expr))
+  ed <- extract_metadata(substitute(expr), env=env)
   expr <- ed$expr
   doc <- ed$docstring
   met <- ed$metadata

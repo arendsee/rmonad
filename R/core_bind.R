@@ -28,17 +28,20 @@ bind <- function(
   emit                = emit_default,
   m_on_bind           = function(x, ...){x},
   io_combine          = default_combine,
-  bind_args           = function(m) list(m_value(m))
+  bind_args           = function(m) list(m_value(m)),
+  expect_rhs_function = TRUE
 ){
   # FIXME: cleanup this implementation
   # FIXME: !!!!!!!
 
-  fdecon <- extract_metadata(substitute(f))
+  e <- parent.frame()
+
+  fdecon <- extract_metadata(substitute(f), env=e, skip_name=!expect_rhs_function)
   rhs_str <- deparse(fdecon$expr)
   rhs_doc <- fdecon$docstring
   rhs_met <- fdecon$metadata
 
-  xdecon <- extract_metadata(substitute(x))
+  xdecon <- extract_metadata(substitute(x), env=e)
   lhs_str <- deparse(xdecon$expr)
   lhs_doc <- xdecon$docstring
   lhs_met <- xdecon$metadata
@@ -54,7 +57,6 @@ bind <- function(
 
   o <- if(bind_if(m))
   {
-    e <- parent.frame()
 
     # insert x as first positional in f
     fs <- substitute(f)

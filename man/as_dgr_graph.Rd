@@ -22,7 +22,6 @@ subtly different 'branch' relationship. These should be resolvable to
 parent/child relations.
 }
 \examples{
-
 data(gff)
 as_dgr_graph(gff$good_result, mem=m_mem, time=m_time)
 }
