@@ -143,21 +143,18 @@ funnel <- function(..., env=parent.frame(), keep_history=TRUE){
     # how to stringify x
     function(x) {
       # if x is a call, deparse it
-      if(is.call(x)){
-        desc=deparse(x)
+      desc <- if(is.call(x)){
+        deparse(x)
       }
       # the substitution in funnel will evaluated these
       else if(is.atomic(x) && length(x) == 1) {
-        desc=x
+        as.character(x)
       }
       # anything else, will be data passed in from the pipe
       else {
-        desc="."
+        "."
       }
-      as_monad(
-        eval(x, env),
-        desc=deparse(x)
-      )
+      as_monad(eval(x, env), desc=desc)
     }
   )
 }
