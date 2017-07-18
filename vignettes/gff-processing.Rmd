@@ -391,7 +391,7 @@ read_gff <- function(file, tags){
         extra = "merge"
       )
 
-   } %v>% funnel(raw_gff=raw_gff, tags=tags) %*>% (function(attributes, raw_gff, tags){
+   } %v>% funnel(raw_gff=raw_gff, tags=tags) %*>% {
 
     "
     The %v>% operator stores the input value. We could replace every %>>%
@@ -413,7 +413,7 @@ read_gff <- function(file, tags){
     value itself.
     "
 
-      dplyr::filter(attributes, tag %in% c(tags, ".U")) %>%
+      dplyr::filter(., tag %in% c(tags, ".U")) %>%
       {
         if(nrow(.) > 0){
           tidyr::spread(., key="tag", value="value")
@@ -445,7 +445,7 @@ read_gff <- function(file, tags){
       { cbind(raw_gff, .) } %>%
       dplyr::select(-.U, -order, -ntags, -attr)
 
-  }) %>_% {
+  } %>_% {
 
     "
     And make the last few assertions.

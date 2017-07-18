@@ -68,10 +68,24 @@ bind <- function(
         as.call( list(as.call(fl)) %++% bind_args(m) )
       }
       # Evaluate '.' inside an anonymous function, e.g. 'x %>>% { 2 * . }'
+      # If a expanded list is passed, accept keywords
       else if(fl[[1]] == '{'){
-        a_function <- eval(call("function", as.pairlist(alist(. =)), fs), envir=e)
         e = environment()
-        as.call( list(quote(a_function), .=m_value(m)) )
+        args <- bind_args(m)
+        keys <- names(args)
+        if(is.null(keys)){
+          keys <- rep("", length(args))
+        }
+        if(keys[1] == ""){
+          keys[1] <- "."
+        }
+        if(any(keys == "")){
+          msg <- "Error in %s: Arguments to an anonymous function must be named"
+          stop(msg)
+        }
+        names(args) <- keys
+        a_function <- eval(call("function", as.pairlist(args), fs), envir=e)
+        as.call( list(quote(a_function)) %++% args )
       }
       else if(fl[[1]] == "function"){
         # as in magrittr

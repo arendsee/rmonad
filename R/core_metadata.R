@@ -5,6 +5,7 @@
 #' may be relaxed in the future.
 #'
 #' @param expr an expression with an optional docstring as the first statement
+#' @param env Environment in which to search for functions
 #' @param skip_name Do not attempt to find function matching expressions of
 #' type 'name'. If FALSE, then a function will by searched for with name
 #' \code{expr} if \code{expr} is a name. This leads to \code{expr} being

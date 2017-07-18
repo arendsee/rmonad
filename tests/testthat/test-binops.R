@@ -112,6 +112,12 @@ test_that('%*>% works the same of monad bound lists', {
   expect_equal(  funnel(stop(1),5,2) %*>% max %>% m_value, list(NULL, 5, 2) )
   expect_false(  funnel(stop(1),5,2) %*>% max %>% m_OK                      )
 })
+test_that('%*>% preserves keyword arguments', {
+  expect_equal(5 %>>% funnel(y=1,z=2) %*>% { . + y + z } %>% esc, 8)
+  expect_true(5 %>>% funnel(y=1,z=2) %*>% { . + y + z } %>% m_OK)
+  expect_equal(funnel(y=1,z=2) %*>% { y + z } %>% esc, 3)
+  expect_true(funnel(y=1,z=2) %*>% { y + z } %>% m_OK)
+})
 
 test_that('anonymous expressions can be run', {
   expect_equal( 1:10 %>>% { 4 } %>% esc  , 4 )

@@ -147,13 +147,13 @@ bar <- {
 
 
 baz <- "oz" %>>%
-  funnel(x, f=foo, b=bar) %*>%
-  (function(x,f,b){
+  funnel(f=foo, b=bar) %*>%
+  {
 
      "This definitely won't work"
      
-     b - f - x - f
-  })
+     . + f + b
+  }
 ```
 
 

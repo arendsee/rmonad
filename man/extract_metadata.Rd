@@ -9,7 +9,7 @@ extract_metadata(expr, env = parent.frame(), skip_name = TRUE)
 \arguments{
 \item{expr}{an expression with an optional docstring as the first statement}
 
-\item{env}{environment in which to evaluate functions}
+\item{env}{Environment in which to search for functions}
 
 \item{skip_name}{Do not attempt to find function matching expressions of
 type 'name'. If FALSE, then a function will by searched for with name
