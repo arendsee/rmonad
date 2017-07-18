@@ -1,0 +1,72 @@
+---
+title: "Rmonad: cheatsheet"
+author: "Zebulun Arendsee"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Cheatsheet}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+**This vignette is incomplete**
+
+
+## Operators
+
+ op      | lhs | rhs      | store | passes    | runif        | pass error
+ ------- | --- | -------- | ----- | --------- | -----------  | ----------
+ `%>>%`  | x   | f(x)     | -     | f(x)      | x passes     | yes
+ `%v>%`  | x   | f(x)     | x     | f(x)      | x passes     | yes
+ `%>_%`  | x   | f(x)     | -     | x         | x passes     | yes
+ `%>^%`  | x   | f(x)     | -     | x         | x passes     | no
+ `%|>%`  | x   | f(x)     | -     | x or f(x) | x fails      | no
+ `%||%`  | x   | y        | -     | x or y    | x fails      | no
+ `%*>%`  | ... | f(...)   | -     | f(...)    | all ... pass | yes
+ `%__%`  | x   | y        | -     | y         | always       | no
+ `%v__%` | x   | y        | x     | y         | always       | no
+
+The operator `%^>%`, used for branch merging, is on the chop block. It can be
+replaced with a combination of `funnel` and `%*>%`. The operator is too
+specialized and convoluted.
+
+
+## Helper functions
+
+ 1. `esc` - extract current value and raise any exceptions
+
+ 2. `mtabulate` - summarize the pipeline in tabular form
+
+ 3. `missues` - list all warnings and errors
+
+ 4. `as_dgr_graph` - convert the pipeline to a DiagrammeR graph
+
+ 5. `as.list` - convert pipeline to a list (same order as `mtabulate`)
+
+ 6. `funnel` - merge pipelines
+
+## Examples
+
+```{r}
+letters[1:5] %>>% paste(collapse="")
+letters[1:5] %v>% paste(collapse="")
+rnorm(1) %>_%
+  { stopifnot(. > 0 & . < 1) } %>>%
+  { rbinom(n=10, size=5, prob=.) } 
+
+rnorm(1) %>^%
+  {
+
+      "This is a seperate branch, it fails if . isn't between 0 and 1"
+
+      . %>_%
+        { stopifnot(. > 0 & . < 1) } %>>%
+        { rbinom(n=10, size=5, prob=.) } 
+  } %>>%
+  {
+
+      "This will run even if the branch producing the binomial random
+      variables fails. It never fails."
+
+      rnorm(n=10, mean=.,sd=1)
+  }
+```

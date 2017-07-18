@@ -8,6 +8,9 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+**this vignette is incomplete**
+
+
 This vignette consists of four parts. First I will illuminate the cryptomonad
 hidden in the R runtime. Second, I will describe how Rmonad can serve as a
 replacement. Third, I will contrast the monadic pipelines of Rmonad with the
