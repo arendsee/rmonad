@@ -116,30 +116,50 @@ as_monad <- function(expr, desc=NULL, doc=NULL){
 #' @export
 funnel <- function(..., env=parent.frame(), keep_history=TRUE){
 # funnel :: [Rexpr] -> m [*]
-  desc <- deparse(match.call())
 
-  .funnel_sub(
-    es = as.list(substitute(alist(...)))[-1],
-    env=env,
-    keep_history=keep_history,
-    desc=desc
+  # NOTE: don't deparse '...' to get labels, this leads to massive performance
+  # penalties when data is piped in (e.g. deparsing a dataframe).
+
+  ms <- .funnel_ms(
+    es = substitute(alist(...))[-1],
+    env=env
   )
+
+  desc <- sprintf("funnel(%s)", paste(sapply(ms, m_code), collapse=", "))
+
+  combine(ms, keep_history=keep_history, desc=desc)
 
 }
 # internal function, for building from a list of expressions
 .funnel_sub <- function(es, env=parent.frame(), ...){
 
-  ms <- lapply(
+  ms <- .funnel_ms(es, env)
+
+  combine(ms, ...)
+}
+.funnel_ms <- function(es, env=parent.frame()){
+  lapply(
     es,
+    # how to stringify x
     function(x) {
+      # if x is a call, deparse it
+      if(is.call(x)){
+        desc=deparse(x)
+      }
+      # the substitution in funnel will evaluated these
+      else if(is.atomic(x) && length(x) == 1) {
+        desc=x
+      }
+      # anything else, will be data passed in from the pipe
+      else {
+        desc="."
+      }
       as_monad(
         eval(x, env),
         desc=deparse(x)
       )
     }
   )
-
-  combine(ms, ...)
 }
 
 
