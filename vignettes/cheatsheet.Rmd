@@ -10,7 +10,6 @@ vignette: >
 
 **This vignette is incomplete**
 
-
 ## Operators
 
  op      | lhs | rhs      | store | passes    | runif        | pass error
@@ -47,6 +46,8 @@ specialized and convoluted.
 ## Examples
 
 ```{r}
+library(rmonad)
+
 letters[1:5] %>>% paste(collapse="")
 letters[1:5] %v>% paste(collapse="")
 rnorm(1) %>_%
