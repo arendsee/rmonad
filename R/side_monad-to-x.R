@@ -57,16 +57,39 @@ missues <- function(m){
 #' @param m An Rmonad
 #' @export
 mreport <- function(m){
+  template <- paste0(collapse="\n", c(
+      "## %s",
+      "%s",
+      "```{r, eval=FALSE}",
+      "%s",
+      "```",
+      "OK=%s | nparents=%s | nbranches=%s | cached=%s",
+      "%s%s%s"
+  ))
+  
+  i=0
   lapply(as.list(m),
     function(x) {
-      template <- "%s\n```{r, eval=FALSE}\n%s\n```\n"
+      i <<- i + 1
       paste(sprintf(
         template,
-        paste(m_doc(x), collapse="\n"),
-        paste(m_code(x), collapse="\n")
+        i,
+        .make_message(m_doc(m), .has_doc(m), "  "),
+        paste(m_code(x), collapse="\n"),
+        m_OK(x), length(m_parents(x)), length(m_branch(x)), .has_value(x),
+        .make_message(m_error(m), .has_error(m), "Error"),
+        .make_message(m_warnings(m), .has_warnings(m), "Warning"),
+        .make_message(m_notes(m), .has_notes(m), "Note")
       ))
     }
   ) %>% unlist %>% paste(collapse="\n")
+}
+.make_message <- function(x,has,root) {
+  if(has){
+    paste(root, x, collapse="\n")
+  } else {
+    ""
+  }
 }
 
 #' Convert a pipeline to DiagrammeR graph

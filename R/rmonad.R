@@ -40,7 +40,7 @@ NULL
 #'            \%>_\% in that future operations do not depend on its
 #'            pass/fail status.
 #'
-#' @section Operators targeted for deprecation
+#' @section Operators targeted for deprecation:
 #'
 #'  \%^>\%    Monadic bind and record input in monad. Perform rhs operation
 #'            on lhs branches. This is really weird, don't use it. I will
