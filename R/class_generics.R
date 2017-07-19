@@ -39,14 +39,15 @@
 #'
 #' @param x An Rmonad object
 #' @param verbose logical print verbose output (include benchmarking)
+#' @param print_value logical print the value wrapped in the Rmonad
 #' @param ... Additional arguments (unused)
 #' @export
-print.Rmonad <- function(x, verbose=FALSE, ...){
+print.Rmonad <- function(x, verbose=FALSE, print_value=TRUE, ...){
 
   ms <- as.list(x)
 
   for(i in seq_len(length(ms)-1)){
-    .print_record(ms[[i]], print_value=TRUE)
+    .print_record(ms[[i]], print_value=print_value)
   }
   .print_record(x, print_value=FALSE)
 
@@ -54,7 +55,8 @@ print.Rmonad <- function(x, verbose=FALSE, ...){
     cat("\n ----------------- \n\n")
   }
 
-  print(m_value(x))
+  if(print_value)
+    print(m_value(x))
 
   if(!m_OK(x)){
     cat(" *** FAILURE *** \n")

@@ -25,52 +25,22 @@ useful of these here. For more information see the vignette.
  \%||\%    if input is error, use rhs value instead
 
  \%|>\%    if input is error, run rhs on last passing result
+
+ \%*>\%    bind lhs list as arguments to right. The lhs may be a literal
+           list or a monad bound list.
 }
 
 \section{Advanced operators}{
 
 
- \%*>\%    bind lhs list as arguments to right. The lhs may be a literal
-           list or a monad bound list.
-
- \%^>\%    monadic bind and record input in monad
-
- \%>^\%    bind as a new branch, pass input on main
-
  \%__\%    keep parents from the lhs (errors ignored). This allows chaining
            of independent operations.
 
  \%v__\%   like \%__\% but store lhs result
-}
 
-\section{x to monad functions}{
-
-
-as_monad - evaluate an expression into a monad (capturing error)
-
-funnel - evaluate expressions into a list inside a monad
-}
-
-\section{monad to monad functions}{
-
-
-forget - erase parents from a monad
-
-doc - add a documentation string to a monad
-
-combine - combine a list of monads into a list in a monad
-}
-
-\section{monad to x functions}{
-
-
-esc - extract the result from a computation
-
-mtabulate - summarize all steps in a pipeline into a table
-
-missues - tabulate all warnings and errors from a pipeline 
-
-unbranch - extract all branches from the pipeline
+ \%>^\%    Bind as a new branch, pass input on main. This differs from
+           \%>_\% in that future operations do not depend on its
+           pass/fail status.
 }
 
 \examples{

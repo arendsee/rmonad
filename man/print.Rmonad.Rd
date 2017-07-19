@@ -4,12 +4,14 @@
 \alias{print.Rmonad}
 \title{Rmonad print generic function}
 \usage{
-\method{print}{Rmonad}(x, verbose = FALSE, ...)
+\method{print}{Rmonad}(x, verbose = FALSE, print_value = TRUE, ...)
 }
 \arguments{
 \item{x}{An Rmonad object}
 
 \item{verbose}{logical print verbose output (include benchmarking)}
+
+\item{print_value}{logical print the value wrapped in the Rmonad}
 
 \item{...}{Additional arguments (unused)}
 }
