@@ -26,19 +26,25 @@ NULL
 #'
 #'  \%|>\%    if input is error, run rhs on last passing result
 #'
-#' @section Advanced operators:
-#'
 #'  \%*>\%    bind lhs list as arguments to right. The lhs may be a literal
 #'            list or a monad bound list.
 #'
-#'  \%^>\%    monadic bind and record input in monad
-#'
-#'  \%>^\%    bind as a new branch, pass input on main
+#' @section Advanced operators:
 #'
 #'  \%__\%    keep parents from the lhs (errors ignored). This allows chaining
 #'            of independent operations.
 #'
 #'  \%v__\%   like \%__\% but store lhs result
+#'
+#'  \%>^\%    Bind as a new branch, pass input on main. This differs from
+#'            \%>_\% in that future operations do not depend on its
+#'            pass/fail status.
+#'
+#' @section Operators targeted for deprecation
+#'
+#'  \%^>\%    Monadic bind and record input in monad. Perform rhs operation
+#'            on lhs branches. This is really weird, don't use it. I will
+#'            deprecate it.
 #'
 #' @section x to monad functions:
 #'

@@ -1,6 +1,7 @@
 [![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=dev)](https://travis-ci.org/arendsee/rmonad)
 [![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/dev.svg)](https://codecov.io/github/arendsee/rmonad?branch=dev)
 
+
 # `rmonad`
 
 Chain monadic sequences into stateful, branching pipelines. As nodes in the
@@ -176,13 +177,13 @@ bar <- {
 
 
 baz <- "oz" %>>%
-  funnel(x, f=foo, b=bar) %*>%
-  (function(x,f,b){
+  funnel(f=foo, b=bar) %*>%
+  {
 
      "This definitely won't work"
      
-     b - f - x - f
-  })
+     . + f + b
+  }
 ```
 
 
@@ -324,6 +325,8 @@ mreport(x)
 
 ```r
 library(DiagrammeR)
+#> Warning in .doLoadActions(where, attach): trying to execute load actions
+#> without 'methods' package
 #> 
 #> Attaching package: 'DiagrammeR'
 #> The following object is masked from 'package:devtools':
@@ -363,6 +366,7 @@ function graph side of rmonad to easily merit coauthorship. Similarly for the
 report generation handling. In addition, there are lots of smaller problems.
 See the next section for a partial summary.
 
+
 ## rmonad v0.2.0 goals
 
 Here are my goals for the v0.2.0 release.
@@ -383,7 +387,7 @@ Here are my goals for the v0.2.0 release.
 
    - [ ] A monad theory vignette
 
-   - [ ] One of two detailed case study vignettes
+   - [x] One of two detailed case study vignettes
 
    - [ ] Improved examples in the introduction vignette and README
 
@@ -391,14 +395,12 @@ Here are my goals for the v0.2.0 release.
    dedicated graph library). This is a major task. Currently `rmonad` builds
    directed graphs, but can do little with them. This should allow:
 
-   - [ ] Plotting of the function graph
+   - [x] Plotting of the function graph
 
    - [ ] Faster, more elegant traversal algorithms
 
    - [ ] Preserve all operations in the graph, even those that were not run
      or that trail after failed states.
-
-   - [ ] Find a way to deal with lists of graphs
 
    - [ ] Check for infinite loops
 
@@ -407,18 +409,18 @@ Here are my goals for the v0.2.0 release.
 
    - [ ] Set docstring to caption if the chunk emits a graph
 
-   - [ ] Else make it a block of text underneath the chunk (or something)
+   - [x] Else make it a block of text underneath the chunk (or something)
 
    - [ ] ...
 
- - [ ] Add some system for caching, a global option system perhaps
+ - [ ] Add some system for caching, a global option perhaps
 
  - [ ] Add some system for job submission. The monad controls evaluation, it
    should be possible to just swap out the evaluation function inside the bind
    function to evaluate in a different setting (e.g. a cluster). But I have
    little experience in this area.
 
- - [ ] Add a system parameterizing individual chunks. A modification of the
+ - [x] Add a system parameterizing individual chunks. A modification of the
    current docstring system, but with a list, instead of a string. This could
    specify a function for caching, or runtime environment, or arguments to pass
    on to knitr.
