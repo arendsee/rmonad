@@ -43,6 +43,44 @@ useful of these here. For more information see the vignette.
            pass/fail status.
 }
 
+\section{Operators targeted for deprecation}{
+
+
+ \%^>\%    Monadic bind and record input in monad. Perform rhs operation
+           on lhs branches. This is really weird, don't use it. I will
+           deprecate it.
+}
+
+\section{x to monad functions}{
+
+
+as_monad - evaluate an expression into a monad (capturing error)
+
+funnel - evaluate expressions into a list inside a monad
+}
+
+\section{monad to monad functions}{
+
+
+forget - erase parents from a monad
+
+doc - add a documentation string to a monad
+
+combine - combine a list of monads into a list in a monad
+}
+
+\section{monad to x functions}{
+
+
+esc - extract the result from a computation
+
+mtabulate - summarize all steps in a pipeline into a table
+
+missues - tabulate all warnings and errors from a pipeline 
+
+unbranch - extract all branches from the pipeline
+}
+
 \examples{
 
 # chain operations
