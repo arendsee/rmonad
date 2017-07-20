@@ -1,10 +1,11 @@
-rewire <- function(e, m, inputs){
+splice_funcion <- function(e, m, inputs, envir=parent.frame()){
 
   bound <- get_bound_variables(e, inputs)
 
-  e <- get_function(e)
+  func <- get_function(e)
 
-  # TODO:
+  e <- get_local_environment(func, inputs, envir)
+
   # 1. gather all variables local to the function
   # 2. find local variables that have a bound variable on the rhs (these are dependent)
   # 3. make dependent sets of bound variables
@@ -17,15 +18,23 @@ rewire <- function(e, m, inputs){
 }
 
 
-gather_all_locals <- function(func, inputs){
+# This can be used as the execution environment for all the functional pieces
+# we build from the disembowled function.
+get_local_environment <- function(func, inputs, envir){
 
-  bound <- get_bound_variables(func, inputs)
+  all_args <- get_args(func)
 
-  get_args(func)
+  bound_args <- get_bound_variables(func, inputs)
 
-  # TODO:
-  #  1. remove args that are bound
-  #  2. merge with all declarations in the preamble
+  local_args <- all_args[! names(all_args) %in% names(bound_args)]
+
+  e <- list2env(local_args, envir=envir)
+
+  for(expr in as.list(get_preamble(func))[-1]){
+    eval(expr, envir=e)
+  }
+
+  e
 
 }
 
