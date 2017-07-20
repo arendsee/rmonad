@@ -46,3 +46,53 @@ test_that("Map bound variables in a function to a list", {
   expect_equal( get_bound_variables(sfoo, list(k=2,1)), list(k=2,x=1) )
   expect_error( get_bound_variables(sfoo, list(u=2,1)) )
 })
+
+
+baz <- function(x,y,z){
+  zanzibar <- x + y
+  mozambique <- zanzibar + 1
+  istambul <- function(x) { x + 1 }
+  5                    %>>%
+    istambul           %>>%
+    { . + z          } %>>%
+    { . * zanzibar   } %>>%
+    { . - mozambique }
+}
+
+test_that("Test little utilities", {
+  expect_equal( get_rhs(substitute(2+3)), 3 )
+  expect_equal( get_lhs(substitute(2+3)), 2 )
+  expect_equal( get_rhs(substitute(x<-1+y)), quote(1+y) )
+})
+
+
+test_that("get_free_variables does", {
+  expect_equal(get_free_variables(1), character(0))
+  expect_equal(get_free_variables(substitute(x <- 1)), character(0))
+  expect_equal(get_free_variables(substitute(x)), "x")
+  expect_equal(get_free_variables(substitute({x;y})), c("x","y"))
+  expect_equal(get_free_variables(substitute({x<-1;y})), c("y"))
+  expect_equal(get_free_variables(substitute({x<-1;x})), character(0))
+  expect_equal(get_free_variables(substitute({x;x<-1;y})), c("x","y"))
+  expect_equal(get_free_variables(substitute(x+y+x)), c("x","y"))
+  expect_equal(
+    get_free_variables(
+      function(x) y
+    ), "y")
+  expect_equal(
+    get_free_variables(
+      function(x) { 2 %>% { . + . } }
+    ), character(0))
+  expect_equal(
+    get_free_variables(
+      function(x) { function(y) y }
+    ), character(0))
+  expect_equal(
+    get_free_variables(
+      function(x) { function(y) z }
+    ), "z")
+  expect_equal(
+    get_free_variables(
+      function(x) { y = 1; y }
+    ), character(0))
+})
