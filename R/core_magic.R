@@ -1,21 +1,119 @@
-# splice_funcion <- function(e, m, ms, envir=parent.frame()){
-#
-#   bound <- get_bound_variables(e, ms)
-#
-#   func <- get_function(e)
-#
-#   e <- get_local_environment(func, names(bound), envir)
-#
-#   # 1. gather all variables local to the function
-#   # 2. find local variables that have a bound variable on the rhs (these are dependent)
-#   # 3. make dependent sets of bound variables
-#   # 4. extract this environment
-#   # 5. convert nested pipeline into many nodes
-#   # 6. this is, of course, done recursively
-#
-#   # NOTE: be sure to the case of no internal piping
-#
-# }
+#' Take a monadic bind operation's result and splice histories
+#'
+#' @param f The function
+#' @param m The monadic result of running f(ms)
+#' @param ms The list of inputs passed to f
+splice_function <- function(f, m, ms){
+
+  ops <- get_monadic_operators(f)
+
+  # If the function contains no internal operators, no transmogrification is needed
+  if(length(ops) == 0){
+    return(m)
+  }
+
+  bv <- get_bound_variables(f, ms)
+
+  decs <- get_declarations(get_preamble(f))
+
+  deps <- get_dependency_matrix(decs, names(bv))
+
+  relink_node(m, ms, deps)
+
+}
+
+#' The recursive function for adding dependencies
+#'
+#' @param m The current monadic node
+#' @param bv A named list of bound variables
+#' @param deps A mapping local variables to bound variable dependencies
+#' @keywords internal
+relink_node <- function(m, bv, deps){
+
+  m_parents(m) <- lapply(m_parents(m), relink_node, bv, deps)
+
+  # FIXME: currently doesn't play well with `funnel(...) %*>% ...`.
+  # `%*>%` needs to store the final function, not the naked body.
+  # For example:
+  #   funnel(x=1,y=2) %*>% { x + y }
+  # should store the code:
+  #   function(x,y) { x + y }
+  # currently it just stores:
+  #   { x + y }
+  code <- parse_as_block(m_code(m))
+
+  free_vars <- get_free_variables(code)
+  free_vars <- free_vars[ free_vars %in% dimnames(deps)[[1]] ]
+
+  dependencies <- bv[
+    deps[free_vars, ] %>% sum %>% '>'(0)
+  ]
+
+  # NOTE: must do this AFTER the recurso
+  m <- app_parents(m, dependencies)
+
+  m
+
+}
+
+parse_as_block <- function(code_str){
+  # make a vector of expressions
+  expr <- parse(text=code_str)
+  # If there is only one expression, return this expression
+  if(length(expr) == 1){
+    expr[[1]]
+  # Otherwise wrap the expressions in a block
+  } else {
+    as.call(c(as.name('{'), as.list(expr)))
+  }
+}
+
+
+#' Get dependencies of local variables on inputs
+#'
+#' @param declarations A list of declarations
+#' @param bound_vars Character vector of variables names that are bound as
+#' arguments to the function
+#' @return logical matrix
+get_dependency_matrix <- function(declarations, bound_vars){
+  lhs <- lapply(declarations, get_lhs) %>% lapply(as.character) %>% unlist 
+  rhs <- lapply(declarations, get_rhs)
+  rhs_free_vars <- lapply(rhs, get_free_variables)
+
+  deps <- bound_vars
+  names(deps) <- bound_vars
+
+  all_vars <- unique(c(bound_vars, lhs))
+
+  deps <- matrix(
+    data=FALSE,
+    nrow=length(all_vars),
+    ncol=length(bound_vars),
+    dimnames = list(all_vars, bound_vars)
+  )
+  for(v in bound_vars){
+    deps[v,v] <- TRUE
+  }
+
+  vars <- bound_vars
+  for(i in seq_len(length(declarations))){
+
+    varname <- lhs[i]
+    rfv <- rhs_free_vars[[i]]
+
+    if(length(rfv) == 0){
+      deps[varname, ] <- rep(FALSE, ncol(deps))
+    } else if(length(rfv) == 1){
+      deps[varname, ] <- deps[rfv, ]
+    } else {
+      deps[varname, ] <- deps[rfv, ] %>% colSums %>% '>'(0)
+    }
+
+  }
+
+  deps
+
+}
 
 
 # Find variables that are used within an expression but that are not locally bound.
@@ -89,28 +187,6 @@ get_lhs <- function(expr){
   }
 }
 
-
-# get_dependent_variables <- function(func, bound_vars){
-#
-#   # Get top-level declarations
-#   decs <- expression_filter(
-#     get_preamble(func),
-#     keep_cond = is.name,
-#     desc_cond = false
-#   )
-#
-# }
-
-# given `x = f(y)`:
-#  1.  - x is on 
-
-
-
-get_implicitly_passed_variables <- function(func){
-
-}
-
-
 # Map the names of variables in a function to an input list. The main purpose
 # is to check for mismatches and give explicit names to positional arguments.
 get_bound_variables <- function(e, ms){
@@ -150,6 +226,8 @@ get_bound_variables <- function(e, ms){
 get_function <- function(e){
   if(is.function(e)){
     e 
+  } else if(e[[1]] == '(' && e[[2]][[1]] == 'function'){
+    e[[2]]
   } else if(is.call(e)){
     if(e[[1]] != "function")
       stop("Expected call to be a function expression")

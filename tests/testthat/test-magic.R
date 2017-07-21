@@ -44,13 +44,14 @@ test_that("Map bound variables in a function to a list", {
   expect_equal( get_bound_variables(sfoo, list(  1  )), list(x=1    ) )
   expect_equal( get_bound_variables(sfoo, list(  1,2)), list(x=1,k=2) )
   expect_equal( get_bound_variables(sfoo, list(k=2,1)), list(k=2,x=1) )
-  expect_error( get_bound_variables(sfoo, list(u=2,1)) )
+  expect_error( get_bound_variables(sfoo, list(u=2,1))                )
 })
 
 
 baz <- function(x,y,z){
   zanzibar <- x + y
   mozambique <- zanzibar + 1
+  z <- 42
   istambul <- function(x) { x + 1 }
   5                    %>>%
     istambul           %>>%

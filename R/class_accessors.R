@@ -266,7 +266,14 @@ app_notes <- function(m, value) {
 
 #' @rdname rmonad_accessors
 #' @export
-app_branch   <- function(m, value) {
+app_branch <- function(m, value) {
   m_branch(m) <- value %++% m_branch(m)
+  m
+}
+
+#' @rdname rmonad_accessors
+#' @export
+app_parents <- function(m, value) {
+  m_parents(m) <- value %++% m_parents(m)
   m
 }

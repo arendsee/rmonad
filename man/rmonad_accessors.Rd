@@ -32,6 +32,7 @@
 \alias{app_warnings}
 \alias{app_notes}
 \alias{app_branch}
+\alias{app_parents}
 \title{get, set, and append rmonad fields}
 \usage{
 m_delete_value(m)
@@ -93,6 +94,8 @@ app_warnings(m, value)
 app_notes(m, value)
 
 app_branch(m, value)
+
+app_parents(m, value)
 }
 \arguments{
 \item{m}{the rmonad}
