@@ -32,18 +32,6 @@ false <- function(...) { FALSE }
 #' @param ... whatever
 true  <- function(...) { TRUE  }
 
-#' The identity function
-#'
-#' @family helper_functions
-#' @param x anything
-#' @param ... parameters that will be ignored
-#' @examples
-#' # pull a value out of failure
-#' 1:10 %$>% colSums %|>% ident
-#' # here it just does nothing
-#' cars %$>% colSums %|>% ident
-ident <- function(x, ...){ x }
-
 #' Ignore the first input, return the second
 #'
 #' This function can be used to change the value in the lhs of a monadic
