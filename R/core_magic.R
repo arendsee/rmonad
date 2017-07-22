@@ -42,15 +42,31 @@ relink_node <- function(m, bv, deps){
   #   { x + y }
   code <- parse_as_block(m_code(m))
 
-  free_vars <- get_free_variables(code)
-  free_vars <- free_vars[ free_vars %in% dimnames(deps)[[1]] ]
+  free_all <- get_free_variables(code)
+  free_locals <- free_all[ free_all %in% dimnames(deps)[[1]] ]
 
   dependencies <- bv[
-    deps[free_vars, ] %>% sum %>% '>'(0)
+    deps[free_locals, ] %>% sum %>% '>'(0)
   ]
 
-  # NOTE: must do this AFTER the recurso
-  m <- app_parents(m, dependencies)
+# poo <<- append(poo, list(list(
+#   m=m,
+#   bv=bv,
+#   deps=deps,
+#   code=code,
+#   free_all=free_all,
+#   free_locals=free_locals,
+#   dependencies=dependencies
+# )))
+
+  # NOTE: must do this AFTER the recursion
+  m <- .m_inherit(
+    m,
+    append(m_parents(m), dependencies),
+    inherit_value = FALSE,
+    inherit_OK    = FALSE,
+    force_keep    = FALSE
+  )
 
   m
 

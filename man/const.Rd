@@ -17,7 +17,6 @@ sequence
 }
 \seealso{
 Other helper_functions: \code{\link{false_as_error}},
-  \code{\link{false}}, \code{\link{ident}},
-  \code{\link{null_as_error}}, \code{\link{toss}},
-  \code{\link{true}}
+  \code{\link{false}}, \code{\link{null_as_error}},
+  \code{\link{toss}}, \code{\link{true}}
 }

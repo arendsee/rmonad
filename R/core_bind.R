@@ -62,18 +62,22 @@ bind <- function(
     fs <- substitute(f)
     fl <- as.list(fs)
 
+      bound_args <- bind_args(m)
+      final_args <- bound_args
+
+      new_function <- function(){}
+
       # If the expressions is of form 'x %>>% Foo::bar'
       # Package names are supported fine if arguments are given
-      expr <- if(fl[[1]] == '::' && length(fl) == 3) {
-        as.call( list(as.call(fl)) %++% bind_args(m) )
+      if(fl[[1]] == '::' && length(fl) == 3) {
+        new_function <- f
       }
       # Evaluate '.' inside an anonymous function, e.g. 'x %>>% { 2 * . }'
       # If a expanded list is passed, accept keywords
       else if(fl[[1]] == '{'){
-        arguments <- bind_args(m)
-        keys <- names(arguments)
+        keys <- names(final_args)
         if(is.null(keys)){
-          keys <- rep("", length(arguments))
+          keys <- rep("", length(final_args))
         }
         if(keys[1] == ""){
           keys[1] <- "."
@@ -82,25 +86,31 @@ bind <- function(
           msg <- "Error in %s: Arguments to an anonymous function must be named"
           stop(msg)
         }
-        names(arguments) <- keys
-        as.call( list(quote(with), arguments, fs) )
+        names(final_args) <- keys
+
+        body(new_function) <- fs
+        formals(new_function) <- final_args
       }
+      # As in magrittr, fail if an anonymous function is in the pipeline
+      # without the parentheses. The infix operators act on the function body
       else if(fl[[1]] == "function"){
-        # as in magrittr
-        # without the parentheses, the infix operators act on the function body
         stop("Anonymous functions must be parenthesized", call.=FALSE)
       }
       else if(fl[[1]] == "(" && fl[[2]][[1]] == "function"){
-        # FIXME: This hack is ugly and incorrect. It works usually ...
-        a_function <- eval(f, envir=e)
-        e = environment()
-        as.call( list(quote(a_function)) %++% bind_args(m) )
+        new_function <- eval(fl[[2]], envir=e)
       }
       else {
-        as.call( list(fl[[1]]) %++% bind_args(m) %++% fl[-1] )
+        new_function <- eval(fl[[1]], envir=e)
+        final_args <- append(bound_args, fl[-1])
       }
 
-    o <- .eval(expr=expr, env=e, desc=rhs_str)
+    o <- .eval(
+      func       = new_function,
+      args       = final_args,
+      env        = e,
+      desc       = rhs_str,
+      bound_args = bound_args    # nested histories
+    )
 
     m <- m_on_bind(m)
 
@@ -121,12 +131,25 @@ bind <- function(
   result
 }
 
+
+# Evaluate the expression, load timing info into resultant object
+.eval <- function(func, args, env, desc, bound_args){
+  st <- system.time(
+    {
+      o <- as_monad( do.call(func, args, envir=env), desc=desc )
+    },
+    gcFirst=FALSE # this kills performance when TRUE
+  )
+  m_time(o) <- signif(unname(st[1]), 2)
+
+  splice_function(func, o, bound_args)
+}
+
+
 ## m_on_bind options
 
 # preserve value upon future bind
 store_value <- function(m) { .m_stored(m) <- TRUE ; m }
-
-
 
 entry_lhs_transform_default <- function(m, f, ...) as_monad(m, ...)
 
@@ -140,21 +163,12 @@ emit_default <- function(input, output) {
   }
 }
 
+
+## io_combine options
+
 branch_combine <- function(m, o){
   m <- app_branch(m, o)
   m
-}
-
-# Evaluate the expression, load timing info into resultant object
-.eval <- function(expr, env, desc){
-  st <- system.time(
-    {
-      o <- as_monad( eval(expr, envir=env), desc=desc )
-    },
-    gcFirst=FALSE # this kills performance when TRUE
-  )
-  m_time(o) <- signif(unname(st[1]), 2)
-  o
 }
 
 default_combine <- function(m, o){

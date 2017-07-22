@@ -14,7 +14,7 @@ Return false for all input
 }
 \seealso{
 Other helper_functions: \code{\link{const}},
-  \code{\link{false_as_error}}, \code{\link{ident}},
+  \code{\link{false_as_error}},
   \code{\link{null_as_error}}, \code{\link{toss}},
   \code{\link{true}}
 }

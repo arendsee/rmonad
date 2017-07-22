@@ -15,6 +15,5 @@ Return true for all input
 \seealso{
 Other helper_functions: \code{\link{const}},
   \code{\link{false_as_error}}, \code{\link{false}},
-  \code{\link{ident}}, \code{\link{null_as_error}},
-  \code{\link{toss}}
+  \code{\link{null_as_error}}, \code{\link{toss}}
 }
