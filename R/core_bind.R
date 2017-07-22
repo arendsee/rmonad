@@ -29,6 +29,7 @@ bind <- function(
   m_on_bind           = function(x, ...){x},
   io_combine          = default_combine,
   bind_args           = function(m) list(m_value(m)),
+  bind_monad          = function(m) list(m),
   expect_rhs_function = TRUE
 ){
   # FIXME: cleanup this implementation
@@ -105,16 +106,16 @@ bind <- function(
         final_args <- append(bound_args, fl[-1])
       }
 
+
     o <- .eval(
       func       = new_function,
       args       = final_args,
-      env        = e,
-      bound_args = bound_args    # nested histories
+      env        = e
     )
 
     m <- m_on_bind(m)
 
-    io_combine(m, o)
+    io_combine(m=m, o=o, f=new_function, margs=bind_monad(m))
 
   } else {
     bind_else(m, f)
@@ -142,16 +143,17 @@ bind <- function(
 }
 
 # Evaluate the expression, load timing info into resultant object
-.eval <- function(func, args, env, bound_args){
+.eval <- function(func, args, env){
+
   st <- system.time(
     {
-      o <- as_monad( do.call(func, args, envir=env))
+      result <- as_monad( do.call(func, args, envir=env))
     },
     gcFirst=FALSE # this kills performance when TRUE
   )
-  m_time(o) <- signif(unname(st[1]), 2)
+  m_time(result) <- signif(unname(st[1]), 2)
 
-  splice_function(f=func, m=o, ms=bound_args)
+  result
 }
 
 
@@ -175,23 +177,23 @@ emit_default <- function(input, output) {
 
 ## io_combine options
 
-branch_combine <- function(m, o){
+branch_combine <- function(m, o, f, margs){
   m <- app_branch(m, o)
   m
 }
 
-default_combine <- function(m, o){
+default_combine <- function(m, o, f, margs){
   if(!m_OK(o)){
     # On failure, propagate the final passing value, this allows
     # for either degugging or passage to alternative handlers.
     m_value(o) <- m_value(m)
   }
 
-  .m_inherit(child=o, parents=m)
+  splice_function(f=f, m=o, ms=margs)
 }
 
-bypass_combine <- function(m, o){
-  # the new value inherits the old value, losing whatever it had
-  # but the pass/fail state of the child is preserved
+bypass_combine <- function(m, o, f, margs){
+  # # the new value inherits the old value, losing whatever it had
+  # # but the pass/fail state of the child is preserved
   .m_inherit(child=o, parents=m, inherit_value=TRUE, inherit_OK=FALSE)
 }

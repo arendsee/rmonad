@@ -56,6 +56,7 @@ NULL
     lhs_expr,
     substitute(rhs),
     bind_args=m_value,
+    bind_monad=function(m) m_parents(m),
     entry_lhs_transform=on_entry
   )
   eval(as.call(cmd), envir=envir)

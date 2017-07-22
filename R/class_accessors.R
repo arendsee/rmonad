@@ -173,9 +173,6 @@ m_branch   <- function(m) m@branch
 #' @rdname rmonad_accessors
 #' @export
 `m_parents<-` <- function(m, value) {
-  if(.has_parents(m)){
-    warning("Do you really want to take this node away from its loving parents?")
-  }
   m@parents <- .maybe_vector_set(value, .is_not_empty)
   m
 }

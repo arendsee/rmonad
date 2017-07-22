@@ -9,7 +9,7 @@ splice_function <- function(f, m, ms){
 
   # If the function contains no internal operators, no transmogrification is needed
   if(length(ops) == 0){
-    return(m)
+    return(.m_inherit(child=m, parents=ms))
   }
 
   bv <- get_bound_variables(f, ms)
@@ -18,7 +18,7 @@ splice_function <- function(f, m, ms){
 
   deps <- get_dependency_matrix(decs, names(bv))
 
-  relink_node(m, ms, deps)
+  relink_node(m=m, bv=bv, deps=deps)
 
 }
 
