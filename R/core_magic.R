@@ -18,7 +18,13 @@ splice_function <- function(f, m, ms){
 
   deps <- get_dependency_matrix(decs, names(bv))
 
-  relink_node(m=m, bv=bv, deps=deps)
+  last <- relink_node(m=m, bv=bv, deps=deps)
+
+  nestchild <- new_monad()
+  m_value(nestchild) <- m_value(last)
+  m_OK(nestchild) <- m_OK(last)
+
+  .m_inherit(child=nestchild, parents=last)
 
 }
 

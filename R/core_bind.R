@@ -121,6 +121,9 @@ bind <- function(
     bind_else(m, f)
   }
 
+  # NOTE: This causes much pain. It is a hack I wrote for reasons I've
+  # forgotten. There should be a more natural place to set this info. This
+  # sometimes overwrites previous settings creating the most subtle bugs.
   if(!is.null(o)){
     m_doc(o)  <- rhs_doc
     m_meta(o) <- rhs_met

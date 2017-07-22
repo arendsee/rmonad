@@ -66,7 +66,7 @@ test_that("%*>% doesn't do anything weird", {
       lapply(m_code) %>%
       lapply(paste0, collapse=" ") %>%
       gsub(pattern=" ", replacement=""),
-    c('2', 'iris', 'list(d=iris,i=2)', 'function(d,i){head(d,i)}')
+    c('2', 'iris', 'function(d,i){head(d,i)}')
   )
 })
 
@@ -76,6 +76,6 @@ test_that("funnel doesn't do anything weird", {
       lapply(m_code) %>%
       lapply(paste0, collapse=" ") %>%
       gsub(pattern=" ", replacement=""),
-    c('2', 'iris', 'funnel(d=iris,i=2)', 'function(d,i){head(d,i)}')
+    c('2', 'iris', 'function(d,i){head(d,i)}')
   )
 })
