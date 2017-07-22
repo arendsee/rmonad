@@ -89,7 +89,8 @@ bind <- function(
         names(final_args) <- keys
 
         body(new_function) <- fs
-        formals(new_function) <- final_args
+        formals(new_function) <- .as_positional_formals(names(final_args))
+        rhs_str <- deparse(new_function)
       }
       # As in magrittr, fail if an anonymous function is in the pipeline
       # without the parentheses. The infix operators act on the function body
@@ -108,7 +109,6 @@ bind <- function(
       func       = new_function,
       args       = final_args,
       env        = e,
-      desc       = rhs_str,
       bound_args = bound_args    # nested histories
     )
 
@@ -132,17 +132,26 @@ bind <- function(
 }
 
 
+# FIXME: There HAS to be a better way to do this, as always in R, there is some
+# magic function, hiding in the thousands of builtins, that does just what you
+# want. But since R is a dynamic language, where no type info is available,
+# there is no good way to find them.
+.as_positional_formals <- function(arg_names){
+  code_str <- sprintf("alist(%s)", paste0(arg_names, " = ", collapse=", ")) 
+  eval(parse(text=code_str))
+}
+
 # Evaluate the expression, load timing info into resultant object
-.eval <- function(func, args, env, desc, bound_args){
+.eval <- function(func, args, env, bound_args){
   st <- system.time(
     {
-      o <- as_monad( do.call(func, args, envir=env), desc=desc )
+      o <- as_monad( do.call(func, args, envir=env))
     },
     gcFirst=FALSE # this kills performance when TRUE
   )
   m_time(o) <- signif(unname(st[1]), 2)
 
-  splice_function(func, o, bound_args)
+  splice_function(f=func, m=o, ms=bound_args)
 }
 
 

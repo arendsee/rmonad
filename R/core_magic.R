@@ -32,14 +32,6 @@ relink_node <- function(m, bv, deps){
 
   m_parents(m) <- lapply(m_parents(m), relink_node, bv, deps)
 
-  # FIXME: currently doesn't play well with `funnel(...) %*>% ...`.
-  # `%*>%` needs to store the final function, not the naked body.
-  # For example:
-  #   funnel(x=1,y=2) %*>% { x + y }
-  # should store the code:
-  #   function(x,y) { x + y }
-  # currently it just stores:
-  #   { x + y }
   code <- parse_as_block(m_code(m))
 
   free_all <- get_free_variables(code)
@@ -48,16 +40,6 @@ relink_node <- function(m, bv, deps){
   dependencies <- bv[
     deps[free_locals, ] %>% sum %>% '>'(0)
   ]
-
-# poo <<- append(poo, list(list(
-#   m=m,
-#   bv=bv,
-#   deps=deps,
-#   code=code,
-#   free_all=free_all,
-#   free_locals=free_locals,
-#   dependencies=dependencies
-# )))
 
   # NOTE: must do this AFTER the recursion
   m <- .m_inherit(
@@ -331,84 +313,3 @@ expression_filter <- function(expr, keep_cond=true, desc_cond=true){
     keepers
   }
 }
-
-
-# # Rule 1
-# #
-# # ...  %>>% f(x)
-# # ... %>% funnel(x=x) %*>% { f(x) }
-#
-# function(x) { f %>>% g %>>% h }
-#
-# %>>% function(x) { f(c) %>>% g(x) %>>% h(x) }
-#
-#
-#  -> M1 ; ...... %>>% g(x) %>>%
-#
-#  -> M1 ; ...... %>% funnel(x=M1) %*>% g %>>%
-#
-#
-#  -> M1 ; f(c) %>% funnel(x=M1) %*>% g %>% funnel(x=M1) %*>% h
-#
-#
-# '%>>% g(x, ...)'  -->  '%>% funnel(x=M1) %*>% g(...)'
-#
-#
-#   %>>% function(x) { f(c) %>>% g(x) %>>% h(x) }
-#   -------v--------        ----v---- ----v----
-#       -> M1 ;        f(c)
-#                         %>% funnel(x=M1) %*>% g
-#                                 %>% funnel(x=M1) %*>% h
-#
-#
-#
-#   %>>% function(x) { f(c) %>>% g(x) %>>% h(x) }
-#   --------v-------
-#     %>% function(x=.) { f(c) %>% funnel(x=.) %*>% g %>% funnel(x=.) %*>% h }
-#
-# rhs cases:
-#  1. named function
-#  2. anonymous function
-#  3. braced function
-#  4. partially applied named function
-#  5. partially applied anonymous function
-#
-# lhs cases:
-#  1. single input
-#  2. multiple inputs (funnel)
-#  3. no input
-#
-# complications:
-#  1. scope
-
-# #' Collect all local variables within a function
-# #'
-# #' This can be used as the execution environment for all the functional pieces
-# #' we build from the disembowled function.
-# #'
-# #' It counts variables that are defined within the function as well as
-# #' arguments that use default values. It does not count arguments are that
-# #' passed external values. Passed arguments are listed in the `inputs` list.
-# #'
-# #' @param func a function or function call
-# #' @param bound_args a list of named inputs
-# #' @param envir the environment to inherit from
-# #' @examples
-# #'
-# #'
-# e = get_local_environment(
-#   func=get_local_environment,
-#   bound_args=c("func", "inputs"),
-#   envir=parent.frame()
-# )
-# get_local_environment <- function(func, bound_args, envir=parent.frame()){
-#   all_args <- get_args(func)
-#   local_args <- all_args[! names(all_args) %in% bound_args]
-#   e <- list2env(local_args, envir=envir)
-#   for(expr in as.list(get_preamble(func))[-1]){
-#     eval(expr, envir=e)
-#   }
-#   e
-# }
-
-

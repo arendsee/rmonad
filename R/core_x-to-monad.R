@@ -125,11 +125,12 @@ funnel <- function(..., env=parent.frame(), keep_history=TRUE){
     env=env
   )
 
-  desc <- sprintf("funnel(%s)", paste(sapply(ms, m_code), collapse=", "))
+  desc <- deparse(match.call())
 
   combine(ms, keep_history=keep_history, desc=desc)
 
 }
+
 # internal function, for building from a list of expressions
 .funnel_sub <- function(es, env=parent.frame(), ...){
 
@@ -148,6 +149,9 @@ funnel <- function(..., env=parent.frame(), keep_history=TRUE){
       }
       # the substitution in funnel will evaluated these
       else if(is.atomic(x) && length(x) == 1) {
+        as.character(x)
+      }
+      else if(is.name(x)){
         as.character(x)
       }
       # anything else, will be data passed in from the pipe

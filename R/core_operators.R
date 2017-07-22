@@ -33,18 +33,18 @@ NULL
 
   lhs_expr <- substitute(lhs)
 
-  lexp <- as.list(lhs_expr)
-
   # FIXME: This is really sneaky. I am ignoring x and y and replacing them with
   # variables defined in this foreign environment. Not good practice.
-  if(lexp[[1]] == "list"){
-    lhs_expr <- lexp[-1]
-    on_entry <- function(x, f, desc) {
+  if(lhs_expr[[1]] == "list"){
+    ninja_desc <- deparse(lhs_expr)
+    lhs_expr <- lhs_expr[-1]
+    on_entry <- function(x, f, ...) {
+      ninja_desc
       .funnel_sub(
         lhs_expr,
         env=envir,
         keep_history = TRUE,
-        desc         = paste(desc)
+        desc         = ninja_desc
       )
     }
   } else {
