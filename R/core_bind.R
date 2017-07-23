@@ -66,8 +66,6 @@ bind <- function(
       bound_args <- bind_args(m)
       final_args <- bound_args
 
-      new_function <- function(){}
-
       # If the expressions is of form 'x %>>% Foo::bar'
       # Package names are supported fine if arguments are given
       if(fl[[1]] == '::' && length(fl) == 3) {
@@ -89,8 +87,12 @@ bind <- function(
         }
         names(final_args) <- keys
 
-        body(new_function) <- fs
-        formals(new_function) <- .as_positional_formals(names(final_args))
+        new_function <- pryr::make_function(
+          .as_positional_formals(names(final_args)),
+          fs,
+          env=e
+        )
+
         rhs_str <- deparse(new_function)
       }
       # As in magrittr, fail if an anonymous function is in the pipeline

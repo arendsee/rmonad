@@ -1,6 +1,6 @@
 Type: Package
 Package: rmonad
-Version: 0.2.0.9010
+Version: 0.2.0.9011
 Title: A Monadic Pipeline System
 Description:
     A monadic solution to pipeline analysis. All operations -- and the errors,
@@ -19,7 +19,8 @@ Depends:
 Imports:
     methods,
     magrittr,
-    DiagrammeR
+    DiagrammeR,
+    pryr
 Suggests:
     testthat,
     covr,
