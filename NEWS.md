@@ -4,6 +4,8 @@
 
  * Rename `lsmeval` as `funnel`.
 
+ * `combine` now works exclusively on monadic lists
+
 ## New features
 
  * Generation of Markdown reports from pipelines with `mreport`
