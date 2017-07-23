@@ -22,7 +22,7 @@
   inherit_OK    = FALSE,
   force_keep    = FALSE
 ) {
-  if(class(parents) == "Rmonad"){
+  if(is_rmonad(parents)){
     if(inherit_value)
       m_value(child) <- m_value(parents)
     if(inherit_OK)

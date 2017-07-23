@@ -26,6 +26,8 @@
 
  * Add GFF case study vignette
 
+ * Add `is_rmonad` function
+
 
 
 # rmonad 0.1.0

@@ -68,6 +68,13 @@ m_delete_value <- function(m) {
 # === END Maybe ===============================================================
 
 
+#' @rdname rmonad_accessors
+#' @export
+is_rmonad <- function(m) {
+  class(m) == "Rmonad"
+}
+
+
 # These are currently only internal accessors, that provide a sane interface to
 # the all the things that may be construed as empty
 .has_code     <- function(m) .is_not_empty_string(m_code(m))

@@ -3,6 +3,7 @@
 \name{rmonad_accessors}
 \alias{rmonad_accessors}
 \alias{m_delete_value}
+\alias{is_rmonad}
 \alias{m_parents}
 \alias{m_value}
 \alias{m_id}
@@ -36,6 +37,8 @@
 \title{get, set, and append rmonad fields}
 \usage{
 m_delete_value(m)
+
+is_rmonad(m)
 
 m_parents(m)
 

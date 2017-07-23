@@ -82,7 +82,7 @@ as_monad <- function(expr, desc=NULL, doc=NULL){
     type="message"
   )
 
-  if(length(value) == 1 && class(value) == "Rmonad") { return(value) }
+  if(length(value) == 1 && is_rmonad(value)) { return(value) }
 
   if(!isOK) {
     value = NULL
