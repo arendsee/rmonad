@@ -89,49 +89,89 @@ is_rmonad <- function(m) {
 .has_mem      <- function(m) .is_not_empty_integer(m_mem(m))
 .has_value    <- function(m) .m_stored(m) || !is.null(m_value(m))
 
-#' @rdname rmonad_accessors
-#' @export
-m_parents <- function(m) .maybe_vector_get(m@parents)
+
+# internal utility for generating error messages when accessing a non-Rmonad
+.m_check <- function(m) {
+  if(!is_rmonad(m)){
+    msg="Expected an Rmonad object, got %s"
+    stop(sprintf(msg, class(m)))
+  }
+}
 
 #' @rdname rmonad_accessors
 #' @export
-m_value <- function(m) .maybe_vector_get(m@x)
+m_parents <- function(m) {
+  .m_check(m)
+  .maybe_vector_get(m@parents)
+}
 
 #' @rdname rmonad_accessors
 #' @export
-m_id <- function(m) m@id
+m_value <- function(m) {
+  .m_check(m)
+  .maybe_vector_get(m@x)
+}
 
 #' @rdname rmonad_accessors
 #' @export
-m_OK <- function(m) m@OK
+m_id <- function(m) {
+  .m_check(m)
+  m@id
+}
 
 #' @rdname rmonad_accessors
 #' @export
-m_code <- function(m) m@code
+m_OK <- function(m) {
+  .m_check(m)
+  m@OK
+}
 
 #' @rdname rmonad_accessors
 #' @export
-m_error <- function(m) .maybe_vector_get(m@error)
+m_code <- function(m) {
+  .m_check(m)
+  m@code
+}
 
 #' @rdname rmonad_accessors
 #' @export
-m_warnings <- function(m) .maybe_vector_get(m@warnings)
+m_error <- function(m) {
+  .m_check(m)
+  .maybe_vector_get(m@error)
+}
 
 #' @rdname rmonad_accessors
 #' @export
-m_notes <- function(m) .maybe_vector_get(m@notes)
+m_warnings <- function(m) {
+  .m_check(m)
+  .maybe_vector_get(m@warnings)
+}
 
 #' @rdname rmonad_accessors
 #' @export
-m_doc <- function(m) .maybe_vector_get(m@doc)
+m_notes <- function(m) {
+  .m_check(m)
+  .maybe_vector_get(m@notes)
+}
 
 #' @rdname rmonad_accessors
 #' @export
-m_meta <- function(m) m@meta
+m_doc <- function(m) {
+  .m_check(m)
+  .maybe_vector_get(m@doc)
+}
+
+#' @rdname rmonad_accessors
+#' @export
+m_meta <- function(m) {
+  .m_check(m)
+  m@meta
+}
 
 #' @rdname rmonad_accessors
 #' @export
 m_time <- function(m) {
+  .m_check(m)
   time <- m@other$time
   if(is.null(time)){
     NA_real_
@@ -144,6 +184,7 @@ m_time <- function(m) {
 #' @rdname rmonad_accessors
 #' @export
 m_mem <- function(m) {
+  .m_check(m)
   mem <- m@other$mem
   if(is.null(mem)){
     NA_real_
@@ -154,11 +195,15 @@ m_mem <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_branch   <- function(m) m@branch
+m_branch   <- function(m) {
+  .m_check(m)
+  m@branch
+}
 
 #' @rdname rmonad_accessors
 #' @export
 `m_id<-` <- function(m, value) {
+  .m_check(m)
   m@id <- value
   m
 }
@@ -166,6 +211,7 @@ m_branch   <- function(m) m@branch
 #' @rdname rmonad_accessors
 #' @export
 `m_OK<-` <- function(m, value) {
+  .m_check(m)
   m@OK <- value
   m
 }
@@ -173,6 +219,7 @@ m_branch   <- function(m) m@branch
 #' @rdname rmonad_accessors
 #' @export
 `m_value<-` <- function(m, value) {
+  .m_check(m)
   m@x <- .maybe_vector_set(value, .is_not_empty)
   m
 }
@@ -180,6 +227,7 @@ m_branch   <- function(m) m@branch
 #' @rdname rmonad_accessors
 #' @export
 `m_parents<-` <- function(m, value) {
+  .m_check(m)
   m@parents <- .maybe_vector_set(value, .is_not_empty)
   m
 }
@@ -187,6 +235,7 @@ m_branch   <- function(m) m@branch
 #' @rdname rmonad_accessors
 #' @export
 `m_code<-` <- function(m, value) {
+  .m_check(m)
   m@code <- value
   m
 }
@@ -194,6 +243,7 @@ m_branch   <- function(m) m@branch
 #' @rdname rmonad_accessors
 #' @export
 `m_error<-` <- function(m, value) {
+  .m_check(m)
   m@error <- .maybe_vector_set(value, .is_not_empty_string, expected_type=is.character)
   m
 }
@@ -202,6 +252,7 @@ m_branch   <- function(m) m@branch
 #' @rdname rmonad_accessors
 #' @export
 `m_warnings<-` <- function(m, value) {
+  .m_check(m)
   m@warnings <- .maybe_vector_set(value, .is_not_empty_string, expected_type=is.character)
   m
 }
@@ -209,6 +260,7 @@ m_branch   <- function(m) m@branch
 #' @rdname rmonad_accessors
 #' @export
 `m_notes<-` <- function(m, value) {
+  .m_check(m)
   m@notes <- .maybe_vector_set(value, .is_not_empty_string, expected_type=is.character)
   m
 }
@@ -216,6 +268,7 @@ m_branch   <- function(m) m@branch
 #' @rdname rmonad_accessors
 #' @export
 `m_doc<-` <- function(m, value) {
+  .m_check(m)
   m@doc <- .maybe_vector_set(value, .is_not_empty_string, expected_type=is.character)
   m
 }
@@ -223,6 +276,7 @@ m_branch   <- function(m) m@branch
 #' @rdname rmonad_accessors
 #' @export
 `m_meta<-` <- function(m, value) {
+  .m_check(m)
   m@meta <- value
   m
 }
@@ -230,6 +284,7 @@ m_branch   <- function(m) m@branch
 #' @rdname rmonad_accessors
 #' @export
 `m_time<-` <- function(m, value) {
+  .m_check(m)
   m@other$time <- value
   m
 }
@@ -237,6 +292,7 @@ m_branch   <- function(m) m@branch
 #' @rdname rmonad_accessors
 #' @export
 `m_mem<-` <- function(m, value) {
+  .m_check(m)
   m@other$mem <- value
   m
 }
@@ -244,6 +300,7 @@ m_branch   <- function(m) m@branch
 #' @rdname rmonad_accessors
 #' @export
 `m_branch<-` <- function(m, value) {
+  .m_check(m)
   m@branch <- value
   m
 }
@@ -253,6 +310,7 @@ m_branch   <- function(m) m@branch
 #' @rdname rmonad_accessors
 #' @export
 app_warnings <- function(m, value) {
+  .m_check(m)
   if(length(value) > 0 && nchar(value) > 0){
     m_warnings(m) <- value %++% m_warnings(m)
   }
@@ -262,6 +320,7 @@ app_warnings <- function(m, value) {
 #' @rdname rmonad_accessors
 #' @export
 app_notes <- function(m, value) {
+  .m_check(m)
   if(length(value) > 0 && nchar(value) > 0){
     m_notes(m) <- value %++% m_notes(m)
   }
@@ -271,6 +330,7 @@ app_notes <- function(m, value) {
 #' @rdname rmonad_accessors
 #' @export
 app_branch <- function(m, value) {
+  .m_check(m)
   m_branch(m) <- value %++% m_branch(m)
   m
 }
@@ -278,6 +338,7 @@ app_branch <- function(m, value) {
 #' @rdname rmonad_accessors
 #' @export
 app_parents <- function(m, value) {
+  .m_check(m)
   m_parents(m) <- value %++% m_parents(m)
   m
 }
