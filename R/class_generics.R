@@ -85,3 +85,54 @@ as.list.Rmonad <- function(x, recurse_nests=TRUE, ...){
   }
   unique(ms)
 }
+
+#' Plot a pipeline graph
+#'
+#' The graph is plotted using DiagrammeR.
+#'
+#' @param x An Rmonad object
+#' @param y This variable is currently ignored
+#' @param label The node labels. If NULL, the node labels will equal node ids.
+#' It may be one of the strings ['code', 'time', 'space', 'value']. If 'value'
+#' is selected, nodes with no value cached are represented with '-'.
+#' Alternatively, it may be a function that maps a single Rmonad object to a
+#' string.
+#' @param ... Additional arguments (unused currently)
+#' @export
+plot.Rmonad <- function(x, y, label=NULL, ...){
+
+  label <-
+  if(is.function(label)) {
+    label               
+  } else if(is.null(label)){
+    m_id
+  } else if(label == "code"){
+    function(m){
+      if(.has_code(m)){
+        m_code(m)
+      } else {
+        "."
+      }
+    }
+  } else if(label == "time") {
+    m_time
+  } else if (label == "space") {
+    m_mem
+  } else if (label == "value") {
+    function(m) {
+      if(.has_value(m)){
+        m_value(m)
+      } else {
+        "-"
+      }
+    }
+  } else {
+    stop("Something is wrong with the 'label' field")
+  }
+
+
+  as_dgr_graph(x, label=label) %>%
+    DiagrammeR::render_graph()
+
+  # DiagrammeR::generate_dot(g) %>% DiagrammeR::grViz()
+}

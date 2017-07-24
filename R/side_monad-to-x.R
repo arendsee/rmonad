@@ -116,6 +116,22 @@ as_dgr_graph <- function(m, type=NULL, label=NULL, ...){
     type <- sapply(ms, type)
   if(!is.null(label))
     label <- sapply(ms, label)
+ 
+  .check_length(type)
+  .check_length(label)
+  lapply(cols, .check_length)
+
+  fillcolor <- sapply(ms,
+    function(x) {
+      if(.has_error(x)){
+        'red'
+      } else if(.has_warnings(x)){
+        'orange'
+      } else {
+        'lightgreen'
+      }
+    }
+  )
 
   # build the node data frame
   nodes_df <- do.call(
@@ -127,6 +143,7 @@ as_dgr_graph <- function(m, type=NULL, label=NULL, ...){
     ) %++% cols
   )
   nodes_df$id <- sapply(ms, m_id)
+  nodes_df$fillcolor <- fillcolor
 
   # FIXME: this ignores branches
   # build the edges data frame, linking child to parent
@@ -138,15 +155,17 @@ as_dgr_graph <- function(m, type=NULL, label=NULL, ...){
   #  %|>% 'reverse-depend'
   #  Or perhaps %__% should create separate graphs?
   edges_df_pc <- DiagrammeR::create_edge_df(
-    from = lapply(ms, function(x) sapply(m_parents(x), m_id)) %>% unlist,
-    to   = lapply(ms, function(x) rep.int(m_id(x), length(m_parents(x)))) %>% unlist,
-    rel  = "depend"
+    from  = lapply(ms, function(x) sapply(m_parents(x), m_id)) %>% unlist,
+    to    = lapply(ms, function(x) rep.int(m_id(x), length(m_parents(x)))) %>% unlist,
+    color = 'black',
+    rel   = "depend"
   )
 
   edges_df_nest <- DiagrammeR::create_edge_df(
-    from = sapply(ms, function(x) if(.has_nest(x)) m_id(m_nest(x)) else NA ),
-    to   = sapply(ms, m_id),
-    rel  = "nest"
+    from  = sapply(ms, function(x) if(.has_nest(x)) m_id(m_nest(x)) else NA ),
+    to    = sapply(ms, m_id),
+    color = 'red',
+    rel   = "nest"
   )
   edges_df_nest <- edges_df_nest[sapply(ms, .has_nest), ]
 
@@ -159,7 +178,12 @@ as_dgr_graph <- function(m, type=NULL, label=NULL, ...){
     edges_df   = edges_df,
     directed   = TRUE,
     graph_name = NULL
-  ) 
+  )
+}
+.check_length <- function(x){
+  if(!is.null(x) && any(sapply(x, length) != 1)){
+    stop("All attributes fields must have length 1")
+  }
 }
 
 #' Returns the value of a monad holds
