@@ -81,7 +81,7 @@ as_monad <- function(expr, desc=NULL, doc=NULL){
     type="message"
   )
 
-  if(length(value) == 1 && is_rmonad(value)) { return(value) }
+  # if(length(value) == 1 && is_rmonad(value)) { return(value) }
 
   if(!isOK) {
     value = NULL
@@ -142,6 +142,7 @@ funnel <- function(..., env=parent.frame(), keep_history=TRUE){
     es,
     # how to stringify x
     function(x) {
+
       # if x is a call, deparse it
       desc <- if(is.call(x)){
         deparse(x)
@@ -157,7 +158,8 @@ funnel <- function(..., env=parent.frame(), keep_history=TRUE){
       else {
         "."
       }
-      as_monad(eval(x, env), desc=desc)
+
+      as_monad(eval(x, env), desc=desc) %>% unnest
     }
   )
 }

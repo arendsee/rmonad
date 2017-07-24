@@ -29,6 +29,7 @@ NULL
 #' @rdname infix
 #' @export
 `%*>%` <- function(lhs, rhs) {
+  # m [*] -> ([*] -> m b) -> m b
   envir <- parent.frame()
 
   lhs_expr <- substitute(lhs)

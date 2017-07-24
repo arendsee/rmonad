@@ -20,3 +20,15 @@ doc <- function(m, ...){
   m_doc(m) <- paste(list(...), collapse=" ")
   m
 }
+
+#' Remove a level of nesting in an Rmonad
+#'
+#' @family monad-to-monad
+#' @param m An Rmonad
+#' @export
+unnest <- function(m){
+  if(is_rmonad(m) && is_rmonad(m_value(m))){
+    m <- m_value(m)
+  }
+  m
+}

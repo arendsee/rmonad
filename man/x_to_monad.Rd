@@ -42,10 +42,9 @@ already an Rmonad, the existing value is returned.
 \code{funnel} evaluates multiple arguments into one Rmonad. It can be used
 within pipelines to create multi-input nodes (works well with \code{\%*>\%}).
 
-\code{combine} takes a list and joins the elements into one Rmonad. If
-passed a list of non-monadic values, this will create a new monad that wraps
-a list, but it records each element of the list as a parent monad. It only
-really makes sense to use \code{combine} on lists of monads.
+\code{combine} takes a list of Rmonads and joins the elements into one
+Rmonad. The values of the original monadic containers joined into a list in
+the child Rmonad. The list Rmonads are recorded as the new Rmonad's parents.
 }
 \examples{
 as_monad(stop(1))

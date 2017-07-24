@@ -152,7 +152,7 @@ bind <- function(
 
   st <- system.time(
     {
-      result <- as_monad( do.call(func, args, envir=env))
+      result <- as_monad( do.call(func, args, envir=env)) %>% unnest
     },
     gcFirst=FALSE # this kills performance when TRUE
   )
@@ -167,7 +167,11 @@ bind <- function(
 # preserve value upon future bind
 store_value <- function(m) { .m_stored(m) <- TRUE ; m }
 
-entry_lhs_transform_default <- function(m, f, ...) as_monad(m, ...)
+entry_lhs_transform_default <- function(m, f, ...) {
+  # FIXME: This is a sneaky way of safely evaluating the lhs without nesting
+  # the nads. I need a cleaner solution.
+  as_monad(m, ...) %>% unnest
+}
 
 emit_default <- function(input, output) {
   # NOTE: output here is an Rmonad, not a value. It will be NULL only if no

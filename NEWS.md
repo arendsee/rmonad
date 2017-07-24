@@ -6,6 +6,9 @@
 
  * `combine` now works exclusively on monadic lists
 
+ * Allow nesting of Rmonads, `as_monad` no longer automatically unnests them,
+   there is an explicit function for this, `unnest`.
+
 ## New features
 
  * Generation of Markdown reports from pipelines with `mreport`
