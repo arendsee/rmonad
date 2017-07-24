@@ -28,7 +28,22 @@ doc <- function(m, ...){
 #' @export
 unnest <- function(m){
   if(is_rmonad(m) && is_rmonad(m_value(m))){
-    m <- m_value(m)
+
+
+  # splice_function(f=f, m=o, ms=margs)
+
+    m_nest(m)  <- .set_recursion_depth(m_value(m), m_nest_depth(m)+1L)
+    m_value(m) <- m_value(m_nest(m))
+    m_OK(m)    <- m_OK(m_nest(m))
+  }
+  m
+}
+
+.set_recursion_depth <- function(m, i){
+  m_parents(m) <- lapply(m_parents(m), .set_recursion_depth, i) 
+  m_nest_depth(m) <- i
+  if(.has_nest(m)){
+    m_nest(m) <- .set_recursion_depth(m_nest(m), i+1L)
   }
   m
 }

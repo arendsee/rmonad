@@ -83,6 +83,7 @@ is_rmonad <- function(m) {
 .has_warnings <- function(m) length(m_warnings(m)) != 0
 .has_notes    <- function(m) length(m_notes(m))    != 0
 .has_parents  <- function(m) length(m_parents(m))  != 0
+.has_nest     <- function(m) length(m_nest(m))     != 0
 .has_branch   <- function(m) length(m_branch(m))   != 0
 .has_meta     <- function(m) length(m_meta(m))     != 0
 .has_time     <- function(m) .is_not_empty_real(m_time(m))
@@ -103,6 +104,20 @@ is_rmonad <- function(m) {
 m_parents <- function(m) {
   .m_check(m)
   .maybe_vector_get(m@parents)
+}
+
+#' @rdname rmonad_accessors
+#' @export
+m_nest <- function(m) {
+  .m_check(m)
+  .maybe_vector_get(m@nest)
+}
+
+#' @rdname rmonad_accessors
+#' @export
+m_nest_depth <- function(m) {
+  .m_check(m)
+  m@nest_depth
 }
 
 #' @rdname rmonad_accessors
@@ -229,6 +244,22 @@ m_branch   <- function(m) {
 `m_parents<-` <- function(m, value) {
   .m_check(m)
   m@parents <- .maybe_vector_set(value, .is_not_empty)
+  m
+}
+
+#' @rdname rmonad_accessors
+#' @export
+`m_nest<-` <- function(m, value) {
+  .m_check(m)
+  m@nest <- .maybe_vector_set(value, .is_not_empty)
+  m
+}
+
+#' @rdname rmonad_accessors
+#' @export
+`m_nest_depth<-` <- function(m, value) {
+  .m_check(m)
+  m@nest_depth <- value
   m
 }
 

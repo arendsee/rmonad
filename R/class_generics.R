@@ -69,15 +69,19 @@ setMethod("show", "Rmonad",
 #' Convert an rmonad object to a list of monads
 #'
 #' @param x An Rmonad object
+#' @param recurse_nests logical Should nested pipelines be included?
 #' @param ... Additional arguments (unused)
 #' @export
-as.list.Rmonad <- function(x, ...){
+as.list.Rmonad <- function(x, recurse_nests=TRUE, ...){
   ms <- list(x)
   for(b in m_branch(x)){
-    ms <- as.list(b) %++% ms
+    ms <- as.list(b, recurse_nests) %++% ms
   }
   for(p in m_parents(x)){
-    ms <- as.list(p) %++% ms
+    ms <- as.list(p, recurse_nests) %++% ms
+  }
+  if(recurse_nests && .has_nest(x)){
+    ms <- as.list(m_nest(x), recurse_nests) %++% ms
   }
   unique(ms)
 }

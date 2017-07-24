@@ -13,33 +13,37 @@
 Rmonad <- setClass(
   "Rmonad",
   representation(
-    x        = "list", # Maybe a
-    id       = "integer",
-    OK       = "logical",
-    code     = "character",
-    error    = "list", # Maybe [String]
-    warnings = "list", # Maybe [String]
-    notes    = "list", # Maybe [String]
-    doc      = "list", # Maybe [String]
-    other    = "list",
-    meta     = "list",
-    branch   = "list",
-    parents  = "list",
-    .stored  = "logical"
+    x          = "list", # Maybe a
+    id         = "integer",
+    OK         = "logical",
+    code       = "character",
+    error      = "list", # Maybe [String]
+    warnings   = "list", # Maybe [String]
+    notes      = "list", # Maybe [String]
+    doc        = "list", # Maybe [String]
+    other      = "list",
+    meta       = "list",
+    branch     = "list",
+    parents    = "list",
+    nest       = "list",
+    nest_depth = "integer",
+    .stored    = "logical"
   ),
   prototype(
-    x        = list(),
-    OK       = TRUE,
-    code     = NA_character_,
-    error    = list(),
-    warnings = list(),
-    notes    = list(),
-    doc      = list(),
-    other    = list(),
-    meta     = list(),
-    branch   = list(),
-    parents  = list(),
-    .stored  = FALSE  # is an x stored here
+    x          = list(),
+    OK         = TRUE,
+    code       = NA_character_,
+    error      = list(),
+    warnings   = list(),
+    notes      = list(),
+    doc        = list(),
+    other      = list(),
+    meta       = list(),
+    branch     = list(),
+    parents    = list(),
+    nest       = list(),
+    nest_depth = 1L,
+    .stored    = FALSE  # is an x stored here
   )
 )
 

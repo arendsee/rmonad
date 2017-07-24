@@ -170,7 +170,7 @@ store_value <- function(m) { .m_stored(m) <- TRUE ; m }
 entry_lhs_transform_default <- function(m, f, ...) {
   # FIXME: This is a sneaky way of safely evaluating the lhs without nesting
   # the nads. I need a cleaner solution.
-  as_monad(m, ...) %>% unnest
+  as_monad(m, lossy=TRUE, ...)
 }
 
 emit_default <- function(input, output) {
@@ -198,7 +198,7 @@ default_combine <- function(m, o, f, margs){
     m_value(o) <- m_value(m)
   }
 
-  splice_function(f=f, m=o, ms=margs)
+  .m_inherit(child=o, parents=m)
 }
 
 bypass_combine <- function(m, o, f, margs){

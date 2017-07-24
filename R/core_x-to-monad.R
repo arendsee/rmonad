@@ -22,6 +22,7 @@
 #' @param desc A description of the monad (usually the producing code)
 #' @param keep_history Merge the histories of all monads
 #' @param env Evaluation environment
+#' @param lossy logical Should unnesting with record be done (TODO: rethink this)?
 #' @param ... multiple expressions
 #' @name x_to_monad
 #' @examples
@@ -48,7 +49,7 @@ NULL
 
 #' @rdname x_to_monad
 #' @export
-as_monad <- function(expr, desc=NULL, doc=NULL){
+as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE){
 # as_monad :: a -> m a
 
   value <- NULL 
@@ -81,7 +82,8 @@ as_monad <- function(expr, desc=NULL, doc=NULL){
     type="message"
   )
 
-  # if(length(value) == 1 && is_rmonad(value)) { return(value) }
+  if(lossy && length(value) == 1 && is_rmonad(value))
+    return(value)
 
   if(!isOK) {
     value = NULL
@@ -159,7 +161,7 @@ funnel <- function(..., env=parent.frame(), keep_history=TRUE){
         "."
       }
 
-      as_monad(eval(x, env), desc=desc) %>% unnest
+      as_monad(eval(x, env), desc=desc, lossy=TRUE)
     }
   )
 }

@@ -5,6 +5,8 @@
 \alias{m_delete_value}
 \alias{is_rmonad}
 \alias{m_parents}
+\alias{m_nest}
+\alias{m_nest_depth}
 \alias{m_value}
 \alias{m_id}
 \alias{m_OK}
@@ -21,6 +23,8 @@
 \alias{m_OK<-}
 \alias{m_value<-}
 \alias{m_parents<-}
+\alias{m_nest<-}
+\alias{m_nest_depth<-}
 \alias{m_code<-}
 \alias{m_error<-}
 \alias{m_warnings<-}
@@ -41,6 +45,10 @@ m_delete_value(m)
 is_rmonad(m)
 
 m_parents(m)
+
+m_nest(m)
+
+m_nest_depth(m)
 
 m_value(m)
 
@@ -73,6 +81,10 @@ m_OK(m) <- value
 m_value(m) <- value
 
 m_parents(m) <- value
+
+m_nest(m) <- value
+
+m_nest_depth(m) <- value
 
 m_code(m) <- value
 

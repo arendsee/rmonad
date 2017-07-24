@@ -7,7 +7,7 @@
 \alias{combine}
 \title{Conversions to monads}
 \usage{
-as_monad(expr, desc = NULL, doc = NULL)
+as_monad(expr, desc = NULL, doc = NULL, lossy = FALSE)
 
 funnel(..., env = parent.frame(), keep_history = TRUE)
 
@@ -19,6 +19,8 @@ combine(xs, keep_history = TRUE, desc = NULL)
 \item{desc}{A description of the monad (usually the producing code)}
 
 \item{doc}{A docstring to associate with the monad}
+
+\item{lossy}{logical Should unnesting with record be done (TODO: rethink this)?}
 
 \item{...}{multiple expressions}
 

@@ -137,17 +137,27 @@ as_dgr_graph <- function(m, type=NULL, label=NULL, ...){
   #  %||% 'reverse-follow'
   #  %|>% 'reverse-depend'
   #  Or perhaps %__% should create separate graphs?
-  edges_df <- DiagrammeR::create_edge_df(
+  edges_df_pc <- DiagrammeR::create_edge_df(
     from = lapply(ms, function(x) sapply(m_parents(x), m_id)) %>% unlist,
     to   = lapply(ms, function(x) rep.int(m_id(x), length(m_parents(x)))) %>% unlist,
-    rel  = NULL
+    rel  = "depend"
   )
+
+  edges_df_nest <- DiagrammeR::create_edge_df(
+    from = sapply(ms, function(x) if(.has_nest(x)) m_id(m_nest(x)) else NA ),
+    to   = sapply(ms, m_id),
+    rel  = "nest"
+  )
+  edges_df_nest <- edges_df_nest[sapply(ms, .has_nest), ]
+
+  edges_df <- rbind(edges_df_pc, edges_df_nest)
+
 
   # Create graph from node and edge dataframes.
   DiagrammeR::create_graph(
-    nodes_df = nodes_df,
-    edges_df = edges_df,
-    directed = TRUE,
+    nodes_df   = nodes_df,
+    edges_df   = edges_df,
+    directed   = TRUE,
     graph_name = NULL
   ) 
 }
