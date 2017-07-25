@@ -198,6 +198,10 @@ default_combine <- function(m, o, f, margs){
     m_value(o) <- m_value(m)
   }
 
+  if(.has_nest(o)){
+    m_nest(o) <- splice_function(f=f, m=m_nest(o), ms=margs)
+  }
+
   .m_inherit(child=o, parents=m)
 }
 
