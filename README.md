@@ -1,7 +1,6 @@
 [![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=dev)](https://travis-ci.org/arendsee/rmonad)
 [![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/dev.svg)](https://codecov.io/github/arendsee/rmonad?branch=dev)
 
-
 # `rmonad`
 
 Chain monadic sequences into stateful, branching pipelines. As nodes in the
@@ -317,30 +316,13 @@ x <-
 
 }
 mreport(x)
-#> [1] "\n```{r, eval=FALSE}\n{\n    \"# Report\\n\\n  This is a pipeline report\\n  \"\n}\n```\n\nthis is a docstring\n```{r, eval=FALSE}\n{\n    5\n}\n```\n\nthis is too\n```{r, eval=FALSE}\n{\n    sqrt(.)\n}\n```\n\n# Conclusion\n\n   optional closing remarks\n   \n```{r, eval=FALSE}\n{\n    NULL\n}\n```\n"
+#> [1] "## 1\n   # Conclusion\n\n   optional closing remarks\n   \n```{r, eval=FALSE}\n{\n    \"# Report\\n\\n  This is a pipeline report\\n  \"\n}\n```\nOK=TRUE | nparents=0 | nbranches=0 | cached=FALSE\n\n## 2\n   # Conclusion\n\n   optional closing remarks\n   \n```{r, eval=FALSE}\n{\n    5\n}\n```\nOK=TRUE | nparents=1 | nbranches=0 | cached=FALSE\n\n## 3\n   # Conclusion\n\n   optional closing remarks\n   \n```{r, eval=FALSE}\nfunction (.) \n{\n    \"this is too\"\n    sqrt(.)\n}\n```\nOK=TRUE | nparents=1 | nbranches=0 | cached=FALSE\n\n## 4\n   # Conclusion\n\n   optional closing remarks\n   \n```{r, eval=FALSE}\nfunction (.) \n{\n    \"# Conclusion\\n\\n   optional closing remarks\\n   \"\n    NULL\n}\n```\nOK=TRUE | nparents=1 | nbranches=0 | cached=TRUE\n"
 ```
 
 ### Graphing pipelines
 
 
 ```r
-library(DiagrammeR)
-#> Warning in .doLoadActions(where, attach): trying to execute load actions
-#> without 'methods' package
-#> 
-#> Attaching package: 'DiagrammeR'
-#> The following object is masked from 'package:devtools':
-#> 
-#>     add_path
-
-# make labels for the DiagrammeR object
-make_labels <- function(m){
-  v <- m_value(m)
-  if(is.null(v))
-    v <- "."
-  v
-}
-
 # here I use the `->` operator, which is the little known twin of `<-`.
 funnel(
   "a" %v>% paste("b"), # %v>% stores the input (%>>% doesn't)
@@ -352,12 +334,25 @@ funnel(
     "g" %v>% paste("h")
   ) %*>%
   paste %>% # the remaining steps are all operating _on_ the monad
-  as_dgr_graph(label=make_labels) %>%
-  DiagrammeR::generate_dot() %>%
-  DiagrammeR::grViz()
+  plot(label='value')
+#> Warning in .doLoadActions(where, attach): trying to execute load actions
+#> without 'methods' package
 ```
 
 ![plot of chunk workflow-plot](README-workflow-plot-1.png)
+
+Nested pipelines can also be plotted:
+
+
+```r
+foo <- function(x){
+    'c' %v>% paste(x) %v>% paste('d')
+}
+'a' %v>% foo %>% plot(label='value')
+```
+
+![plot of chunk nested-workflow-plot](README-nested-workflow-plot-1.png)
+
 
 ## Contributing
 
@@ -369,58 +364,32 @@ See the next section for a partial summary.
 
 ## rmonad v0.2.0 goals
 
-Here are my goals for the v0.2.0 release.
+The coming Rmonad v0.2.0 should have:
 
- - [x] Add optional docstrings to anonymous functions 
+ - [ ] Cleaner code
 
- - [ ] Cleanup the bind function (it is a bloated mess)
+ - [ ] Better vignettes and documentation
 
- - [ ] Extend test coverage to near 100%
-
- - [ ] Benchmark rmonad, speed it up as much as is reasonable
-
- - [ ] Improve documentation
-
-   - [ ] Detailed documentation for each infix operator
-
- - [ ] Better examples (my current examples are highly contrived)
+   - [ ] Detailed documentation for all infix operators
 
    - [ ] A monad theory vignette
 
    - [x] One of two detailed case study vignettes
 
-   - [ ] Improved examples in the introduction vignette and README
+ - [x] optional docstrings for bound functions 
 
- - [ ] Reimplement the underlying graph structure with igraph (or some similar
-   dedicated graph library). This is a major task. Currently `rmonad` builds
-   directed graphs, but can do little with them. This should allow:
+ - [x] optional metadata in function preambles
 
-   - [x] Plotting of the function graph
+ - [x] generic plot functions that support nested pipelines
 
-   - [ ] Faster, more elegant traversal algorithms
+ - [ ] a more elegant data structure for representing the workflow graph
 
-   - [ ] Preserve all operations in the graph, even those that were not run
-     or that trail after failed states.
+   - [ ] preserve all operations, even those not run
 
-   - [ ] Check for infinite loops
+   - [ ] check for infinite loops
 
- - [ ] Functions for converting the pipeline data structure into an Rmd. There
-   are a lot of details to work out here.
+ - [x] functions for converting the pipeline data structure into an Rmd
 
-   - [ ] Set docstring to caption if the chunk emits a graph
+ - [ ] a system for persistant caching of results
 
-   - [x] Else make it a block of text underneath the chunk (or something)
-
-   - [ ] ...
-
- - [ ] Add some system for caching, a global option perhaps
-
- - [ ] Add some system for job submission. The monad controls evaluation, it
-   should be possible to just swap out the evaluation function inside the bind
-   function to evaluate in a different setting (e.g. a cluster). But I have
-   little experience in this area.
-
- - [x] Add a system parameterizing individual chunks. A modification of the
-   current docstring system, but with a list, instead of a string. This could
-   specify a function for caching, or runtime environment, or arguments to pass
-   on to knitr.
+ - [ ] a system for job submission
