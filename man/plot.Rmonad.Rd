@@ -12,8 +12,8 @@
 \item{y}{This variable is currently ignored}
 
 \item{label}{The node labels. If NULL, the node labels will equal node ids.
-It may be one of the strings ['code', 'time', 'space', 'value']. If 'value'
-is selected, nodes with no value cached are represented with '-'.
+It may be one of the strings ['code', 'time', 'space', 'value', 'depth']. If
+'value' is selected, nodes with no value cached are represented with '-'.
 Alternatively, it may be a function that maps a single Rmonad object to a
 string.}
 

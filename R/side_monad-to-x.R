@@ -139,38 +139,37 @@ as_dgr_graph <- function(m, type=NULL, label=NULL, ...){
     list(
       n     = length(ms),
       type  = type,
-      label = label
+      label = label,
+      rank  = sapply(ms, m_nest_depth)
     ) %++% cols
   )
   nodes_df$id <- sapply(ms, m_id)
   nodes_df$fillcolor <- fillcolor
 
-  # FIXME: this ignores branches
-  # build the edges data frame, linking child to parent
-  # TODO: add classifications for relationships
-  #  %__% creates 'follow' edges, that errors do not propagate past.
-  #  %>>% creates 'depend' edges, where errors to propagate
-  #  %>_% creates two 'depend' edges
-  #  %||% 'reverse-follow'
-  #  %|>% 'reverse-depend'
-  #  Or perhaps %__% should create separate graphs?
+  # see www.graphviz.org/ for attribute opeions
   edges_df_pc <- DiagrammeR::create_edge_df(
-    from  = lapply(ms, function(x) sapply(m_parents(x), m_id)) %>% unlist,
-    to    = lapply(ms, function(x) rep.int(m_id(x), length(m_parents(x)))) %>% unlist,
-    color = 'black',
-    rel   = "depend"
+    from    = lapply(ms, function(x) sapply(m_parents(x), m_id)) %>% unlist,
+    to      = lapply(ms, function(x) rep.int(m_id(x), length(m_parents(x)))) %>% unlist,
+    f_depth = lapply(ms, function(x) sapply(m_parents(x), m_nest_depth)) %>% unlist,
+    t_depth = lapply(ms, function(x) rep.int(m_nest_depth(x), length(m_parents(x)))) %>% unlist,
+    rel     = "depend"
   )
-
   edges_df_nest <- DiagrammeR::create_edge_df(
     from  = sapply(ms, function(x) if(.has_nest(x)) m_id(m_nest(x)) else NA ),
     to    = sapply(ms, m_id),
-    color = 'red',
+    f_depth = lapply(ms, function(x) sapply(m_parents(x), m_nest_depth)) %>% unlist,
+    t_depth = lapply(ms, function(x) rep.int(m_nest_depth(x), length(m_parents(x)))) %>% unlist,
     rel   = "nest"
   )
   edges_df_nest <- edges_df_nest[sapply(ms, .has_nest), ]
 
   edges_df <- rbind(edges_df_pc, edges_df_nest)
 
+  edges_df$rel <- ifelse(
+    (edges_df$t_depth != edges_df$f_depth) & edges_df$rel == 'depend',
+    'transitive',
+    edges_df$rel
+  )
 
   # Create graph from node and edge dataframes.
   DiagrammeR::create_graph(

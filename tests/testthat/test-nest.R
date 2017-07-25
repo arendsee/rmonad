@@ -9,7 +9,6 @@ foo <- function(x,k=3){
   45 %>>% addit(x) %>>% subit(k)
 }
 
-# TODO: add tests after nesting is implemented again
 test_that("Nesting works for named functions", {
   expect_equal(4 %>>% foo %>% esc, 46)
   expect_equal(

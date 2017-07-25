@@ -93,8 +93,8 @@ as.list.Rmonad <- function(x, recurse_nests=TRUE, ...){
 #' @param x An Rmonad object
 #' @param y This variable is currently ignored
 #' @param label The node labels. If NULL, the node labels will equal node ids.
-#' It may be one of the strings ['code', 'time', 'space', 'value']. If 'value'
-#' is selected, nodes with no value cached are represented with '-'.
+#' It may be one of the strings ['code', 'time', 'space', 'value', 'depth']. If
+#' 'value' is selected, nodes with no value cached are represented with '-'.
 #' Alternatively, it may be a function that maps a single Rmonad object to a
 #' string.
 #' @param ... Additional arguments (unused currently)
@@ -118,6 +118,8 @@ plot.Rmonad <- function(x, y, label=NULL, ...){
     m_time
   } else if (label == "space") {
     m_mem
+  } else if (label == "depth") {
+    m_nest_depth
   } else if (label == "value") {
     function(m) {
       if(.has_value(m)){
@@ -130,9 +132,12 @@ plot.Rmonad <- function(x, y, label=NULL, ...){
     stop("Something is wrong with the 'label' field")
   }
 
+  g <- as_dgr_graph(x, label=label)
 
-  as_dgr_graph(x, label=label) %>%
-    DiagrammeR::render_graph()
+  g$edges_df$color <- ifelse(g$edges_df$rel == 'depend', 'black', 'red')
+  g$edges_df$color <- ifelse(g$edges_df$rel == 'transitive', 'gray', g$edges_df$color)
 
-  # DiagrammeR::generate_dot(g) %>% DiagrammeR::grViz()
+  g$edges_df$style <- ifelse(g$edges_df$rel == 'transitive', "dotted", "")
+
+  DiagrammeR::render_graph(g)
 }
