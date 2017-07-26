@@ -7,20 +7,8 @@ splice_function <- function(f, m, ms){
 
   ops <- get_monadic_operators(f)
 
-  # # If the function contains no internal operators, no transmogrification is needed
-  # if(length(ops) == 0){
-  #   return(.m_inherit(child=m, parents=ms))
-  # }
-
-  # FIXME: this needs to be recursive
-  if(length(ops) == 0){
+  if(length(ops) == 0)
     return(m)
-  }
-
-  # # If the function contains no internal operators, no transmogrification is needed
-  # if(length(ops) == 0){
-  #   return(.m_inherit(child=m, parents=ms))
-  # }
 
   bv <- get_bound_variables(f, ms)
 
@@ -28,15 +16,7 @@ splice_function <- function(f, m, ms){
 
   deps <- get_dependency_matrix(decs, names(bv))
 
-  last <- relink_node(m=m, bv=bv, deps=deps)
-
-  last
-
-  # nestchild <- new_monad()
-  # m_value(nestchild) <- m_value(last)
-  # m_OK(nestchild) <- m_OK(last)
-  #
-  # .m_inherit(child=nestchild, parents=last)
+  relink_node(m=m, bv=bv, deps=deps)
 
 }
 

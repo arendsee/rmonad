@@ -20,3 +20,20 @@ test_that("Nesting works for named functions", {
     c(0,0,2,1,1)
   )
 })
+
+bar <- function(x, j=4){
+  10 %>>% foo(k=x)
+}
+
+test_that("Nesting works for deeply nested functions", {
+   expect_equal(20 %>>% bar %>% esc, 35)
+   expect_true(20 %>>% bar %>% m_OK)
+   expect_equal(
+     20 %>>% bar %>% sapply(m_nest_depth),
+     c(1,3,3,3,1,2,2,1)
+   )
+   expect_equal(
+     20 %>>% bar %>% sapply(m_code),
+     c("10", "45", "addit(x)", "subit(k)", "20", "10", "foo(k = x)", "bar")
+   )
+})

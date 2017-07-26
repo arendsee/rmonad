@@ -41,7 +41,9 @@ unnest <- function(m){
 
 .set_recursion_depth <- function(m, i){
   m_parents(m) <- lapply(m_parents(m), .set_recursion_depth, i) 
-  m_nest_depth(m) <- i
+  if(m_nest_depth(m) == i - 1){
+    m_nest_depth(m) <- i
+  }
   if(.has_nest(m)){
     m_nest(m) <- .set_recursion_depth(m_nest(m), i+1L)
   }
