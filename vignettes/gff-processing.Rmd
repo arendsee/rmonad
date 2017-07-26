@@ -523,6 +523,17 @@ lapply(as.list(result), m_value)
 lapply(as.list(result), m_doc)
 ```
 
+```{r gff-workflow-plot, eval=FALSE}
+plot(result)
+```
+
+![plot of chunk gff-workflow-plot](gff-workflow-plot-1.png)
+
+A plot of the connections between functions in the pipeline. The node labels
+are the Rmonad ids. The red arrow indicates a 'nest' relationship. Green nodes
+are OK, orange nodes raised a warning, red nodes (none appear in this graph)
+represent errors.
+
 The generic `as.list` function extracts every node from an rmonad object. Here
 is a list of all currently supported getter functions.
 
