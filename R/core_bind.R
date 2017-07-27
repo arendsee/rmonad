@@ -30,19 +30,18 @@ bind <- function(
   io_combine          = default_combine,
   bind_args           = function(m) list(m_value(m)),
   bind_monad          = function(m) list(m),
-  expect_rhs_function = TRUE
+  expect_rhs_function = TRUE,
+  envir               = parent.frame()
 ){
   # FIXME: cleanup this implementation
   # FIXME: !!!!!!!
 
-  e <- parent.frame()
-
-  fdecon <- extract_metadata(substitute(f), env=e, skip_name=!expect_rhs_function)
+  fdecon <- extract_metadata(substitute(f), env=envir, skip_name=!expect_rhs_function)
   rhs_str <- deparse(fdecon$expr)
   rhs_doc <- fdecon$docstring
   rhs_met <- fdecon$metadata
 
-  xdecon <- extract_metadata(substitute(x), env=e)
+  xdecon <- extract_metadata(substitute(x), env=envir)
   lhs_str <- deparse(xdecon$expr)
   lhs_doc <- xdecon$docstring
   lhs_met <- xdecon$metadata
@@ -90,7 +89,7 @@ bind <- function(
         new_function <- pryr::make_function(
           .as_positional_formals(names(final_args)),
           fs,
-          env=e
+          env=envir
         )
 
         rhs_str <- deparse(new_function)
@@ -101,10 +100,10 @@ bind <- function(
         stop("Anonymous functions must be parenthesized", call.=FALSE)
       }
       else if(fl[[1]] == "(" && fl[[2]][[1]] == "function"){
-        new_function <- eval(fl[[2]], envir=e)
+        new_function <- eval(fl[[2]], envir=envir)
       }
       else {
-        new_function <- eval(fl[[1]], envir=e)
+        new_function <- eval(fl[[1]], envir=envir)
         final_args <- append(bound_args, fl[-1])
       }
 
@@ -112,7 +111,7 @@ bind <- function(
     o <- .eval(
       func       = new_function,
       args       = final_args,
-      env        = e
+      env        = envir
     )
 
     m <- m_on_bind(m)

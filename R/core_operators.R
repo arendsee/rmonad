@@ -177,7 +177,6 @@ NULL
     .m_inherit(child=o, parents=i, force_keep=force_keep)
   }
 
-  envir <- parent.frame()
   cmd <- list(
     bind,
     lhs,
@@ -185,7 +184,8 @@ NULL
     bind_if   = false,
     bind_else = function(...){as_monad(eval(rhs, envir))},
     emit      = emit,
-    expect_rhs_function = FALSE
+    expect_rhs_function = FALSE,
+    envir=envir
   )
   eval(as.call(cmd), envir=envir)
 }
