@@ -9,6 +9,8 @@
  * Allow nesting of Rmonads, `as_monad` no longer automatically unnests them,
    there is an explicit function for this, `unnest`.
 
+ * `as_monad` now records time and space (previously were left as NA)
+
 ## New features
 
  * Generation of Markdown reports from pipelines with `mreport`

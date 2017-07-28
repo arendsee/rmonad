@@ -63,23 +63,28 @@ as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE){
   doc <- ed$docstring
   met <- ed$metadata
 
-  notes <- capture.output(
+  st <- system.time(
     {
-      value <- withCallingHandlers(
-        tryCatch(
-          eval(expr, envir=env),
-          error = function(e) {
-            fails <<- e$message;
-            isOK <<- FALSE
-          }
-        ),
-        warning = function(w){
-          warns <<- warns %++% w$message
-          invokeRestart("muffleWarning")
-        }
+      notes <- capture.output(
+        {
+          value <- withCallingHandlers(
+            tryCatch(
+              eval(expr, envir=env),
+              error = function(e) {
+                fails <<- e$message;
+                isOK <<- FALSE
+              }
+            ),
+            warning = function(w){
+              warns <<- warns %++% w$message
+              invokeRestart("muffleWarning")
+            }
+          )
+        },
+        type="message"
       )
     },
-    type="message"
+    gcFirst=FALSE # this kills performance when TRUE
   )
 
   if(lossy && length(value) == 1 && is_rmonad(value))
@@ -106,6 +111,7 @@ as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE){
   m_OK(m)       <- isOK
   m_doc(m)      <- doc
   m_mem(m)      <- object.size(value)
+  m_time(m)     <- signif(unname(st[1]), 2)
   m_meta(m)     <- met
 
   m
@@ -184,7 +190,7 @@ combine <- function(xs, keep_history=TRUE, desc=NULL){
   m_value(out) <- lapply(xs, m_value)
 
   # monad is passing if all parents are cool
-  m_OK(out) <- all(sapply(xs, m_OK))
+    m_OK(out) <- all(sapply(xs, m_OK))
 
   if(!is.null(desc)){
     m_code(out) <- desc 
