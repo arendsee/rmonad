@@ -33,6 +33,10 @@ test_that("Nesting works for deeply nested functions", {
      c(1,3,3,3,1,2,2,1)
    )
    expect_equal(
+     20 %>>% bar %>% lapply(m_value),
+     list(NULL,NULL,NULL,NULL,NULL,NULL,NULL,35)
+   )
+   expect_equal(
      20 %>>% bar %>% sapply(m_code),
      c("10", "45", "addit(x)", "subit(k)", "20", "10", "foo(k = x)", "bar")
    )
