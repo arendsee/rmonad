@@ -4,13 +4,13 @@
 \alias{mreport}
 \title{Convert a pipeline to Rmarkdown}
 \usage{
-mreport(m)
+mreport(m, section_prefix = "")
 }
 \arguments{
 \item{m}{An Rmonad}
 }
 \description{
-This is currently a stub. It only pastes the docstrings and code blocks.
+Convert a pipeline to Rmarkdown
 }
 \seealso{
 Other monad-to-x: \code{\link{as_dgr_graph}},

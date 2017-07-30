@@ -52,12 +52,10 @@ missues <- function(m){
 
 #' Convert a pipeline to Rmarkdown
 #'
-#' This is currently a stub. It only pastes the docstrings and code blocks.
-#'
 #' @family monad-to-x
 #' @param m An Rmonad
 #' @export
-mreport <- function(m){
+mreport <- function(m, section_prefix=""){
   template <- paste0(collapse="\n", c(
       "## %s",
       "%s",
@@ -65,29 +63,45 @@ mreport <- function(m){
       "%s",
       "```",
       "OK=%s | nparents=%s | nbranches=%s | cached=%s",
-      "%s%s%s"
+      "%s%s%s",
+      "%s"
   ))
-  
-  i=0
-  lapply(as.list(m),
+  lapply(as.list(m, recurse_nests=FALSE),
     function(x) {
-      i <<- i + 1
-      paste(sprintf(
+      if(section_prefix != ""){
+        label <- paste(section_prefix, m_id(x), sep=".")
+      } else {
+        label <- m_id(x)
+      }
+      rep <- paste0(sprintf(
         template,
-        i,
+        label,
         .make_message(m_doc(m), .has_doc(m), "  "),
         paste(m_code(x), collapse="\n"),
         m_OK(x), length(m_parents(x)), length(m_branch(x)), .has_value(x),
-        .make_message(m_error(m), .has_error(m), "Error"),
-        .make_message(m_warnings(m), .has_warnings(m), "Warning"),
-        .make_message(m_notes(m), .has_notes(m), "Note")
+        .make_message(m_error(x), .has_error(x), "Error"),
+        .make_message(m_warnings(x), .has_warnings(x), "Warning"),
+        .make_message(m_notes(x), .has_notes(x), "Note"),
+        .write_result(x)
       ))
+      if(.has_nest(x)){
+        section_prefix <- label
+        rep <- paste0(rep, mreport(m_nest(x), section_prefix=section_prefix), collapse="\n")
+      }
+      rep
     }
   ) %>% unlist %>% paste(collapse="\n")
 }
 .make_message <- function(x,has,root) {
   if(has){
     paste(root, x, collapse="\n")
+  } else {
+    ""
+  }
+}
+.write_result <- function(x){
+  if(.has_value(x)){
+    sprintf("```\n%s\n```\n", paste0("## ", capture.output(print(m_value(x))), collapse="\n"))
   } else {
     ""
   }
