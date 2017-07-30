@@ -61,7 +61,10 @@ NULL
 #' @rdname rmonad_accessors
 #' @export
 m_delete_value <- function(m) {
-  m@value <- list() # Nothing
+  if(is_rmonad(m)){
+    m@x <- list() # Nothing
+    m@.stored <- FALSE
+  }
   m
 }
 

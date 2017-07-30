@@ -10,10 +10,11 @@ mtabulate <- function(m){
   d
 }
 .mtabulate <- function(m){
+  v <- m_value(m)
   list(
     code      = paste(m_code(m), collapse="\n"),
     OK        = m_OK(m),
-    cached    = !is.null(m_value(m)),
+    cached    = (!is_rmonad(v) && !is.null(v)) || .m_stored(m),
     time      = signif(m_time(m)[1], 2),
     space     = m_mem(m),
     nbranch   = length(m_branch(m)),
