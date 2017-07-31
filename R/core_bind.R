@@ -57,16 +57,14 @@ bind <- function(
 
   o <- if(bind_if(m))
   {
-
-    # insert x as first positional in f
-    fs <- substitute(f)
+    fs <- fdecon$expr
     fl <- as.list(fs)
 
       bound_args <- bind_args(m)
       final_args <- bound_args
 
       # If the expressions is of form 'x %>>% Foo::bar'
-      # Package names are supported fine if arguments are given
+      # No special handling needed if arguments are given
       if(fl[[1]] == '::' && length(fl) == 3) {
         new_function <- f
       }

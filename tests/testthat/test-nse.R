@@ -124,7 +124,6 @@ test_that("anonymous functions handle docstrings and metadata", {
       m_doc(x) == "asdf" && identical(m_meta(x), list(k=1))
     }
   )
-
 })
 
 test_that("metadata is extracted", {
@@ -143,5 +142,14 @@ test_that("metadata is extracted", {
       docstring = "asdf",
       metadata  = list(k=1)
     )
+  )
+})
+
+test_that("docstrings are correct in anonymous bind expressions", {
+  expect_equal(
+    16 %>>% {"asdf"; list(k=1); sqrt(.)} %>%
+       m_code %>% gsub(pattern=" |\n", replacement="") %>%
+       paste(collapse=""),
+    'function(.){sqrt(.)}'
   )
 })
