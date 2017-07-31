@@ -86,7 +86,7 @@ mreport <- function(m, section_prefix=""){
       rep <- paste0(sprintf(
         template,
         label,
-        .make_message(m_doc(m), .has_doc(m), "  "),
+        .make_message(m_doc(x), .has_doc(x), "  "),
         paste(m_code(x), collapse="\n"),
         m_OK(x), length(m_parents(x)), length(m_branch(x)), .has_value(x),
         .make_message(m_error(x), .has_error(x), "Error"),
