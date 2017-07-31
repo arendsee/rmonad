@@ -24,6 +24,7 @@ mtabulate <- function(m, recurse_nests=TRUE, code=FALSE){
     cached    = (!is_rmonad(v) && !is.null(v)) || .m_stored(m),
     time      = signif(m_time(m)[1], 2),
     space     = m_mem(m),
+    is_nested = .has_nest(m),
     nbranch   = length(m_branch(m)),
     nnotes    = length(m_notes(m)),
     nwarnings = length(m_warnings(m)),
@@ -58,13 +59,13 @@ missues <- function(m, recurse_nests=TRUE){
 
 #' Convert a pipeline to Rmarkdown
 #'
+#' This function is experimental and may change completely in the future
+#'
 #' @family monad-to-x
 #' @param m An Rmonad
 #' @param section_prefix A prefix to add to all section headers (mostly for internal use)
 #' @export
 mreport <- function(m, section_prefix=""){
-
-  warning("This function is experimental and may change completely in the future")
 
   template <- paste0(collapse="\n", c(
       "## %s",

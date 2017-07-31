@@ -12,7 +12,7 @@ mreport(m, section_prefix = "")
 \item{section_prefix}{A prefix to add to all section headers (mostly for internal use)}
 }
 \description{
-Convert a pipeline to Rmarkdown
+This function is experimental and may change completely in the future
 }
 \seealso{
 Other monad-to-x: \code{\link{as_dgr_graph}},
