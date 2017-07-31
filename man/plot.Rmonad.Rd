@@ -4,7 +4,7 @@
 \alias{plot.Rmonad}
 \title{Plot a pipeline graph}
 \usage{
-\method{plot}{Rmonad}(x, y, label = NULL, ...)
+\method{plot}{Rmonad}(x, y, label = NULL, color = "status", ...)
 }
 \arguments{
 \item{x}{An Rmonad object}
@@ -16,6 +16,10 @@ It may be one of the strings ['code', 'time', 'space', 'value', 'depth']. If
 'value' is selected, nodes with no value cached are represented with '-'.
 Alternatively, it may be a function that maps a single Rmonad object to a
 string.}
+
+\item{color}{How to color the nodes. Default is 'status', which colors green
+for passing, orange for warning, and red for error. Alternatively, color can
+be a function of an Rmonad object, which will be applied to each node.}
 
 \item{...}{Additional arguments (unused currently)}
 }

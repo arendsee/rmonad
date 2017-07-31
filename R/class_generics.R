@@ -97,9 +97,12 @@ as.list.Rmonad <- function(x, recurse_nests=TRUE, ...){
 #' 'value' is selected, nodes with no value cached are represented with '-'.
 #' Alternatively, it may be a function that maps a single Rmonad object to a
 #' string.
+#' @param color How to color the nodes. Default is 'status', which colors green
+#' for passing, orange for warning, and red for error. Alternatively, color can
+#' be a function of an Rmonad object, which will be applied to each node.
 #' @param ... Additional arguments (unused currently)
 #' @export
-plot.Rmonad <- function(x, y, label=NULL, ...){
+plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
 
   label <-
   if(is.function(label)) {
@@ -132,7 +135,24 @@ plot.Rmonad <- function(x, y, label=NULL, ...){
     stop("Something is wrong with the 'label' field")
   }
 
-  g <- as_dgr_graph(x, label=label)
+  color <-
+  if(is.function(color)){
+    color
+  } else if(color == 'status'){
+    function(x) {
+      if(.has_error(x)){
+        'red'
+      } else if(.has_warnings(x)){
+        'orange'
+      } else {
+        'lightgreen'
+      }
+    }
+  } else {
+    stop("The 'color' field in plot.Rmonad must be either 'status' or a function")
+  }
+
+  g <- as_dgr_graph(x, label=label, color=color)
 
   g$edges_df$color <- ifelse(g$edges_df$rel == 'depend', 'black', 'red')
   g$edges_df$color <- ifelse(g$edges_df$rel == 'transitive', 'gray', g$edges_df$color)

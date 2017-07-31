@@ -4,7 +4,7 @@
 \alias{as_dgr_graph}
 \title{Convert a pipeline to DiagrammeR graph}
 \usage{
-as_dgr_graph(m, type = NULL, label = NULL, ...)
+as_dgr_graph(m, type = NULL, label = NULL, color = NULL, ...)
 }
 \arguments{
 \item{m}{An Rmonad}
@@ -12,6 +12,8 @@ as_dgr_graph(m, type = NULL, label = NULL, ...)
 \item{type}{a function that will produce the type column for DiagrammeR}
 
 \item{label}{a function that will produce the label column for DiagrammeR}
+
+\item{color}{a function that sets the color of each node}
 
 \item{...}{named functions that act on a monad to produce a scalar. These
 functions will produce the attributes used in the graph object.}

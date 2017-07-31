@@ -128,13 +128,14 @@ mreport <- function(m, section_prefix=""){
 #' @param m An Rmonad
 #' @param type a function that will produce the type column for DiagrammeR
 #' @param label a function that will produce the label column for DiagrammeR
+#' @param color a function that sets the color of each node
 #' @param ... named functions that act on a monad to produce a scalar. These
 #' functions will produce the attributes used in the graph object.
 #' @export
 #' @examples
 #' data(gff)
 #' as_dgr_graph(gff$good_result, mem=m_mem, time=m_time)
-as_dgr_graph <- function(m, type=NULL, label=NULL, ...){
+as_dgr_graph <- function(m, type=NULL, label=NULL, color=NULL, ...){
   ms <- as.list(m)
   funcs <- list(...)
   cols <- lapply(funcs, function(f) sapply(ms, f))
@@ -146,18 +147,15 @@ as_dgr_graph <- function(m, type=NULL, label=NULL, ...){
   .check_length(type)
   .check_length(label)
   lapply(cols, .check_length)
-
-  fillcolor <- sapply(ms,
-    function(x) {
-      if(.has_error(x)){
-        'red'
-      } else if(.has_warnings(x)){
-        'orange'
-      } else {
-        'lightgreen'
-      }
-    }
-  )
+ 
+  fillcolor <-
+  if(is.function(color)){
+    sapply(ms, color)
+  } else if(is.null(color)){
+    NULL
+  } else {
+    stop("The 'color' parameter in as_dgr_graph must be either NULL or a function")
+  }
 
   # build the node data frame
   nodes_df <- do.call(
