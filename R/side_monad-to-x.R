@@ -2,17 +2,24 @@
 #'
 #' @family monad-to-x
 #' @param m An Rmonad
+#' @param recurse_nests logical Should the resulting table descend into nested pipelines?
+#' @param code logical Should the code by included?
 #' @export
-mtabulate <- function(m){
-  ms <- as.list(m)
+mtabulate <- function(m, recurse_nests=TRUE, code=FALSE){
+  ms <- as.list(m, recurse_nests)
   d <- do.call(rbind.data.frame, lapply(ms, .mtabulate)) %>%
     as.data.frame
+  rownames(d) <- NULL
+  if(!code){
+    d$code <- NULL
+  }
   d
 }
 .mtabulate <- function(m){
   v <- m_value(m)
   list(
     code      = paste(m_code(m), collapse="\n"),
+    id        = m_id(m),
     OK        = m_OK(m),
     cached    = (!is_rmonad(v) && !is.null(v)) || .m_stored(m),
     time      = signif(m_time(m)[1], 2),
@@ -29,10 +36,10 @@ mtabulate <- function(m){
 #' 
 #' @family monad-to-x
 #' @param m An Rmonad
+#' @param recurse_nests logical Should the resulting table descend into nested pipelines?
 #' @export
-missues <- function(m){
+missues <- function(m, recurse_nests=TRUE){
   ms <- as.list(m)
-  cid <- 1L
   .missues <- function(m) {
     type <- c(
               rep.int("error",   length(m_error(m))    ),
@@ -40,8 +47,7 @@ missues <- function(m){
               rep.int("note",    length(m_notes(m))    )
              )
     issue <- as.character(c(m_error(m), m_warnings(m), m_notes(m)))
-    idcol <- rep(cid, length(type))
-    cid <<- cid + 1L
+    idcol <- rep(m_id(m), length(type))
     list(id=idcol, type=type, issue=issue) 
   }
   do.call(rbind.data.frame, lapply(ms, .missues)) %>%
@@ -54,8 +60,12 @@ missues <- function(m){
 #'
 #' @family monad-to-x
 #' @param m An Rmonad
+#' @param section_prefix A prefix to add to all section headers (mostly for internal use)
 #' @export
 mreport <- function(m, section_prefix=""){
+
+  warning("This function is experimental and may change completely in the future")
+
   template <- paste0(collapse="\n", c(
       "## %s",
       "%s",
@@ -101,7 +111,7 @@ mreport <- function(m, section_prefix=""){
 }
 .write_result <- function(x){
   if(.has_value(x)){
-    sprintf("```\n%s\n```\n", paste0("## ", capture.output(print(m_value(x))), collapse="\n"))
+    sprintf("```\n%s\n```\n", paste0("R> ", capture.output(print(m_value(x))), collapse="\n"))
   } else {
     ""
   }
@@ -217,10 +227,10 @@ as_dgr_graph <- function(m, type=NULL, label=NULL, ...){
 #'        extra context. 
 #' @export 
 esc <- function(m, quiet=FALSE){
-  mtab <- mtabulate(m)
-  mtab$id <- seq_len(nrow(mtab))
+  mtab <- mtabulate(m, recurse_nests=TRUE, code=TRUE)
 
-  issues <- merge(mtab, missues(m))[, c("code", "type", "issue")]
+  issues <- missues(m, recurse_nests=TRUE) %>%
+    { merge(mtab, .)[, c("code", "type", "issue")] }
 
   if(quiet){
     fw <- .quiet_warning

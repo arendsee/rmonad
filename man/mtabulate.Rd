@@ -4,10 +4,14 @@
 \alias{mtabulate}
 \title{Make tabular summary of a monadic chain}
 \usage{
-mtabulate(m)
+mtabulate(m, recurse_nests = TRUE, code = FALSE)
 }
 \arguments{
 \item{m}{An Rmonad}
+
+\item{recurse_nests}{logical Should the resulting table descend into nested pipelines?}
+
+\item{code}{logical Should the code by included?}
 }
 \description{
 Make tabular summary of a monadic chain

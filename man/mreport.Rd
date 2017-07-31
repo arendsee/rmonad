@@ -8,6 +8,8 @@ mreport(m, section_prefix = "")
 }
 \arguments{
 \item{m}{An Rmonad}
+
+\item{section_prefix}{A prefix to add to all section headers (mostly for internal use)}
 }
 \description{
 Convert a pipeline to Rmarkdown

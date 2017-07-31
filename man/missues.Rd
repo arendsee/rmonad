@@ -4,10 +4,12 @@
 \alias{missues}
 \title{Tabulates all errors, warnings and notes}
 \usage{
-missues(m)
+missues(m, recurse_nests = TRUE)
 }
 \arguments{
 \item{m}{An Rmonad}
+
+\item{recurse_nests}{logical Should the resulting table descend into nested pipelines?}
 }
 \description{
 Tabulates all errors, warnings and notes
