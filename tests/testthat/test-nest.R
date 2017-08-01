@@ -41,3 +41,12 @@ test_that("Nesting works for deeply nested functions", {
      c("10", "45", "addit(x)", "subit(k)", "20", "10", "foo(k = x)", "bar")
    )
 })
+
+
+a_bomb <- function(x,y){
+  g <- { x * 2 } %>>% { 7 * . }
+  g %>>% { y * . }
+}
+test_that("Test deep anonymous nesting works", {
+   expect_equal(funnel(x=2,y=5) %*>% a_bomb %>% esc, 140)
+})

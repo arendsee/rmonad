@@ -85,6 +85,7 @@ parse_as_block <- function(code_str){
 #' arguments to the function
 #' @return logical matrix
 get_dependency_matrix <- function(declarations, bound_vars){
+
   lhs <- lapply(declarations, get_lhs) %>% lapply(as.character) %>% unlist 
   rhs <- lapply(declarations, get_rhs)
   rhs_free_vars <- lapply(rhs, get_free_variables)
@@ -149,10 +150,18 @@ get_free_variables <- function(expr, bound_args=""){
       get_free_variables(expr=get_rhs(expr))
   }
 
+  # Return a name is it is not bound
+  else if(is.name(expr) && ! (as.character(expr) %in% bound_args)){
+    as.character(expr)
+  }
+
   # If this is a code block, recruse into each expression. If they are
   # assignments, record the newly bound variable.
   # NOTE: '{' is also a call, so must preceded `else if(is.call(expr))`
-  else if(expr == '{'){
+  else if(
+    is.call(expr) &&
+    expr[[1]] == '{'
+  ){
     freevars <- character(0)
     for(e in as.list(expr)[-1]){
       if(is_declaration(e)){
@@ -169,22 +178,20 @@ get_free_variables <- function(expr, bound_args=""){
   # On the lhs, '.' is global; on the rhs, '.' is bound.
   # in: `5 %>% add(.)`   -- no free variables
   # in: `. %>% add(.)`   -- '.' is a free variable
-  else if(as.character(expr) %in% c('%>%', '%<>%', '%T>%', '%$%', rmonad_ops) %>% any){
+  else if(
+    is.call(expr) &&
+    any(as.character(expr[[1]]) %in% c('%>%', '%<>%', '%T>%', '%$%', rmonad_ops))
+  ){
     rhs_freevars <- get_free_variables(expr[[2]], bound_args=bound_args)
     bound_args <- c(bound_args, '.')
     lhs_freevars <- get_free_variables(expr[[3]], bound_args=bound_args)
-    c(rhs_freevars, lhs_freevars)
+    unique(c(rhs_freevars, lhs_freevars))
   }
 
   # For a call, recurse into each argument
   else if(is.call(expr)){
 
     lapply(expr[-1], get_free_variables, bound_args) %>% unlist %>% unique
-  }
-
-  # Return a name is it is not bound
-  else if(is.name(expr) && ! (as.character(expr) %in% bound_args)){
-    as.character(expr)
   }
 
   # Otherwise, return an empty vector
