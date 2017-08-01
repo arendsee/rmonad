@@ -111,6 +111,10 @@ get_dependency_matrix <- function(declarations, bound_vars){
     varname <- lhs[i]
     rfv <- rhs_free_vars[[i]]
 
+    # Only consider the free variables that are declared or imported in the header.
+    # This allows globals or NSE variables (e.g. `subset(cars, dist > 10)`)
+    rfv <- rfv[rfv %in% rownames(deps)]
+
     if(length(rfv) == 0){
       deps[varname, ] <- rep(FALSE, ncol(deps))
     } else if(length(rfv) == 1){

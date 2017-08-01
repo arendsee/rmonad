@@ -50,3 +50,12 @@ a_bomb <- function(x,y){
 test_that("Test deep anonymous nesting works", {
    expect_equal(funnel(x=2,y=5) %*>% a_bomb %>% esc, 140)
 })
+
+
+h_bomb <- function(x){
+  g <- subset(x, cyl > 4)
+  g %>>% max
+}
+test_that("Nothing explodes when NSE happens in nest", {
+   expect_equal(funnel(x=mtcars) %*>% h_bomb %>% m_value, 472)
+})
