@@ -1,3 +1,16 @@
+rmonad_ops <- c(
+  "%>>%",
+  "%v>%",
+  "%>_%",
+  "%||%",
+  "%|>%",
+  "%*>%",
+  "%__%",
+  "%v__%",
+  "%>^%",
+  "%^>%"
+)
+
 #' Take a monadic bind operation's result and splice histories
 #'
 #' @param f The function
@@ -118,7 +131,7 @@ get_dependency_matrix <- function(declarations, bound_vars){
 #
 # '.' is magic, being automatically bound.
 #
-get_free_variables <- function(expr, bound_args=c(".")){
+get_free_variables <- function(expr, bound_args=""){
 
   # For functions, append all parameter names to the list of bound variables
   # (these are not free), and then recurse into the body
@@ -151,8 +164,21 @@ get_free_variables <- function(expr, bound_args=c(".")){
     unique(freevars)
   }
 
+  # If any of the magrittr or Rmonad operators are in the expression, then '.'
+  # will be automatically bound downstream.
+  # On the lhs, '.' is global; on the rhs, '.' is bound.
+  # in: `5 %>% add(.)`   -- no free variables
+  # in: `. %>% add(.)`   -- '.' is a free variable
+  else if(as.character(expr) %in% c('%>%', '%<>%', '%T>%', '%$%', rmonad_ops) %>% any){
+    rhs_freevars <- get_free_variables(expr[[2]], bound_args=bound_args)
+    bound_args <- c(bound_args, '.')
+    lhs_freevars <- get_free_variables(expr[[3]], bound_args=bound_args)
+    c(rhs_freevars, lhs_freevars)
+  }
+
   # For a call, recurse into each argument
   else if(is.call(expr)){
+
     lapply(expr[-1], get_free_variables, bound_args) %>% unlist %>% unique
   }
 
@@ -292,10 +318,7 @@ is_declaration <- function(expr){
 }
 
 is_rmonad_operator <- function(expr){
-  class(expr) == "call" &&
-    any(as.character(expr) %in%
-      c("%>>%", "%v>%", "%>_%", "%||%", "%|>%", "%*>%", "%__%", "%v__%", "%>^%", "%^>%")
-    )
+  class(expr) == "call" && any(as.character(expr) %in% rmonad_ops)
 }
 
 expression_filter <- function(expr, keep_cond=true, desc_cond=true){

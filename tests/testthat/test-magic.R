@@ -86,6 +86,10 @@ test_that("get_free_variables does", {
     ), character(0))
   expect_equal(
     get_free_variables(
+      function(x) { . %>% { . + . } }
+    ), '.')
+  expect_equal(
+    get_free_variables(
       function(x) { function(y) y }
     ), character(0))
   expect_equal(

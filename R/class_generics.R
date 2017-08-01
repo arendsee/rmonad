@@ -112,7 +112,7 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   } else if(label == "code"){
     function(m){
       if(.has_code(m)){
-        m_code(m)
+        paste0(m_code(m), collapse="\n")
       } else {
         "."
       }
