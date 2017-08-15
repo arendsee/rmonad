@@ -53,9 +53,15 @@ test_that("Test deep anonymous nesting works", {
 
 
 h_bomb <- function(x){
+  # This catches a past bug in declaration evaluation
+  # DO NOT refactor
   g <- subset(x, cyl > 4)
   g %>>% max
 }
-test_that("Nothing explodes when NSE happens in nest", {
-   expect_equal(funnel(x=mtcars) %*>% h_bomb %>% m_value, 472)
+test_that("Nothing explodes when NSE is used in nested declarations", {
+   expect_equal(
+     funnel(x=mtcars) %*>% h_bomb %>% m_value,
+     h_bomb(mtcars) %>% m_value
+  )
+  expect_true(funnel(x=mtcars) %*>% h_bomb %>% m_OK)
 })
