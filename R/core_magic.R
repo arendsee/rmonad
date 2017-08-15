@@ -146,6 +146,14 @@ get_free_variables <- function(expr, bound_args=""){
       get_free_variables(expr=get_body(expr))
   }
 
+  # If the expression is an access to a value inside a variable, the return the
+  # accessed variable. For example, the expression `x$y` contains only the one
+  # free variable, `x`, not two. Note that the expression `x[[y]]`, contains
+  # two free variables.
+  else if(is.call(expr) && (as.character(expr[[1]]) %in% c('$', '@'))){
+    as.character(expr[[2]])
+  }
+
   # For declarations, append the defined variable to bound list, then recurse
   # into the right-hand side
   else if(is_declaration(expr)) {

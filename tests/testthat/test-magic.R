@@ -113,3 +113,17 @@ test_that("Multiple free variables can be handled in declarations", {
     2
   )
 })
+
+test_that("Fields are not treated as free variables", {
+  expect_equal(
+    {
+      foo <- function(speed){
+        y <- cars$speed # y should not be a child of speed
+        speed %>>% { . * y }
+      }
+      5 %>>% foo %>% lapply(m_parents) %>% sapply(length)
+    },
+    c(0,1,1,1)
+    # If y is counted as a child of speed, this will be c(0,1,2,1)
+  )
+})
