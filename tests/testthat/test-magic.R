@@ -101,3 +101,15 @@ test_that("get_free_variables does", {
       function(x) { y = 1; y }
     ), character(0))
 })
+
+test_that("Multiple free variables can be handled in declarations", {
+  expect_equal(
+    3 %>>%
+    {
+      y <- 1 
+      bar <- . + y
+      bar %>>% sqrt # this test MUST have a monadic operator
+    } %>% esc,
+    2
+  )
+})

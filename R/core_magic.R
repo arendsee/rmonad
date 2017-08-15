@@ -106,7 +106,7 @@ get_dependency_matrix <- function(declarations, bound_vars){
   }
 
   vars <- bound_vars
-  for(i in seq_len(length(declarations))){
+  for(i in seq_along(declarations)){
 
     varname <- lhs[i]
     rfv <- rhs_free_vars[[i]]
@@ -118,9 +118,9 @@ get_dependency_matrix <- function(declarations, bound_vars){
     if(length(rfv) == 0){
       deps[varname, ] <- rep(FALSE, ncol(deps))
     } else if(length(rfv) == 1){
-      deps[varname, ] <- deps[rfv, ]
+      deps[varname, ] <- deps[rfv, , drop=FALSE]
     } else {
-      deps[varname, ] <- deps[rfv, ] %>% colSums %>% '>'(0)
+      deps[varname, ] <- deps[intersect(vars, rfv), , drop=FALSE] %>% colSums %>% '>'(0)
     }
 
   }
