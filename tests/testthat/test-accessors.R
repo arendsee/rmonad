@@ -26,3 +26,10 @@ test_that("You can't put in illegal values", {
   expect_error(m_warnings(.m) <- 34    )
   expect_error(m_notes(.m)    <- FALSE )
 })
+
+test_that("Attempting to access a non-existent value should raise an warning", {
+  expect_warning({
+    x <- 16 %>>% sqrt %>>% sqrt
+    m_value(as.list(x)[[1]])
+  })
+})

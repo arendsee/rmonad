@@ -18,17 +18,16 @@ set.seed(210)
 
  * a stateful pipeline framework
 
- * nuanced error handling
+ * pure error handling
 
  * access to the intermediate results of a pipeline
 
  * effects -- e.g. plotting, caching -- within a pipeline
 
- * access to results preceding an error
-
  * branching and chaining of pipelines
 
- * a structured approach to literate programming
+ * a flexible approach to literate programming
+
 
 
 ## Monadic pipelines
@@ -58,7 +57,7 @@ In `magrittr` you could do something similar:
 `%>%` takes the value on the left and applies it to the function on the right.
 `%>>%`, takes a monad on the left and a function on the right, then builds a
 new monad from them. This new monad holds the computed value, if the
-computation succeeded. It collates all errors, warnings, and messages.  These
+computation succeeded. It collates all errors, warnings, and messages. These
 are stored in step-by-step a history of the pipeline.
 
 `%>%` is an application operator, `%>>%` is a *monadic bind* operator. Magrittr
@@ -119,7 +118,6 @@ downstream monadic sequence (except when explicitly doing error handling).
 However it, and all other information in the monad, can be easily accessed. 
 
 
-
 ## Extracting data from an Rmonad
 
 If you want to extract the terminal result from the monad, you can use the `esc`
@@ -168,6 +166,15 @@ result <- 1:5 %v>% sqrt %v>% sqrt %v>% sqrt
 as.list(result)[[2]] %>% esc
 ```
 
+An Rmonad can be converted to a `DiagrammeR` graph (or `igraph`); in this way,
+standard tools for network analysis can be applied to pipelines. `rmonad`
+currently has built in support for plotting piplines and making markdown
+reports (experimental).
+
+```{r, eval=FALSE}
+as_dgr_graph(result)
+```
+
 ## Handling effects
 
 The `%>_%` operator is useful when you want to include a function inside a
@@ -213,6 +220,7 @@ The above code will enter a failed state if the input is either not a data
 frame or the columns are not all numeric. The braced expressions are anonymous
 functions of '.' (as in `magrittr`). The final expression `%|>%` catches an
 error and performs `head` on the last valid input (`iris`).
+
 
 
 ## Error handling
@@ -294,6 +302,7 @@ unbranch(x)
 Note the branches could be long monadic chains themselves, which might have
 their own branches. The `unbranch` function recursively extracts all branches
 from the tree.
+
 
 
 ## Chains of chains

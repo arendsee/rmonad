@@ -50,7 +50,7 @@ m_nest(m)
 
 m_nest_depth(m)
 
-m_value(m)
+m_value(m, warn = TRUE)
 
 m_id(m)
 
@@ -114,6 +114,8 @@ app_parents(m, value)
 }
 \arguments{
 \item{m}{the rmonad}
+
+\item{warn}{Warn if the accessed field does not exist (value was not cached)}
 
 \item{value}{value to replace or append current value}
 }

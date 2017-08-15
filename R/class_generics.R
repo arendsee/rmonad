@@ -28,7 +28,7 @@
   if(.has_branch(x)){
     .scat("\nHas %s branches", length(.has_branch(x)))
   }
-  if(.m_stored(x) && print_value){
+  if(.has_value(x) && print_value){
     cat("\n")
     print(m_value(x))
   }

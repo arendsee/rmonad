@@ -7,7 +7,7 @@
 
 .rm_value_if <- function(m, force_keep=FALSE){
   if(!force_keep && !.m_stored(m)){
-    m_value(m) <- NULL
+    m <- m_delete_value(m)
     .m_stored(m) <- FALSE
   } else {
     .m_stored(m) <- TRUE

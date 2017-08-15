@@ -48,7 +48,7 @@ test_that('function passing works with package labels', {
 
 test_that('input storing works', {
   expect_equal(
-    256 %v>% sqrt %>>% sqrt %v>% sqrt %>% lapply(m_value),
+    256 %v>% sqrt %>>% sqrt %v>% sqrt %>% lapply(m_value, warn=FALSE),
     list(256,NULL,4,2)
   )
 })
@@ -68,11 +68,11 @@ test_that('Alteratives (%||%) work', {
 
 test_that('branching works %>^%', {
   expect_equal(
-    16 %>^% sqrt %>^% '*'(2) %>% unbranch %>% lapply(m_value),
+    16 %>^% sqrt %>^% '*'(2) %>% unbranch %>% lapply(m_value, warn=FALSE),
     list(16,4,32)
   )
   expect_equal(
-    16 %>^% stop(1) %>^% '*'(2) %>% unbranch %>% lapply(m_value),
+    16 %>^% stop(1) %>^% '*'(2) %>% unbranch %>% lapply(m_value, warn=FALSE),
     list(16,NULL,32)
   )
 })
@@ -138,6 +138,6 @@ test_that('"%__%" and "%v__%" work', {
   expect_equal( stop("hi") %__% 1:10 %>% esc, 1:10 )
   expect_true(  stop("hi") %__% 1:10 %>% m_OK )
 
-  expect_equal( 1:5 %v__% 1:10 %>% lapply(m_value), list(1:5, 1:10) )
+  expect_equal( 1:5 %v__% 1:10 %>% lapply(m_value, warn=FALSE), list(1:5, 1:10) )
   expect_true(  1:5 %v__% 1:10 %>% m_OK )
 })

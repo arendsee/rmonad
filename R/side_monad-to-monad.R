@@ -27,7 +27,7 @@ doc <- function(m, ...){
 #' @param m An Rmonad
 #' @export
 unnest <- function(m){
-  if(is_rmonad(m) && is_rmonad(m_value(m))){
+  if(is_rmonad(m) && .has_value(m) && is_rmonad(m_value(m))){
 
     m_nest(m)  <- .set_recursion_depth(m_value(m), m_nest_depth(m)+1L)
     m_OK(m)    <- m_OK(m_nest(m))

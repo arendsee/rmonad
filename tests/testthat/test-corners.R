@@ -11,3 +11,10 @@ test_that("empty anonymouse functions", {
   expect_false(16 %>>% (function(){}) %>% m_OK)
 
 })
+
+test_that("NULL can be value", {
+  expect_equal(
+    NULL %>>% as.data.frame %>% esc,
+    as.data.frame(NULL)
+  )
+})

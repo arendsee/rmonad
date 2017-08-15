@@ -2,6 +2,7 @@
 #'
 #' @param m the rmonad
 #' @param value value to replace or append current value
+#' @param warn Warn if the accessed field does not exist (value was not cached)
 #' @name rmonad_accessors
 NULL
 
@@ -12,11 +13,6 @@ NULL
 # way to distinguish between a node holding no value and NULL. My approach is
 # to emulate the Haskell Maybe by using a list of length 0 or 1. An empty list
 # is Nothing. A list with one element, is Something.
-
-# FIXME: I'm doing this wrong. Attempting to access a value that does not exist
-# should raise an error. Setting a value to NULL emphatically should not be the
-# same as unstoring a value. There needs to be special functions for deleting a
-# value. The current code passes my tests. But is logically wrong.
 
 .is_not_empty <- function(x) length(x) > 0
 
@@ -43,7 +39,7 @@ NULL
     NULL   # Nothing
            # NOTE: this is still ambiguous
   } else {
-    x[[1]] # a
+    x$value # a
   }
 }
 
@@ -52,7 +48,7 @@ NULL
     if(!expected_type(x)){
       stop("Type error")
     }
-    list(x) # Just a
+    list(value=x) # Just a
   } else {
     list()  # Nothing
   }
@@ -91,7 +87,7 @@ is_rmonad <- function(m) {
 .has_meta     <- function(m) length(m_meta(m))     != 0
 .has_time     <- function(m) .is_not_empty_real(m_time(m))
 .has_mem      <- function(m) .is_not_empty_integer(m_mem(m))
-.has_value    <- function(m) .m_stored(m) || !is.null(m_value(m))
+.has_value    <- function(m) length(m@x) == 1
 
 
 # internal utility for generating error messages when accessing a non-Rmonad
@@ -125,8 +121,11 @@ m_nest_depth <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_value <- function(m) {
+m_value <- function(m, warn=TRUE){
   .m_check(m)
+  if(warn && length(m@x) == 0){
+    warning("Attempting to access the value of a non-cached node, returning NULL")
+  }
   .maybe_vector_get(m@x)
 }
 
@@ -238,7 +237,7 @@ m_branch   <- function(m) {
 #' @export
 `m_value<-` <- function(m, value) {
   .m_check(m)
-  m@x <- .maybe_vector_set(value, .is_not_empty)
+  m@x <- list(value=value)
   m
 }
 

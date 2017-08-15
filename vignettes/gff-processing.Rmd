@@ -502,8 +502,7 @@ Now we see why we might want a little more granularity in our pipeline. To
 summarize the results we can use the `mtabulate` functions.
 
 ```{r}
-# remove the first column, which contains the code blocks as strings
-mtabulate(result)[-1]
+mtabulate(result)
 ```
 
 We can also get a summary of issues
@@ -517,16 +516,19 @@ The `id` column corresponds to a row number in the `mtabulate` result.
 To extract particular values, we can use the `m_*` family of getters
 
 ```{r, eval=FALSE}
-# get a list of every stored value
-lapply(as.list(result), m_value)
+# get a list of every stored value, report uncached values as NULL
+lapply(as.list(result), m_value, warn=FALSE)
 # get a list of every docstring
 lapply(as.list(result), m_doc)
 ```
 
+<!--
+Unfortunately, knitr imports 5Mb of junk when I build this plot directly, so
+instead I am importing a static image. There should be a way to avoid this
+--!>
 ```{r gff-workflow-plot, eval=FALSE}
 plot(result)
 ```
-
 ![plot of chunk gff-workflow-plot](gff-workflow-plot-1.png)
 
 A plot of the connections between functions in the pipeline. The node labels

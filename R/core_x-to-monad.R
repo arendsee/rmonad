@@ -90,10 +90,6 @@ as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE){
   if(lossy && length(value) == 1 && is_rmonad(value))
     return(value)
 
-  if(!isOK) {
-    value = NULL
-  }
-
   code <- if(is.null(desc)) {
     deparse(substitute(expr))
   } else {
@@ -102,8 +98,10 @@ as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE){
 
   m <- new_monad()
 
+  # The default value is Nothing
+  if(isOK) m_value(m) <- value
+
   # These accessors do the right thing (don't mess with them)
-  m_value(m)    <- value
   m_code(m)     <- code
   m_error(m)    <- fails
   m_warnings(m) <- warns
@@ -187,7 +185,7 @@ combine <- function(xs, keep_history=TRUE, desc=NULL){
   m_parents(out) <- xs
 
   # store all values (even if failing, in which case should be NULL)
-  m_value(out) <- lapply(xs, m_value)
+  m_value(out) <- lapply(xs, m_value, warn=FALSE)
 
   # monad is passing if all parents are cool
     m_OK(out) <- all(sapply(xs, m_OK))

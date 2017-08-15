@@ -16,12 +16,12 @@ mtabulate <- function(m, recurse_nests=TRUE, code=FALSE){
   d
 }
 .mtabulate <- function(m){
-  v <- m_value(m)
+  v <- m_value(m, warn=FALSE)
   list(
     code      = paste(m_code(m), collapse="\n"),
     id        = m_id(m),
     OK        = m_OK(m),
-    cached    = (!is_rmonad(v) && !is.null(v)) || .m_stored(m),
+    cached    = .has_value(m) && !is_rmonad(v),
     time      = signif(m_time(m)[1], 2),
     space     = m_mem(m),
     is_nested = .has_nest(m),

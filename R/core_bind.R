@@ -28,13 +28,12 @@ bind <- function(
   emit                = emit_default,
   m_on_bind           = function(x, ...){x},
   io_combine          = default_combine,
-  bind_args           = function(m) list(m_value(m)),
+  bind_args           = function(m) list(m_value(m, warn=FALSE)),
   bind_monad          = function(m) list(m),
   expect_rhs_function = TRUE,
   envir               = parent.frame()
 ){
   # FIXME: cleanup this implementation
-  # FIXME: !!!!!!!
 
   fdecon <- extract_metadata(substitute(f), env=envir, skip_name=!expect_rhs_function)
   rhs_str <- deparse(fdecon$expr)
@@ -130,7 +129,7 @@ bind <- function(
   }
 
   result <- emit(m, o)
-  m_mem(result) <- as.integer(object.size(m_value(result)))
+  m_mem(result) <- as.integer(object.size(m_value(result, warn=FALSE)))
   result
 }
 
@@ -192,7 +191,7 @@ default_combine <- function(m, o, f, margs){
   if(!m_OK(o)){
     # On failure, propagate the final passing value, this allows
     # for either degugging or passage to alternative handlers.
-    m_value(o) <- m_value(m)
+    m_value(o) <- m_value(m, warn=FALSE)
   }
 
   if(.has_nest(o)){

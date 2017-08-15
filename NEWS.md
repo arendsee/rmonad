@@ -25,6 +25,10 @@
 
  * Allow `%*>%` to take monad bound lists
 
+ * `NULL` can now be stored as a value and is distinguishable from Nothing
+   (i.e. an uncached value). `m_value` will raise a warning when accessing an
+   uncached value. The warning can be turned off.
+
 ## Minor
 
  * Update README
