@@ -36,7 +36,7 @@ NULL
 
   # FIXME: This is really sneaky. I am ignoring x and y and replacing them with
   # variables defined in this foreign environment. Not good practice.
-  if(lhs_expr[[1]] == "list"){
+  if(is.call(lhs_expr) && lhs_expr[[1]] == "list"){
     ninja_desc <- deparse(lhs_expr)
     lhs_expr <- lhs_expr[-1]
     on_entry <- function(x, f, ...) {

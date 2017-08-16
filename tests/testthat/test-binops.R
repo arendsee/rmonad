@@ -118,6 +118,17 @@ test_that('%*>% preserves keyword arguments', {
   expect_equal(funnel(y=1,z=2) %*>% { y + z } %>% esc, 3)
   expect_true(funnel(y=1,z=2) %*>% { y + z } %>% m_OK)
 })
+test_that('%*>% evaluates lists in variables', {
+  # Tests for mishandling of NSE
+  expect_equal(
+    {
+      args <- list(pattern="df", replacement="aa", x="asdf")
+      args %*>% sub %>% esc
+    },
+    "asaa"
+  )
+  expect_equal( 1:6 %>>% { list(a=min(.), b=max(.)) } %*>% sum %>% esc, 7 )
+})
 
 test_that('anonymous expressions can be run', {
   expect_equal( 1:10 %>>% { 4 } %>% esc  , 4 )
