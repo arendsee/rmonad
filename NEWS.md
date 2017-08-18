@@ -9,11 +9,9 @@
  * Allow nesting of Rmonads, `as_monad` no longer automatically unnests them,
    there is an explicit function for this, `unnest`.
 
- * `as_monad` now records time and space (previously were left as NA)
-
 ## New features
 
- * Generation of Markdown reports from pipelines with `mreport`
+ * Generation of rudimentary Markdown reports from pipelines with `mreport`
 
  * Convert pipeline to DiagrammeR graph with `as_dgr_graph`.
 
@@ -21,7 +19,9 @@
 
  * Support for multivariate anonymous functions
 
-# Fixes
+ * `as_monad` now records time and space (previously were left as NA)
+
+## Fixes
 
  * Allow `%*>%` to take monad bound lists
 

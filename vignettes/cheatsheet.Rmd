@@ -8,8 +8,6 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-**This vignette is incomplete**
-
 ## Operators
 
  op      | lhs | rhs      | store | passes    | runif        | pass error

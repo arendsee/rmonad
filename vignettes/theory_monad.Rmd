@@ -8,9 +8,6 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-**this vignette is incomplete**
-
-
 This vignette consists of four parts. First I will illuminate the cryptomonad
 hidden in the R runtime. Second, I will describe how Rmonad can serve as a
 replacement. Third, I will contrast the monadic pipelines of Rmonad with the
@@ -25,7 +22,8 @@ sections.
 ## The R cryptomonad
 
 What does `sqrt` do? You may answer, "return the square root of an input". But
-this is not quite right. The function `sqrt` maps to a set of possible values.
+this is not quite right. The function `sqrt` maps an input to a set of possible
+values.
 
  * when x is numeric and $x > 0$ : $\sqrt{x}$ 
  * when x is numeric and $x \le 0$ : `NA` and a warning effect
@@ -40,10 +38,10 @@ a -> m b
 ```
 
 Where `a` is the pure input value, `b` is the pure output value, and `m`
-represents the context. The `sqrt` function can be described as `number* -> m
-number`. Where `number*` represents a value that *should* be a number, but,
-since R is dynamic, may be anything. `m numeric` represents a context that
-holds 1) either a number or an error and 2) any other effects that arise.
+represents the output context. The `sqrt` function can be described as `number*
+-> m number`. Where `number*` represents an input value that *should* be a
+number, but, since R is dynamic, may be anything. `m numeric` represents a
+context that holds either a number or some effect.
 
 When we build a pipeline, we chain many functions together. Say, for example,
 we have the expression:
@@ -61,10 +59,9 @@ sum  :: numeric* -> m numeric
 
 `numeric*` represents something that should be numeric. Again, since R is
 dynamically typed, we have no guaranttees that the input actually is numeric.
-The important thing to note is that each function takes a pure value and maps
-to a value wrapped in a context. `sum(x)` outputs `m numeric*`, but `sqrt`
-wants a `numeric*`. We need a function to mediate this. A function with the
-form:
+Each function takes a pure value and maps to a value wrapped in a context.
+`sum(x)` outputs `m numeric*`, but `sqrt` wants a `numeric*`. We need a
+function to mediate this. A function with the form:
 
 ```
 bind :: (m numeric*) -> (numeric* -> m numeric*) -> (m numeric) 
@@ -83,7 +80,7 @@ Where `a` and `b` are data types. `m1`, `m2` and `m3` are contexts. Every bind
 operation takes 1) a value in a context (`m1 a`) and 2) a function that maps
 that value to `m2 b`. The prior state `m1`, as well as the intermediate state
 `m2`, are in the scope of the `bind` function. This allows contextual
-information to propagate from the `m1` to `m2`.
+information to propagate from the `m1` to `m3`.
 
 A monad is a pattern consisting of a context `m`, two functions, and three
 laws. The functions are `bind` and `return` (not to be confused with the
@@ -101,7 +98,7 @@ Haskell's `>>=`).
 ## Rmonad
 
 The goal of Rmonad is to ditch the existing impure R cryptomonad and replace it
-with a clean formal monad.
+with a clean explicit monad.
 
 ```
 x %>>% sum %>>% sqrt
@@ -130,10 +127,24 @@ In Rmonad, the `m` is an object, that catches all undefined behavior.
 
 ## Rmonad versus magrittr
 
-contrast with magrittr (the identity monad)
+To understand the monadic nature of `rmonad` it is useful to compare it to
+`magrittr`. In `magrittr`, the expression `x %>% foo %>% bar` is the same as
+`bar(foo(x))`. From a monadic point of view, `x` is first implicitly raised
+into an 'Identity' monad (which is quite formless here) `m1 x`. Then
 
+```
+bind :: m1 x -> (x -> m2 y) -> m3 y
+```
 
-## Rmonad for Haskellers
+The `bind` function above executes `foo` on `x`, yielding `m2 y`. It then
+reduces this to `m3 y` in the presence of `m1`. But `magrittr` passes no
+information from `m1` to `m3`. The pipeline is context indepent. 
+
+In `rmonad`, the pipeline `x %>>% foo %>>% bar` will pass a record of past
+events at each bind operation, thus incrementally building a graph of the
+pipeline.
+
+## Rmonad for Haskellers 
 
 Only a few R expressions are pure. If a function is given an invalid input at
 runtime (e.g. `sqrt("wtf")`), it will die with a message printed to stderr.
@@ -157,16 +168,17 @@ as_monad = a -> m b
 
 Where `a` can be one of three types
 
- 1. an unevaluated R expression - `as_monad` evaluates the expression.
-    `as_monad` is used inside the `bind` function in this capacity.
+ 1. an unevaluated R expression - `as_monad` evaluates the expression,
+    capturing any exceptions, warnings or messages. `as_monad` is used inside
+    the `bind` function in this capacity.
 
  2. a pure R value - acts as `return`
 
- 3. a monad - returns the monad unchanged
 
+The `%>>%` operator is like the Haskell `>>=` operator, but with some of the
+sloppiness expected of a dynamic language:
 
 ```
-%__% == >>
 %>>% :: m a -> (a -> m b) -> m b
       | a -> (a -> m b) -> m b
       | (a -> r b) -> (a -> m b) -> m b
