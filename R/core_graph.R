@@ -1,9 +1,9 @@
 # These are internal functions, for connecting parents to children
 
 .m_stored <- function(m) {
-  m@.stored
+  m$get_stored()
 }
-`.m_stored<-` <- function(m, value) { m@.stored <- value ; m }
+`.m_stored<-` <- function(m, value) { m$set_stored(value) ; m }
 
 .rm_value_if <- function(m, force_keep=FALSE){
   if(!force_keep && !.m_stored(m)){

@@ -96,7 +96,7 @@ as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE){
     desc
   }
 
-  m <- new_monad()
+  m <- Rmonad$new()
 
   # The default value is Nothing
   if(isOK) m_value(m) <- value
@@ -181,7 +181,7 @@ combine <- function(xs, keep_history=TRUE, desc=NULL){
   }
 
   # make a new monad that is the child of all monads in the input list
-  out <- new_monad()
+  out <- Rmonad$new()
   m_parents(out) <- xs
 
   # store all values (even if failing, in which case should be NULL)

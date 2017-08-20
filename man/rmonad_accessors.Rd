@@ -2,7 +2,6 @@
 % Please edit documentation in R/class_accessors.R
 \name{rmonad_accessors}
 \alias{rmonad_accessors}
-\alias{m_delete_value}
 \alias{is_rmonad}
 \alias{m_parents}
 \alias{m_nest}
@@ -19,7 +18,6 @@
 \alias{m_time}
 \alias{m_mem}
 \alias{m_branch}
-\alias{m_id<-}
 \alias{m_OK<-}
 \alias{m_value<-}
 \alias{m_parents<-}
@@ -40,8 +38,6 @@
 \alias{app_parents}
 \title{get, set, and append rmonad fields}
 \usage{
-m_delete_value(m)
-
 is_rmonad(m)
 
 m_parents(m)
@@ -73,8 +69,6 @@ m_time(m)
 m_mem(m)
 
 m_branch(m)
-
-m_id(m) <- value
 
 m_OK(m) <- value
 

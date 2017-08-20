@@ -21,10 +21,10 @@ mtabulate <- function(m, recurse_nests=TRUE, code=FALSE){
     code      = paste(m_code(m), collapse="\n"),
     id        = m_id(m),
     OK        = m_OK(m),
-    cached    = .has_value(m) && !is_rmonad(v),
+    cached    = has_value(m) && !is_rmonad(v),
     time      = signif(m_time(m)[1], 2),
     space     = m_mem(m),
-    is_nested = .has_nest(m),
+    is_nested = has_nest(m),
     nbranch   = length(m_branch(m)),
     nnotes    = length(m_notes(m)),
     nwarnings = length(m_warnings(m)),
@@ -87,15 +87,15 @@ mreport <- function(m, section_prefix=""){
       rep <- paste0(sprintf(
         template,
         label,
-        .make_message(m_doc(x), .has_doc(x), "  "),
+        .make_message(m_doc(x), x$has_doc(), "  "),
         paste(m_code(x), collapse="\n"),
-        m_OK(x), length(m_parents(x)), length(m_branch(x)), .has_value(x),
-        .make_message(m_error(x), .has_error(x), "Error"),
-        .make_message(m_warnings(x), .has_warnings(x), "Warning"),
-        .make_message(m_notes(x), .has_notes(x), "Note"),
+        m_OK(x), length(m_parents(x)), length(m_branch(x)), has_value(x),
+        .make_message(m_error(x), has_error(x), "Error"),
+        .make_message(m_warnings(x), has_warnings(x), "Warning"),
+        .make_message(m_notes(x), has_notes(x), "Note"),
         .write_result(x)
       ))
-      if(.has_nest(x)){
+      if(has_nest(x)){
         section_prefix <- label
         rep <- paste0(rep, mreport(m_nest(x), section_prefix=section_prefix), collapse="\n")
       }
@@ -111,7 +111,7 @@ mreport <- function(m, section_prefix=""){
   }
 }
 .write_result <- function(x){
-  if(.has_value(x)){
+  if(has_value(x)){
     sprintf("```\n%s\n```\n", paste0("R> ", capture.output(print(m_value(x))), collapse="\n"))
   } else {
     ""
@@ -179,13 +179,13 @@ as_dgr_graph <- function(m, type=NULL, label=NULL, color=NULL, ...){
     rel     = "depend"
   )
   edges_df_nest <- DiagrammeR::create_edge_df(
-    from  = sapply(ms, function(x) if(.has_nest(x)) m_id(m_nest(x)) else NA ),
+    from  = sapply(ms, function(x) if(has_nest(x)) m_id(m_nest(x)) else NA ),
     to    = sapply(ms, m_id),
     f_depth = lapply(ms, function(x) sapply(m_parents(x), m_nest_depth)) %>% unlist,
     t_depth = lapply(ms, function(x) rep.int(m_nest_depth(x), length(m_parents(x)))) %>% unlist,
     rel   = "nest"
   )
-  edges_df_nest <- edges_df_nest[sapply(ms, .has_nest), ]
+  edges_df_nest <- edges_df_nest[sapply(ms, has_nest), ]
 
   edges_df <- rbind(edges_df_pc, edges_df_nest)
 
@@ -285,7 +285,7 @@ esc <- function(m, quiet=FALSE){
 unbranch <- function(m){
 
   as.list(m)               %>%
-    Filter(f=.has_branch)  %>%
+    Filter(f=has_branch)  %>%
     lapply(m_branch)       %>%
     lapply(rev)            %>%
     unlist                 %>%

@@ -47,10 +47,10 @@ bind <- function(
 
   m <- entry_lhs_transform(x, f, desc=lhs_str)
 
-  if(!.has_doc(m)){
+  if(!has_doc(m)){
     m_doc(m) <- lhs_doc
   }
-  if(!.has_meta(m)){
+  if(!has_meta(m)){
     m_meta(m) <- lhs_met
   }
 
@@ -183,7 +183,7 @@ emit_default <- function(input, output) {
 ## io_combine options
 
 branch_combine <- function(m, o, f, margs){
-  if(.has_nest(o)){
+  if(has_nest(o)){
     m_nest(o) <- splice_function(f=f, m=m_nest(o), ms=margs)
   }
 
@@ -202,7 +202,7 @@ default_combine <- function(m, o, f, margs){
     m_value(o) <- m_value(m, warn=FALSE)
   }
 
-  if(.has_nest(o)){
+  if(has_nest(o)){
     m_nest(o) <- splice_function(f=f, m=m_nest(o), ms=margs)
   }
 

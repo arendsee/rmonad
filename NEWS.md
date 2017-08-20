@@ -23,6 +23,8 @@
 
  * `as_monad` now records time and space (previously were left as NA)
 
+ * Rmonad class refactored as an R6 class
+
 ## Fixes
 
  * Allow `%*>%` to take monad bound lists

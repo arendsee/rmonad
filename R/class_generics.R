@@ -2,33 +2,33 @@
 
 .print_record <- function(x, verbose=FALSE, print_value=TRUE, ...) {
 
-  if(.has_doc(x)){
+  if(has_doc(x)){
     .scat("\n\n    %s\n\n", m_doc(x))
   }
   .scat('R> "%s"', paste(m_code(x), collapse="\n"))
 
-  if(verbose && (.has_time(x) || .has_mem(x))){
+  if(verbose && (has_time(x) || has_mem(x))){
     cat("\n  ")
-    if(.has_mem(x))  { .scat(" size: %s", m_mem(x))  }
-    if(.has_time(x)) { .scat(" time: %s", m_time(x)) }
+    if(has_mem(x))  { .scat(" size: %s", m_mem(x))  }
+    if(has_time(x)) { .scat(" time: %s", m_time(x)) }
   }
-  if(.has_error(x)){
+  if(has_error(x)){
     .scat("\n * ERROR: %s", m_error(x))
   }
-  if(.has_warnings(x)){
+  if(has_warnings(x)){
     .scat("\n * WARNING: %s",
       paste(m_warnings(x), collapse="\n * WARNING: ")
     )
   }
-  if(.has_notes(x)){
+  if(has_notes(x)){
     .scat("\n * NOTE: %s",
       paste(m_notes(x), collapse="\n * NOTE: ")
     )
   }
-  if(.has_branch(x)){
-    .scat("\nHas %s branches", length(.has_branch(x)))
+  if(has_branch(x)){
+    .scat("\nHas %s branches", length(has_branch(x)))
   }
-  if(.has_value(x) && print_value){
+  if(has_value(x) && print_value){
     cat("\n")
     print(m_value(x))
   }
@@ -62,9 +62,6 @@ print.Rmonad <- function(x, verbose=FALSE, print_value=TRUE, ...){
     cat(" *** FAILURE *** \n")
   }
 }
-setMethod("show", "Rmonad",
-  function(object) print(object)
-)
 
 #' Convert an rmonad object to a list of monads
 #'
@@ -80,7 +77,7 @@ as.list.Rmonad <- function(x, recurse_nests=TRUE, ...){
   for(p in m_parents(x)){
     ms <- as.list(p, recurse_nests) %++% ms
   }
-  if(recurse_nests && .has_nest(x)){
+  if(recurse_nests && has_nest(x)){
     ms <- as.list(m_nest(x), recurse_nests) %++% ms
   }
   unique(ms)
@@ -111,7 +108,7 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
     m_id
   } else if(label == "code"){
     function(m){
-      if(.has_code(m)){
+      if(has_code(m)){
         paste0(m_code(m), collapse="\n")
       } else {
         "."
@@ -125,7 +122,7 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
     m_nest_depth
   } else if (label == "value") {
     function(m) {
-      if(.has_value(m)){
+      if(has_value(m)){
         m_value(m)
       } else {
         "-"
@@ -140,9 +137,9 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
     color
   } else if(color == 'status'){
     function(x) {
-      if(.has_error(x)){
+      if(has_error(x)){
         'red'
-      } else if(.has_warnings(x)){
+      } else if(has_warnings(x)){
         'orange'
       } else {
         'lightgreen'
