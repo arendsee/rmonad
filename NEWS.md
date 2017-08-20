@@ -9,7 +9,7 @@
  * Allow nesting of Rmonads, `as_monad` no longer automatically unnests them,
    there is an explicit function for this, `unnest`.
 
- * Remove the `doc` function. Instead use doc strings.
+ * Deprecate the `doc` function. Instead use doc strings.
 
 ## New features
 
