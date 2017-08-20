@@ -8,7 +8,59 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-## Operators
+Here are the currently supported operators:
+
+ * `%>>%` - pass value on the left as the initial argument to the rhs function
+ * `%v>%` - like `%>>%` but stores LHS value
+ * `%>_%` - like `%>>%` but passes LHS instead of RHS -- propagates RHS failure
+ * `%>^%` - like `%>_%` but does not propagate RHS failure
+ * `%||%` - use RHS value if LHS is failing
+ * `%|>%` - call RHS on LHS if LHS failed
+ * `%*>%` - treat lhs as list of arguments passed to the rhs function
+ * `%__%` - ignore LHS, RHS starts a new chain (but preserves LHS history)
+ * `%v__%` - like `%__%` but stores LHS value
+
+The design space can be enumerated with following states:
+
+ 1. LHS class
+    0. a value
+    1. a list of values
+
+ 2. RHS class
+    0. function of LHS
+    1. a value independent of the LHS
+
+ 3. Value is stored
+    0. no
+    1. yes
+
+ 4. What is passed
+    0. the output of the RHS
+    1. the output of the LHS
+    2. the value of the RHS if the LHS failed
+
+ 5. Operations passes if
+    0. LHS and RHS both pass
+    1. LHS or RHS pass
+    2. LHS passes
+    3. RHS passes
+
+Given these states, the current operators can be represented as
+
+ * `%>>%`  - 00000
+ * `%*>%`  - 10000
+ * `%v>%`  - 00100
+ * `%>_%`  - 00010
+ * `%>^%`  - 00012
+ * `%__%`  - 01003
+ * `%v__%` - 01103
+ * `%||%`  - 01021 
+ * `%|>%`  - 00021
+
+There are a lot of potentially useful combinations that are not used. And there
+are likely other operator types not in this space that would be useful.
+
+Below is reformating of hte same information:
 
  op      | lhs | rhs      | store | passes    | runif        | pass error
  ------- | --- | -------- | ----- | --------- | -----------  | ----------
