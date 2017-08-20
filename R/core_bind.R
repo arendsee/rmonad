@@ -183,8 +183,16 @@ emit_default <- function(input, output) {
 ## io_combine options
 
 branch_combine <- function(m, o, f, margs){
-  m <- app_branch(m, o)
+  if(.has_nest(o)){
+    m_nest(o) <- splice_function(f=f, m=m_nest(o), ms=margs)
+  }
+
+  o <- .m_inherit(child=o, parents=m)
+
+  m <- app_branch(m=m, value=o)
+
   m
+
 }
 
 default_combine <- function(m, o, f, margs){

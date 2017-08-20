@@ -66,27 +66,49 @@ test_that('Alteratives (%||%) work', {
   expect_true(1 %||% 5 %>>% sqrt %>% m_OK)
 })
 
-test_that('branching works %>^%', {
+test_that('simple branching works', {
   expect_equal(
-    16 %>^% sqrt %>^% '*'(2) %>% unbranch %>% lapply(m_value, warn=FALSE),
-    list(16,4,32)
+    16 %>^% magrittr::add(1) %>>% magrittr::add(2) %>% unbranch %>% sapply(m_value),
+    c(18, 17)
   )
   expect_equal(
-    16 %>^% stop(1) %>^% '*'(2) %>% unbranch %>% lapply(m_value, warn=FALSE),
-    list(16,NULL,32)
+    16 %>^% magrittr::add(1) %>>% magrittr::add(2) %>% unbranch %>% sapply(m_OK),
+    c(TRUE, TRUE)
   )
+
+  # expect_true({
+  #   parent_ids <- 16 %>^% add(1) %>>% add(2) %>% as.list %>%
+  #     lapply(function(x) sapply(m_parents(x), m_id))
+  #   # The first element is the source node, with value 16
+  #   length(parent_ids[[1]]) == 0 &&
+  #   # The two other nodes are its direct children
+  #   parent_ids[[2]] == parent_ids[[3]] &&
+  #   # There should be exactly 3 nodes in the network
+  #   length(parent_ids) == 3
+  # })
 })
 
-foo <- function(x,y) { x - y }
-test_that('branching function work %^>%', {
-  expect_equal(
-    1:10 %>^% '*'(3) %>^% '*'(2) %^>% foo %>% esc,
-    -1 * 1:10
-  )
-  expect_true(
-    1:10 %>^% '*'(3) %>^% '*'(2) %^>% foo %>% m_OK,
-  )
-})
+# test_that('branching works %>^%', {
+#   expect_equal(
+#     16 %>^% sqrt %>^% '*'(2) %>% unbranch %>% lapply(m_value, warn=FALSE),
+#     list(16,4,32)
+#   )
+#   expect_equal(
+#     16 %>^% stop(1) %>^% '*'(2) %>% unbranch %>% lapply(m_value, warn=FALSE),
+#     list(16,NULL,32)
+#   )
+# })
+#
+# foo <- function(x,y) { x - y }
+# test_that('branching function work %^>%', {
+#   expect_equal(
+#     1:10 %>^% '*'(3) %>^% '*'(2) %^>% foo %>% esc,
+#     -1 * 1:10
+#   )
+#   expect_true(
+#     1:10 %>^% '*'(3) %>^% '*'(2) %^>% foo %>% m_OK,
+#   )
+# })
 
 test_that('output toss works %>_%', {
   expect_equal(1 %>_% '*'(3) %>>% '*'(2) %>% lapply(m_code), list("1", "*3", "*2"))
