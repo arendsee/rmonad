@@ -4,7 +4,7 @@
 \alias{relink_node}
 \title{The recursive function for adding dependencies}
 \usage{
-relink_node(m, bv, deps)
+relink_node(m, bv, deps, depth)
 }
 \arguments{
 \item{m}{The current monadic node}

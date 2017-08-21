@@ -95,7 +95,7 @@ specialized and convoluted.
 
 ## Examples
 
-```{r}
+```{r, eval=FALSE}
 library(rmonad)
 
 letters[1:5] %>>% paste(collapse="")
@@ -111,7 +111,7 @@ rnorm(1) %>^%
 
       . %>_%
         { stopifnot(. > 0 & . < 1) } %>>%
-        { rbinom(n=10, size=5, prob=.) } 
+        { rbinom(n=10, size=5, prob=.) }
   } %>>%
   {
 

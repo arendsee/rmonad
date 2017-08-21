@@ -28,7 +28,7 @@ test_that("Nesting works for deeply nested functions", {
    expect_equal(20 %>>% bar %>% esc, 35)
    expect_true(20 %>>% bar %>% m_OK)
    expect_equal(
-     20 %>>% bar %>% sapply(m_nest_depth),
+     20 %>>% bar %>% recursive_set_nest_depth %>% sapply(m_nest_depth),
      c(2,3,3,3,1,2,1)
    )
    expect_equal(

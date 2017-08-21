@@ -39,7 +39,7 @@ splice_function <- function(f, m, ms){
 #' @param bv A named list of bound variables
 #' @param deps A mapping local variables to bound variable dependencies
 #' @keywords internal
-relink_node <- function(m, bv, deps){
+relink_node <- function(m, bv, deps, depth){
 
   m_parents(m) <- lapply(m_parents(m), relink_node, bv, deps)
 

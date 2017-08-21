@@ -34,7 +34,7 @@ doc <- function(m, ...){
 unnest <- function(m){
   if(is_rmonad(m) && has_value(m) && is_rmonad(m_value(m))){
 
-    m_nest(m)  <- .set_recursion_depth(m_value(m), m_nest_depth(m)+1L)
+    m_nest(m)  <- m_value(m)
     m_OK(m)    <- m_OK(m_nest(m))
     # move the value from the nest to the outer position
     m_value(m) <- m_value(m_nest(m))
@@ -43,13 +43,24 @@ unnest <- function(m){
   m
 }
 
-.set_recursion_depth <- function(m, i){
-  m_parents(m) <- lapply(m_parents(m), .set_recursion_depth, i) 
-  if(m_nest_depth(m) == i - 1){
-    m_nest_depth(m) <- i
+# FIXME: This is a bit of a hack. I have had some trouble getting the recursion
+# depth set correctly at runtime, but it is fairly easy (see below) to set it
+# after the run is complete. But this is not a good solution, since it leaves
+# the monad in an incomplete state.
+recursive_set_nest_depth <- function(m, i=1L){
+
+  ms <- as.list(m, recurse_nests=FALSE)
+
+  for(x in ms){
+    if(is.na(m_nest_depth(x)))
+      x$set_nest_depth(i)
   }
-  if(has_nest(m)){
-    m_nest(m) <- .set_recursion_depth(m_nest(m), i+1L)
+
+  for(x in ms){
+    if(has_nest(x))
+      recursive_set_nest_depth(m_nest(x), i+1L)
   }
+
   m
+
 }

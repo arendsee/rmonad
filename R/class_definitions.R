@@ -1,5 +1,11 @@
-# FIXME: don't use naughty global variables
-.rmonad_node_id=1L
+reset_rmonad_id <- function(){
+  .rmonad_node_id=0L
+  function(){
+    .rmonad_node_id <<- .rmonad_node_id + 1 
+    .rmonad_node_id
+  }
+}
+.generate_node_id <- reset_rmonad_id()
 
 #' The eponymous monad type
 #'
@@ -29,7 +35,7 @@ Rmonad <- R6::R6Class(
     branch     = list(), # TODO: recast as 'children', no special firstborn treatment
     parents    = list(),
     nest       = list(),
-    nest_depth = 1L,
+    nest_depth = NA_integer_,
     initialize = function(){
       private$set_id()
     },
@@ -126,12 +132,10 @@ Rmonad <- R6::R6Class(
     id = NA_integer_,
     stored = FALSE, # is an x stored here
     set_id = function(){
-      stopifnot(is.integer(.rmonad_node_id))
       if(!is.na(private$id)){
         warning("Changing the id of a node is usually a very bad idea")
       }
-      private$id <- .rmonad_node_id
-      .rmonad_node_id <<- private$id + 1L
+      private$id <- .generate_node_id()
     },
 
 # === A note about Maybe ======================================================
