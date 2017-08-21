@@ -21,6 +21,17 @@ test_that('simple branching works', {
   })
 })
 
+test_that('branching works %>^%', {
+  expect_equal(
+    16 %>^% sqrt %>^% '*'(2) %>% unbranch %>% lapply(esc, warn=FALSE),
+    list(16,4,32)
+  )
+  expect_equal(
+    16 %>^% stop(1) %>^% '*'(2) %>% unbranch %>% lapply(esc, warn=FALSE),
+    list(16,NULL,32)
+  )
+})
+
 test_that('Reference sematics do not mess up externally defined rmonads', {
   expect_equal(
     {
@@ -31,26 +42,3 @@ test_that('Reference sematics do not mess up externally defined rmonads', {
     8
   )
 })
-
-# test_that('branching works %>^%', {
-#   expect_equal(
-#     16 %>^% sqrt %>^% '*'(2) %>% unbranch %>% lapply(m_value, warn=FALSE),
-#     list(16,4,32)
-#   )
-#   expect_equal(
-#     16 %>^% stop(1) %>^% '*'(2) %>% unbranch %>% lapply(m_value, warn=FALSE),
-#     list(16,NULL,32)
-#   )
-# })
-#
-# foo <- function(x,y) { x - y }
-# test_that('branching function work %^>%', {
-#   expect_equal(
-#     1:10 %>^% '*'(3) %>^% '*'(2) %^>% foo %>% esc,
-#     -1 * 1:10
-#   )
-#   expect_true(
-#     1:10 %>^% '*'(3) %>^% '*'(2) %^>% foo %>% m_OK,
-#   )
-# })
-
