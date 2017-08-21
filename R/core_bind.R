@@ -165,7 +165,7 @@ store_value <- function(m) { .m_stored(m) <- TRUE ; m }
 entry_lhs_transform_default <- function(m, f, ...) {
   # FIXME: This is a sneaky way of safely evaluating the lhs without nesting
   # the nads. I need a cleaner solution.
-  as_monad(m, lossy=TRUE, ...)
+  as_monad(m, lossy=TRUE, clone=TRUE, ...)
 }
 
 emit_default <- function(input, output) {

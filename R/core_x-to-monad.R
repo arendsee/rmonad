@@ -49,7 +49,7 @@ NULL
 
 #' @rdname x_to_monad
 #' @export
-as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE){
+as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE, clone=FALSE){
 # as_monad :: a -> m a
 
   value <- NULL 
@@ -87,8 +87,12 @@ as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE){
     gcFirst=FALSE # this kills performance when TRUE
   )
 
-  if(lossy && is_rmonad(value))
+  if(lossy && is_rmonad(value)){
+    if(clone){
+      value <- value$clone()
+    }
     return(value)
+  }
 
   code <- if(is.null(desc)) {
     deparse(substitute(expr))
