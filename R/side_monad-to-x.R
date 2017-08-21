@@ -290,7 +290,7 @@ esc <- function(m, quiet=FALSE){
 unbranch <- function(m){
 
   as.list(m)               %>%
-    Filter(f=has_branch)  %>%
+    Filter(f=has_branch)   %>%
     lapply(m_branch)       %>%
     lapply(rev)            %>%
     unlist                 %>%

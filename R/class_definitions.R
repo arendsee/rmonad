@@ -105,7 +105,7 @@ Rmonad <- R6::R6Class(
         self$notes <- x %++% self$notes
       }
     },
-    app_branch  = function(x) self$branch <- x %++% self$branch,
+    app_branch  = function(x) self$branch  <- x %++% self$branch,
     app_parents = function(x) self$parents <- x %++% self$parents,
 
     has_code     = function() private$is_not_empty_string(self$code)  ,

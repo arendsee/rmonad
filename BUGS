@@ -1,7 +1,0 @@
- - unbranch doubles the last entry
-   `234 %>^% sqrt %>^% sum %>% unbranch`
- - Branching with `%>^%` unbranches in the wrong order
-   NULL %>^% {"a"} %>^% {"b"} %^>% paste
-   NULL %>^% {"a"} %>^% {"b"} %>^% {"c"} %^>% paste
-   NULL %>^% {"a"} %>^% {"b"} %>^% {"c"} %>^% {"d"} %^>% paste
- - Parents don't link to children, so branches are lost in as.list

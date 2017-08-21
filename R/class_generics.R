@@ -70,12 +70,14 @@ print.Rmonad <- function(x, verbose=FALSE, print_value=TRUE, ...){
 #' @param ... Additional arguments (unused)
 #' @export
 as.list.Rmonad <- function(x, recurse_nests=TRUE, ...){
-  ms <- list(x)
+  ms <- list()
   for(b in m_branch(x)){
     ms <- as.list(b, recurse_nests) %++% ms
   }
+  ms <- append(list(x), ms)
   for(p in m_parents(x)){
-    ms <- as.list(p, recurse_nests) %++% ms
+    if(! m_id(x) %in% sapply(m_branch(p), m_id))
+      ms <- as.list(p, recurse_nests) %++% ms
   }
   if(recurse_nests && has_nest(x)){
     ms <- as.list(m_nest(x), recurse_nests) %++% ms
