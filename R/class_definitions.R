@@ -14,7 +14,7 @@
 #' @slot parents  list of parent Rmonad objects
 #' @slot .stored  logical (internal) whether an x value should be kept
 
-Rmonad <- R6Class(
+Rmonad <- R6::R6Class(
   "Rmonad",
   public = list(
     x          = list(), # Maybe a
@@ -29,7 +29,7 @@ Rmonad <- R6Class(
     branch     = list(), # TODO: recast as 'children', no special firstborn treatment
     parents    = list(),
     nest       = list(),
-    nest_depth = 0L,
+    nest_depth = 1L,
     initialize = function(){
       private$set_id()
     },
@@ -89,17 +89,17 @@ Rmonad <- R6Class(
     set_mem        = function(x) self$other$mem  <- x,
     set_stored     = function(x) private$stored  <- x,
 
-    app_warnings = function(m, x) {
+    app_warnings = function(x) {
       if(length(x) > 0 && nchar(x) > 0){
         self$warnings <- x %++% self$warnings
       }
     },
-    app_notes = function(m, x) {
+    app_notes = function(x) {
       if(length(x) > 0 && nchar(x) > 0){
         self$notes <- x %++% self$notes
       }
     },
-    app_branch = function(m, value) self$branch <- value %++% self$branch,
+    app_branch  = function(x) self$branch <- x %++% self$branch,
     app_parents = function(x) self$parents <- x %++% self$parents,
 
     has_code     = function() private$is_not_empty_string(self$code)  ,

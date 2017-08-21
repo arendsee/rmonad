@@ -104,7 +104,6 @@ bind <- function(
         final_args <- append(bound_args, fl[-1])
       }
 
-
     o <- .eval(
       func       = new_function,
       args       = final_args,

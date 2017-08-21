@@ -7,8 +7,8 @@ foo <- function(x){
 test_that("Lists over nested functions produce the correct output", {
   # the results is a list of Rmonads
   expect_equal(
-    -1:1 %>>% { lapply(., foo) } %>% {sapply(m_value(.), class)},
-    c("Rmonad", "Rmonad", "Rmonad")
+    -1:1 %>>% { lapply(., foo) } %>% {sapply(m_value(.), is_rmonad)},
+    c(TRUE, TRUE, TRUE)
   )
   # binding this to `combine` performs the operation
   #   m [m a] -> m [a]

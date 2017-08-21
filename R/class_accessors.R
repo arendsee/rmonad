@@ -11,7 +11,7 @@ NULL
 #' @rdname rmonad_accessors
 #' @export
 is_rmonad <- function(m) {
-  all(class(m) == c("Rmonad", "R6"))
+  setequal(class(m), c("Rmonad", "R6"))
 }
 
 # internal utility for generating error messages when accessing a non-Rmonad
@@ -66,14 +66,14 @@ m_nest_depth <- function(m) {
 #' @export
 m_value <- function(m, warn=TRUE){
   .m_check(m)
-  m$get_x()
+  m$get_x(warn)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_id <- function(m) {
   .m_check(m)
-  m$set_id()
+  m$get_id()
 }
 
 #' @rdname rmonad_accessors

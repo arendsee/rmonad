@@ -87,7 +87,7 @@ as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE){
     gcFirst=FALSE # this kills performance when TRUE
   )
 
-  if(lossy && length(value) == 1 && is_rmonad(value))
+  if(lossy && is_rmonad(value))
     return(value)
 
   code <- if(is.null(desc)) {
