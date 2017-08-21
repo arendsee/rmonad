@@ -320,11 +320,12 @@ The `%v__%` operator records the output of the lhs and evaluates the rhs into
 an Rmonad. If you don't care about the output, you can use `%__%`, which simply
 replaces the rhs value with lhs value (while, of course, propagating state).
 
-The `%__%` operator is a little like a ';', in that it demarcates independent
-statements. Each statement, though, is wrapped into a graph of operations. This
-graph is itself data, and can be computed on. You could take any analysis and
-recompose it as `%v__%` delimited blocks. The result of running the analysis
-would be a data structure containing all results and errors.
+The `%__%` operator is a little like a semicolon, in that it demarcates
+independent statements. Each statement, though, is wrapped into a graph of
+operations. This graph is itself data, and can be computed on. You could take
+any analysis and recompose it as `%v__%` delimited blocks. The result of
+running the analysis would be a data structure containing all results and
+errors.
 
 ```{r, eval=FALSE}
 program <-

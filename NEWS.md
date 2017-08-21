@@ -33,6 +33,8 @@
    (i.e. an uncached value). `m_value` will raise a warning when accessing an
    uncached value. The warning can be turned off.
 
+ * as.list now lists elements in the expected order
+
 ## Minor
 
  * Update README
@@ -43,6 +45,10 @@
 
  * Add `is_rmonad` function
 
+## New bugs
+
+ * nest level is set at runtime, but rather set in batch on converstion to
+   a DiagrammeR object. In the meantime, nest depth is set to NA
 
 
 # rmonad 0.1.0

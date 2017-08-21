@@ -8,42 +8,43 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+
 Here are the currently supported operators:
 
- * `%>>%` - pass value on the left as the initial argument to the rhs function
- * `%v>%` - like `%>>%` but stores LHS value
- * `%>_%` - like `%>>%` but passes LHS instead of RHS -- propagates RHS failure
- * `%>^%` - like `%>_%` but does not propagate RHS failure
- * `%||%` - use RHS value if LHS is failing
- * `%|>%` - call RHS on LHS if LHS failed
- * `%*>%` - treat lhs as list of arguments passed to the rhs function
- * `%__%` - ignore LHS, RHS starts a new chain (but preserves LHS history)
- * `%v__%` - like `%__%` but stores LHS value
+ * `%>>%` - pass left hand side (`lhs`) as initial argument of right hand side (`rhs`) function
+ * `%v>%` - like `%>>%` but stores `lhs` value
+ * `%>_%` - like `%>>%` but passes `lhs` instead of `rhs` -- propagates `rhs` failure
+ * `%>^%` - like `%>_%` but does not propagate `rhs` failure, branch operator
+ * `%||%` - use `rhs` value if `lhs` is failing
+ * `%|>%` - call `rhs` on `lhs` if `lhs` failed
+ * `%*>%` - treat lhs as list of arguments passed to the `rhs` function
+ * `%__%` - ignore `lhs`, `rhs` starts a new chain (but preserves `lhs` history)
+ * `%v__%` - like `%__%` but stores `lhs` value
 
 The design space can be enumerated with following states:
 
- 1. LHS class
+ 1. `lhs` class
     0. a value
     1. a list of values
 
- 2. RHS class
-    0. function of LHS
-    1. a value independent of the LHS
+ 2. `rhs` class
+    0. function of `lhs`
+    1. a value independent of the `lhs`
 
  3. Value is stored
     0. no
     1. yes
 
  4. What is passed
-    0. the output of the RHS
-    1. the output of the LHS
-    2. the value of the RHS if the LHS failed
+    0. the output of the `rhs`
+    1. the output of the `lhs`
+    2. the value of the `rhs` if the `lhs` failed
 
  5. Operations passes if
-    0. LHS and RHS both pass
-    1. LHS or RHS pass
-    2. LHS passes
-    3. RHS passes
+    0. `lhs` and `rhs` both pass
+    1. `lhs` or `rhs` pass
+    2. `lhs` passes
+    3. `rhs` passes
 
 Given these states, the current operators can be represented as
 
@@ -60,7 +61,7 @@ Given these states, the current operators can be represented as
 There are a lot of potentially useful combinations that are not used. And there
 are likely other operator types not in this space that would be useful.
 
-Below is reformating of hte same information:
+Below is reformating of the same information:
 
  op      | lhs | rhs      | store | passes    | runif        | pass error
  ------- | --- | -------- | ----- | --------- | -----------  | ----------

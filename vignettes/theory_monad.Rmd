@@ -8,14 +8,17 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-This vignette consists of four parts. First I will illuminate the cryptomonad
+This vignette consists of four parts. First I will describe the cryptomonad
 hidden in the R runtime. Second, I will describe how Rmonad can serve as a
 replacement. Third, I will contrast the monadic pipelines of Rmonad with the
 compositional pipelines of `magrittr`. Finally, I will discuss Rmonad from the
 Haskell perspective.
 
 I will introduce the concept of a monad incrementally through the first three
-sections.
+sections. However, monad's in the programming context are notoriously difficult
+to understand. If you are not familiar with them, you may try studying a few
+online tutorials first. That said, `rmonad` can be used without understanding
+monads.
 
 
 
