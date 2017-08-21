@@ -10,7 +10,7 @@ test_that('simple branching works', {
     c(TRUE, TRUE)
   )
   expect_true({
-    parent_ids <- 16 %>^% add(1) %>>% add(2) %>% as.list %>%
+    parent_ids <- 16 %>^% magrittr::add(1) %>>% magrittr::add(2) %>% as.list %>%
       lapply(function(x) sapply(m_parents(x), m_id))
     # The first element is the source node, with value 16
     length(parent_ids[[1]]) == 0 &&

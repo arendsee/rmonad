@@ -70,7 +70,7 @@ NULL
 #' unbranch - extract all branches from the pipeline
 #'
 #' @docType package
-#' @name rmonad
+#' @name rmonad-pkg
 #' @examples
 #'
 #' # chain operations

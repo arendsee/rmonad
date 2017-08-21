@@ -22,6 +22,8 @@ combine(xs, keep_history = TRUE, desc = NULL)
 
 \item{lossy}{logical Should unnesting with record be done (TODO: rethink this)?}
 
+\item{clone}{logical Should the R6 object be cloned?}
+
 \item{...}{multiple expressions}
 
 \item{env}{Evaluation environment}

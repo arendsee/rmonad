@@ -20,6 +20,7 @@
 #' @param xs  A list of elements to join into a monad
 #' @param doc A docstring to associate with the monad
 #' @param desc A description of the monad (usually the producing code)
+#' @param clone logical Should the R6 object be cloned?
 #' @param keep_history Merge the histories of all monads
 #' @param env Evaluation environment
 #' @param lossy logical Should unnesting with record be done (TODO: rethink this)?
