@@ -2,7 +2,7 @@
 % Please edit documentation in R/class_generics.R
 \name{plot.Rmonad}
 \alias{plot.Rmonad}
-\title{Plot a pipeline graph}
+\title{Render an Rmonad graph}
 \usage{
 \method{plot}{Rmonad}(x, y, label = NULL, color = "status", ...)
 }
@@ -24,5 +24,14 @@ be a function of an Rmonad object, which will be applied to each node.}
 \item{...}{Additional arguments (unused currently)}
 }
 \description{
-The graph is plotted using DiagrammeR.
+Convert the Rmonad object to a DiagrammeR graph and then render it
+}
+\details{
+The nodes in the graph represent both a function and the function's output.
+The edges are relationships between nodes. In an unnested pipeline, every
+edge represents data flow from source to sink (solid black edges). Nested
+pipelines contain two additional edge types: a transitive edge, where a node
+is dependent on a value that was passed to its parent (dotted grey line);
+and a nest edge linking a node to the nested node that produced its value
+(solid red line).
 }

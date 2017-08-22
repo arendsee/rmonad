@@ -3,10 +3,6 @@
 #' This function should not be used directly. Rather you should use the infix
 #' operators. They all wrap this function.
 #'
-#' Non-standard evaluation to insert x into f as the first positional argument.
-#' This allows specialization of f, but also prevents higher-order voodoo from
-#' being performed.
-#'
 #' @export
 #' @param x The input, may or may not be a monad report
 #' @param f A function of the value contained in x

@@ -85,9 +85,17 @@ as.list.Rmonad <- function(x, recurse_nests=TRUE, ...){
   unique(ms)
 }
 
-#' Plot a pipeline graph
+#' Render an Rmonad graph
 #'
-#' The graph is plotted using DiagrammeR.
+#' Convert the Rmonad object to a DiagrammeR graph and then render it
+#'
+#' The nodes in the graph represent both a function and the function's output.
+#' The edges are relationships between nodes. In an unnested pipeline, every
+#' edge represents data flow from source to sink (solid black edges). Nested
+#' pipelines contain two additional edge types: a transitive edge, where a node
+#' is dependent on a value that was passed to its parent (dotted grey line);
+#' and a nest edge linking a node to the nested node that produced its value
+#' (solid red line).
 #'
 #' @param x An Rmonad object
 #' @param y This variable is currently ignored

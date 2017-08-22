@@ -18,31 +18,29 @@ NULL
 #'
 #'  \%v>\%    monadic bind: store intermediate result
 #'
+#'  \%*>\%    bind lhs list as arguments to right. The lhs may be a literal
+#'            list or a monad bound list.
+#'
 #'  \%>_\%    perform rhs action, discard result, pass the lhs
+#'
+#'  \%>^\%    Bind as a new branch, pass input on main. This differs from
+#'            \%>_\% in that future operations do not depend on its pass/fail
+#'            status. Use \code{unbranch} to extract all branches from an
+#'            Rmonad object.
 #'
 #'  \%||\%    if input is error, use rhs value instead
 #'
 #'  \%|>\%    if input is error, run rhs on last passing result
-#'
-#'  \%*>\%    bind lhs list as arguments to right. The lhs may be a literal
-#'            list or a monad bound list.
-#'
-#' @section Advanced operators:
 #'
 #'  \%__\%    keep parents from the lhs (errors ignored). This allows chaining
 #'            of independent operations.
 #'
 #'  \%v__\%   like \%__\% but store lhs result
 #'
-#'  \%>^\%    Bind as a new branch, pass input on main. This differs from
-#'            \%>_\% in that future operations do not depend on its
-#'            pass/fail status.
-#'
 #' @section Operators targeted for deprecation:
 #'
 #'  \%^>\%    Monadic bind and record input in monad. Perform rhs operation
-#'            on lhs branches. This is really weird, don't use it. I will
-#'            deprecate it.
+#'            on lhs branches. I may deprecate this operator.
 #'
 #' @section x to monad functions:
 #'
@@ -53,8 +51,6 @@ NULL
 #' @section monad to monad functions:
 #'
 #' forget - erase parents from a monad
-#'
-#' doc - add a documentation string to a monad
 #'
 #' combine - combine a list of monads into a list in a monad
 #'

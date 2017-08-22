@@ -37,9 +37,4 @@ A monad report
 This function should not be used directly. Rather you should use the infix
 operators. They all wrap this function.
 }
-\details{
-Non-standard evaluation to insert x into f as the first positional argument.
-This allows specialization of f, but also prevents higher-order voodoo from
-being performed.
-}
 \keyword{internal}
