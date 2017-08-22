@@ -103,6 +103,8 @@ as.list.Rmonad <- function(x, recurse_nests=TRUE, ...){
 #' @export
 plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
 
+  y <- NULL
+
   label <-
   if(is.function(label)) {
     label               
@@ -144,7 +146,7 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
       } else if(has_warnings(x)){
         'orange'
       } else {
-        'lightgreen'
+        'palegreen'
       }
     }
   } else {
