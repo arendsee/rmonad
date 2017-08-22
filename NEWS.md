@@ -35,6 +35,9 @@
 
  * as.list now lists elements in the expected order
 
+ * Errors raised are stored even if they are not non-empty strings. Previously
+   calls like `stop()` would be reconed as passing.
+
 ## Minor
 
  * Update README

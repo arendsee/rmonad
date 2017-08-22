@@ -18,3 +18,7 @@ test_that("NULL can be value", {
     as.data.frame(NULL)
   )
 })
+
+test_that("Error messages can be empty", {
+  expect_true(as_monad(stop()) %>% has_error)            
+})
