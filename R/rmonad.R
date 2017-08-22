@@ -1,4 +1,3 @@
-#' @importFrom methods isClass new show
 #' @importFrom utils capture.output object.size
 #' @importFrom magrittr "%>%"
 utils::globalVariables(c("%>%", "."))

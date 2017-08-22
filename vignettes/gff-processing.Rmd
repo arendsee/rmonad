@@ -96,9 +96,7 @@ Before using `rmonad`, I will use a more conventional approach.
 
 ```{r}
 library(readr)
-library(stringr)
 library(dplyr)
-library(tibble)
 library(tidyr)
 library(magrittr)
 library(rmonad)

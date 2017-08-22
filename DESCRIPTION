@@ -30,8 +30,7 @@ Suggests:
     readr,
     stringr,
     tidyr,
-    dplyr,
-    tibble
+    dplyr
 VignetteBuilder: knitr
 LazyData: yes
 RoxygenNote: 6.0.1
