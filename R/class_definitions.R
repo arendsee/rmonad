@@ -7,19 +7,113 @@ reset_rmonad_id <- function(){
 }
 .generate_node_id <- reset_rmonad_id()
 
-#' The eponymous monad type
-#'
-#' @slot x        A list of 0 or 1 elements, containing either nothing or data
-#' @slot OK       logical Is the monad passing?
-#' @slot code     A string showing the function that created record's report 
-#' @slot error    An error in this this record
-#' @slot warnings Character vector of warnings
-#' @slot notes    Character vector of notes
-#' @slot doc      character vector documentation messages
-#' @slot other    list of other things (currently includes time and space)
-#' @slot parents  list of parent Rmonad objects
-#' @slot .stored  logical (internal) whether an x value should be kept
 
+
+#' Create an Rmonad object
+#'
+#' @description This is the R monad that holds any state information relevant to the thread
+#' of pure computation. 
+#'
+#' @field x          The computed value the node wraps
+#' @field id         The node's unique id
+#' @field OK         A logical storing whether the node is in a passing or failing state
+#' @field code       A string showing the function that created record's report 
+#' @field error      Character vector of length 1, an error message
+#' @field warnings   Character vector of warnings (if any)
+#' @field notes      Character vector of notes (if any). Notes include anything raised with \code{message}.
+#' @field doc        Character vector of length 1, the node's docstring
+#' @field other      List of metadata generated at runtime (currently includes time and space)
+#' @field meta       List of metadata about the function specified in a list after the docstring
+#' @field branch     List of child pipelines dependent on this node but independent of the main pipe
+#' @field parents    List of parent Rmonad objects, these are the node's inputs
+#' @field nest       A nested pipeline that produced this nodes value given this nodes inputs
+#' @field nest_depth The nesting depth of this node (with 1 being unnested)
+#'
+#'
+#' @section Getters:
+#'
+#' \describe{
+#'   \item{\code{get_x}}{Get \code{x}. Raise a warning if no value is cached.}
+#'   \item{\code{get_id}}{Get \code{id}}
+#'   \item{\code{get_OK}}{Get \code{OK}}
+#'   \item{\code{get_code}}{Get \code{code}}
+#'   \item{\code{get_error}}{Get \code{error}}
+#'   \item{\code{get_warnings}}{Get \code{warnings}}
+#'   \item{\code{get_notes}}{Get \code{notes}}
+#'   \item{\code{get_doc}}{Get \code{doc}}
+#'   \item{\code{get_other}}{Get \code{other}}
+#'   \item{\code{get_meta}}{Get \code{meta}}
+#'   \item{\code{get_branch}}{Get \code{branch}}
+#'   \item{\code{get_parents}}{Get \code{parents}}
+#'   \item{\code{get_nest}}{Get \code{nest}}
+#'   \item{\code{get_nest_depth}}{Get \code{nest_depth}}
+#'   \item{\code{get_time}}{Get \code{time}. This is a value stored in the field \code{other}}
+#'   \item{\code{get_mem}}{Get \code{mem}. This is a value stored in the field \code{other}}
+#'   \item{\code{get_stored}}{Get \code{stored}}
+#' }
+#'
+#' @section Setters:
+#'
+#' \describe{
+#'   \item{\code{set_x}}{Set \code{x}}
+#'   \item{\code{set_id}}{Set \code{id}. Raises a warning if an id already is defined.}
+#'   \item{\code{set_OK}}{Set \code{OK}}
+#'   \item{\code{set_code}}{Set \code{code}}
+#'   \item{\code{set_error}}{Set \code{error}}
+#'   \item{\code{set_warnings}}{Set \code{warnings}. See also \code{app_warnings}}
+#'   \item{\code{set_notes}}{Set \code{notes}. See also \code{app_nodes}}
+#'   \item{\code{set_doc}}{Set \code{doc}}
+#'   \item{\code{set_other}}{Set \code{other}}
+#'   \item{\code{set_meta}}{Set \code{meta}}
+#'   \item{\code{set_branch}}{Set \code{branch}. See also \code{app_branch}}
+#'   \item{\code{set_parents}}{Set \code{parents}. See also \code{app_parents}}
+#'   \item{\code{set_nest}}{Set \code{nest}}
+#'   \item{\code{set_nest_depth}}{Set \code{nest_depth}}
+#'   \item{\code{set_time}}{Set \code{time}}
+#'   \item{\code{set_mem}}{Set \code{mem}}
+#'   \item{\code{set_stored}}{Set \code{stored}}
+#' }
+#'
+#' @section Other accessors:
+#'
+#' \describe{
+#'   \item{\code{app_warnings}}{Append list to \code{app_warnings}}
+#'   \item{\code{app_notes}}{Append list to \code{app_notes}}
+#'   \item{\code{app_branch }}{Append list to \code{app_branch }}
+#'   \item{\code{app_parents}}{Append list to \code{app_parents}}
+#' }
+#'
+#' \describe{
+#'   \item{\code{has_code}}{Check whether code{code} exists}
+#'   \item{\code{has_error}}{Check whether code{error} exists}
+#'   \item{\code{has_doc}}{Check whether code{doc} exists}
+#'   \item{\code{has_warnings}}{Check whether code{warnings} exists}
+#'   \item{\code{has_notes}}{Check whether code{notes} exists}
+#'   \item{\code{has_parents}}{Check whether code{parents} exists}
+#'   \item{\code{has_nest}}{Check whether code{nest} exists}
+#'   \item{\code{has_branch}}{Check whether code{branch} exists}
+#'   \item{\code{has_meta}}{Check whether code{meta} exists}
+#'   \item{\code{has_time}}{Check whether code{time} exists}
+#'   \item{\code{has_mem}}{Check whether code{mem} exists}
+#'   \item{\code{has_value}}{Check whether code{value} exists}
+#' }
+#'
+#' @section Other methods:
+#'
+#' \describe{
+#'   \item{\code{delete_value}}{Remove the value from this node. This is NOT
+#'   the same as assigning NULL to the \code{x} field, since NULL is a valid
+#'   value that may be stored as the result of the node's computation.
+#'   Internally, Rmonad stores a value as a list, with 0 or 1 elements, where
+#'   the optional element is the stored value. This allows NULL to be
+#'   distingushed from an uncached value.}
+#' }
+#'
+#' @docType class
+#'
+#' @export
+#' @format An \code{\link{R6Class}} factory
+#' @usage # m <- Rmonad$new()
 Rmonad <- R6::R6Class(
   "Rmonad",
   public = list(

@@ -1,5 +1,3 @@
-# These are internal functions, for connecting parents to children
-
 .m_stored <- function(m) {
   m$get_stored()
 }
