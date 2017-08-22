@@ -41,6 +41,13 @@ has_mem      <- function(m) m$has_mem()
 has_value    <- function(m) m$has_value()
 
 
+# TODO: chop these
+.m_stored <- function(m) {
+  m$get_stored()
+}
+`.m_stored<-` <- function(m, value) { m$set_stored(value) ; m }
+
+
 #' @rdname rmonad_accessors
 #' @export
 m_parents <- function(m) {

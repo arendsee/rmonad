@@ -128,6 +128,8 @@ of pure computation.
   Internally, Rmonad stores a value as a list, with 0 or 1 elements, where
   the optional element is the stored value. This allows NULL to be
   distingushed from an uncached value.}
+  \item{\code{inherit}}{Link a node to a single or list of parent Rmonad
+  objects.}
 }
 }
 

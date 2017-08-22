@@ -186,7 +186,7 @@ branch_combine <- function(m, o, f, margs){
     m_nest(o) <- splice_function(f=f, m=m_nest(o), ms=margs)
   }
 
-  o <- .m_inherit(child=o, parents=m, force_keep=TRUE)
+  o$inherit(parents=m, force_keep=TRUE)
 
   m <- app_branch(m=m, value=o)
 
@@ -205,11 +205,16 @@ default_combine <- function(m, o, f, margs){
     m_nest(o) <- splice_function(f=f, m=m_nest(o), ms=margs)
   }
 
-  .m_inherit(child=o, parents=m)
+  o$inherit(parents=m)
+
+  o
 }
 
 bypass_combine <- function(m, o, f, margs){
   # # the new value inherits the old value, losing whatever it had
   # # but the pass/fail state of the child is preserved
-  .m_inherit(child=o, parents=m, inherit_value=TRUE, inherit_OK=FALSE)
+
+  o$inherit(parents=m, inherit_value=TRUE, inherit_OK=FALSE)
+
+  o
 }

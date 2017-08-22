@@ -133,7 +133,8 @@ NULL
     }
     # else link the rhs to lhs input, and replace the lhs
     else {
-      .m_inherit(child=output, parents=input)
+      output$inherit(parents=input)
+      output
     }
   }
 
@@ -174,7 +175,8 @@ NULL
 .chain <- function(lhs, rhs, force_keep, envir) {
 
   emit <- function(i,o) {
-    .m_inherit(child=o, parents=i, force_keep=force_keep)
+    o$inherit(parents=i, force_keep=force_keep)
+    o
   }
 
   cmd <- list(

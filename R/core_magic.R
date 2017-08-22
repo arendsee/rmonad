@@ -53,8 +53,7 @@ relink_node <- function(m, bv, deps){
   ]
 
   # NOTE: must do this AFTER the recursion
-  m <- .m_inherit(
-    m,
+  m$inherit(
     append(m_parents(m), dependencies),
     inherit_value = FALSE,
     inherit_OK    = FALSE,

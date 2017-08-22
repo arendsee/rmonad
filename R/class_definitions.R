@@ -107,6 +107,8 @@ reset_rmonad_id <- function(){
 #'   Internally, Rmonad stores a value as a list, with 0 or 1 elements, where
 #'   the optional element is the stored value. This allows NULL to be
 #'   distingushed from an uncached value.}
+#'   \item{\code{inherit}}{Link a node to a single or list of parent Rmonad
+#'   objects.}
 #' }
 #'
 #' @docType class
@@ -218,7 +220,46 @@ Rmonad <- R6::R6Class(
     delete_value = function() {
       self$x <- list() # Nothing
       private$stored <- FALSE
+    },
+
+    inherit = function(
+      parents,
+      inherit_value = FALSE,
+      inherit_OK    = FALSE,
+      force_keep    = FALSE
+    ) {
+
+      .rm_value_if <- function(m, force_keep=FALSE){
+        if(!force_keep && !.m_stored(m)){
+          m <- m_delete_value(m)
+          .m_stored(m) <- FALSE
+        } else {
+          .m_stored(m) <- TRUE
+        }
+        m
+      }
+
+      if(is_rmonad(parents)){
+        if(inherit_value){
+          self$set_x(parents$get_x())
+        }
+        if(inherit_OK){
+          self$OK <- parents$OK
+        }
+        parents <- .rm_value_if(parents, force_keep=force_keep)
+        self$set_parents(list(parents))
+      } else {
+        if(inherit_value){
+          self$set_x(lapply(parents, m_value))
+        }
+        if(inherit_OK){
+          self$OK <- all(lapply(parents, m_OK))
+        }
+        parents <- lapply(parents, .rm_value_if, force_keep=force_keep)
+        self$set_parents(parents)
+      }
     }
+
 
   ),
 
@@ -279,6 +320,5 @@ Rmonad <- R6::R6Class(
         list()  # Nothing
       }
     }
-
   )
 )
