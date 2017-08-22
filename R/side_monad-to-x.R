@@ -134,9 +134,15 @@ mreport <- function(m, section_prefix=""){
 #' @export
 #' @examples
 #' data(gff)
-#' as_dgr_graph(gff$good_result, mem=m_mem, time=m_time)
+#' g <- as_dgr_graph(gff$good_result, mem=m_mem, time=m_time)
 as_dgr_graph <- function(m, type=NULL, label=NULL, color=NULL, ...){
   ms <- as.list(m)
+
+m <<- m
+type=NULL
+label=NULL
+color=NULL
+funcs=list()
 
   if(any(sapply(ms, m_nest_depth) %>% is.na)){
     m <- recursive_set_nest_depth(m)

@@ -25,7 +25,7 @@ parent/child relations.
 }
 \examples{
 data(gff)
-as_dgr_graph(gff$good_result, mem=m_mem, time=m_time)
+g <- as_dgr_graph(gff$good_result, mem=m_mem, time=m_time)
 }
 \seealso{
 Other monad-to-x: \code{\link{esc}}, \code{\link{missues}},
