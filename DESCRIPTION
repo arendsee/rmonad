@@ -10,8 +10,7 @@ Description:
     be queried for debugging or report generation. 'rmonad' complements, rather
     than competes with, non-monadic pipeline packages like 'magrittr' or
     'pipeR'.
-Author: Zebulun Arendsee <zbwrnz@gmail.com>
-Maintainer: Zebulun Arendsee <zbwrnz@gmail.com>
+Authors@R: person("Zebulun", "Arendsee", email="zbwrnz@gmail.com", role=c("aut","cre"))
 URL: https://github.com/arendsee/rmonad
 BugReports: https://github.com/arendsee/rmonad/issues
 Encoding: UTF-8

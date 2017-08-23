@@ -19,12 +19,17 @@ useful of these here. For more information see the vignette.
 \describe{
    \item{\code{\%>>\%}}{monadic bind: applies rhs function to the lhs value}
    \item{\code{\%v>\%}}{monadic bind: store intermediate result}
-   \item{\code{\%*>\%}}{bind lhs list as arguments to right. The lhs may be a literal list or a monad bound list.}
+   \item{\code{\%*>\%}}{bind lhs list as arguments to right. The lhs may be
+   a literal list or a monad bound list.}
    \item{\code{\%>_\%}}{perform rhs action, discard result, pass the lhs}
-   \item{\code{\%>^\%}}{Bind as a new branch, pass input on main. This differs from \code{\%>_\%} in that future operations do not depend on its pass/fail status. Use \code{unbranch} to extract all branches from an Rmonad object.} 
+   \item{\code{\%>^\%}}{Bind as a new branch, pass input on main. This
+   differs from \code{\%>_\%} in that future operations do not depend on its
+   pass/fail status. Use \code{unbranch} to extract all branches from an
+   Rmonad object.} 
    \item{\code{\%||\%}}{if input is error, use rhs value instead}
    \item{\code{\%|>\%}}{if input is error, run rhs on last passing result}
-   \item{\code{\%__\%}}{keep parents from the lhs (errors ignored). This allows chaining of independent operations.}
+   \item{\code{\%__\%}}{keep parents from the lhs (errors ignored). This
+   allows chaining of independent operations.}
    \item{\code{\%v__\%}}{like \code{\%__\%} but store lhs result}
 }
 }
