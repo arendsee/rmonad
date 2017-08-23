@@ -2,20 +2,15 @@
 
 ## Backwards incompatible changes
 
- * Rename `lsmeval` as `funnel`.
+ * Rename `lsmeval` as `funnel`
 
- * `combine` now works exclusively on monadic lists
+ * `combine` now works exclusively on lists of Rmonad objects
 
- * Allow nesting of Rmonads, `as_monad` no longer automatically unnests them,
-   there is an explicit function for this, `unnest`.
+ * Allow nesting of Rmonads, `as_monad` no longer automatically unnests them
 
  * Deprecate the `doc` function. Instead use doc strings.
 
 ## New features
-
- * Generation of rudimentary Markdown reports from pipelines with `mreport`
-
- * Convert pipeline to DiagrammeR graph with `as_dgr_graph`.
 
  * Docstrings and metadata in anonymous functions
 
@@ -25,13 +20,22 @@
 
  * Rmonad class refactored as an R6 class
 
+ * Allow `%*>%` to take monad bound lists
+   
+ * `m_value` raises a warning (by default) when accessing an uncached value.
+
+## New functions
+
+ * `mreport` - Generate of rudimentary Markdown reports
+
+ * `as_dgr_graph` - Convert pipeline to DiagrammeR graph 
+
+ * `is_rmonad` - Tests if something is an `Rmonad` object
+
 ## Fixes
 
- * Allow `%*>%` to take monad bound lists
-
  * `NULL` can now be stored as a value and is distinguishable from Nothing
-   (i.e. an uncached value). `m_value` will raise a warning when accessing an
-   uncached value. The warning can be turned off.
+   (i.e. an uncached value).
 
  * as.list now lists elements in the expected order
 
@@ -44,14 +48,12 @@
 
  * Put docstring first in the printed output 
 
- * Add GFF case study vignette
-
- * Add `is_rmonad` function
+ * New vignettes
 
 ## New bugs
 
- * nest level is set at runtime, but rather set in batch on converstion to
-   a DiagrammeR object. In the meantime, nest depth is set to NA
+ * Nest level is not set at runtime, but rather set upon conversion to
+   a DiagrammeR object. In the meantime, nest depth is NA.
 
 
 # rmonad 0.1.0

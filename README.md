@@ -1,15 +1,6 @@
 [![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=dev)](https://travis-ci.org/arendsee/rmonad)
 [![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/dev.svg)](https://codecov.io/github/arendsee/rmonad?branch=dev)
 
----
-output: markdown_github 
----
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-
-
-
 # `rmonad`
 
 Chain monadic sequences into stateful, branching pipelines. As nodes in the
