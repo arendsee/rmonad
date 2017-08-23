@@ -7,7 +7,7 @@
 #' raised in the inputs will be caught.
 #'
 #' \code{as_monad} evaluate a single expression into an Rmonad. If the value is
-#' already an Rmonad, the existing value is returned.
+#' already an Rmonad, it will be nested.
 #'
 #' \code{funnel} evaluates multiple arguments into one Rmonad. It can be used
 #' within pipelines to create multi-input nodes (works well with \code{\%*>\%}).
@@ -23,7 +23,7 @@
 #' @param clone logical Should the R6 object be cloned?
 #' @param keep_history Merge the histories of all monads
 #' @param env Evaluation environment
-#' @param lossy logical Should unnesting with record be done (TODO: rethink this)?
+#' @param lossy logical Should unnesting with record be done?
 #' @param ... multiple expressions
 #' @name x_to_monad
 #' @examples

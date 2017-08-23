@@ -20,7 +20,7 @@ combine(xs, keep_history = TRUE, desc = NULL)
 
 \item{doc}{A docstring to associate with the monad}
 
-\item{lossy}{logical Should unnesting with record be done (TODO: rethink this)?}
+\item{lossy}{logical Should unnesting with record be done?}
 
 \item{clone}{logical Should the R6 object be cloned?}
 
@@ -41,7 +41,7 @@ whole. Any non-monadic inputs will be converted to monads. Any exceptions
 raised in the inputs will be caught.
 
 \code{as_monad} evaluate a single expression into an Rmonad. If the value is
-already an Rmonad, the existing value is returned.
+already an Rmonad, it will be nested.
 
 \code{funnel} evaluates multiple arguments into one Rmonad. It can be used
 within pipelines to create multi-input nodes (works well with \code{\%*>\%}).

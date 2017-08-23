@@ -14,58 +14,47 @@ NULL
 #'
 #' @section Basic Operators:
 #'
-#'  \%>>\%    monadic bind: applies rhs function to the lhs value
-#'
-#'  \%v>\%    monadic bind: store intermediate result
-#'
-#'  \%*>\%    bind lhs list as arguments to right. The lhs may be a literal
-#'            list or a monad bound list.
-#'
-#'  \%>_\%    perform rhs action, discard result, pass the lhs
-#'
-#'  \%>^\%    Bind as a new branch, pass input on main. This differs from
-#'            \%>_\% in that future operations do not depend on its pass/fail
-#'            status. Use \code{unbranch} to extract all branches from an
-#'            Rmonad object.
-#'
-#'  \%||\%    if input is error, use rhs value instead
-#'
-#'  \%|>\%    if input is error, run rhs on last passing result
-#'
-#'  \%__\%    keep parents from the lhs (errors ignored). This allows chaining
-#'            of independent operations.
-#'
-#'  \%v__\%   like \%__\% but store lhs result
+#' \describe{
+#'    \item{\code{\%>>\%}}{monadic bind: applies rhs function to the lhs value}
+#'    \item{\code{\%v>\%}}{monadic bind: store intermediate result}
+#'    \item{\code{\%*>\%}}{bind lhs list as arguments to right. The lhs may be a literal list or a monad bound list.}
+#'    \item{\code{\%>_\%}}{perform rhs action, discard result, pass the lhs}
+#'    \item{\code{\%>^\%}}{Bind as a new branch, pass input on main. This differs from \code{\%>_\%} in that future operations do not depend on its pass/fail status. Use \code{unbranch} to extract all branches from an Rmonad object.} 
+#'    \item{\code{\%||\%}}{if input is error, use rhs value instead}
+#'    \item{\code{\%|>\%}}{if input is error, run rhs on last passing result}
+#'    \item{\code{\%__\%}}{keep parents from the lhs (errors ignored). This allows chaining of independent operations.}
+#'    \item{\code{\%v__\%}}{like \code{\%__\%} but store lhs result}
+#' }
 #'
 #' @section Operators targeted for deprecation:
 #'
-#'  \%^>\%    Monadic bind and record input in monad. Perform rhs operation
-#'            on lhs branches. I may deprecate this operator.
+#'  \code{\%^>\%} Monadic bind and record input in monad. Perform rhs operation
+#'                on lhs branches. I may deprecate this operator.
 #'
 #' @section x to monad functions:
 #'
-#' as_monad - evaluate an expression into a monad (capturing error)
+#' \code{as_monad} - evaluate an expression into a monad (capturing error)
 #'
-#' funnel - evaluate expressions into a list inside a monad
+#' \code{funnel} - evaluate expressions into a list inside a monad
 #'
 #' @section monad to monad functions:
 #'
-#' forget - erase parents from a monad
+#' \code{forget} - erase parents from a monad
 #'
-#' combine - combine a list of monads into a list in a monad
+#' \code{combine} - combine a list of monads into a list in a monad
 #'
 #' @section monad to x functions:
 #'
-#' esc - extract the result from a computation
+#' \code{esc} - extract the result from a computation
 #'
-#' mtabulate - summarize all steps in a pipeline into a table
+#' \code{mtabulate} - summarize all steps in a pipeline into a table
 #'
-#' missues - tabulate all warnings and errors from a pipeline 
+#' \code{missues} - tabulate all warnings and errors from a pipeline 
 #'
-#' unbranch - extract all branches from the pipeline
+#' \code{unbranch} - extract all branches from the pipeline
 #'
 #' @docType package
-#' @name rmonad-pkg
+#' @name rmonad
 #' @examples
 #'
 #' # chain operations

@@ -14,7 +14,7 @@ reset_rmonad_id <- function(){
 #' @description This is the R monad that holds any state information relevant to the thread
 #' of pure computation. 
 #'
-#' @field x          The computed value the node wraps
+#' @field value      The computed value the node wraps
 #' @field id         The node's unique id
 #' @field OK         A logical storing whether the node is in a passing or failing state
 #' @field code       A string showing the function that created record's report 
@@ -33,7 +33,7 @@ reset_rmonad_id <- function(){
 #' @section Getters:
 #'
 #' \describe{
-#'   \item{\code{get_x}}{Get \code{x}. Raise a warning if no value is cached.}
+#'   \item{\code{get_value}}{Get \code{value}. Raise a warning if no value is cached.}
 #'   \item{\code{get_id}}{Get \code{id}}
 #'   \item{\code{get_OK}}{Get \code{OK}}
 #'   \item{\code{get_code}}{Get \code{code}}
@@ -55,7 +55,7 @@ reset_rmonad_id <- function(){
 #' @section Setters:
 #'
 #' \describe{
-#'   \item{\code{set_x}}{Set \code{x}}
+#'   \item{\code{set_value}}{Set \code{value}}
 #'   \item{\code{set_id}}{Set \code{id}. Raises a warning if an id already is defined.}
 #'   \item{\code{set_OK}}{Set \code{OK}}
 #'   \item{\code{set_code}}{Set \code{code}}
@@ -115,10 +115,11 @@ reset_rmonad_id <- function(){
 #'
 #' @format An \code{\link{R6Class}} factory
 #' @usage # m <- Rmonad$new()
+#' @name Rmonad_cls
 Rmonad <- R6::R6Class(
   "Rmonad",
   public = list(
-    x          = list(), # Maybe a
+    value      = list(), # Maybe a
     OK         = TRUE,
     code       = NA_character_,
     error      = list(), # Maybe [String]
@@ -135,11 +136,11 @@ Rmonad <- R6::R6Class(
       private$set_id()
     },
 
-    get_x = function(warn=TRUE) {
-      if(warn && length(self$x) == 0){
+    get_value = function(warn=TRUE) {
+      if(warn && length(self$value) == 0){
         warning("Attempting to access the value of a non-cached node, returning NULL")
       }
-      private$maybe_vector_get(self$x)
+      private$maybe_vector_get(self$value)
     },
     get_id         = function() private$id,
     get_OK         = function() self$OK,
@@ -173,7 +174,7 @@ Rmonad <- R6::R6Class(
     get_stored = function() private$stored,
 
     # TODO: Add checking to all of these
-    set_x          = function(x) self$x           <- list(value=x),
+    set_value      = function(x) self$value       <- list(value=x),
     set_OK         = function(x) self$OK          <- x,
     set_code       = function(x) self$code        <- x,
     set_error      = function(x) self$error       <- as.character(x),
@@ -214,10 +215,10 @@ Rmonad <- R6::R6Class(
     has_meta     = function() length(self$meta)     != 0              ,
     has_time     = function() private$is_not_empty_real(self$time)    ,
     has_mem      = function() private$is_not_empty_integer(self$mem)  ,
-    has_value    = function() length(self$x) == 1                     ,
+    has_value    = function() length(self$value) == 1                 ,
 
     delete_value = function() {
-      self$x <- list() # Nothing
+      self$value <- list() # Nothing
       private$stored <- FALSE
     },
 
@@ -240,7 +241,7 @@ Rmonad <- R6::R6Class(
 
       if(is_rmonad(parents)){
         if(inherit_value){
-          self$set_x(parents$get_x())
+          self$set_value(parents$get_value())
         }
         if(inherit_OK){
           self$OK <- parents$OK
@@ -249,7 +250,7 @@ Rmonad <- R6::R6Class(
         self$set_parents(list(parents))
       } else {
         if(inherit_value){
-          self$set_x(lapply(parents, m_value))
+          self$set_value(lapply(parents, m_value))
         }
         if(inherit_OK){
           self$OK <- all(lapply(parents, m_OK))

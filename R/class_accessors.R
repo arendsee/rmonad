@@ -8,8 +8,10 @@ NULL
 
 
 
-#' @rdname rmonad_accessors
-#' @export
+#' Determine wether something is an Rmonad object
+#'
+#' @param m Rmonad object
+#' @return logical TRUE if m is an Rmonad
 is_rmonad <- function(m) {
   setequal(class(m), c("Rmonad", "R6"))
 }
@@ -22,11 +24,21 @@ is_rmonad <- function(m) {
   }
 }
 
+#' Delete a node's value
+#'
+#' This is not the same as setting the value to NULL. Deleting tells
+#' \code{rmonad} that no value is cached. If the value is accessed later, a
+#' warning is raised. In contrast, setting the value to NULL will result in
+#' \code{rmonad} thinking that the result of the computation was NULL.
+#'
+#' @export
+#' @param m Rmonad object
 m_delete_value <- function(m) {
   m$delete_value()
   m
 }
 
+# TODO: should these be exported?
 has_code     <- function(m) m$has_code()
 has_error    <- function(m) m$has_error()
 has_doc      <- function(m) m$has_doc()
@@ -73,7 +85,7 @@ m_nest_depth <- function(m) {
 #' @export
 m_value <- function(m, warn=TRUE){
   .m_check(m)
-  m$get_x(warn)
+  m$get_value(warn)
 }
 
 #' @rdname rmonad_accessors
@@ -167,7 +179,7 @@ m_branch   <- function(m) {
 #' @export
 `m_value<-` <- function(m, value) {
   .m_check(m)
-  m$set_x(value)
+  m$set_value(value)
   m
 }
 

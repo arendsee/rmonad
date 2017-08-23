@@ -2,9 +2,8 @@
 #'
 #' Infix monadic sequence operators
 #'
-#' This page contains a list of all operators, including experimental ones. See
-#' the main package help page (\code{?rmonad}) for a discussion of the
-#' operators that are really supported.
+#' See the main package help page (\code{?rmonad}) or the \code{intro} and
+#' \code{cheatsheet} vignettes for more information.
 #'
 #'@param lhs left hand value
 #'@param rhs right hand value
