@@ -274,6 +274,12 @@ foo <- function(x){
 'a' %v>% foo %>% plot(label='value')
 ```
 
+## Scaling up
+
+`rmonad` can be used to mediate very large pipelines. Below is a plot of an in
+house pipeline. Green nodes are passing and yellow nodes produced warnings.
+
+![Plot of a large rmonad pipeline](README-big-pipeline.png)
 
 ## Contributing
 

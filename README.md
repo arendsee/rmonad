@@ -1,6 +1,15 @@
 [![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=dev)](https://travis-ci.org/arendsee/rmonad)
 [![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/dev.svg)](https://codecov.io/github/arendsee/rmonad?branch=dev)
 
+---
+output: markdown_github 
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+
+
+
 # `rmonad`
 
 Chain monadic sequences into stateful, branching pipelines. As nodes in the
@@ -358,6 +367,12 @@ foo <- function(x){
 
 ![plot of chunk nested-workflow-plot](README-nested-workflow-plot-1.png)
 
+## Scaling up
+
+`rmonad` can be used to mediate very large pipelines. Below is a plot of an in
+house pipeline. Green nodes are passing and yellow nodes produced warnings.
+
+![Plot of a large rmonad pipeline](README-big-pipeline.png)
 
 ## Contributing
 
