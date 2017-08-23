@@ -42,15 +42,8 @@ install.packages("rmonad")
 You can install from the github dev branch with:
 
 ```{r gh-installation, eval = FALSE}
-# install.packages("devtools")
 devtools::install_github("arendsee/rmonad", ref="dev")
 ```
-
-## On obsolescence and collaboration
-
-Some of the material in `master` is already slated for deprecation. See `dev`
-for the newest material. `rmonad` is experimental at this point.  If you are
-interested in collaborating, shoot me an email. Also see the `dev` README.
 
 ## Examples
 
@@ -191,7 +184,7 @@ analysis
 ### Add metadata to chunk
 
 ```{r, eval=FALSE}
-{
+as_monad({
   "This is data describing a chunk"
 
   list(
@@ -203,15 +196,23 @@ analysis
 
   # this is the actual thing computed
   1 + 1
-}
+})
 ```
 
 ### Build Markdown report from a pipeline
 
-Handling for this is currently extremely rudimentary. The `mreport` function
-will concatenate all the code run in the pipeline along with the docstrings.
+`rmonad` stores the description of a pipeline as a graphical object. This
+object may be queried to access all data needed to build a report. These could
+be detailed reports where the code, documentation, and metadata for every node
+is written to a linked HTML file. Or a report may be more specialized, e.g. a
+benchmarking or debugging report. A report generating function may be branched,
+with certain elements generated only if some condition is met. Overall,
+`rmonad` offers a more dynamimc approach to literate programming.
 
-```{r}
+This potential is mostly unrealized currently. `rmonad` offers the prototype
+report generator `mreport`.
+
+```{r, eval=FALSE}
 x <- 
 {
   "# Report
@@ -246,6 +247,9 @@ mreport(x)
 
 ### Graphing pipelines
 
+An `rmonad` pipeline can be converted to a `DiagrammeR` object. Along with many
+unexplored possibilities, this allows the pipeline to be plotted:
+
 ```{r workflow-plot, results="asis"}
 # here I use the `->` operator, which is the little known twin of `<-`.
 funnel(
@@ -268,7 +272,6 @@ foo <- function(x){
     'c' %v>% paste(x) %v>% paste('d')
 }
 'a' %v>% foo %>% plot(label='value')
-
 ```
 
 
@@ -280,34 +283,28 @@ report generation handling. In addition, there are lots of smaller problems.
 See the next section for a partial summary.
 
 
-## rmonad v0.2.0 goals
+## rmonad v0.3.0 goals
 
-The coming Rmonad v0.2.0 should have:
+ - [ ] A more elegant data structure for representing the workflow graph. I
+   want to replace my ad hoc, hand-rolled data structure with a dedicated graph
+   library (perhaps DiagrammeR).
 
- - [ ] Cleaner code
+ - [ ] Record all operations, even those not run. Currently if an input to a
+   node fails, the node is ignored. So the ultimate graph is truncated at the
+   first error.
+   
+ - [ ] Full code regeneration from the `rmonad` object. Currently `rmonad`
+   stores each node's code, but it loses information.
 
- - [ ] Better vignettes and documentation
+ - [ ] Add function to align two `rmonad` pipelines. This function would be the
+   basis for `diff` and `patch` functions. Where a `patch` function takes an
+   unevaluated `rmonad` object, aligns it to a broken pipeline, and resumes
+   evaluation from the failing nodes using the patch object code.
 
-   - [ ] Detailed documentation for all infix operators
+ - [ ] Store file and line number of all code. 
 
-   - [ ] A monad theory vignette
+ - [ ] Persistant caching of results
 
-   - [x] One of two detailed case study vignettes
+ - [ ] Job submission handling
 
- - [x] optional docstrings for bound functions 
-
- - [x] optional metadata in function preambles
-
- - [x] generic plot functions that support nested pipelines
-
- - [ ] a more elegant data structure for representing the workflow graph
-
-   - [ ] preserve all operations, even those not run
-
-   - [ ] check for infinite loops
-
- - [x] functions for converting the pipeline data structure into an Rmd
-
- - [ ] a system for persistant caching of results
-
- - [ ] a system for job submission
+ - [ ] Add a shiny app for interactive exploration of a pipeline

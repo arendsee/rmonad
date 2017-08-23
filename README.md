@@ -28,15 +28,8 @@ You can install from the github dev branch with:
 
 
 ```r
-# install.packages("devtools")
 devtools::install_github("arendsee/rmonad", ref="dev")
 ```
-
-## On obsolescence and collaboration
-
-Some of the material in `master` is already slated for deprecation. See `dev`
-for the newest material. `rmonad` is experimental at this point.  If you are
-interested in collaborating, shoot me an email. Also see the `dev` README.
 
 ## Examples
 
@@ -109,12 +102,16 @@ funnel(
     1:10
 )
 #> R> "1:10"
+#>  [1]  1  2  3  4  5  6  7  8  9 10
+#> 
 #> R> "runif("df")"
 #>  * ERROR: invalid arguments
 #>  * WARNING: NAs introduced by coercion
 #> R> "stop("stop, drop and die")"
 #>  * ERROR: stop, drop and die
 #> R> "runif(5)"
+#> [1] 0.5120101 0.8351271 0.8930770 0.4460601 0.2983039
+#> 
 #> R> "funnel(runif(5), stop("stop, drop and die"), runif("df"), 1:10)"
 #> 
 #>  ----------------- 
@@ -264,7 +261,7 @@ analysis
 
 
 ```r
-{
+as_monad({
   "This is data describing a chunk"
 
   list(
@@ -276,13 +273,21 @@ analysis
 
   # this is the actual thing computed
   1 + 1
-}
+})
 ```
 
 ### Build Markdown report from a pipeline
 
-Handling for this is currently extremely rudimentary. The `mreport` function
-will concatenate all the code run in the pipeline along with the docstrings.
+`rmonad` stores the description of a pipeline as a graphical object. This
+object may be queried to access all data needed to build a report. These could
+be detailed reports where the code, documentation, and metadata for every node
+is written to a linked HTML file. Or a report may be more specialized, e.g. a
+benchmarking or debugging report. A report generating function may be branched,
+with certain elements generated only if some condition is met. Overall,
+`rmonad` offers a more dynamimc approach to literate programming.
+
+This potential is mostly unrealized currently. `rmonad` offers the prototype
+report generator `mreport`.
 
 
 ```r
@@ -316,10 +321,12 @@ x <-
 
 }
 mreport(x)
-#> [1] "## 1\n   # Conclusion\n\n   optional closing remarks\n   \n```{r, eval=FALSE}\n{\n    \"# Report\\n\\n  This is a pipeline report\\n  \"\n}\n```\nOK=TRUE | nparents=0 | nbranches=0 | cached=FALSE\n\n## 2\n   # Conclusion\n\n   optional closing remarks\n   \n```{r, eval=FALSE}\n{\n    5\n}\n```\nOK=TRUE | nparents=1 | nbranches=0 | cached=FALSE\n\n## 3\n   # Conclusion\n\n   optional closing remarks\n   \n```{r, eval=FALSE}\nfunction (.) \n{\n    \"this is too\"\n    sqrt(.)\n}\n```\nOK=TRUE | nparents=1 | nbranches=0 | cached=FALSE\n\n## 4\n   # Conclusion\n\n   optional closing remarks\n   \n```{r, eval=FALSE}\nfunction (.) \n{\n    \"# Conclusion\\n\\n   optional closing remarks\\n   \"\n    NULL\n}\n```\nOK=TRUE | nparents=1 | nbranches=0 | cached=TRUE\n"
 ```
 
 ### Graphing pipelines
+
+An `rmonad` pipeline can be converted to a `DiagrammeR` object. Along with many
+unexplored possibilities, this allows the pipeline to be plotted:
 
 
 ```r
@@ -335,8 +342,6 @@ funnel(
   ) %*>%
   paste %>% # the remaining steps are all operating _on_ the monad
   plot(label='value')
-#> Warning in .doLoadActions(where, attach): trying to execute load actions
-#> without 'methods' package
 ```
 
 ![plot of chunk workflow-plot](README-workflow-plot-1.png)
@@ -362,34 +367,28 @@ report generation handling. In addition, there are lots of smaller problems.
 See the next section for a partial summary.
 
 
-## rmonad v0.2.0 goals
+## rmonad v0.3.0 goals
 
-The coming Rmonad v0.2.0 should have:
+ - [ ] A more elegant data structure for representing the workflow graph. I
+   want to replace my ad hoc, hand-rolled data structure with a dedicated graph
+   library (perhaps DiagrammeR).
 
- - [ ] Cleaner code
+ - [ ] Record all operations, even those not run. Currently if an input to a
+   node fails, the node is ignored. So the ultimate graph is truncated at the
+   first error.
+   
+ - [ ] Full code regeneration from the `rmonad` object. Currently `rmonad`
+   stores each node's code, but it loses information.
 
- - [ ] Better vignettes and documentation
+ - [ ] Add function to align two `rmonad` pipelines. This function would be the
+   basis for `diff` and `patch` functions. Where a `patch` function takes an
+   unevaluated `rmonad` object, aligns it to a broken pipeline, and resumes
+   evaluation from the failing nodes using the patch object code.
 
-   - [ ] Detailed documentation for all infix operators
+ - [ ] Store file and line number of all code. 
 
-   - [ ] A monad theory vignette
+ - [ ] Persistant caching of results
 
-   - [x] One of two detailed case study vignettes
+ - [ ] Job submission handling
 
- - [x] optional docstrings for bound functions 
-
- - [x] optional metadata in function preambles
-
- - [x] generic plot functions that support nested pipelines
-
- - [ ] a more elegant data structure for representing the workflow graph
-
-   - [ ] preserve all operations, even those not run
-
-   - [ ] check for infinite loops
-
- - [x] functions for converting the pipeline data structure into an Rmd
-
- - [ ] a system for persistant caching of results
-
- - [ ] a system for job submission
+ - [ ] Add a shiny app for interactive exploration of a pipeline
