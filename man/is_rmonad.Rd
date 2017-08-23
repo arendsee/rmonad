@@ -2,7 +2,7 @@
 % Please edit documentation in R/class_accessors.R
 \name{is_rmonad}
 \alias{is_rmonad}
-\title{Determine wether something is an Rmonad object}
+\title{Determine whether something is an Rmonad object}
 \usage{
 is_rmonad(m)
 }
@@ -13,5 +13,5 @@ is_rmonad(m)
 logical TRUE if m is an Rmonad
 }
 \description{
-Determine wether something is an Rmonad object
+Determine whether something is an Rmonad object
 }

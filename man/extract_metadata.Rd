@@ -23,7 +23,7 @@ metadata removed, the docstring itself, and the metadata.
 }
 \description{
 Currently the docstring must come first and the metadata list must come
-second. Both must preceed any other code in the function. These constraints
+second. Both must precede any other code in the function. These constraints
 may be relaxed in the future.
 }
 \examples{

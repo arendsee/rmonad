@@ -106,7 +106,7 @@ reset_rmonad_id <- function(){
 #'   value that may be stored as the result of the node's computation.
 #'   Internally, Rmonad stores a value as a list, with 0 or 1 elements, where
 #'   the optional element is the stored value. This allows NULL to be
-#'   distingushed from an uncached value.}
+#'   distinguished from an uncached value.}
 #'   \item{\code{inherit}}{Link a node to a single or list of parent Rmonad
 #'   objects.}
 #' }

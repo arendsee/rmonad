@@ -8,7 +8,7 @@ NULL
 
 
 
-#' Determine wether something is an Rmonad object
+#' Determine whether something is an Rmonad object
 #'
 #' @param m Rmonad object
 #' @return logical TRUE if m is an Rmonad

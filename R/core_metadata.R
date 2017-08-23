@@ -1,7 +1,7 @@
 #' Extract docstring and meta data from an anonymous function
 #'
 #' Currently the docstring must come first and the metadata list must come
-#' second. Both must preceed any other code in the function. These constraints
+#' second. Both must precede any other code in the function. These constraints
 #' may be relaxed in the future.
 #'
 #' @param expr an expression with an optional docstring as the first statement
