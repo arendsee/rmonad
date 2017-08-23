@@ -168,5 +168,10 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
 
   g$edges_df$style <- ifelse(g$edges_df$rel == 'transitive', "dotted", "")
 
+  # For some reason, the color was defaulting to white, which was hard to see
+  # against the node background and made text that overflowed the node
+  # invisible against the white canvas.
+  g$nodes_df$fontcolor <- 'black'
+
   DiagrammeR::render_graph(g)
 }
