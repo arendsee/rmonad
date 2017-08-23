@@ -113,7 +113,6 @@ reset_rmonad_id <- function(){
 #'
 #' @docType class
 #'
-#' @export
 #' @format An \code{\link{R6Class}} factory
 #' @usage # m <- Rmonad$new()
 Rmonad <- R6::R6Class(

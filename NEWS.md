@@ -21,7 +21,7 @@
  * Rmonad class refactored as an R6 class
 
  * Allow `%*>%` to take monad bound lists
-   
+
  * `m_value` raises a warning (by default) when accessing an uncached value.
 
 ## New functions
@@ -31,6 +31,22 @@
  * `as_dgr_graph` - Convert pipeline to DiagrammeR graph 
 
  * `is_rmonad` - Tests if something is an `Rmonad` object
+
+ * `unnest` - remove a level of nesting from a node
+
+ * `extract_metadata` - get docstring and metadata from a function or block
+
+ * `m_nest` - get or set a node's nested pipeline
+
+ * `m_nest_depth` - get or set a node's nest depth
+
+ * `m_meta` - get or set a node's metadata
+
+ * `m_id` - get or set a node's id (changing an existing id raises a warning)
+
+ * `app_parents` - add a list of parents to a node
+
+ * `m_delete_value` - delete the value stored by a node 
 
 ## Fixes
 
