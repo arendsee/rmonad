@@ -1,6 +1,6 @@
 Type: Package
 Package: rmonad
-Version: 0.1.0
+Version: 0.2.0
 Title: A Monadic Pipeline System
 Description:
     A monadic solution to pipeline analysis. All operations -- and the errors,
@@ -17,13 +17,20 @@ Encoding: UTF-8
 Depends:
     R (>= 3.2.0)
 Imports:
+    R6,
+    methods,
     magrittr,
-    methods
+    DiagrammeR,
+    pryr
 Suggests:
     testthat,
     covr,
     knitr,
-    rmarkdown
+    rmarkdown,
+    readr,
+    stringr,
+    tidyr,
+    dplyr
 VignetteBuilder: knitr
 LazyData: yes
 RoxygenNote: 6.0.1

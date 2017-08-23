@@ -15,8 +15,7 @@ lsmeval(..., keep_history = TRUE)
 A list of Rmonads
 }
 \description{
-Safely builds a list of monads from an argument list of expressions
-}
-\examples{
-lsmeval( 1:10, stop(1), sqrt(-3:3) )
+Deprecated, use funnel instead. \code{lsmeval} is the same as \code{funnel},
+but the name funnel more clearly expresses the use of this function. Which
+is to join multiple pipes into one.
 }

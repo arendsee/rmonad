@@ -4,10 +4,12 @@
 \alias{as.list.Rmonad}
 \title{Convert an rmonad object to a list of monads}
 \usage{
-\method{as.list}{Rmonad}(x, ...)
+\method{as.list}{Rmonad}(x, recurse_nests = TRUE, ...)
 }
 \arguments{
 \item{x}{An Rmonad object}
+
+\item{recurse_nests}{logical Should nested pipelines be included?}
 
 \item{...}{Additional arguments (unused)}
 }

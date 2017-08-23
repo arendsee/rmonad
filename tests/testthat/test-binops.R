@@ -8,9 +8,12 @@ test_that('%>>% and esc work (simple)', {
   expect_true( cars %>>% head %>% m_OK)
 
   expect_equal(1:3 %>>% '*'(2) %>% esc, c(2,4,6))
-  expect_true(1:3 %>>% '*'(2) %>% m_OK)
+  expect_true( 1:3 %>>% '*'(2) %>% m_OK)
 
   expect_error("3" %>>% '*'(2) %>% esc)
+
+  expect_equal(1:3 %>>% (function(x){x^2}) %>>% '*'(2) %>% esc, 2*((1:3)^2) )
+  expect_equal(1:3 %>>% (function(x){x^2})             %>% esc,   ((1:3)^2) )
 })
 
 test_that('%>>% chaining works', {
@@ -45,7 +48,7 @@ test_that('function passing works with package labels', {
 
 test_that('input storing works', {
   expect_equal(
-    256 %v>% sqrt %>>% sqrt %v>% sqrt %>% lapply(m_value),
+    256 %v>% sqrt %>>% sqrt %v>% sqrt %>% lapply(m_value, warn=FALSE),
     list(256,NULL,4,2)
   )
 })
@@ -61,28 +64,6 @@ test_that('Alteratives (%|>%) work', {
 test_that('Alteratives (%||%) work', {
   expect_equal(1 %||% 5 %>>% sqrt %>% lapply(m_code), list("1", "sqrt"))
   expect_true(1 %||% 5 %>>% sqrt %>% m_OK)
-})
-
-test_that('branching works %>^%', {
-  expect_equal(
-    16 %>^% sqrt %>^% '*'(2) %>% unbranch %>% lapply(m_value),
-    list(16,4,32)
-  )
-  expect_equal(
-    16 %>^% stop(1) %>^% '*'(2) %>% unbranch %>% lapply(m_value),
-    list(16,NULL,32)
-  )
-})
-
-foo <- function(x,y) { x - y }
-test_that('branching function work %^>%', {
-  expect_equal(
-    1:10 %>^% '*'(3) %>^% '*'(2) %^>% foo %>% esc,
-    -1 * 1:10
-  )
-  expect_true(
-    1:10 %>^% '*'(3) %>^% '*'(2) %^>% foo %>% m_OK,
-  )
 })
 
 test_that('output toss works %>_%', {
@@ -102,6 +83,29 @@ test_that('%*>% safely evaluates failing lists', {
   expect_equal( list(stop(1),5,2) %*>% max %>% m_value, list(NULL, 5, 2) )
   # but knows the input is failing
   expect_false( list(stop(1),5,2) %*>% max %>% m_OK )
+})
+test_that('%*>% works the same of monad bound lists', {
+  expect_equal(  funnel(3,5,2)       %*>% max %>% m_value, 5                )
+  expect_silent( funnel(stop(1),5,2) %*>% max                               )
+  expect_equal(  funnel(stop(1),5,2) %*>% max %>% m_value, list(NULL, 5, 2) )
+  expect_false(  funnel(stop(1),5,2) %*>% max %>% m_OK                      )
+})
+test_that('%*>% preserves keyword arguments', {
+  expect_equal(5 %>>% funnel(y=1,z=2) %*>% { . + y + z } %>% esc, 8)
+  expect_true(5 %>>% funnel(y=1,z=2) %*>% { . + y + z } %>% m_OK)
+  expect_equal(funnel(y=1,z=2) %*>% { y + z } %>% esc, 3)
+  expect_true(funnel(y=1,z=2) %*>% { y + z } %>% m_OK)
+})
+test_that('%*>% evaluates lists in variables', {
+  # Tests for mishandling of NSE
+  expect_equal(
+    {
+      args <- list(pattern="df", replacement="aa", x="asdf")
+      args %*>% sub %>% esc
+    },
+    "asaa"
+  )
+  expect_equal( 1:6 %>>% { list(a=min(.), b=max(.)) } %*>% sum %>% esc, 7 )
 })
 
 test_that('anonymous expressions can be run', {
@@ -123,6 +127,6 @@ test_that('"%__%" and "%v__%" work', {
   expect_equal( stop("hi") %__% 1:10 %>% esc, 1:10 )
   expect_true(  stop("hi") %__% 1:10 %>% m_OK )
 
-  expect_equal( 1:5 %v__% 1:10 %>% lapply(m_value), list(1:5, 1:10) )
+  expect_equal( 1:5 %v__% 1:10 %>% lapply(m_value, warn=FALSE), list(1:5, 1:10) )
   expect_true(  1:5 %v__% 1:10 %>% m_OK )
 })

@@ -2,9 +2,8 @@
 #'
 #' Infix monadic sequence operators
 #'
-#' This page contains a list of all operators, including experimental ones. See
-#' the main package help page (\code{?rmonad}) for a discussion of the
-#' operators that are really supported.
+#' See the main package help page (\code{?rmonad}) or the \code{intro} and
+#' \code{cheatsheet} vignettes for more information.
 #'
 #'@param lhs left hand value
 #'@param rhs right hand value
@@ -22,28 +21,42 @@ NULL
 #' @export
 `%v>%` <- function(lhs, rhs) {
   envir <- parent.frame()
-  cmd <- list(bind, substitute(lhs), substitute(rhs), m_on_bind=.store)
+  cmd <- list(bind, substitute(lhs), substitute(rhs), m_on_bind=store_value)
   eval(as.call(cmd), envir=envir)
 }
 
 #' @rdname infix
 #' @export
 `%*>%` <- function(lhs, rhs) {
+  # m [*] -> ([*] -> m b) -> m b
   envir <- parent.frame()
-  lexp <- as.list(substitute(lhs))[-1]
-  on_entry <- function(x, f, desc) {
-    .lsmeval_sub(
-      lexp,
-      env=envir,
-      keep_history = TRUE,
-      desc         = paste(desc)
-    )
+
+  lhs_expr <- substitute(lhs)
+
+  # FIXME: This is really sneaky. I am ignoring x and y and replacing them with
+  # variables defined in this foreign environment. Not good practice.
+  if(is.call(lhs_expr) && lhs_expr[[1]] == "list"){
+    ninja_desc <- deparse(lhs_expr)
+    lhs_expr <- lhs_expr[-1]
+    on_entry <- function(x, f, ...) {
+      ninja_desc
+      .funnel_sub(
+        lhs_expr,
+        env=envir,
+        keep_history = TRUE,
+        desc         = ninja_desc
+      )
+    }
+  } else {
+    on_entry <- entry_lhs_transform_default
   }
+
   cmd   <- list(
     bind,
-    substitute(lhs),
+    lhs_expr,
     substitute(rhs),
     bind_args=m_value,
+    bind_monad=function(m) m_parents(m),
     entry_lhs_transform=on_entry
   )
   eval(as.call(cmd), envir=envir)
@@ -112,18 +125,19 @@ NULL
   envir <- parent.frame()
   rhs_str <- deparse(substitute(rhs))
 
-  emit <- function(i,o) {
+  emit <- function(input,output) {
     # if the lhs failed, pass the evaluated rhs
-    if(m_OK(i)){
-      i
+    if(m_OK(input)){
+      input
     }
     # else link the rhs to lhs input, and replace the lhs
     else {
-      .m_inherit(child=o, parents=i)
+      output$inherit(parents=input)
+      output
     }
   }
 
-  cmd   <- list(
+  cmd <- list(
     bind,
     substitute(lhs),
     substitute(rhs),
@@ -131,23 +145,48 @@ NULL
     bind_if = false,
     # and instead just evaluate the rhs
     bind_else = function(i,o) as_monad(o, desc=rhs_str),
-    emit = emit
+    emit = emit,
+    expect_rhs_function = FALSE
   )
   eval(as.call(cmd), envir=envir)
 }
 
+
+
 #' @rdname infix
 #' @export
 `%__%` <- function(lhs, rhs) {
-  lhs <- as_monad(lhs, desc=deparse(substitute(lhs)))
-  rhs <- as_monad(rhs, desc=deparse(substitute(rhs)))
-  .m_inherit(child=rhs, parents=lhs, force_keep=FALSE)
+
+  envir <- parent.frame()
+  .chain(substitute(lhs), substitute(rhs), FALSE, envir)
+
 }
 
 #' @rdname infix
 #' @export
 `%v__%` <- function(lhs, rhs) {
-  lhs <- as_monad(lhs, desc=deparse(substitute(lhs)))
-  rhs <- as_monad(rhs, desc=deparse(substitute(rhs)))
-  .m_inherit(child=rhs, parents=lhs, force_keep=TRUE)
+
+  envir <- parent.frame()
+  .chain(substitute(lhs), substitute(rhs), TRUE, envir)
+
+}
+
+.chain <- function(lhs, rhs, force_keep, envir) {
+
+  emit <- function(i,o) {
+    o$inherit(parents=i, force_keep=force_keep)
+    o
+  }
+
+  cmd <- list(
+    bind,
+    lhs,
+    rhs,
+    bind_if   = false,
+    bind_else = function(...){as_monad(eval(rhs, envir))},
+    emit      = emit,
+    expect_rhs_function = FALSE,
+    envir=envir
+  )
+  eval(as.call(cmd), envir=envir)
 }

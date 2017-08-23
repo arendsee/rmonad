@@ -1,0 +1,124 @@
+---
+title: "Rmonad: cheatsheet"
+author: "Zebulun Arendsee"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Cheatsheet}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+
+Here are the currently supported operators:
+
+ * `%>>%` - pass left hand side (`lhs`) as initial argument of right hand side (`rhs`) function
+ * `%v>%` - like `%>>%` but stores `lhs` value
+ * `%>_%` - like `%>>%` but passes `lhs` instead of `rhs` -- propagates `rhs` failure
+ * `%>^%` - like `%>_%` but does not propagate `rhs` failure, branch operator
+ * `%||%` - use `rhs` value if `lhs` is failing
+ * `%|>%` - call `rhs` on `lhs` if `lhs` failed
+ * `%*>%` - treat lhs as list of arguments passed to the `rhs` function
+ * `%__%` - ignore `lhs`, `rhs` starts a new chain (but preserves `lhs` history)
+ * `%v__%` - like `%__%` but stores `lhs` value
+
+The design space can be enumerated with following states:
+
+ 1. `lhs` class
+    0. a value
+    1. a list of values
+
+ 2. `rhs` class
+    0. function of `lhs`
+    1. a value independent of the `lhs`
+
+ 3. Value is stored
+    0. no
+    1. yes
+
+ 4. What is passed
+    0. the output of the `rhs`
+    1. the output of the `lhs`
+    2. the value of the `rhs` if the `lhs` failed
+
+ 5. Operations passes if
+    0. `lhs` and `rhs` both pass
+    1. `lhs` or `rhs` pass
+    2. `lhs` passes
+    3. `rhs` passes
+
+Given these states, the current operators can be represented as
+
+ * `%>>%`  - 00000
+ * `%*>%`  - 10000
+ * `%v>%`  - 00100
+ * `%>_%`  - 00010
+ * `%>^%`  - 00012
+ * `%__%`  - 01003
+ * `%v__%` - 01103
+ * `%||%`  - 01021 
+ * `%|>%`  - 00021
+
+There are a lot of potentially useful combinations that are not used. And there
+are likely other operator types not in this space that would be useful.
+
+Below is reformating of the same information:
+
+ op      | lhs | rhs      | store | passes    | runif        | pass error
+ ------- | --- | -------- | ----- | --------- | -----------  | ----------
+ `%>>%`  | x   | f(x)     | -     | f(x)      | x passes     | yes
+ `%v>%`  | x   | f(x)     | x     | f(x)      | x passes     | yes
+ `%>_%`  | x   | f(x)     | -     | x         | x passes     | yes
+ `%>^%`  | x   | f(x)     | -     | x         | x passes     | no
+ `%|>%`  | x   | f(x)     | -     | x or f(x) | x fails      | no
+ `%||%`  | x   | y        | -     | x or y    | x fails      | no
+ `%*>%`  | ... | f(...)   | -     | f(...)    | all ... pass | yes
+ `%__%`  | x   | y        | -     | y         | always       | no
+ `%v__%` | x   | y        | x     | y         | always       | no
+
+The operator `%^>%`, used for branch merging, is on the chop block. It can be
+replaced with a combination of `funnel` and `%*>%`. The operator is too
+specialized and convoluted.
+
+
+## Helper functions
+
+ 1. `esc` - extract current value and raise any exceptions
+
+ 2. `mtabulate` - summarize the pipeline in tabular form
+
+ 3. `missues` - list all warnings and errors
+
+ 4. `as_dgr_graph` - convert the pipeline to a DiagrammeR graph
+
+ 5. `as.list` - convert pipeline to a list (same order as `mtabulate`)
+
+ 6. `funnel` - merge pipelines
+
+## Examples
+
+```{r, eval=FALSE}
+library(rmonad)
+
+letters[1:5] %>>% paste(collapse="")
+letters[1:5] %v>% paste(collapse="")
+rnorm(1) %>_%
+  { stopifnot(. > 0 & . < 1) } %>>%
+  { rbinom(n=10, size=5, prob=.) } 
+
+rnorm(1) %>^%
+  {
+
+      "This is a seperate branch, it fails if . isn't between 0 and 1"
+
+      . %>_%
+        { stopifnot(. > 0 & . < 1) } %>>%
+        { rbinom(n=10, size=5, prob=.) }
+  } %>>%
+  {
+
+      "This will run even if the branch producing the binomial random
+      variables fails. It never fails."
+
+      rnorm(n=10, mean=.,sd=1)
+  }
+```

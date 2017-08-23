@@ -6,6 +6,20 @@
 #' @param ... whatever
 toss <- function(...){ }
 
+#' Given two arguments, return the first
+#'
+#' @family help_functions
+#' @param x anything
+#' @param y anything
+first <- function(x, y) x
+
+#' Given two arguments, return the second
+#'
+#' @family help_functions
+#' @param x anything
+#' @param y anything
+second <- function(x, y) y
+
 #' Return false for all input
 #'
 #' @family helper_functions
@@ -17,18 +31,6 @@ false <- function(...) { FALSE }
 #' @family helper_functions
 #' @param ... whatever
 true  <- function(...) { TRUE  }
-
-#' The identity function
-#'
-#' @family helper_functions
-#' @param x anything
-#' @param ... parameters that will be ignored
-#' @examples
-#' # pull a value out of failure
-#' 1:10 %$>% colSums %|>% ident
-#' # here it just does nothing
-#' cars %$>% colSums %|>% ident
-ident <- function(x, ...){ x }
 
 #' Ignore the first input, return the second
 #'

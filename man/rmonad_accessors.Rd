@@ -3,35 +3,49 @@
 \name{rmonad_accessors}
 \alias{rmonad_accessors}
 \alias{m_parents}
+\alias{m_nest}
+\alias{m_nest_depth}
 \alias{m_value}
+\alias{m_id}
 \alias{m_OK}
 \alias{m_code}
 \alias{m_error}
 \alias{m_warnings}
 \alias{m_notes}
 \alias{m_doc}
+\alias{m_meta}
 \alias{m_time}
 \alias{m_mem}
 \alias{m_branch}
 \alias{m_OK<-}
 \alias{m_value<-}
 \alias{m_parents<-}
+\alias{m_nest<-}
+\alias{m_nest_depth<-}
 \alias{m_code<-}
 \alias{m_error<-}
 \alias{m_warnings<-}
 \alias{m_notes<-}
 \alias{m_doc<-}
+\alias{m_meta<-}
 \alias{m_time<-}
 \alias{m_mem<-}
 \alias{m_branch<-}
 \alias{app_warnings}
 \alias{app_notes}
 \alias{app_branch}
+\alias{app_parents}
 \title{get, set, and append rmonad fields}
 \usage{
 m_parents(m)
 
-m_value(m)
+m_nest(m)
+
+m_nest_depth(m)
+
+m_value(m, warn = TRUE)
+
+m_id(m)
 
 m_OK(m)
 
@@ -45,6 +59,8 @@ m_notes(m)
 
 m_doc(m)
 
+m_meta(m)
+
 m_time(m)
 
 m_mem(m)
@@ -57,6 +73,10 @@ m_value(m) <- value
 
 m_parents(m) <- value
 
+m_nest(m) <- value
+
+m_nest_depth(m) <- value
+
 m_code(m) <- value
 
 m_error(m) <- value
@@ -66,6 +86,8 @@ m_warnings(m) <- value
 m_notes(m) <- value
 
 m_doc(m) <- value
+
+m_meta(m) <- value
 
 m_time(m) <- value
 
@@ -78,9 +100,13 @@ app_warnings(m, value)
 app_notes(m, value)
 
 app_branch(m, value)
+
+app_parents(m, value)
 }
 \arguments{
 \item{m}{the rmonad}
+
+\item{warn}{Warn if the accessed field does not exist (value was not cached)}
 
 \item{value}{value to replace or append current value}
 }

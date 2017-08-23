@@ -29,7 +29,6 @@ You can install from the github dev branch with:
 
 
 ```r
-# install.packages("devtools")
 devtools::install_github("arendsee/rmonad", ref="dev")
 ```
 
@@ -46,6 +45,7 @@ For details, see the vignette. Here are a few excerpts
 
 ```r
 library(rmonad)
+#> Error in library(rmonad): there is no package called 'rmonad'
 ```
 
 
@@ -57,16 +57,7 @@ library(rmonad)
     sqrt %v>% # record an intermediate value
     sqrt %>>%
     sqrt
-#> R> "1:5"
-#> R> "sqrt"
-#> [1] 1.000000 1.414214 1.732051 2.000000 2.236068
-#> 
-#> R> "sqrt"
-#> R> "sqrt"
-#> 
-#>  ----------------- 
-#> 
-#> [1] 1.000000 1.090508 1.147203 1.189207 1.222845
+#> Error in 1:5 %>>% sqrt %v>% sqrt %>>% sqrt: could not find function "%>>%"
 ```
 
 
@@ -95,7 +86,7 @@ if(length(x) > 0) {
 
 # this does the same
 x[[1]] %||% NULL %>% esc
-#> NULL
+#> Error in x[[1]] %||% NULL: could not find function "%||%"
 ```
 
 
@@ -103,39 +94,13 @@ x[[1]] %||% NULL %>% esc
 
 
 ```r
-lsmeval(
+funnel(
     runif(5),
     stop("stop, drop and die"),
     runif("df"),
     1:10
 )
-#> Warning: 'lsmeval' is deprecated.
-#> Use 'funnel' instead.
-#> See help("Deprecated")
-#> R> "1:10"
-#> R> "runif("df")"
-#>  * ERROR: invalid arguments
-#>  * WARNING: NAs introduced by coercion
-#> R> "stop("stop, drop and die")"
-#>  * ERROR: stop, drop and die
-#> R> "runif(5)"
-#> R> "funnel(..1, ..2, ..3, ..4, keep_history = keep_history)"
-#> 
-#>  ----------------- 
-#> 
-#> [[1]]
-#> [1] 0.5120101 0.8351271 0.8930770 0.4460601 0.2983039
-#> 
-#> [[2]]
-#> NULL
-#> 
-#> [[3]]
-#> NULL
-#> 
-#> [[4]]
-#>  [1]  1  2  3  4  5  6  7  8  9 10
-#> 
-#>  *** FAILURE ***
+#> Error in funnel(runif(5), stop("stop, drop and die"), runif("df"), 1:10): could not find function "funnel"
 ```
 
 
@@ -143,7 +108,7 @@ lsmeval(
 
 
 ```r
-lsmeval(
+funnel(
     read.csv("a.csv") %>>% do_analysis_a,
     read.csv("b.csv") %>>% do_analysis_b,
     k = 5
@@ -151,54 +116,177 @@ lsmeval(
 ```
 
 
+```r
+foo <- {
+
+  "This is nothing"
+
+  NA
+
+} %>>% {
+
+  "This the length of nothing"
+
+  length(.) 
+}
+
+bar <- {
+
+  "These are cars"
+
+  cars
+
+} %>>% {
+
+  "There are this many of them"
+
+  length(.)
+}
+
+
+baz <- "oz" %>>%
+  funnel(f=foo, b=bar) %*>%
+  {
+
+     "This definitely won't work"
+     
+     . + f + b
+  }
+```
+
+
 ### Chain independent pipelines, with documentation
 
 
 ```r
-runif(5) %>>% abs %>% doc(
+analysis <- 
+{
+    "This analysis begins with 5 uniform random variables"
 
-    "Alternatively, the documentation could go into a text block below the code
-    in a knitr document. The advantage of having documentation here, is that it
-    is coupled unambiguously to the generating function. These annotations,
-    together with the ability to chain chains of monads, allows whole complex
-    workflows to be built, with the results collated into a single object. All
-    errors propagate exactly as errors should, only affecting downstream
-    computations. The final object can be converted into a markdown document
-    and automatically generated function graphs."
+    runif(5)
 
-                  ) %>^% sum %__%
-rnorm(6)   %>>% abs %>^% sum %v__%
-rnorm("a") %>>% abs %>^% sum %__%
-rexp(6)    %>>% abs %>^% sum %T>%
-  { print(mtabulate(.)) } %>% missues
-#>                       code    OK cached  time space nbranch nnotes
-#> 2                 runif(5)  TRUE  FALSE    NA    NA       0      0
-#> 21 eval(expr, envir = env)  TRUE   TRUE 0.001    NA       0      0
-#> 3                      sum  TRUE  FALSE 0.001    88       1      0
-#> 4                 rnorm(6)  TRUE  FALSE    NA    88       0      0
-#> 5  eval(expr, envir = env)  TRUE   TRUE 0.001    NA       0      0
-#> 6                      sum  TRUE   TRUE 0.001    88       1      0
-#> 7               rnorm("a") FALSE  FALSE    NA     0       0      0
-#> 8                  rexp(6)  TRUE  FALSE    NA    88       0      0
-#> 9  eval(expr, envir = env)  TRUE   TRUE 0.001    NA       0      0
-#> 10                     sum  TRUE   TRUE 0.001    88       1      0
-#>    nwarnings error doc
-#> 2          0     0   0
-#> 21         0     0   0
-#> 3          0     0   0
-#> 4          0     0   0
-#> 5          0     0   0
-#> 6          0     0   0
-#> 7          1     1   0
-#> 8          0     0   0
-#> 9          0     0   0
-#> 10         0     0   0
-#>   id    type                      issue
-#> 1  7   error          invalid arguments
-#> 2  7 warning NAs introduced by coercion
+} %>>% '^'(2) %>>% sum %__%
+{
+    "The next step is to take 6 normal random variables"
+
+    rnorm(6)  
+} %>>% '^'(2) %>>% sum %v__%
+{
+    "And this is were the magic happens, we take 'a' random normal variables"
+
+    rnorm("a")
+
+} %>>% '^'(2) %>>% sum %__%
+{
+    "Then, just for good measure, we toss in six exponentials"
+
+    rexp(6)
+
+} %>>% '^'(2) %>>% sum
+#> Error in {: could not find function "%>>%"
+
+analysis
+#> Error in eval(expr, envir, enclos): object 'analysis' not found
 ```
 
-## `dev` branch features
+### Add metadata to chunk
+
+
+```r
+as_monad({
+  "This is data describing a chunk"
+
+  list(
+    foo = "this is metadata, you can put anything you want in here",
+    bar = "maybe can pass parameters to an Rmarkdown chunk",
+    baz = "or store stuff in state, for example:"
+    sysinfo = devtools::session_info()
+  )
+
+  # this is the actual thing computed
+  1 + 1
+})
+```
+
+### Build Markdown report from a pipeline
+
+`rmonad` stores the description of a pipeline as a graphical object. This
+object may be queried to access all data needed to build a report. These could
+be detailed reports where the code, documentation, and metadata for every node
+is written to a linked HTML file. Or a report may be more specialized, e.g. a
+benchmarking or debugging report. A report generating function may be branched,
+with certain elements generated only if some condition is met. Overall,
+`rmonad` offers a more dynamimc approach to literate programming.
+
+This potential is mostly unrealized currently. `rmonad` offers the prototype
+report generator `mreport`.
+
+
+```r
+x <- 
+{
+  "# Report
+
+  This is a pipeline report
+  "
+
+} %__% {
+  
+  "this is a docstring"
+  
+  5
+
+} %>>% {
+  
+  "this is too"
+  
+  sqrt(.)
+
+} %>_% {
+
+   "# Conclusion
+
+   optional closing remarks
+   "
+
+  NULL
+
+}
+mreport(x)
+```
+
+### Graphing pipelines
+
+An `rmonad` pipeline can be converted to a `DiagrammeR` object. Along with many
+unexplored possibilities, this allows the pipeline to be plotted:
+
+
+```r
+# here I use the `->` operator, which is the little known twin of `<-`.
+funnel(
+  "a" %v>% paste("b"), # %v>% stores the input (%>>% doesn't)
+  "c" %v>% paste("d")
+) %*>% # %*>% bind argument list from funnel to paste
+  paste %>%  # funnel joins monads, so we pass in the full monad here, with
+  funnel(    # '%>%', rather than use '%>>'% to get the wrapped value
+    "e" %v>% paste("f"),
+    "g" %v>% paste("h")
+  ) %*>%
+  paste %>% # the remaining steps are all operating _on_ the monad
+  plot(label='value')
+#> Error in funnel("a" %v>% paste("b"), "c" %v>% paste("d")) %*>% paste %>% : could not find function "%*>%"
+```
+
+Nested pipelines can also be plotted:
+
+
+```r
+foo <- function(x){
+    'c' %v>% paste(x) %v>% paste('d')
+}
+'a' %v>% foo %>% plot(label='value')
+#> Error in "a" %v>% foo: could not find function "%v>%"
+```
 
 ### Docstrings
 
@@ -229,3 +317,44 @@ This allows chunks of code to be annotated without the exta boilerplate of
 
 }
 ```
+
+## Scaling up
+
+`rmonad` can be used to mediate very large pipelines. Below is a plot of an in
+house pipeline. Green nodes are passing and yellow nodes produced warnings.
+
+![Plot of a large rmonad pipeline](README-big-pipeline.png)
+
+## Contributing
+
+I am looking for collaborators. There are enough unsolved problems on the
+function graph side of rmonad to easily merit coauthorship. Similarly for the
+report generation handling. In addition, there are lots of smaller problems.
+See the next section for a partial summary.
+
+
+## rmonad v0.3.0 goals
+
+ - [ ] A more elegant data structure for representing the workflow graph. I
+   want to replace my ad hoc, hand-rolled data structure with a dedicated graph
+   library (perhaps DiagrammeR).
+
+ - [ ] Record all operations, even those not run. Currently if an input to a
+   node fails, the node is ignored. So the ultimate graph is truncated at the
+   first error.
+   
+ - [ ] Full code regeneration from the `rmonad` object. Currently `rmonad`
+   stores each node's code, but it loses information.
+
+ - [ ] Add function to align two `rmonad` pipelines. This function would be the
+   basis for `diff` and `patch` functions. Where a `patch` function takes an
+   unevaluated `rmonad` object, aligns it to a broken pipeline, and resumes
+   evaluation from the failing nodes using the patch object code.
+
+ - [ ] Store file and line number of all code. 
+
+ - [ ] Persistant caching of results
+
+ - [ ] Job submission handling
+
+ - [ ] Add a shiny app for interactive exploration of a pipeline

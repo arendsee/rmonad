@@ -1,16 +1,16 @@
 context("accessor methods")
 
-m <- Rmonad()
+m <- Rmonad$new()
 
 test_that("The .has_* correctly return false", {
-  expect_equal(.has_branch(m),   FALSE)
-  expect_equal(.has_doc(m),      FALSE)
-  expect_equal(.has_error(m),    FALSE)
-  expect_equal(.has_mem(m),      FALSE)
-  expect_equal(.has_notes(m),    FALSE)
-  expect_equal(.has_time(m),     FALSE)
-  expect_equal(.has_value(m),    FALSE)
-  expect_equal(.has_warnings(m), FALSE)
+  expect_equal(m$has_branch(),   FALSE)
+  expect_equal(m$has_doc(),      FALSE)
+  expect_equal(m$has_error(),    FALSE)
+  expect_equal(m$has_mem(),      FALSE)
+  expect_equal(m$has_notes(),    FALSE)
+  expect_equal(m$has_time(),     FALSE)
+  expect_equal(m$has_value(),    FALSE)
+  expect_equal(m$has_warnings(), FALSE)
 })
 
 test_that("You get out what you put in", {
@@ -25,4 +25,11 @@ test_that("You get out what you put in", {
 test_that("You can't put in illegal values", {
   expect_error(m_warnings(.m) <- 34    )
   expect_error(m_notes(.m)    <- FALSE )
+})
+
+test_that("Attempting to access a non-existent value should raise an warning", {
+  expect_warning({
+    x <- 16 %>>% sqrt %>>% sqrt
+    m_value(as.list(x)[[1]])
+  })
 })

@@ -3,10 +3,6 @@
 #' This function should not be used directly. Rather you should use the infix
 #' operators. They all wrap this function.
 #'
-#' Non-standard evaluation to insert x into f as the first positional argument.
-#' This allows specialization of f, but also prevents higher-order voodoo from
-#' being performed.
-#'
 #' @export
 #' @param x The input, may or may not be a monad report
 #' @param f A function of the value contained in x
@@ -22,88 +18,199 @@
 bind <- function(
   x,
   f,
-  entry_lhs_transform = function(m, f, ...) as_monad(m, ...),
+  entry_lhs_transform = entry_lhs_transform_default,
   bind_if             = function(m) m_OK(m),
-  bind_else           = toss,
+  bind_else           = function(...){NULL},
   emit                = emit_default,
-  m_on_bind           = ident,
+  m_on_bind           = function(x, ...){x},
   io_combine          = default_combine,
-  bind_args           = function(m) list(m_value(m))
+  bind_args           = function(m) list(m_value(m, warn=FALSE)),
+  bind_monad          = function(m) list(m),
+  expect_rhs_function = TRUE,
+  envir               = parent.frame()
 ){
   # FIXME: cleanup this implementation
 
-  left_str = deparse(substitute(x))
-  m <- entry_lhs_transform(x, f, desc=left_str)
+  fdecon <- extract_metadata(substitute(f), env=envir, skip_name=!expect_rhs_function)
+  rhs_str <- deparse(fdecon$expr)
+  rhs_doc <- fdecon$docstring
+  rhs_met <- fdecon$metadata
+
+  xdecon <- extract_metadata(substitute(x), env=envir)
+  lhs_str <- deparse(xdecon$expr)
+  lhs_doc <- xdecon$docstring
+  lhs_met <- xdecon$metadata
+
+  m <- entry_lhs_transform(x, f, desc=lhs_str)
+
+  if(!has_doc(m)){
+    m_doc(m) <- lhs_doc
+  }
+  if(!has_meta(m)){
+    m_meta(m) <- lhs_met
+  }
 
   o <- if(bind_if(m))
   {
-    e <- parent.frame()
-
-    # insert x as first positional in f
-    fs <- substitute(f)
+    fs <- fdecon$expr
     fl <- as.list(fs)
 
+      bound_args <- bind_args(m)
+      final_args <- bound_args
+
       # If the expressions is of form 'x %>>% Foo::bar'
-      # Package names are supported fine if arguments are given
-      expr <- if(fl[[1]] == '::' && length(fl) == 3) {
-        as.call( list(as.call(fl)) %++% bind_args(m) )
+      # No special handling needed if arguments are given
+      if(fl[[1]] == '::' && length(fl) == 3) {
+        new_function <- f
       }
       # Evaluate '.' inside an anonymous function, e.g. 'x %>>% { 2 * . }'
+      # If a expanded list is passed, accept keywords
       else if(fl[[1]] == '{'){
-        a_function <- eval(call("function", as.pairlist(alist(. =)), fs), envir=e)
-        e = environment()
-        as.call( list(quote(a_function), .=m_value(m)) )
+        keys <- names(final_args)
+        if(is.null(keys)){
+          keys <- rep("", length(final_args))
+        }
+        if(keys[1] == ""){
+          keys[1] <- "."
+        }
+        if(any(keys == "")){
+          msg <- "Error in %s: Arguments to an anonymous function must be named"
+          stop(msg)
+        }
+        names(final_args) <- keys
+
+        new_function <- pryr::make_function(
+          .as_positional_formals(names(final_args)),
+          fs,
+          env=envir
+        )
+
+        rhs_str <- deparse(new_function)
+      }
+      # As in magrittr, fail if an anonymous function is in the pipeline
+      # without the parentheses. The infix operators act on the function body
+      else if(fl[[1]] == "function"){
+        stop("Anonymous functions must be parenthesized", call.=FALSE)
+      }
+      else if(fl[[1]] == "(" && fl[[2]][[1]] == "function"){
+        new_function <- eval(fl[[2]], envir=envir)
       }
       else {
-        as.call( list(fl[[1]]) %++% bind_args(m) %++% fl[-1] )
+        new_function <- eval(fl[[1]], envir=envir)
+        final_args <- append(bound_args, fl[-1])
       }
 
-    st <- system.time(
-      {
-        o <- as_monad( eval(expr, envir=e), desc=deparse(fs) )
-      },
-      gcFirst=FALSE # this kills performance when TRUE
+    o <- .eval(
+      func       = new_function,
+      args       = final_args,
+      env        = envir
     )
-    m_time(o) <- signif(unname(st[1]), 2)
 
     m <- m_on_bind(m)
 
-    io_combine(m, o)
+    io_combine(m=m, o=o, f=new_function, margs=bind_monad(m))
 
   } else {
     bind_else(m, f)
   }
 
-  o <- emit(m, o)
-  m_mem(o) <- as.integer(object.size(m_value(o)))
-  o
+  # NOTE: This causes much pain. It is a hack I wrote for reasons I've
+  # forgotten. There should be a more natural place to set this info. This
+  # sometimes overwrites previous settings creating the most subtle bugs.
+  if(!is.null(o)){
+    m_doc(o)  <- rhs_doc
+    m_meta(o) <- rhs_met
+    m_code(o) <- rhs_str
+  }
+
+  result <- emit(m, o)
+  m_mem(result) <- as.integer(object.size(m_value(result, warn=FALSE)))
+  result
 }
 
-emit_default <- function(i , o) {
-  if(is.null(o)){
-    i
+
+# FIXME: There HAS to be a better way to do this, as always in R, there is some
+# magic function, hiding in the thousands of builtins, that does just what you
+# want. But since R is a dynamic language, where no type info is available,
+# there is no good way to find them.
+.as_positional_formals <- function(arg_names){
+  code_str <- sprintf("alist(%s)", paste0(arg_names, " = ", collapse=", ")) 
+  eval(parse(text=code_str))
+}
+
+# Evaluate the expression, load timing info into resultant object
+.eval <- function(func, args, env){
+
+  st <- system.time(
+    {
+      result <- as_monad( do.call(func, args, envir=env)) %>% unnest
+    },
+    gcFirst=FALSE # this kills performance when TRUE
+  )
+  m_time(result) <- signif(unname(st[1]), 2)
+
+  result
+}
+
+
+## m_on_bind options
+
+# preserve value upon future bind
+store_value <- function(m) { .m_stored(m) <- TRUE ; m }
+
+entry_lhs_transform_default <- function(m, f, ...) {
+  # FIXME: This is a sneaky way of safely evaluating the lhs without nesting
+  # the nads. I need a cleaner solution.
+  as_monad(m, lossy=TRUE, clone=TRUE, ...)
+}
+
+emit_default <- function(input, output) {
+  # NOTE: output here is an Rmonad, not a value. It will be NULL only if no
+  # bind operation was performed. It may wrap a NULL value.
+  if(is.null(output)){
+    input
   } else {
-    o
+    output
   }
 }
 
-branch_combine <- function(m, o){
-  m <- app_branch(m, o)
+
+## io_combine options
+
+branch_combine <- function(m, o, f, margs){
+  if(has_nest(o)){
+    m_nest(o) <- splice_function(f=f, m=m_nest(o), ms=margs)
+  }
+
+  o$inherit(parents=m, force_keep=TRUE)
+
+  m <- app_branch(m=m, value=o)
+
   m
+
 }
 
-default_combine <- function(m, o){
+default_combine <- function(m, o, f, margs){
   if(!m_OK(o)){
     # On failure, propagate the final passing value, this allows
     # for either degugging or passage to alternative handlers.
-    m_value(o) <- m_value(m)
+    m_value(o) <- m_value(m, warn=FALSE)
   }
 
-  .m_inherit(child=o, parents=m)
+  if(has_nest(o)){
+    m_nest(o) <- splice_function(f=f, m=m_nest(o), ms=margs)
+  }
+
+  o$inherit(parents=m)
+
+  o
 }
 
-bypass_combine <- function(m, o){
-  # the new value inherits the old value, losing whatever it had
-  # but the pass/fail state of the child is preserved
-  .m_inherit(child=o, parents=m, inherit_value=TRUE, inherit_OK=FALSE)
+bypass_combine <- function(m, o, f, margs){
+  # # the new value inherits the old value, losing whatever it had
+  # # but the pass/fail state of the child is preserved
+
+  o$inherit(parents=m, inherit_value=TRUE, inherit_OK=FALSE)
+
+  o
 }
