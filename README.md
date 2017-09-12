@@ -45,7 +45,6 @@ For details, see the vignette. Here are a few excerpts
 
 ```r
 library(rmonad)
-#> Error in library(rmonad): there is no package called 'rmonad'
 ```
 
 
@@ -57,7 +56,16 @@ library(rmonad)
     sqrt %v>% # record an intermediate value
     sqrt %>>%
     sqrt
-#> Error in 1:5 %>>% sqrt %v>% sqrt %>>% sqrt: could not find function "%>>%"
+#> R> "1:5"
+#> R> "sqrt"
+#> [1] 1.000000 1.414214 1.732051 2.000000 2.236068
+#> 
+#> R> "sqrt"
+#> R> "sqrt"
+#> 
+#>  ----------------- 
+#> 
+#> [1] 1.000000 1.090508 1.147203 1.189207 1.222845
 ```
 
 
@@ -86,7 +94,7 @@ if(length(x) > 0) {
 
 # this does the same
 x[[1]] %||% NULL %>% esc
-#> Error in x[[1]] %||% NULL: could not find function "%||%"
+#> NULL
 ```
 
 
@@ -100,7 +108,34 @@ funnel(
     runif("df"),
     1:10
 )
-#> Error in funnel(runif(5), stop("stop, drop and die"), runif("df"), 1:10): could not find function "funnel"
+#> R> "1:10"
+#>  [1]  1  2  3  4  5  6  7  8  9 10
+#> 
+#> R> "runif("df")"
+#>  * ERROR: invalid arguments
+#>  * WARNING: NAs introduced by coercion
+#> R> "stop("stop, drop and die")"
+#>  * ERROR: stop, drop and die
+#> R> "runif(5)"
+#> [1] 0.5120101 0.8351271 0.8930770 0.4460601 0.2983039
+#> 
+#> R> "funnel(runif(5), stop("stop, drop and die"), runif("df"), 1:10)"
+#> 
+#>  ----------------- 
+#> 
+#> [[1]]
+#> [1] 0.5120101 0.8351271 0.8930770 0.4460601 0.2983039
+#> 
+#> [[2]]
+#> NULL
+#> 
+#> [[3]]
+#> NULL
+#> 
+#> [[4]]
+#>  [1]  1  2  3  4  5  6  7  8  9 10
+#> 
+#>  *** FAILURE ***
 ```
 
 
@@ -183,10 +218,50 @@ analysis <-
     rexp(6)
 
 } %>>% '^'(2) %>>% sum
-#> Error in {: could not find function "%>>%"
 
 analysis
-#> Error in eval(expr, envir, enclos): object 'analysis' not found
+#> 
+#> 
+#>     This analysis begins with 5 uniform random variables
+#> 
+#> R> "{
+#>     runif(5)
+#> }"
+#> R> "`^`(2)"
+#> R> "sum"
+#> 
+#> 
+#>     The next step is to take 6 normal random variables
+#> 
+#> R> "{
+#>     rnorm(6)
+#> }"
+#> R> "`^`(2)"
+#> R> "sum"
+#> [1] 10.78472
+#> 
+#> 
+#> 
+#>     And this is were the magic happens, we take 'a' random normal variables
+#> 
+#> R> "{
+#>     rnorm("a")
+#> }"
+#>  * ERROR: invalid arguments
+#>  * WARNING: NAs introduced by coercion
+#> 
+#> 
+#>     Then, just for good measure, we toss in six exponentials
+#> 
+#> R> "{
+#>     rexp(6)
+#> }"
+#> R> "`^`(2)"
+#> R> "sum"
+#> 
+#>  ----------------- 
+#> 
+#> [1] 29.97433
 ```
 
 ### Add metadata to chunk
@@ -274,7 +349,7 @@ funnel(
   ) %*>%
   paste %>% # the remaining steps are all operating _on_ the monad
   plot(label='value')
-#> Error in funnel("a" %v>% paste("b"), "c" %v>% paste("d")) %*>% paste %>% : could not find function "%*>%"
+#> Error in loadNamespace(name): there is no package called 'webshot'
 ```
 
 Nested pipelines can also be plotted:
@@ -285,7 +360,7 @@ foo <- function(x){
     'c' %v>% paste(x) %v>% paste('d')
 }
 'a' %v>% foo %>% plot(label='value')
-#> Error in "a" %v>% foo: could not find function "%v>%"
+#> Error in loadNamespace(name): there is no package called 'webshot'
 ```
 
 ### Docstrings
