@@ -349,8 +349,9 @@ funnel(
   ) %*>%
   paste %>% # the remaining steps are all operating _on_ the monad
   plot(label='value')
-#> Error in loadNamespace(name): there is no package called 'webshot'
 ```
+
+![plot of chunk workflow-plot](README-workflow-plot-1.png)
 
 Nested pipelines can also be plotted:
 
@@ -360,8 +361,9 @@ foo <- function(x){
     'c' %v>% paste(x) %v>% paste('d')
 }
 'a' %v>% foo %>% plot(label='value')
-#> Error in loadNamespace(name): there is no package called 'webshot'
 ```
+
+![plot of chunk nested-workflow-plot](README-nested-workflow-plot-1.png)
 
 ### Docstrings
 
