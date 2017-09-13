@@ -1,5 +1,5 @@
 ---
-title: "Rmonad: an introduction"
+title: "`rmonad`: an introduction"
 author: "Zebulun Arendsee"
 output: rmarkdown::html_vignette
 vignette: >
@@ -14,7 +14,7 @@ library(magrittr)
 set.seed(210)
 ```
 
-`Rmonad` offers
+`rmonad` offers
 
  * a stateful pipeline framework
 
@@ -32,7 +32,7 @@ set.seed(210)
 
 ## Monadic pipelines
 
-I will introduce `Rmonad` with a simple sequence of squares
+I will introduce `rmonad` with a simple sequence of squares
 
 ```{r}
 # %>>% corresponds to Haskell's >>=
@@ -42,7 +42,7 @@ I will introduce `Rmonad` with a simple sequence of squares
     sqrt
 ```
 
-So what exactly did Rmonad do with your data? It is still there, sitting
+So what exactly did `rmonad` do with your data? It is still there, sitting
 happily inside the monad.
 
 In `magrittr` you could do something similar:
@@ -61,7 +61,7 @@ computation succeeded. It collates all errors, warnings, and messages. These
 are stored in step-by-step a history of the pipeline.
 
 `%>%` is an application operator, `%>>%` is a *monadic bind* operator. Magrittr
-and Rmonad complement eachother. `%>%` can be used inside a monadic sequence to
+and `rmonad` complement eachother. `%>%` can be used inside a monadic sequence to
 perform operations *on* monads, whereas `%>>%` performs operations *in* them.
 If this is all too mystical, just hold on, the examples are sensical even
 without an understanding of monads.
@@ -118,7 +118,7 @@ downstream monadic sequence (except when explicitly doing error handling).
 However it, and all other information in the monad, can be easily accessed. 
 
 
-## Extracting data from an Rmonad
+## Extracting data from an `rmonad`
 
 If you want to extract the terminal result from the monad, you can use the `esc`
 function:
@@ -166,7 +166,7 @@ result <- 1:5 %v>% sqrt %v>% sqrt %v>% sqrt
 as.list(result)[[2]] %>% esc
 ```
 
-An Rmonad can be converted to a `DiagrammeR` graph (or `igraph`); in this way,
+An `rmonad` can be converted to a `DiagrammeR` graph (or `igraph`); in this way,
 standard tools for network analysis can be applied to pipelines. `rmonad`
 currently has built in support for plotting piplines and making markdown
 reports (experimental).
@@ -266,10 +266,10 @@ letters[1:10] %v>% colSums %|>% sum %||% message("Can't process this")
 ```
 
 
-Overall, in Rmonad, errors are well-behaved. It is reasonable to write
+Overall, in `rmonad`, errors are well-behaved. It is reasonable to write
 functions that return an error rather than one of the myriad default values
 (`NULL`, `NA`, `logical(0)`, `list()`, `FALSE`). This approach is unambiguous.
-Rmonad can catch the error and allow allow the programmer to deal with it
+`rmonad` can catch the error and allow allow the programmer to deal with it
 accordingly.
 
 
@@ -317,7 +317,7 @@ rexp(10)  %>>% sum
 ```
 
 The `%v__%` operator records the output of the lhs and evaluates the rhs into
-an Rmonad. If you don't care about the output, you can use `%__%`, which simply
+an `rmonad`. If you don't care about the output, you can use `%__%`, which simply
 replaces the rhs value with lhs value (while, of course, propagating state).
 
 The `%__%` operator is a little like a semicolon, in that it demarcates

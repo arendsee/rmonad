@@ -530,7 +530,7 @@ plot(result)
 ![plot of chunk gff-workflow-plot](gff-workflow-plot-1.png)
 
 A plot of the connections between functions in the pipeline. The node labels
-are the Rmonad ids. The red arrow indicates a 'nest' relationship. Green nodes
+are the `rmonad` ids. The red arrow indicates a 'nest' relationship. Green nodes
 are OK, orange nodes raised a warning, red nodes (none appear in this graph)
 represent errors.
 
