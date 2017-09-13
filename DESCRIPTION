@@ -21,7 +21,8 @@ Imports:
     methods,
     magrittr,
     DiagrammeR,
-    pryr
+    pryr,
+    future
 Suggests:
     testthat,
     covr,

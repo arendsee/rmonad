@@ -1,6 +1,7 @@
 #' @importFrom utils capture.output object.size
 #' @importFrom magrittr "%>%"
-utils::globalVariables(c("%>%", "."))
+#' @importFrom future "%<-%"
+utils::globalVariables(c("%>%", ".", "%<-%"))
 NULL
 
 #' rmonad: handling pipes, errors, and everything with monads
