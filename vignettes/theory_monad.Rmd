@@ -149,6 +149,10 @@ pipeline.
 
 ## `rmonad` for Haskellers 
 
+The name `rmonad` is a nod to `Xmonad` (no relation to the Restricted Monad
+package). Where `Xmonad` wraps the X window system, `rmonad` wraps evaluation
+of R expressions. 
+
 Only a few R expressions are pure. If a function is given an invalid input at
 runtime (e.g. `sqrt("wtf")`), it will die with a message printed to stderr.
 `rmonad` wraps all R calls in a monad, intercepting all messages, so that the
