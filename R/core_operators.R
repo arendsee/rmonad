@@ -174,7 +174,7 @@ NULL
 .chain <- function(lhs, rhs, force_keep, envir) {
 
   emit <- function(i,o) {
-    o$inherit(parents=i, force_keep=force_keep)
+    o$set_prior(i)
     o
   }
 

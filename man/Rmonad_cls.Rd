@@ -40,6 +40,8 @@ of pure computation.
 
 \item{\code{parents}}{List of parent Rmonad objects, these are the node's inputs}
 
+\item{\code{prior}}{An Rmonad object that precedes (but passes no value to) this one}
+
 \item{\code{nest}}{A nested pipeline that produced this nodes value given this nodes inputs}
 
 \item{\code{nest_depth}}{The nesting depth of this node (with 1 being unnested)}

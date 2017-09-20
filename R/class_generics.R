@@ -82,6 +82,9 @@ as.list.Rmonad <- function(x, recurse_nests=TRUE, ...){
   if(recurse_nests && has_nest(x)){
     ms <- as.list(m_nest(x), recurse_nests) %++% ms
   }
+  if(x$has_prior()){
+    ms <- as.list(x$get_prior()) %++% ms
+  }
   unique(ms)
 }
 

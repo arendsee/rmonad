@@ -26,6 +26,7 @@ reset_rmonad_id <- function(){
 #' @field meta       List of metadata about the function specified in a list after the docstring
 #' @field branch     List of child pipelines dependent on this node but independent of the main pipe
 #' @field parents    List of parent Rmonad objects, these are the node's inputs
+#' @field prior      An Rmonad object that precedes (but passes no value to) this one
 #' @field nest       A nested pipeline that produced this nodes value given this nodes inputs
 #' @field nest_depth The nesting depth of this node (with 1 being unnested)
 #'
@@ -130,6 +131,7 @@ Rmonad <- R6::R6Class(
     meta       = list(),
     branch     = list(), # TODO: recast as 'children', no special firstborn treatment
     parents    = list(),
+    prior      = list(),
     nest       = list(),
     nest_depth = NA_integer_,
     initialize = function(){
@@ -153,6 +155,7 @@ Rmonad <- R6::R6Class(
     get_meta       = function() self$meta,
     get_branch     = function() self$branch,
     get_parents    = function() private$maybe_vector_get(self$parents),
+    get_prior      = function() private$maybe_vector_get(self$prior),
     get_nest       = function() private$maybe_vector_get(self$nest),
     get_nest_depth = function() self$nest_depth,
     get_time = function() {
@@ -185,6 +188,7 @@ Rmonad <- R6::R6Class(
     set_meta       = function(x) self$meta        <- x,
     set_branch     = function(x) self$branch      <- x,
     set_parents    = function(x) self$parents     <- private$maybe_vector_set(x, private$is_not_empty),
+    set_prior      = function(x) self$prior       <- private$maybe_vector_set(x, private$is_not_empty, expected_type=is_rmonad),
     set_nest       = function(x) self$nest        <- private$maybe_vector_set(x, private$is_not_empty),
     set_nest_depth = function(x) self$nest_depth  <- x,
     set_time       = function(x) self$other$time  <- x,
@@ -210,6 +214,7 @@ Rmonad <- R6::R6Class(
     has_warnings = function() length(self$warnings) != 0              ,
     has_notes    = function() length(self$notes)    != 0              ,
     has_parents  = function() length(self$parents)  != 0              ,
+    has_prior    = function() length(self$prior)    == 1              ,
     has_nest     = function() length(self$nest)     != 0              ,
     has_branch   = function() length(self$branch)   != 0              ,
     has_meta     = function() length(self$meta)     != 0              ,
