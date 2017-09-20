@@ -166,10 +166,15 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
 
   g <- as_dgr_graph(x, label=label, color=color)
 
+  # see www.graphviz.org/ for attribute options
   g$edges_df$color <- ifelse(g$edges_df$rel == 'depend', 'black', 'red')
-  g$edges_df$color <- ifelse(g$edges_df$rel == 'transitive', 'gray', g$edges_df$color)
 
+  g$edges_df$color <- ifelse(g$edges_df$rel == 'transitive', 'gray', g$edges_df$color)
   g$edges_df$style <- ifelse(g$edges_df$rel == 'transitive', "dotted", "")
+
+  g$edges_df$color     <- ifelse(g$edges_df$rel == 'prior', 'blue', g$edges_df$color)
+  g$edges_df$penwidth  <- ifelse(g$edges_df$rel == 'prior', 3, 1)
+  g$edges_df$style     <- ifelse(g$edges_df$rel == 'prior', "dotted", g$edges_df$style)
 
   # For some reason, the color was defaulting to white, which was hard to see
   # against the node background and made text that overflowed the node

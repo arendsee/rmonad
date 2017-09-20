@@ -175,7 +175,6 @@ as_dgr_graph <- function(m, type=NULL, label=NULL, color=NULL, ...){
   nodes_df$id <- sapply(ms, m_id)
   nodes_df$fillcolor <- fillcolor
 
-  # see www.graphviz.org/ for attribute opeions
   edges_df_pc <- DiagrammeR::create_edge_df(
     from    = lapply(ms, function(x) sapply(m_parents(x), m_id)) %>% unlist,
     to      = lapply(ms, function(x) rep.int(m_id(x), length(m_parents(x)))) %>% unlist,
@@ -193,6 +192,21 @@ as_dgr_graph <- function(m, type=NULL, label=NULL, color=NULL, ...){
   edges_df_nest <- edges_df_nest[sapply(ms, has_nest), ]
 
   edges_df <- rbind(edges_df_pc, edges_df_nest)
+
+  has_prior <- sapply(ms, function(x) if (x$has_prior()) m_id(x) else NA) %>% {.[!is.na(.)]}
+  is_prior <- sapply(ms, function(x) if (x$has_prior()) m_id(x$get_prior()) else NA) %>% {.[!is.na(.)]}
+
+  # Check for `%__%` operators
+  if(length(has_prior > 0)){
+    edges_df_prior <- DiagrammeR::create_edge_df(
+      from  = has_prior,
+      to    = is_prior,
+      f_depth = rep(0, length(has_prior)),
+      t_depth = rep(0, length(has_prior)),
+      rel   = "prior"
+    )
+    edges_df <- rbind(edges_df,    edges_df_prior)
+  }
 
   edges_df$rel <- ifelse(
     (edges_df$t_depth != edges_df$f_depth) & edges_df$rel == 'depend',
