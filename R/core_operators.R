@@ -158,7 +158,7 @@ NULL
 `%__%` <- function(lhs, rhs) {
 
   envir <- parent.frame()
-  .chain(substitute(lhs), substitute(rhs), FALSE, envir)
+  .chain(substitute(lhs), substitute(rhs), envir)
 
 }
 
@@ -166,12 +166,14 @@ NULL
 #' @export
 `%v__%` <- function(lhs, rhs) {
 
+  .Deprecated("Use `%__%` instead, they now do the same thing")
+
   envir <- parent.frame()
-  .chain(substitute(lhs), substitute(rhs), TRUE, envir)
+  .chain(substitute(lhs), substitute(rhs), envir)
 
 }
 
-.chain <- function(lhs, rhs, force_keep, envir) {
+.chain <- function(lhs, rhs, envir) {
 
   emit <- function(i,o) {
     o$set_prior(i)
