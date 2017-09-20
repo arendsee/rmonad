@@ -308,24 +308,20 @@ from the tree.
 ## Chains of chains
 
 If you want to connect many chains, all with independent inputs, you can do so
-with the `%__%` and `%v__%` operators.
+with the `%__%` operator.
 
 ```{r}
-runif(10) %>>% sum %v__%
-rnorm(10) %>>% sum %v__%
+runif(10) %>>% sum %__%
+rnorm(10) %>>% sum %__%
 rexp(10)  %>>% sum
 ```
 
-The `%v__%` operator records the output of the lhs and evaluates the rhs into
-an `rmonad`. If you don't care about the output, you can use `%__%`, which simply
-replaces the rhs value with lhs value (while, of course, propagating state).
-
-The `%__%` operator is a little like a semicolon, in that it demarcates
+The `%__%` operator records the output of the lhs and evaluates the rhs into an
+`rmonad`. This operator is a little like a semicolon, in that it demarcates
 independent statements. Each statement, though, is wrapped into a graph of
 operations. This graph is itself data, and can be computed on. You could take
-any analysis and recompose it as `%v__%` delimited blocks. The result of
-running the analysis would be a data structure containing all results and
-errors.
+any analysis and recompose it as `%__%` delimited blocks. The result of running
+the analysis would be a data structure containing all results and errors.
 
 ```{r, eval=FALSE}
 program <-
@@ -333,9 +329,9 @@ program <-
     x = 2
     y = 5
     x * y
-} %v__% {
+} %__% {
     letters %>% sqrt
-} %v__% {
+} %__% {
     10 * x
 }
 ```
@@ -409,7 +405,7 @@ runif(5) %>>% abs %>% doc(
     and automatically generated function graphs."
 
                   ) %>^% sum %__%
-rnorm(6)   %>>% abs %>^% sum %v__%
+rnorm(6)   %>>% abs %>^% sum %__%
 rnorm("a") %>>% abs %>^% sum %__%
 rexp(6)    %>>% abs %>^% sum %T>%
   {print(mtabulate(.)) } %>% missues

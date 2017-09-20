@@ -19,7 +19,6 @@ Here are the currently supported operators:
  * `%|>%` - call `rhs` on `lhs` if `lhs` failed
  * `%*>%` - treat lhs as list of arguments passed to the `rhs` function
  * `%__%` - ignore `lhs`, `rhs` starts a new chain (but preserves `lhs` history)
- * `%v__%` - like `%__%` but stores `lhs` value
 
 The design space can be enumerated with following states:
 
@@ -54,7 +53,6 @@ Given these states, the current operators can be represented as
  * `%>_%`  - 00010
  * `%>^%`  - 00012
  * `%__%`  - 01003
- * `%v__%` - 01103
  * `%||%`  - 01021 
  * `%|>%`  - 00021
 
@@ -73,7 +71,6 @@ Below is reformating of the same information:
  `%||%`  | x   | y        | -     | x or y    | x fails      | no
  `%*>%`  | ... | f(...)   | -     | f(...)    | all ... pass | yes
  `%__%`  | x   | y        | -     | y         | always       | no
- `%v__%` | x   | y        | x     | y         | always       | no
 
 The operator `%^>%`, used for branch merging, is on the chop block. It can be
 replaced with a combination of `funnel` and `%*>%`. The operator is too

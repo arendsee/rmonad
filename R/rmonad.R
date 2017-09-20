@@ -23,7 +23,6 @@ NULL
 #'    \item{\code{\%||\%}}{if input is error, use rhs value instead}
 #'    \item{\code{\%|>\%}}{if input is error, run rhs on last passing result}
 #'    \item{\code{\%__\%}}{keep parents from the lhs (errors ignored). This allows chaining of independent operations.}
-#'    \item{\code{\%v__\%}}{like \code{\%__\%} but store lhs result}
 #' }
 #'
 #' @section Operators targeted for deprecation:
@@ -74,7 +73,7 @@ NULL
 #' read.csv("a.csv") %||% iris %>>% head
 #'
 #' # join two independent pipelines, preserving history
-#' cars %>>% colSums %v__% cars %>>% lapply(sd) %>>% unlist
+#' cars %>>% colSums %__% cars %>>% lapply(sd) %>>% unlist
 #'
 #' # load an expression into a monad, catching errors
 #' as_monad(stop("instant death"))

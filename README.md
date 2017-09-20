@@ -198,7 +198,7 @@ analysis <-
     "The next step is to take 6 normal random variables"
 
     rnorm(6)  
-} %>>% '^'(2) %>>% sum %v__%
+} %>>% '^'(2) %>>% sum %__%
 {
     "And this is were the magic happens, we take 'a' random normal variables"
 
@@ -231,8 +231,6 @@ analysis
 #> }"
 #> R> "`^`(2)"
 #> R> "sum"
-#> [1] 10.78472
-#> 
 #> 
 #> 
 #>     And this is were the magic happens, we take 'a' random normal variables
