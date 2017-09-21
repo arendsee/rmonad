@@ -130,8 +130,3 @@ test_that('"%__%" works', {
   expect_equal( 1:5 %__% 1:10 %>% lapply(m_value, warn=FALSE), list(1:5, 1:10) )
   expect_true(  1:5 %__% 1:10 %>% m_OK )
 })
-
-test_that('"%__%" does not double nest lhs (issue #1)', {
-  expect_silent(5 %__% as_monad(4) %>>% sqrt)
-  expect_equal(5 %__% as_monad(4) %>>% sqrt %>% m_value, 2)
-})

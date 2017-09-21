@@ -58,8 +58,3 @@ test_that('funnel handles errors in expressions', {
   expect_equal(funnel(5, stop(1)) %>% m_value, list(5, NULL))
   expect_false(funnel(5, stop(1)) %>% m_OK)
 })
-
-test_that('funnel works with %__% (github issue #2)', {
-  expect_equal( funnel(16 %v>% sqrt) %>% lapply(m_value), list(16, 4, list(4)))
-  expect_equal( "hi" %__% funnel(16 %v>% sqrt) %>% lapply(m_value), list("hi", 16, 4, list(4))) 
-})
