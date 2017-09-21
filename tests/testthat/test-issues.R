@@ -11,11 +11,12 @@ test_that('issue #2: funnel works with %__%', {
 })
 
 test_that('issue #3: nested errors are localized', {
-  # The failing node should hold the final value 
-  expect_equal(as.list("hi" %>>% { . %>>% log })[[3]] %>% m_value, "hi")
-  # The node containing the failing nested pipeline should hold nothing 
-  expect_equal(as.list("hi" %>>% { . %>>% log })[[4]] %>% m_value, NA)
-  # Can get intermediate values from inside the nest
-  expect_equal(as.list("hi" %>>% { . %>>% paste("bi") %>>% log })[[4]] %>% m_value, "hi bi")
-  expect_false(as.list("hi" %>>% { . %>>% paste("bi") %>>% log })[[4]] %>% m_OK)
+  expect_equal(
+    "a" %>>% {
+      . %>>% paste("b") %>>% {
+        . %>>% paste("c") %>>% stop
+      }
+    } %>% lapply(m_value, warn=FALSE),
+    list(NULL, NULL, NULL, NULL, NULL, "a b c", "a b", "a")
+  )
 })
