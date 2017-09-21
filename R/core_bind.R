@@ -191,14 +191,20 @@ branch_combine <- function(m, o, f, margs){
 }
 
 default_combine <- function(m, o, f, margs){
-  if(!m_OK(o)){
-    # On failure, propagate the final passing value, this allows
-    # for either degugging or passage to alternative handlers.
-    m_value(o) <- m_value(m, warn=FALSE)
-  }
 
   if(has_nest(o)){
     m_nest(o) <- splice_function(f=f, m=m_nest(o), ms=margs)
+    if(!m_OK(o)){
+      m_value(m_nest(o)) <- m_value(o)
+      # the final value will be inside the nest
+      m_value(o) <- NA
+    }
+  } else {
+    if(!m_OK(o)){
+      # On failure, propagate the final passing value, this allows
+      # for either degugging or passage to alternative handlers.
+      m_value(o) <- m_value(m, warn=FALSE)
+    }
   }
 
   o$inherit(parents=m)
