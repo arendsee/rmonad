@@ -19,4 +19,14 @@ test_that('issue #3: nested errors are localized', {
     } %>% lapply(m_value, warn=FALSE),
     list(NULL, NULL, NULL, NULL, NULL, "a b c", "a b", "a")
   )
+  # The %__% operator often screws things up, best to check 
+  expect_equal(
+    "yolo" %__%
+    "a" %>>% {
+      . %>>% paste("b") %>>% {
+        . %>>% paste("c") %>>% stop
+      }
+    } %>% lapply(m_value, warn=FALSE),
+    list("yolo", NULL, NULL, NULL, NULL, NULL, "a b c", "a b", "a")
+  )
 })
