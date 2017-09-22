@@ -386,30 +386,67 @@ Monadic list evaluation is the natural way to build large programs from smaller
 pieces.
 
 
-
 ## Annotating steps
 
 As our pipelines become more complex, it becomes essential to document them. We
 can do that as follows:
 
 ```{r}
-runif(5) %>>% abs %>% doc(
+{
 
-    "Alternatively, the documentation could go into a text block below the code
-    in a knitr document. The advantage of having documentation here, is that it
-    is coupled unambiguously to the generating function. These annotations,
-    together with the ability to chain chains of monads, allows whole complex
-    workflows to be built, with the results collated into a single object. All
-    errors propagate exactly as errors should, only affecting downstream
-    computations. The final object can be converted into a markdown document
-    and automatically generated function graphs."
+    "This is docstring. The following list is metadata associated with this
+    node. Both the docstring and the metadata list will be processed out of
+    this function before it is executed. They also will not appear in the code
+    stored in the Rmonad object."
 
-                  ) %>^% sum %__%
-rnorm(6)   %>>% abs %>^% sum %__%
-rnorm("a") %>>% abs %>^% sum %__%
-rexp(6)    %>>% abs %>^% sum %T>%
-  {print(mtabulate(.)) } %>% missues
+    list(sys = sessionInfo(), foo = "This can be anything")
+
+    # This NULL is necessary, otherwise the metadata list above would be
+    # treated as the node output
+    NULL
+
+} %__% # The %__% operator connects independent pieces of a pipeline.
+
+"a" %>>% {
+
+    "The docstrings are stored in the Rmonad objects. They may be extracted in
+    the generation of reports. For example, they could go into a text block
+    below the code in a knitr document. The advantage of having documentation
+    here, is that it is coupled unambiguously to the generating function. These
+    annotations, together with the ability to chain chains of monads, allows
+    whole complex workflows to be built, with the results collated into a
+    single object. All errors propagate exactly as errors should, only
+    affecting downstream computations. The final object can be converted into a
+    markdown document and automatically generated function graphs."
+
+    paste(., "b")
+
+}
 ```
 
-Note `%T>%` is a `magrittr` operator. It allows execution of the rhs function
-on the lhs *monad* and bypasses the result.
+
+## Nesting pipelines
+
+`rmonad` pipelines may be nested to arbitrary depth. 
+
+```{r}
+foo <- function(x, y) {
+    "This is a function containing a pipeline. It always fails"    
+
+    "a" %>>% paste(x) %>>% paste(y) %>>% log
+}
+
+bar <- function(x) {
+    "this is another function, it doesn't fail"
+
+    funnel("b", "c") %*>% foo %>>% paste(x)
+}
+
+"d" %>>% bar
+```
+
+This function descends through three levels of nesting. There is a failure at
+the deepest level. This failing node, where a string is passed to a `log`
+function, stores the error message and the input. Each node ascending from the
+point of failure stores their respective input. This allows debugging to resume
+from any desired level.
