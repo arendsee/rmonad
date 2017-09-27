@@ -15,6 +15,13 @@ such as `magrittr` or `pipeR`. These can be used to perform operations where
 preservation of state is not desired. Also they are needed to operate on
 monadic containers themselves.
 
+## Funding
+
+This work is funded by the National Science Foundation grant:
+
+[NSF-IOS 1546858](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1546858)
+Orphan Genes: An Untapped Genetic Reservoir of Novel Traits
+
 ## Installation
 
 You can install from CRAN with:
@@ -344,9 +351,8 @@ funnel(
   ) %*>%
   paste %>% # the remaining steps are all operating _on_ the monad
   plot(label='value')
+#> Error in loadNamespace(name): there is no package called 'webshot'
 ```
-
-![plot of chunk workflow-plot](README-workflow-plot-1.png)
 
 Nested pipelines can also be plotted:
 
@@ -356,9 +362,8 @@ foo <- function(x){
     'c' %v>% paste(x) %v>% paste('d')
 }
 'a' %v>% foo %>% plot(label='value')
+#> Error in loadNamespace(name): there is no package called 'webshot'
 ```
-
-![plot of chunk nested-workflow-plot](README-nested-workflow-plot-1.png)
 
 ## Scaling up
 

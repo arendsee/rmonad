@@ -8,6 +8,10 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+This work is funded by the National Science Foundation grant [NSF-IOS
+1546858](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1546858).
+
+
 This vignette consists of four parts. First I will describe the cryptomonad
 hidden in the R runtime. Second, I will describe how `rmonad` can serve as a
 replacement. Third, I will contrast the monadic pipelines of `rmonad` with the

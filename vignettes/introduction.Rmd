@@ -8,6 +8,10 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+This work is funded by the National Science Foundation grant [NSF-IOS
+1546858](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1546858).
+
+
 ```{r, echo=FALSE, message=FALSE}
 library(rmonad)
 library(magrittr)

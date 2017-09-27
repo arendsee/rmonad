@@ -31,6 +31,13 @@ such as `magrittr` or `pipeR`. These can be used to perform operations where
 preservation of state is not desired. Also they are needed to operate on
 monadic containers themselves.
 
+## Funding
+
+This work is funded by the National Science Foundation grant:
+
+[NSF-IOS 1546858](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1546858)
+Orphan Genes: An Untapped Genetic Reservoir of Novel Traits
+
 ## Installation
 
 You can install from CRAN with:
