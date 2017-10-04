@@ -11,7 +11,8 @@ operations, and optionally their values. It consists mainly of a set of
 monadic bind operators for controlling a pipeline and handling error. It
 also contains functions for operating on monads, evaluating expressions into
 monads, and extracting values from them. I will briefly introduce the most
-useful of these here. For more information see the vignette.
+useful of these here. For more information see the \code{introduction}
+vignette.
 }
 \section{Basic Operators}{
 

@@ -15,7 +15,7 @@ mreport(m, section_prefix = "")
 This function is experimental and may change completely in the future
 }
 \seealso{
-Other monad-to-x: \code{\link{as_dgr_graph}},
+Other from_Rmonad: \code{\link{as_dgr_graph}},
   \code{\link{esc}}, \code{\link{missues}},
   \code{\link{mtabulate}}
 }

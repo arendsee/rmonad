@@ -28,7 +28,7 @@ combine(xs, keep_history = TRUE, desc = NULL)
 
 \item{env}{Evaluation environment}
 
-\item{keep_history}{Merge the histories of all monads}
+\item{keep_history}{merge the histories of all monads}
 
 \item{xs}{A list of elements to join into a monad}
 }

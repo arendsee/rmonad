@@ -21,7 +21,7 @@
 #' @param doc A docstring to associate with the monad
 #' @param desc A description of the monad (usually the producing code)
 #' @param clone logical Should the R6 object be cloned?
-#' @param keep_history Merge the histories of all monads
+#' @param keep_history merge the histories of all monads
 #' @param env Evaluation environment
 #' @param lossy logical Should unnesting with record be done?
 #' @param ... multiple expressions
@@ -207,8 +207,8 @@ combine <- function(xs, keep_history=TRUE, desc=NULL){
 #' Safely builds a list of monads from an argument list of expressions
 #'
 #' Deprecated, use funnel instead. \code{lsmeval} is the same as \code{funnel},
-#' but the name funnel more clearly expresses the use of this function. Which
-#' is to join multiple pipes into one.
+#' but the name funnel more clearly expresses the use of this function (joining
+#' multiple pipes into one).
 #'
 #' @param ... expressions to be wrapped into monads
 #' @param keep_history Merge the histories of all monads

@@ -16,6 +16,6 @@ A list of Rmonads
 }
 \description{
 Deprecated, use funnel instead. \code{lsmeval} is the same as \code{funnel},
-but the name funnel more clearly expresses the use of this function. Which
-is to join multiple pipes into one.
+but the name funnel more clearly expresses the use of this function (joining
+multiple pipes into one).
 }

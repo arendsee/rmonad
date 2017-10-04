@@ -95,10 +95,11 @@ as.list.Rmonad <- function(x, recurse_nests=TRUE, ...){
 #' The nodes in the graph represent both a function and the function's output.
 #' The edges are relationships between nodes. In an unnested pipeline, every
 #' edge represents data flow from source to sink (solid black edges). Nested
-#' pipelines contain two additional edge types: a transitive edge, where a node
-#' is dependent on a value that was passed to its parent (dotted grey line);
-#' and a nest edge linking a node to the nested node that produced its value
-#' (solid red line).
+#' pipelines contain three additional edge types: a transitive edge, where a
+#' node is dependent on a value that was passed to its parent (dotted grey
+#' line); a nest edge linking a node to the nested node that produced its value
+#' (solid red line); a 'prior' edge for pipelines coupled with the \code{\%__\%}
+#' operator (thick dotted blue line).
 #'
 #' @param x An Rmonad object
 #' @param y This variable is currently ignored
