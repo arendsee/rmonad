@@ -11,30 +11,31 @@ vignette: >
 This work is funded by the National Science Foundation grant [NSF-IOS
 1546858](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1546858).
 
+You probably don't need to read this. Certainly you should read the
+[introduction](https://cran.r-project.org/web/packages/rmonad/vignettes/introduction.html)
+vignette first.
 
-This vignette consists of four parts. First I will describe the cryptomonad
+This vignette consists of four parts. First I will describe the monad
 hidden in the R runtime. Second, I will describe how `rmonad` can serve as a
 replacement. Third, I will contrast the monadic pipelines of `rmonad` with the
 compositional pipelines of `magrittr`. Finally, I will discuss `rmonad` from the
 Haskell perspective.
 
 I will introduce the concept of a monad incrementally through the first three
-sections. However, monad's in the programming context are notoriously difficult
+sections. However, monads in the programming context are notoriously difficult
 to understand. If you are not familiar with them, you may try studying a few
 online tutorials first. That said, `rmonad` can be used without understanding
 monads.
 
-
-
-## The R cryptomonad
+## The hidden R monad
 
 What does `sqrt` do? You may answer, "return the square root of an input". But
 this is not quite right. The function `sqrt` maps an input to a set of possible
-values.
+values:
 
  * when x is numeric and $x > 0$ : $\sqrt{x}$ 
- * when x is numeric and $x \le 0$ : `NA` and a warning effect
- * when x is not numeric : an error effect that propagates downstream
+ * when x is numeric and $x \le 0$ : `NA` with a warning
+ * when x is not numeric : an error that stops evaluation and dumps a message
 
 Every R function maps a pure value to a computational context with possible
 undefined behavior and side effects. We can describe the action of a function
@@ -104,7 +105,7 @@ Haskell's `>>=`).
 
 ## `rmonad`
 
-The goal of `rmonad` is to ditch the existing impure R cryptomonad and replace it
+The goal of `rmonad` is to ditch the existing impure R monad and replace it
 with a clean explicit monad.
 
 ```
