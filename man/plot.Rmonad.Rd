@@ -31,7 +31,7 @@ The nodes in the graph represent both a function and the function's output.
 The edges are relationships between nodes. In an unnested pipeline, every
 edge represents data flow from source to sink (solid black edges). Nested
 pipelines contain three additional edge types: a transitive edge, where a
-node is dependent on a value that was passed to its parent (dotted grey
+node is dependent on a value that was passed to its parent (dotted gray
 line); a nest edge linking a node to the nested node that produced its value
 (solid red line); a 'prior' edge for pipelines coupled with the \code{\%__\%}
 operator (thick dotted blue line).
