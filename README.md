@@ -40,12 +40,6 @@ You can install this with:
 devtools::install_github("arendsee/rmonad", ref="dev")
 ```
 
-## On obsolescence and collaboration
-
-Some of the material in `master` is already slated for deprecation. See `dev`
-for the newest material. `rmonad` is experimental at this point.  If you are
-interested in collaborating, shoot me an email. Also see the `dev` README.
-
 ## Examples
 
 For details, see the vignette. Here are a few excerpts
