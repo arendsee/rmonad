@@ -12,7 +12,7 @@ This work is funded by the National Science Foundation grant [NSF-IOS
 1546858](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1546858).
 
 You probably don't need to read this. Certainly you should read the
-[introduction](https://cran.r-project.org/web/packages/rmonad/vignettes/introduction.html)
+[introduction](https://CRAN.R-project.org/package=rmonad/vignettes/introduction.html)
 vignette first.
 
 This vignette consists of four parts. First I will describe the monad
