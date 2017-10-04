@@ -1,3 +1,22 @@
+# rmonad 0.3.0
+
+ * Deprecate the `%v__%` operator. Now the `%__%` operator always stores the
+   final left-side result.
+
+ * Fix linking to nested history.
+
+ * Fix incorrect history linking bugs caused by the `%__%` operator
+ 
+ * Preserve the inputs to failing nested nodes. Now if a nested node fails, the
+   input to that node, and the input to every ascending node, is preserved.
+   (like a traceback where the function arguments are saved).
+
+ * Add a new kind of edge. The `%__%` associates two pipelines but does not
+   pass data or propagate errors. This was previously treated as one kind of
+   'parent' edge; now it is a 'prior' edge.
+
+ * Add special plot handling for 'prior' edges.
+
 # rmonad 0.2.0
 
 ## Backwards incompatible changes

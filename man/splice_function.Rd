@@ -14,5 +14,6 @@ splice_function(f, m, ms)
 \item{ms}{The list of inputs passed to f}
 }
 \description{
-Take a monadic bind operation's result and splice histories
+We need to link input variables to the nodes in the nested pipeline that use
+them.
 }

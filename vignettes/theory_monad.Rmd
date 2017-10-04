@@ -1,5 +1,5 @@
 ---
-title: "Rmonad: Where's the monad?"
+title: "`rmonad`: Where's the monad?"
 author: "Zebulun Arendsee"
 output: rmarkdown::html_vignette
 vignette: >
@@ -8,29 +8,34 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-This vignette consists of four parts. First I will describe the cryptomonad
-hidden in the R runtime. Second, I will describe how Rmonad can serve as a
-replacement. Third, I will contrast the monadic pipelines of Rmonad with the
-compositional pipelines of `magrittr`. Finally, I will discuss Rmonad from the
+This work is funded by the National Science Foundation grant [NSF-IOS
+1546858](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1546858).
+
+You probably don't need to read this. Certainly you should read the
+[introduction](https://cran.r-project.org/web/packages/rmonad/vignettes/introduction.html)
+vignette first.
+
+This vignette consists of four parts. First I will describe the monad
+hidden in the R runtime. Second, I will describe how `rmonad` can serve as a
+replacement. Third, I will contrast the monadic pipelines of `rmonad` with the
+compositional pipelines of `magrittr`. Finally, I will discuss `rmonad` from the
 Haskell perspective.
 
 I will introduce the concept of a monad incrementally through the first three
-sections. However, monad's in the programming context are notoriously difficult
+sections. However, monads in the programming context are notoriously difficult
 to understand. If you are not familiar with them, you may try studying a few
 online tutorials first. That said, `rmonad` can be used without understanding
 monads.
 
-
-
-## The R cryptomonad
+## The hidden R monad
 
 What does `sqrt` do? You may answer, "return the square root of an input". But
 this is not quite right. The function `sqrt` maps an input to a set of possible
-values.
+values:
 
  * when x is numeric and $x > 0$ : $\sqrt{x}$ 
- * when x is numeric and $x \le 0$ : `NA` and a warning effect
- * when x is not numeric : an error effect that propagates downstream
+ * when x is numeric and $x \le 0$ : `NA` with a warning
+ * when x is not numeric : an error that stops evaluation and dumps a message
 
 Every R function maps a pure value to a computational context with possible
 undefined behavior and side effects. We can describe the action of a function
@@ -92,15 +97,15 @@ takes a pure value and lifts it into a context. `return` has the form `a -> m
 a`.
 
 Before we cover the monad laws, and before we learn exactly what the monad is
-in the Rmonad context, we will walk step by step through one example. Rmonad
-uses the infix operator `%>>%` as `bind` (Rmonad's `%>>%` corresponds to
+in the `rmonad` context, we will walk step by step through one example. `rmonad`
+uses the infix operator `%>>%` as `bind` (`rmonad`'s `%>>%` corresponds to
 Haskell's `>>=`).
 
 
 
-## Rmonad
+## `rmonad`
 
-The goal of Rmonad is to ditch the existing impure R cryptomonad and replace it
+The goal of `rmonad` is to ditch the existing impure R monad and replace it
 with a clean explicit monad.
 
 ```
@@ -124,11 +129,11 @@ But what exactly is `m`? In an R session, the R runtime handles errors. If one
 function raises an error, the error is propagated to functions that use its
 input.
 
-In Rmonad, the `m` is an object, that catches all undefined behavior.
+In `rmonad`, the `m` is an object, that catches all undefined behavior.
 
 
 
-## Rmonad versus magrittr
+## `rmonad` versus magrittr
 
 To understand the monadic nature of `rmonad` it is useful to compare it to
 `magrittr`. In `magrittr`, the expression `x %>% foo %>% bar` is the same as
@@ -147,11 +152,15 @@ In `rmonad`, the pipeline `x %>>% foo %>>% bar` will pass a record of past
 events at each bind operation, thus incrementally building a graph of the
 pipeline.
 
-## Rmonad for Haskellers 
+## `rmonad` for Haskellers 
+
+The name `rmonad` is a nod to `Xmonad` (no relation to the Restricted Monad
+package). Where `Xmonad` wraps the X window system, `rmonad` wraps evaluation
+of R expressions. 
 
 Only a few R expressions are pure. If a function is given an invalid input at
 runtime (e.g. `sqrt("wtf")`), it will die with a message printed to stderr.
-Rmonad wraps all R calls in a monad, intercepting all messages, so that the
+`rmonad` wraps all R calls in a monad, intercepting all messages, so that the
 result of a computation is returned as a pure object.
 
 The 'R monad' is one monad to rule the all. There is no monad stack and no
@@ -162,7 +171,7 @@ object. All this weight might seem like a performance killer, but R programmers
 are used to function calls being slow, so if they care about performance, they
 wouldn't use a function in a tight loop anyways.
 
-The `return` function is a little complex in Rmonad. It is a special case of
+The `return` function is a little complex in `rmonad`. It is a special case of
 the `as_monad` function:
 
 ```

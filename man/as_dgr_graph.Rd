@@ -19,15 +19,16 @@ as_dgr_graph(m, type = NULL, label = NULL, color = NULL, ...)
 functions will produce the attributes used in the graph object.}
 }
 \description{
-WARNING: this pipeline handles parent/child relationships, but not the
-subtly different 'branch' relationship. These should be resolvable to
-parent/child relations.
+Convert an Rmonad to a DiagrammeR graph. Branches, which are made with the
+`%>^%` operator, will not be included in the resulting graph. This is a bug
+which I will resolve in the near future.
 }
 \examples{
 data(gff)
 g <- as_dgr_graph(gff$good_result, mem=m_mem, time=m_time)
 }
 \seealso{
-Other monad-to-x: \code{\link{esc}}, \code{\link{missues}},
-  \code{\link{mreport}}, \code{\link{mtabulate}}
+Other from_Rmonad: \code{\link{esc}},
+  \code{\link{missues}}, \code{\link{mreport}},
+  \code{\link{mtabulate}}
 }

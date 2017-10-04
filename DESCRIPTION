@@ -1,6 +1,6 @@
 Type: Package
 Package: rmonad
-Version: 0.2.0
+Version: 0.3.0
 Title: A Monadic Pipeline System
 Description:
     A monadic solution to pipeline analysis. All operations -- and the errors,
@@ -9,7 +9,7 @@ Description:
     handled, and where pipelines branch and merge. The resulting structure may
     be queried for debugging or report generation. 'rmonad' complements, rather
     than competes with, non-monadic pipeline packages like 'magrittr' or
-    'pipeR'.
+    'pipeR'. This work is funded by NSF grant IOS-1546858.
 Authors@R: person("Zebulun", "Arendsee", email="zbwrnz@gmail.com", role=c("aut","cre"))
 URL: https://github.com/arendsee/rmonad
 BugReports: https://github.com/arendsee/rmonad/issues

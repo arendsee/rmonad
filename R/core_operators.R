@@ -158,7 +158,7 @@ NULL
 `%__%` <- function(lhs, rhs) {
 
   envir <- parent.frame()
-  .chain(substitute(lhs), substitute(rhs), FALSE, envir)
+  .chain(substitute(lhs), substitute(rhs), envir)
 
 }
 
@@ -166,15 +166,17 @@ NULL
 #' @export
 `%v__%` <- function(lhs, rhs) {
 
+  .Deprecated("Use `%__%` instead, they now do the same thing")
+
   envir <- parent.frame()
-  .chain(substitute(lhs), substitute(rhs), TRUE, envir)
+  .chain(substitute(lhs), substitute(rhs), envir)
 
 }
 
-.chain <- function(lhs, rhs, force_keep, envir) {
+.chain <- function(lhs, rhs, envir) {
 
   emit <- function(i,o) {
-    o$inherit(parents=i, force_keep=force_keep)
+    o$set_prior(i)
     o
   }
 
@@ -183,7 +185,7 @@ NULL
     lhs,
     rhs,
     bind_if   = false,
-    bind_else = function(...){as_monad(eval(rhs, envir))},
+    bind_else = function(...){as_monad(eval(rhs, envir), lossy=TRUE, clone=TRUE)},
     emit      = emit,
     expect_rhs_function = FALSE,
     envir=envir

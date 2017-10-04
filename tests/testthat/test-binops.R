@@ -123,10 +123,10 @@ test_that('dot substitution is performed in anonymous expressions', {
   expect_true(  iris %>>% { sapply(., is.numeric) %>% all } %>% m_OK )
 })
 
-test_that('"%__%" and "%v__%" work', {
+test_that('"%__%" works', {
   expect_equal( stop("hi") %__% 1:10 %>% esc, 1:10 )
   expect_true(  stop("hi") %__% 1:10 %>% m_OK )
 
-  expect_equal( 1:5 %v__% 1:10 %>% lapply(m_value, warn=FALSE), list(1:5, 1:10) )
-  expect_true(  1:5 %v__% 1:10 %>% m_OK )
+  expect_equal( 1:5 %__% 1:10 %>% lapply(m_value, warn=FALSE), list(1:5, 1:10) )
+  expect_true(  1:5 %__% 1:10 %>% m_OK )
 })

@@ -2,7 +2,7 @@
 % Please edit documentation in R/side_monad-to-x.R
 \name{mtabulate}
 \alias{mtabulate}
-\title{Make tabular summary of a monadic chain}
+\title{Make tabular summary of a pipeline}
 \usage{
 mtabulate(m, recurse_nests = TRUE, code = FALSE)
 }
@@ -14,10 +14,10 @@ mtabulate(m, recurse_nests = TRUE, code = FALSE)
 \item{code}{logical Should the code by included?}
 }
 \description{
-Make tabular summary of a monadic chain
+Make tabular summary of a pipeline
 }
 \seealso{
-Other monad-to-x: \code{\link{as_dgr_graph}},
+Other from_Rmonad: \code{\link{as_dgr_graph}},
   \code{\link{esc}}, \code{\link{missues}},
   \code{\link{mreport}}
 }

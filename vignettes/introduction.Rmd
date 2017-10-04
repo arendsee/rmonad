@@ -1,5 +1,5 @@
 ---
-title: "Rmonad: an introduction"
+title: "`rmonad`: an introduction"
 author: "Zebulun Arendsee"
 output: rmarkdown::html_vignette
 vignette: >
@@ -8,13 +8,17 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+This work is funded by the National Science Foundation grant [NSF-IOS
+1546858](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1546858).
+
+
 ```{r, echo=FALSE, message=FALSE}
 library(rmonad)
 library(magrittr)
 set.seed(210)
 ```
 
-`Rmonad` offers
+`rmonad` offers
 
  * a stateful pipeline framework
 
@@ -32,7 +36,7 @@ set.seed(210)
 
 ## Monadic pipelines
 
-I will introduce `Rmonad` with a simple sequence of squares
+I will introduce `rmonad` with a simple sequence of squares
 
 ```{r}
 # %>>% corresponds to Haskell's >>=
@@ -42,7 +46,7 @@ I will introduce `Rmonad` with a simple sequence of squares
     sqrt
 ```
 
-So what exactly did Rmonad do with your data? It is still there, sitting
+So what exactly did `rmonad` do with your data? It is still there, sitting
 happily inside the monad.
 
 In `magrittr` you could do something similar:
@@ -61,7 +65,7 @@ computation succeeded. It collates all errors, warnings, and messages. These
 are stored in step-by-step a history of the pipeline.
 
 `%>%` is an application operator, `%>>%` is a *monadic bind* operator. `magrittr`
-and Rmonad complement eachother. `%>%` can be used inside a monadic sequence to
+and `rmonad` complement eachother. `%>%` can be used inside a monadic sequence to
 perform operations *on* monads, whereas `%>>%` performs operations *in* them.
 If this is all too mystical, just hold on, the examples are sensical even
 without an understanding of monads.
@@ -118,7 +122,7 @@ downstream monadic sequence (except when explicitly doing error handling).
 However it, and all other information in the monad, can be easily accessed. 
 
 
-## Extracting data from an Rmonad
+## Extracting data from an `rmonad`
 
 If you want to extract the terminal result from the monad, you can use the `esc`
 function:
@@ -166,7 +170,7 @@ result <- 1:5 %v>% sqrt %v>% sqrt %v>% sqrt
 as.list(result)[[2]] %>% esc
 ```
 
-An Rmonad can be converted to a `DiagrammeR` graph (or `igraph`); in this way,
+An `rmonad` can be converted to a `DiagrammeR` graph (or `igraph`); in this way,
 standard tools for network analysis can be applied to pipelines. `rmonad`
 currently has built in support for plotting piplines and making markdown
 reports (experimental).
@@ -266,10 +270,10 @@ letters[1:10] %v>% colSums %|>% sum %||% message("Can't process this")
 ```
 
 
-Overall, in Rmonad, errors are well-behaved. It is reasonable to write
+Overall, in `rmonad`, errors are well-behaved. It is reasonable to write
 functions that return an error rather than one of the myriad default values
 (`NULL`, `NA`, `logical(0)`, `list()`, `FALSE`). This approach is unambiguous.
-Rmonad can catch the error and allow allow the programmer to deal with it
+`rmonad` can catch the error and allow allow the programmer to deal with it
 accordingly.
 
 
@@ -308,24 +312,20 @@ from the tree.
 ## Chains of chains
 
 If you want to connect many chains, all with independent inputs, you can do so
-with the `%__%` and `%v__%` operators.
+with the `%__%` operator.
 
 ```{r}
-runif(10) %>>% sum %v__%
-rnorm(10) %>>% sum %v__%
+runif(10) %>>% sum %__%
+rnorm(10) %>>% sum %__%
 rexp(10)  %>>% sum
 ```
 
-The `%v__%` operator records the output of the lhs and evaluates the rhs into
-an Rmonad. If you don't care about the output, you can use `%__%`, which simply
-replaces the rhs value with lhs value (while, of course, propagating state).
-
-The `%__%` operator is a little like a semicolon, in that it demarcates
+The `%__%` operator records the output of the lhs and evaluates the rhs into an
+`rmonad`. This operator is a little like a semicolon, in that it demarcates
 independent statements. Each statement, though, is wrapped into a graph of
 operations. This graph is itself data, and can be computed on. You could take
-any analysis and recompose it as `%v__%` delimited blocks. The result of
-running the analysis would be a data structure containing all results and
-errors.
+any analysis and recompose it as `%__%` delimited blocks. The result of running
+the analysis would be a data structure containing all results and errors.
 
 ```{r, eval=FALSE}
 program <-
@@ -333,9 +333,9 @@ program <-
     x = 2
     y = 5
     x * y
-} %v__% {
+} %__% {
     letters %>% sqrt
-} %v__% {
+} %__% {
     10 * x
 }
 ```
@@ -390,30 +390,67 @@ Monadic list evaluation is the natural way to build large programs from smaller
 pieces.
 
 
-
 ## Annotating steps
 
 As our pipelines become more complex, it becomes essential to document them. We
 can do that as follows:
 
 ```{r}
-runif(5) %>>% abs %>% doc(
+{
 
-    "Alternatively, the documentation could go into a text block below the code
-    in a knitr document. The advantage of having documentation here, is that it
-    is coupled unambiguously to the generating function. These annotations,
-    together with the ability to chain chains of monads, allows whole complex
-    workflows to be built, with the results collated into a single object. All
-    errors propagate exactly as errors should, only affecting downstream
-    computations. The final object can be converted into a markdown document
-    and automatically generated function graphs."
+    "This is docstring. The following list is metadata associated with this
+    node. Both the docstring and the metadata list will be processed out of
+    this function before it is executed. They also will not appear in the code
+    stored in the Rmonad object."
 
-                  ) %>^% sum %__%
-rnorm(6)   %>>% abs %>^% sum %v__%
-rnorm("a") %>>% abs %>^% sum %__%
-rexp(6)    %>>% abs %>^% sum %T>%
-  {print(mtabulate(.)) } %>% missues
+    list(sys = sessionInfo(), foo = "This can be anything")
+
+    # This NULL is necessary, otherwise the metadata list above would be
+    # treated as the node output
+    NULL
+
+} %__% # The %__% operator connects independent pieces of a pipeline.
+
+"a" %>>% {
+
+    "The docstrings are stored in the Rmonad objects. They may be extracted in
+    the generation of reports. For example, they could go into a text block
+    below the code in a knitr document. The advantage of having documentation
+    here, is that it is coupled unambiguously to the generating function. These
+    annotations, together with the ability to chain chains of monads, allows
+    whole complex workflows to be built, with the results collated into a
+    single object. All errors propagate exactly as errors should, only
+    affecting downstream computations. The final object can be converted into a
+    markdown document and automatically generated function graphs."
+
+    paste(., "b")
+
+}
 ```
 
-Note `%T>%` is a `magrittr` operator. It allows execution of the rhs function
-on the lhs *monad* and bypasses the result.
+
+## Nesting pipelines
+
+`rmonad` pipelines may be nested to arbitrary depth. 
+
+```{r}
+foo <- function(x, y) {
+    "This is a function containing a pipeline. It always fails"    
+
+    "a" %>>% paste(x) %>>% paste(y) %>>% log
+}
+
+bar <- function(x) {
+    "this is another function, it doesn't fail"
+
+    funnel("b", "c") %*>% foo %>>% paste(x)
+}
+
+"d" %>>% bar
+```
+
+This function descends through three levels of nesting. There is a failure at
+the deepest level. This failing node, where a string is passed to a `log`
+function, stores the error message and the input. Each node ascending from the
+point of failure stores their respective input. This allows debugging to resume
+from any desired level.

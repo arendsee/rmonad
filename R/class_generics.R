@@ -82,6 +82,9 @@ as.list.Rmonad <- function(x, recurse_nests=TRUE, ...){
   if(recurse_nests && has_nest(x)){
     ms <- as.list(m_nest(x), recurse_nests) %++% ms
   }
+  if(x$has_prior()){
+    ms <- as.list(x$get_prior()) %++% ms
+  }
   unique(ms)
 }
 
@@ -92,10 +95,11 @@ as.list.Rmonad <- function(x, recurse_nests=TRUE, ...){
 #' The nodes in the graph represent both a function and the function's output.
 #' The edges are relationships between nodes. In an unnested pipeline, every
 #' edge represents data flow from source to sink (solid black edges). Nested
-#' pipelines contain two additional edge types: a transitive edge, where a node
-#' is dependent on a value that was passed to its parent (dotted grey line);
-#' and a nest edge linking a node to the nested node that produced its value
-#' (solid red line).
+#' pipelines contain three additional edge types: a transitive edge, where a
+#' node is dependent on a value that was passed to its parent (dotted grey
+#' line); a nest edge linking a node to the nested node that produced its value
+#' (solid red line); a 'prior' edge for pipelines coupled with the \code{\%__\%}
+#' operator (thick dotted blue line).
 #'
 #' @param x An Rmonad object
 #' @param y This variable is currently ignored
@@ -163,10 +167,15 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
 
   g <- as_dgr_graph(x, label=label, color=color)
 
+  # see www.graphviz.org/ for attribute options
   g$edges_df$color <- ifelse(g$edges_df$rel == 'depend', 'black', 'red')
-  g$edges_df$color <- ifelse(g$edges_df$rel == 'transitive', 'gray', g$edges_df$color)
 
+  g$edges_df$color <- ifelse(g$edges_df$rel == 'transitive', 'gray', g$edges_df$color)
   g$edges_df$style <- ifelse(g$edges_df$rel == 'transitive', "dotted", "")
+
+  g$edges_df$color     <- ifelse(g$edges_df$rel == 'prior', 'blue', g$edges_df$color)
+  g$edges_df$penwidth  <- ifelse(g$edges_df$rel == 'prior', 3, 1)
+  g$edges_df$style     <- ifelse(g$edges_df$rel == 'prior', "dotted", g$edges_df$style)
 
   # For some reason, the color was defaulting to white, which was hard to see
   # against the node background and made text that overflowed the node

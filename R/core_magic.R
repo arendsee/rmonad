@@ -13,6 +13,9 @@ rmonad_ops <- c(
 
 #' Take a monadic bind operation's result and splice histories
 #'
+#' We need to link input variables to the nodes in the nested pipeline that use
+#' them.
+#'
 #' @param f The function
 #' @param m The monadic result of running f(ms)
 #' @param ms The list of inputs passed to f

@@ -8,6 +8,10 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+This work is funded by the National Science Foundation grant [NSF-IOS
+1546858](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1546858).
+
+
 ## The problem
 
 Gene Feature Format (GFF) is used to annotate intervals on a genome. Loading
@@ -530,7 +534,7 @@ plot(result)
 ![plot of chunk gff-workflow-plot](gff-workflow-plot-1.png)
 
 A plot of the connections between functions in the pipeline. The node labels
-are the Rmonad ids. The red arrow indicates a 'nest' relationship. Green nodes
+are the `rmonad` ids. The red arrow indicates a 'nest' relationship. Green nodes
 are OK, orange nodes raised a warning, red nodes (none appear in this graph)
 represent errors.
 

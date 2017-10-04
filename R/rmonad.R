@@ -10,7 +10,8 @@ NULL
 #' monadic bind operators for controlling a pipeline and handling error. It
 #' also contains functions for operating on monads, evaluating expressions into
 #' monads, and extracting values from them. I will briefly introduce the most
-#' useful of these here. For more information see the vignette.
+#' useful of these here. For more information see the \code{introduction}
+#' vignette.
 #'
 #' @section Basic Operators:
 #'
@@ -26,9 +27,7 @@ NULL
 #'    Rmonad object.} 
 #'    \item{\code{\%||\%}}{if input is error, use rhs value instead}
 #'    \item{\code{\%|>\%}}{if input is error, run rhs on last passing result}
-#'    \item{\code{\%__\%}}{keep parents from the lhs (errors ignored). This
-#'    allows chaining of independent operations.}
-#'    \item{\code{\%v__\%}}{like \code{\%__\%} but store lhs result}
+#'    \item{\code{\%__\%}}{keep parents from the lhs (errors ignored). This allows chaining of independent operations.}
 #' }
 #'
 #' @section Operators targeted for deprecation:
@@ -79,7 +78,7 @@ NULL
 #' read.csv("a.csv") %||% iris %>>% head
 #'
 #' # join two independent pipelines, preserving history
-#' cars %>>% colSums %v__% cars %>>% lapply(sd) %>>% unlist
+#' cars %>>% colSums %__% cars %>>% lapply(sd) %>>% unlist
 #'
 #' # load an expression into a monad, catching errors
 #' as_monad(stop("instant death"))
