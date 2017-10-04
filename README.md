@@ -31,7 +31,8 @@ You can install from CRAN with:
 install.packages("rmonad")
 ```
 
-You can install from the github dev branch with:
+The newest `rmonad` code will always be in the github `dev` branch.
+You can install this with:
 
 
 ```r
@@ -293,7 +294,7 @@ be detailed reports where the code, documentation, and metadata for every node
 is written to a linked HTML file. Or a report may be more specialized, e.g. a
 benchmarking or debugging report. A report generating function may be branched,
 with certain elements generated only if some condition is met. Overall,
-`rmonad` offers a more dynamimc approach to literate programming.
+`rmonad` offers a more dynamic approach to literate programming.
 
 This potential is mostly unrealized currently. `rmonad` offers the prototype
 report generator `mreport`.
@@ -351,8 +352,9 @@ funnel(
   ) %*>%
   paste %>% # the remaining steps are all operating _on_ the monad
   plot(label='value')
-#> Error in loadNamespace(name): there is no package called 'webshot'
 ```
+
+![plot of chunk workflow-plot](README-workflow-plot-1.png)
 
 Nested pipelines can also be plotted:
 
@@ -362,8 +364,9 @@ foo <- function(x){
     'c' %v>% paste(x) %v>% paste('d')
 }
 'a' %v>% foo %>% plot(label='value')
-#> Error in loadNamespace(name): there is no package called 'webshot'
 ```
+
+![plot of chunk nested-workflow-plot](README-nested-workflow-plot-1.png)
 
 ## Scaling up
 
@@ -375,12 +378,17 @@ house pipeline. Green nodes are passing and yellow nodes produced warnings.
 ## Contributing
 
 I am looking for collaborators. There are enough unsolved problems on the
-function graph side of rmonad to easily merit coauthorship. Similarly for the
+function graph side of rmonad to easily merit co-authorship. Similarly for the
 report generation handling. In addition, there are lots of smaller problems.
 See the next section for a partial summary.
 
 
-## rmonad v0.3.0 goals
+## rmonad v0.4.0 goals
+
+ - [ ] Utility functions for extracting data from Rmonad objects
+
+ - [ ] Fast `as.list` function for Rmonad objects. This currently takes several
+   seconds for pipelines with hundreds of nodes.
 
  - [ ] A more elegant data structure for representing the workflow graph. I
    want to replace my ad hoc, hand-rolled data structure with a dedicated graph
@@ -400,7 +408,7 @@ See the next section for a partial summary.
 
  - [ ] Store file and line number of all code. 
 
- - [ ] Persistant caching of results
+ - [ ] Persistent caching of results
 
  - [ ] Job submission handling
 
