@@ -1,0 +1,27 @@
+#' Apply rewriters to an Rmonad
+#'
+#' Rewriters are functions stored in an Rmonad's metadata list that operate on
+#' an Rmonad after it has evaluated its code.
+#'
+#' @param x The Rmonad
+#' @param meta A metadata list
+apply_rewriters <- function(x, meta=m_meta(x)){
+
+  if(is.function(meta$format_warnings) && has_warnings(x)){
+    m_warnings(x) <- meta$format_warnings(m_value(x), m_warnings(x))
+  }
+
+  if(is.function(meta$format_error) && has_error(x)){
+    m_error(x) <- meta$format_error(m_value(x), m_error(x))
+  }
+
+  if(is.function(meta$format_notes) && has_notes(x)){
+    m_notes(x) <- meta$format_notes(m_value(x), m_notes(x))
+  }
+
+  if(is.function(meta$summarize) && m_OK(x)){
+    m_summary(x) <- meta$summarize(m_value(x))
+  }
+
+  x
+}

@@ -161,6 +161,13 @@ m_mem <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
+m_summary <- function(m) {
+  .m_check(m)
+  m$get_summary()
+}
+
+#' @rdname rmonad_accessors
+#' @export
 m_branch   <- function(m) {
   .m_check(m)
   m$get_branch()
@@ -269,6 +276,14 @@ m_branch   <- function(m) {
 `m_mem<-` <- function(m, value) {
   .m_check(m)
   m$set_mem(value)
+  m
+}
+
+#' @rdname rmonad_accessors
+#' @export
+`m_summary<-` <- function(m, value){
+  .m_check(m)
+  m$other$summary <- value
   m
 }
 

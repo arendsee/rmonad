@@ -117,6 +117,8 @@ as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE, clone=FALSE){
   m_time(m)     <- signif(unname(st[1]), 2)
   m_meta(m)     <- met
 
+  m <- apply_rewriters(m, met)
+
   m
 
 }

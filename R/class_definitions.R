@@ -158,6 +158,7 @@ Rmonad <- R6::R6Class(
     get_prior      = function() private$maybe_vector_get(self$prior),
     get_nest       = function() private$maybe_vector_get(self$nest),
     get_nest_depth = function() self$nest_depth,
+    get_summary    = function() self$other$summary,
     get_time = function() {
       time <- self$other$time
       if(is.null(time)){
