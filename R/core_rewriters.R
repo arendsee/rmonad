@@ -23,5 +23,21 @@ apply_rewriters <- function(x, meta=m_meta(x)){
     m_summary(x) <- meta$summarize(m_value(x))
   }
 
+  if(is.function(meta$cache) && m_OK(x)){
+    meta$cache(m_value(x))
+  }
+
+  if(is.function(meta$log_pass) && m_OK(x)){
+    meta$log_pass(x)
+  }
+
+  if(is.function(meta$log_fail) && !m_OK(x)){
+    meta$log_fail(x)
+  }
+
+  if(is.function(meta$log)){
+    meta$log(x)
+  }
+
   x
 }
