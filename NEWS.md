@@ -1,3 +1,8 @@
+# rmonad 0.4.0
+
+ * Add rewriter functions that can reformat warning, error, and note message,
+   or summarize the result, after an Rmonad is built.
+
 # rmonad 0.3.0
 
  * Deprecate the `%v__%` operator. Now the `%__%` operator always stores the
