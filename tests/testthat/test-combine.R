@@ -69,3 +69,18 @@ test_that('funnel intermediate values are deleted', {
     list(NULL, NULL, NULL, 210)
   )
 })
+
+test_that('funnel does not alter the monads it uses', {
+  # This will break if `funnel` doesn't properly clone the parents before
+  # removing their values
+  expect_equal(
+    {
+      foo_ <- 36 %>% sqrt
+      funnel(foo_, 7) %*>%
+        (function(x,y){x+y}) %>%
+        funnel(foo_) %*>%
+        (function(x,y){x+y}) %>% esc
+    },
+    19
+  )
+})
