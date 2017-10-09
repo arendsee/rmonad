@@ -58,3 +58,14 @@ test_that('funnel handles errors in expressions', {
   expect_equal(funnel(5, stop(1)) %>% m_value, list(5, NULL))
   expect_false(funnel(5, stop(1)) %>% m_OK)
 })
+
+test_that('funnel intermediate values are deleted', {
+  expect_equal(
+    funnel(1:10, 11:20)              %*>%
+      (function(x,y){ sum(c(x,y)) }) %>%
+      as.list                        %>%
+      lapply(forget)                 %>%
+      lapply(m_value, warn=FALSE),
+    list(NULL, NULL, NULL, 210)
+  )
+})
