@@ -3,6 +3,8 @@
  * Add rewriter functions that can reformat warning, error, and note message,
    or summarize the result, after an Rmonad is built.
 
+ * Free values stored in the Rmonad objects combined with funnel
+
 # rmonad 0.3.0
 
  * Deprecate the `%v__%` operator. Now the `%__%` operator always stores the
