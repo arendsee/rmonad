@@ -106,11 +106,11 @@ bind <- function(
       env        = envir
     )
 
-    o <- apply_rewriters(o, rhs_met)
-
     m <- m_on_bind(m)
 
-    io_combine(m=m, o=o, f=new_function, margs=bind_monad(m))
+    o <- io_combine(m=m, o=o, f=new_function, margs=bind_monad(m))
+
+    apply_rewriters(o, rhs_met)
 
   } else {
     bind_else(m, f)

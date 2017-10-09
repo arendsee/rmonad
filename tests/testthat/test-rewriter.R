@@ -22,3 +22,12 @@ test_that("format warnings", {
     }) %>% esc, 4
   )
 })
+
+test_that("format warnings with output data", {
+  expect_equal(
+    -1 %>>%
+      { list(format_warnings=function(x, w){ paste0("made a ", x) }); log(.) } %>%
+      m_warnings,
+    c("made a NaN")
+  )
+})

@@ -1,3 +1,5 @@
+# TODO: document this
+
 #' Apply rewriters to an Rmonad
 #'
 #' Rewriters are functions stored in an Rmonad's metadata list that operate on
@@ -27,16 +29,8 @@ apply_rewriters <- function(x, meta=m_meta(x)){
     meta$cache(m_value(x))
   }
 
-  if(is.function(meta$log_pass) && m_OK(x)){
-    meta$log_pass(x)
-  }
-
-  if(is.function(meta$log_fail) && !m_OK(x)){
-    meta$log_fail(x)
-  }
-
   if(is.function(meta$log)){
-    meta$log(x)
+    meta$log(x, passing=m_OK(x))
   }
 
   x
