@@ -5,6 +5,8 @@
 
  * Free values stored in the Rmonad objects combined with funnel
 
+ * Evaluate metadata in the correct environment
+
 # rmonad 0.3.0
 
  * Deprecate the `%v__%` operator. Now the `%__%` operator always stores the
