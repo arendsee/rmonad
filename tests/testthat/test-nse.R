@@ -153,3 +153,26 @@ test_that("docstrings are correct in anonymous bind expressions", {
     'function(.){sqrt(.)}'
   )
 })
+
+test_that("metadata lists are evaluated in the proper environment", {
+  expect_equal(
+    {
+      x=42
+      36 %>>% {
+        list(foo = x)
+        NULL
+      } %>% m_meta %$% foo
+    },
+    42
+  )
+  expect_equal(
+    {
+      do_error <- function(x, ws){ "dang it" }
+      "wrench" %>>% {
+        list(format_error=do_error)
+        log(.)
+      } %>% m_error
+    },
+    "dang it"
+  )
+})
