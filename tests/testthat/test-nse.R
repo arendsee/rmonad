@@ -157,11 +157,11 @@ test_that("docstrings are correct in anonymous bind expressions", {
 test_that("metadata lists are evaluated in the proper environment", {
   expect_equal(
     {
-      x=42
+      x <- 42
       36 %>>% {
         list(foo = x)
         NULL
-      } %>% m_meta %$% foo
+      } %>% m_meta %>% { .$foo }
     },
     42
   )
