@@ -4,11 +4,15 @@
 #' to this function.
 #'
 #' @param warn logical Emit a warning on access 
-noCache <- function(warn=TRUE){
-  if(warn){
-    warning("Attempting to access data that has been deleted, returning NULL")
+noCache <- function(warn=TRUE, check=FALSE, ...){
+  if(check){
+    FALSE
+  } else {
+    if(warn){
+      warning("Attempting to access data that has been deleted, returning NULL")
+    }
+    NULL
   }
-  NULL
 }
 
 #' Store a value in memory
@@ -20,7 +24,13 @@ noCache <- function(warn=TRUE){
 #' foo
 #' foo_proxy()
 memoryCache <- function(x){
-  function() x
+  function(check=FALSE, ...) {
+    if(check){
+      TRUE
+    } else {
+      x
+    }
+  }
 }
 
 #' Make a function of x that caches data locally
@@ -43,9 +53,13 @@ makeLocalCacher <- function(path){
     }
     save(x, file=filename) 
     rm(x)
-    function(){
-      load(filename)
-      x
+    function(check=FALSE, ...){
+      if(check){
+        TRUE
+      } else {
+        load(filename)
+        x
+      }
     }
   }
 }

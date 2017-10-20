@@ -13,7 +13,7 @@ NULL
 #' @param m Rmonad object
 #' @return logical TRUE if m is an Rmonad
 is_rmonad <- function(m) {
-  setequal(class(m), c("Rmonad", "R6"))
+  setequal(class(m), "Rmonad")
 }
 
 # internal utility for generating error messages when accessing a non-Rmonad
@@ -34,121 +34,219 @@ is_rmonad <- function(m) {
 #' @export
 #' @param m Rmonad object
 m_delete_value <- function(m) {
+  # TODO: uncomment next line (nothing bad could possibly happen if you do)
+  # .m_check(m)
   m$delete_value()
   m
 }
 
-# TODO: should these be exported?
-has_code     <- function(m) m$has_code()
-has_error    <- function(m) m$has_error()
-has_doc      <- function(m) m$has_doc()
-has_warnings <- function(m) m$has_warnings()
-has_notes    <- function(m) m$has_notes()
-has_parents  <- function(m) m$has_parents()
-has_nest     <- function(m) m$has_nest()
-has_branch   <- function(m) m$has_branch()
-has_meta     <- function(m) m$has_meta()
-has_time     <- function(m) m$has_time()
-has_mem      <- function(m) m$has_mem()
-has_value    <- function(m) m$has_value()
 
+.is_not_empty = function(x) length(x) > 0
+
+.is_not_empty_string = function(x) {
+  !is.null(x)     &&
+  !is.na(x)       &&
+  is.character(x) &&
+  (
+    length(x) > 1 ||
+    (length(x) == 1 && nchar(x) > 0)
+  )
+}
+
+.is_not_empty_integer = function(x) {
+  !is.null(x) && !is.na(x) && is.integer(x) && length(x) != 0
+}
+
+.is_not_empty_real = function(x) {
+  !is.null(x) && !is.na(x) && is.numeric(x) && length(x) != 0
+}
+
+.maybe_vector_get = function(x){
+  if(length(x) == 0){
+    NULL   # Nothing
+           # NOTE: this is still ambiguous
+  } else {
+    x$value # a
+  }
+}
+
+.maybe_vector_set = function(x, is_not_empty, expected_type=true){
+  if(is_not_empty(x)){
+    if(!expected_type(x)){
+      stop("Type error")
+    }
+    list(value=x) # Just a
+  } else {
+    list()  # Nothing
+  }
+}
+
+.getHeadAttribute <- function(m, attribute){
+  .m_check(m)
+  igraph::get.vertex.attribute(m@graph, attribute, m@head)
+}
+
+.setHeadAttribute <- function(m, attribute, value){
+  .m_check(m)
+  igraph::set.vertex.attribute(m@graph, attribute, m@head, value)
+}
+
+# TODO: export these?
+has_code     = function(m) .is_not_empty_string(.getHeadAttribute(m, "code"))
+has_error    = function(m) length(.getHeadAttribute(m, "error"))    != 0
+has_doc      = function(m) length(.getHeadAttribute(m, "doc"))      != 0
+has_warnings = function(m) length(.getHeadAttribute(m, "warnings")) != 0
+has_notes    = function(m) length(.getHeadAttribute(m, "notes"))    != 0
+has_meta     = function(m) length(.getHeadAttribute(m, "meta"))     != 0
+has_time     = function(m) .is_not_empty_real(.getHeadAttribute(m, "time"))
+has_mem      = function(m) .is_not_empty_real(.getHeadAttribute(m, "mem"))
+has_value    = function(m) .getHeadAttribute(m, "value")(check=TRUE)
+has_parents  = function(m) is.null(m_parents(m))
+has_prior    = function(m) is.null(m_prior(m))
+has_nest     = function(m) is.null(m_nest(m))
+has_branch   = function(m) is.null(m_branch(m))
 
 # TODO: chop these
 .m_stored <- function(m) {
-  m$get_stored()
+  .m_check(m)
+  .getHeadAttribute(m, "stored")
 }
 `.m_stored<-` <- function(m, value) { m$set_stored(value) ; m }
 
+
+.get_relative_ids <- function(m, mode, type){
+  # FIXME: Directly using vertex ids is not a good idea; they are not stable in
+  # general. In my particular case, I think they will be stable, but this is
+  # dangerous. An alternative approach would be to add a unique name to each
+  # node (e.g. a UUID) and using the names in head instead.
+  vertices <- igraph::neighbors(m@graph, m@head, mode=mode) %>% as.numeric %>% unique
+
+  edges <- igraph::incident_edges(m@graph, m@head, mode=mode)[[1]] %>% as.numeric
+
+  stopifnot(length(vertices) == length(edges))
+  
+  etype <- igraph::get.edge.attribute(m@graph, "type", edges)
+
+  stopifnot(length(etype) == length(edges))
+
+  vertices[etype == type]
+
+  if(length(vertices) == 0){
+    # parent of root. FIXME: this is a bit arbitrary
+    m <- NULL
+  } else {
+    m@head <- vertices
+  }
+
+  m
+}
+
+# TODO: I should be able to remove most of these functions, replace them with
+# generic attribute getters and setters. This would reduce code repitition.
+# However, it would also slightly complicate mapping these functions over
+# rmonads. For example, common tasks like `lapply(x, m_value)` would become
+# `lapply(x, function(y) get_attr(y, "value"))`. I am sure there is a clean
+# solution, but for now, during this refactor, I want to keep changes to a
+# minimum.
 
 #' @rdname rmonad_accessors
 #' @export
 m_parents <- function(m) {
   .m_check(m)
-  m$get_parents()
+  .get_relative_ids(m, "in", "depend")
 }
+
 
 #' @rdname rmonad_accessors
 #' @export
 m_nest <- function(m) {
   .m_check(m)
-  m$get_nest()
+  .get_relative_ids(m, "in", "nest")
+}
+
+#' @rdname rmonad_accessors
+#' @export
+m_prior <- function(m) {
+  .m_check(m)
+  .get_relative_ids(m, "in", "prior")
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_nest_depth <- function(m) {
   .m_check(m)
-  m$get_nest_depth()
+  .getHeadAttribute(m, "nest_depth")
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_value <- function(m, warn=TRUE){
+m_value <- function(m, ...){
   .m_check(m)
-  m$get_value(warn)
+  # ... should only ever be 'warn' at this point
+  .getHeadAttribute(m, "value")(...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_id <- function(m) {
   .m_check(m)
-  m$get_id()
+  m@head
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_OK <- function(m) {
   .m_check(m)
-  m$get_OK()
+  .getHeadAttribute(m, "value")(check=TRUE)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_code <- function(m) {
   .m_check(m)
-  m$get_code()
+  .getHeadAttribute(m, "code")
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_error <- function(m) {
   .m_check(m)
-  m$get_error()
+  .getHeadAttribute(m, "error")
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_warnings <- function(m) {
   .m_check(m)
-  m$get_warnings()
+  .getHeadAttribute(m, "warnings")
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_notes <- function(m) {
   .m_check(m)
-  m$get_notes()
+  .getHeadAttribute(m, "notes")
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_doc <- function(m) {
   .m_check(m)
-  m$get_doc()
+  .getHeadAttribute(m, "doc")
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_meta <- function(m) {
   .m_check(m)
-  m$get_meta()
+  .getHeadAttribute(m, "meta")
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_time <- function(m) {
   .m_check(m)
-  m$get_time()
+  .getHeadAttribute(m, "time")
 }
 
 
@@ -156,21 +254,21 @@ m_time <- function(m) {
 #' @export
 m_mem <- function(m) {
   .m_check(m)
-  m$get_mem()
+  .getHeadAttribute(m, "mem")
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_summary <- function(m) {
   .m_check(m)
-  m$get_summary()
+  .getHeadAttribute(m, "summary")
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_branch   <- function(m) {
+m_branch <- function(m) {
   .m_check(m)
-  m$get_branch()
+  .getHeadAttribute(m, "branch")
 }
 
 
@@ -178,7 +276,7 @@ m_branch   <- function(m) {
 #' @export
 `m_OK<-` <- function(m, value) {
   .m_check(m)
-  m$set_OK(value)
+  m <- .setHeadAttribute(m, "OK", value)
   m
 }
 
@@ -186,31 +284,8 @@ m_branch   <- function(m) {
 #' @export
 `m_value<-` <- function(m, value) {
   .m_check(m)
-  m$set_value(value)
-  m
-}
-
-#' @rdname rmonad_accessors
-#' @export
-`m_parents<-` <- function(m, value) {
-  .m_check(m)
-  m$set_parents(value)
-  m
-}
-
-#' @rdname rmonad_accessors
-#' @export
-`m_nest<-` <- function(m, value) {
-  .m_check(m)
-  m$set_nest(value)
-  m
-}
-
-#' @rdname rmonad_accessors
-#' @export
-`m_nest_depth<-` <- function(m, value) {
-  .m_check(m)
-  m$set_nest_depth(value)
+  # TODO: Don't hardcode the cache function
+  m <- .setHeadAttribute(m, "value", memoryCache(value))
   m
 }
 
@@ -218,7 +293,7 @@ m_branch   <- function(m) {
 #' @export
 `m_code<-` <- function(m, value) {
   .m_check(m)
-  m$set_code(value)
+  m <- .setHeadAttribute(m, "code", value)
   m
 }
 
@@ -226,7 +301,7 @@ m_branch   <- function(m) {
 #' @export
 `m_error<-` <- function(m, value) {
   .m_check(m)
-  m$set_error(value)
+  m <- .setHeadAttribute(m, "error", value)
   m
 }
 
@@ -235,7 +310,7 @@ m_branch   <- function(m) {
 #' @export
 `m_warnings<-` <- function(m, value) {
   .m_check(m)
-  m$set_warnings(value)
+  m <- .setHeadAttribute(m, "warnings", value)
   m
 }
 
@@ -243,7 +318,7 @@ m_branch   <- function(m) {
 #' @export
 `m_notes<-` <- function(m, value) {
   .m_check(m)
-  m$set_notes(value)
+  m <- .setHeadAttribute(m, "notes", value)
   m
 }
 
@@ -251,7 +326,7 @@ m_branch   <- function(m) {
 #' @export
 `m_doc<-` <- function(m, value) {
   .m_check(m)
-  m$set_doc(value)
+  m <- .setHeadAttribute(m, "doc", value)
   m
 }
 
@@ -259,7 +334,7 @@ m_branch   <- function(m) {
 #' @export
 `m_meta<-` <- function(m, value) {
   .m_check(m)
-  m$set_meta(value)
+  m <- .setHeadAttribute(m, "meta", value)
   m
 }
 
@@ -267,7 +342,7 @@ m_branch   <- function(m) {
 #' @export
 `m_time<-` <- function(m, value) {
   .m_check(m)
-  m$set_time(value)
+  m <- .setHeadAttribute(m, "time", value)
   m
 }
 
@@ -275,7 +350,7 @@ m_branch   <- function(m) {
 #' @export
 `m_mem<-` <- function(m, value) {
   .m_check(m)
-  m$set_mem(value)
+  m <- .setHeadAttribute(m, "mem", value)
   m
 }
 
@@ -283,7 +358,57 @@ m_branch   <- function(m) {
 #' @export
 `m_summary<-` <- function(m, value){
   .m_check(m)
-  m$other$summary <- value
+  m <- .setHeadAttribute(m, "summary", value)
+  m
+}
+
+
+#' @rdname rmonad_accessors
+#' @export
+app_warnings <- function(m, value) {
+  .m_check(m)
+  warnings <- .getHeadAttr(m, "warnings")
+  if(length(value) > 0 && nchar(value) > 0){
+    warnings <- value %++% warnings
+  }
+  .setHeadAttr(m, "warnings", warnings)
+}
+
+#' @rdname rmonad_accessors
+#' @export
+app_notes <- function(m, value) {
+  .m_check(m)
+  notes <- .getHeadAttr(m, "notes")
+  if(length(value) > 0 && nchar(value) > 0){
+    notes <- value %++% notes
+  }
+  .setHeadAttr(m, "notes", notes)
+}
+
+
+
+
+#' @rdname rmonad_accessors
+#' @export
+`m_parents<-` <- function(m, value) {
+  .m_check(m)
+  stop("NOT IMPLEMENTED")
+  m
+}
+
+#' @rdname rmonad_accessors
+#' @export
+`m_nest<-` <- function(m, value) {
+  .m_check(m)
+  stop("NOT IMPLEMENTED")
+  m
+}
+
+#' @rdname rmonad_accessors
+#' @export
+`m_nest_depth<-` <- function(m, value) {
+  .m_check(m)
+  stop("NOT IMPLEMENTED")
   m
 }
 
@@ -291,25 +416,7 @@ m_branch   <- function(m) {
 #' @export
 `m_branch<-` <- function(m, value) {
   .m_check(m)
-  m$set_branch(value)
-  m
-}
-
-
-
-#' @rdname rmonad_accessors
-#' @export
-app_warnings <- function(m, value) {
-  .m_check(m)
-  m$app_warnings(value)
-  m
-}
-
-#' @rdname rmonad_accessors
-#' @export
-app_notes <- function(m, value) {
-  .m_check(m)
-  m$app_notes(value)
+  stop("NOT IMPLEMENTED")
   m
 }
 
@@ -317,7 +424,7 @@ app_notes <- function(m, value) {
 #' @export
 app_branch <- function(m, value) {
   .m_check(m)
-  m$app_branch(value)
+  stop("NOT IMPLEMENTED")
   m
 }
 
@@ -325,6 +432,6 @@ app_branch <- function(m, value) {
 #' @export
 app_parents <- function(m, value) {
   .m_check(m)
-  m$app_parents(value)
+  stop("NOT IMPLEMENTED")
   m
 }

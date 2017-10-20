@@ -4,7 +4,7 @@
 \alias{voidCache}
 \title{Represent a value that has not been set}
 \usage{
-voidCache()
+voidCache(check = FALSE, ...)
 }
 \description{
 This is the default value of RmonadNode@value. It should always be replaced

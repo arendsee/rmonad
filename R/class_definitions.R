@@ -6,51 +6,59 @@
 #' be spoken to sternly) or 2) there is a bug in rmonad.
 #'
 #' @return NULL
-voidCache <- function(){
+voidCache <- function(check=FALSE, ...){
   # FIXME: This function ought to be in `core_cache.R`, but this causes a
   # collation error, i.e. "object 'voidCache' not found" in RmonadNode below.
   # Defining this function locally fixes the problem.
-  warning("Attempting to access an a DataNode with no stored value, returning NULL")
-  NULL
+  if(check){
+    FALSE
+  } else {
+    warning("Attempting to access an a DataNode with no stored value, returning NULL")
+    NULL
+  }
 }
 
 setOldClass("igraph")
 Rmonad <- setClass(
   "Rmonad",
   representation(
-    graph = "igraph"
+    graph = "igraph",
+    head = "integer"
     # TODO: add rmonad settings (e.g. default cache function)
   ),
   prototype(
-    graph = igraph::make_empty_graph(directed=TRUE, n=1)
+    graph = igraph::make_empty_graph(directed=TRUE, n=1),
+    head = 1L
   )
 )
 
-RmonadNode <- setClass(
-  "RmonadNode",
-  representation(
-    value    = "function",
-    OK       = "logical",
-    error    = "list",
-    warnings = "list",
-    notes    = "list",
-    doc      = "list",
-    other    = "list",
-    meta     = "list",
-    code     = "character"
-  ),
-  prototype(
-    value    = voidCache,
-    OK       = TRUE,
-    code     = NA_character_,
-    error    = list(),
-    warnings = list(),
-    notes    = list(),
-    other    = list(),
-    meta     = list(),
-    doc      = list()
-  )
-)
+# # TODO: Do I even need this? It is an extra layer of obfuscation, why not use
+# # direct igraph attributes? Yeah, totally should.
+# RmonadNode <- setClass(
+#   "RmonadNode",
+#   representation(
+#     value    = "function",
+#     OK       = "logical",
+#     error    = "list",
+#     warnings = "list",
+#     notes    = "list",
+#     doc      = "list",
+#     other    = "list",
+#     meta     = "list",
+#     code     = "character"
+#   ),
+#   prototype(
+#     value    = voidCache,
+#     OK       = TRUE,
+#     code     = NA_character_,
+#     error    = list(),
+#     warnings = list(),
+#     notes    = list(),
+#     other    = list(),
+#     meta     = list(),
+#     doc      = list()
+#   )
+# )
 
 
 # reset_rmonad_id <- function(){
