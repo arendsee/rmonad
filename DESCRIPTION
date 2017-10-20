@@ -17,7 +17,7 @@ Encoding: UTF-8
 Depends:
     R (>= 3.2.0)
 Imports:
-    R6,
+    igraph,
     methods,
     magrittr,
     DiagrammeR,

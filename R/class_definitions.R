@@ -1,3 +1,31 @@
+#' Represent a value that has not been set
+#'
+#' This is the default value of RmonadNode@value. It should always be replaced
+#' shortly after the object is created, thus should only be encountered if 1)
+#' the user is directly creating RmonadNode objects (in which case they should
+#' be spoken to sternly) or 2) there is a bug in rmonad.
+#'
+#' @return NULL
+voidCache <- function(){
+  # FIXME: This function ought to be in `core_cache.R`, but this causes a
+  # collation error, i.e. "object 'voidCache' not found" in RmonadNode below.
+  # Defining this function locally fixes the problem.
+  warning("Attempting to access an a DataNode with no stored value, returning NULL")
+  NULL
+}
+
+setOldClass("igraph")
+Rmonad <- setClass(
+  "Rmonad",
+  representation(
+    graph = "igraph"
+    # TODO: add rmonad settings (e.g. default cache function)
+  ),
+  prototype(
+    graph = igraph::make_empty_graph(directed=TRUE, n=1)
+  )
+)
+
 RmonadNode <- setClass(
   "RmonadNode",
   representation(
@@ -12,7 +40,7 @@ RmonadNode <- setClass(
     code     = "character"
   ),
   prototype(
-    value    = nodeCacheVoid,
+    value    = voidCache,
     OK       = TRUE,
     code     = NA_character_,
     error    = list(),

@@ -1,16 +1,3 @@
-#' Represent a value that has not been set
-#'
-#' This is the default value of RmonadNode@value. It should always be replaced
-#' shortly after the object is created, thus should only be encountered if 1)
-#' the user is directly creating RmonadNode objects (in which case they should
-#' be spoken to sternly) or 2) there is a bug in rmonad.
-#'
-#' @return NULL
-voidCache <- function(){
-  warning("Attempting to access an a DataNode with no stored value, returning NULL")
-  NULL
-}
-
 #' Represent a value that has been deleted
 #'
 #' By default, the value of a node that has already been executed will be set
