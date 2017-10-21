@@ -25,35 +25,6 @@ Rmonad <- function(){
 }
 
 
-# # TODO: Do I even need this? It is an extra layer of obfuscation, why not use
-# # direct igraph attributes? Yeah, totally should.
-# RmonadNode <- setClass(
-#   "RmonadNode",
-#   representation(
-#     value    = "function",
-#     OK       = "logical",
-#     error    = "list",
-#     warnings = "list",
-#     notes    = "list",
-#     doc      = "list",
-#     other    = "list",
-#     meta     = "list",
-#     code     = "character"
-#   ),
-#   prototype(
-#     value    = voidCache,
-#     OK       = TRUE,
-#     code     = NA_character_,
-#     error    = list(),
-#     warnings = list(),
-#     notes    = list(),
-#     other    = list(),
-#     meta     = list(),
-#     doc      = list()
-#   )
-# )
-
-
 # reset_rmonad_id <- function(){
 #   .rmonad_node_id=0L
 #   function(){

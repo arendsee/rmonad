@@ -26,17 +26,13 @@ is_rmonad <- function(m) {
 
 #' Delete a node's value
 #'
-#' This is not the same as setting the value to NULL. Deleting tells
-#' \code{rmonad} that no value is cached. If the value is accessed later, a
-#' warning is raised. In contrast, setting the value to NULL will result in
-#' \code{rmonad} thinking that the result of the computation was NULL.
-#'
 #' @export
 #' @param m Rmonad object
 m_delete_value <- function(m) {
-  # TODO: uncomment next line (nothing bad could possibly happen if you do)
-  # .m_check(m)
-  m$delete_value()
+  .m_check(m)
+  cache <- igraph::get.vertex.attribute(m@graph, "value", m@head)
+  cache@del()
+  m@graph <- igraph::set.vertex.attribute(m@graph, "value", m@head, noCache())
   m
 }
 
@@ -61,6 +57,13 @@ m_delete_value <- function(m) {
   !is.null(x) && !is.na(x) && is.numeric(x) && length(x) != 0
 }
 
+# === A note about Maybe ======================================================
+# Some of the values stored in Rmonad could reasonably contain nothing, which
+# is not the same as NULL. The value a node wraps be anything. But intermediate
+# values are not usually stored (unless using %v>% or relatives), so we need a
+# way to distinguish between a node holding no value and NULL. My approach is
+# to emulate the Haskell Maybe by using a list of length 0 or 1. An empty list
+# is Nothing. A list with one element, is Something.
 .maybe_vector_get = function(x){
   if(length(x) == 0){
     NULL   # Nothing

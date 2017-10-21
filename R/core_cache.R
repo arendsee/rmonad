@@ -52,7 +52,7 @@ memoryCache <- function(x){
   # FIXME: allow deletion of x, must delete only the LOCAL x 
   # FIXME: allow checking, must check for presence of LOCAL x
   new("CacheManager",
-    get = function() x,
+    get = function(...) x,
     del = nothing,
     chk = true
   )

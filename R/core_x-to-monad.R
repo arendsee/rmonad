@@ -101,7 +101,7 @@ as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE, clone=FALSE){
     desc
   }
 
-  m <- Rmonad$new()
+  m <- Rmonad()
 
   # The default value is Nothing
   if(isOK) m_value(m) <- value

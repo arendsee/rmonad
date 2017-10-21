@@ -10,8 +10,5 @@ m_delete_value(m)
 \item{m}{Rmonad object}
 }
 \description{
-This is not the same as setting the value to NULL. Deleting tells
-\code{rmonad} that no value is cached. If the value is accessed later, a
-warning is raised. In contrast, setting the value to NULL will result in
-\code{rmonad} thinking that the result of the computation was NULL.
+Delete a node's value
 }
