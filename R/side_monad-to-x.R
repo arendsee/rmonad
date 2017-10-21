@@ -2,35 +2,27 @@
 #'
 #' @family from_Rmonad
 #' @param m An Rmonad
-#' @param recurse_nests logical Should the resulting table descend into nested pipelines?
 #' @param code logical Should the code by included?
 #' @export
-mtabulate <- function(m, recurse_nests=TRUE, code=FALSE){
-  ms <- as.list(m, recurse_nests)
-  d <- do.call(rbind.data.frame, lapply(ms, .mtabulate)) %>%
-    as.data.frame
-  rownames(d) <- NULL
-  if(!code){
-    d$code <- NULL
+mtabulate <- function(m, code=FALSE){
+  data.frame(
+    code      = igraph::V(m@graph)$code %>% paste(collapse="\n"),
+    id        = igraph::V(m@graph) %>% as.numeric,
+    OK        = igraph::V(m@graph)$OK,
+    cached    = igraph::V(m@graph)$value %>% sapply(function(x) x@chk()),
+    time      = igraph::V(m@graph)$time %>% { signif(.[1], 2) },
+    space     = igraph::V(m@graph)$mem,
+    # is_nested = has_nest(m),
+    # nbranch   = length(m_branch(m)),
+    nnotes    = igraph::V(m@graph)$notes    %>% sapply(length),
+    nwarnings = igraph::V(m@graph)$warnings %>% sapply(length),
+    error     = igraph::V(m@graph)$error    %>% sapply(length),
+    doc       = igraph::V(m@graph)$doc      %>% sapply(length)
+  ) %>% {
+    if(!code)
+      .$code <- NULL
+    .
   }
-  d
-}
-.mtabulate <- function(m){
-  v <- m_value(m, warn=FALSE)
-  list(
-    code      = paste(m_code(m), collapse="\n"),
-    id        = m_id(m),
-    OK        = m_OK(m),
-    cached    = has_value(m) && !is_rmonad(v),
-    time      = signif(m_time(m)[1], 2),
-    space     = m_mem(m),
-    is_nested = has_nest(m),
-    nbranch   = length(m_branch(m)),
-    nnotes    = length(m_notes(m)),
-    nwarnings = length(m_warnings(m)),
-    error     = length(m_error(m)),
-    doc       = length(m_doc(m))
-  )
 }
 
 #' Tabulates all errors, warnings and notes
@@ -40,21 +32,19 @@ mtabulate <- function(m, recurse_nests=TRUE, code=FALSE){
 #' @param recurse_nests logical Should the resulting table descend into nested pipelines?
 #' @export
 missues <- function(m, recurse_nests=TRUE){
-  ms <- as.list(m)
-  .missues <- function(m) {
-    type <- c(
-              rep.int("error",   length(m_error(m))    ),
-              rep.int("warning", length(m_warnings(m)) ),
-              rep.int("note",    length(m_notes(m))    )
-             )
-    issue <- as.character(c(m_error(m), m_warnings(m), m_notes(m)))
-    idcol <- rep(m_id(m), length(type))
-    list(id=idcol, type=type, issue=issue) 
-  }
-  do.call(rbind.data.frame, lapply(ms, .missues)) %>%
-    as.data.frame  # NOTE: this cast is required, since the above code
-                   # silently mishandles the case or a zero-row data
-                   # frame (it returns a list).
+  ids      <- igraph::V(m@graph) %>% as.numeric
+  error    <- igraph::V(m@graph)$error    %>% unlist
+  warnings <- igraph::V(m@graph)$warnings %>% unlist
+  notes    <- igraph::V(m@graph)$notes    %>% unlist
+  data.frame(
+    id = ids, 
+    type = c(
+      rep("error", length(error)),
+      rep("warning", length(warnings)),
+      rep("note", length(notes))
+    ),
+    issue = c(error, warnings, notes)
+  )
 }
 
 #' Convert a pipeline to Rmarkdown
