@@ -1,14 +1,3 @@
-#' Clear an rmonad's parents
-#'
-#' @family monad-to-monad
-#' @param m An Rmonad
-#' @return The input Rmonad with all parents erased
-#' @export 
-forget <- function(m){
-  m_parents(m) <- list()
-  m
-}
-
 #' Remove a level of nesting in an Rmonad
 #'
 #' @family monad-to-monad
