@@ -5,8 +5,16 @@
 #' @param code logical Should the code by included?
 #' @export
 mtabulate <- function(m, code=FALSE){
+  # FIXME: I shouldn't need this once the accessor refactor is done
+  optional_text <- function(x){
+    if(is.null(x)) {
+      rep(0, igraph::vcount(m@graph))
+    } else {
+      sapply(x, length)
+    }
+  }
   data.frame(
-    code      = igraph::V(m@graph)$code %>% paste(collapse="\n"),
+    code      = igraph::V(m@graph)$code %>% sapply(paste0, collapse="\n"),
     id        = igraph::V(m@graph) %>% as.numeric,
     OK        = igraph::V(m@graph)$OK,
     cached    = igraph::V(m@graph)$value %>% sapply(function(x) x@chk()),
@@ -14,10 +22,10 @@ mtabulate <- function(m, code=FALSE){
     space     = igraph::V(m@graph)$mem,
     # is_nested = has_nest(m),
     # nbranch   = length(m_branch(m)),
-    nnotes    = igraph::V(m@graph)$notes    %>% sapply(length),
-    nwarnings = igraph::V(m@graph)$warnings %>% sapply(length),
-    error     = igraph::V(m@graph)$error    %>% sapply(length),
-    doc       = igraph::V(m@graph)$doc      %>% sapply(length)
+    nnotes    = igraph::V(m@graph)$notes    %>% optional_text,
+    nwarnings = igraph::V(m@graph)$warnings %>% optional_text,
+    error     = igraph::V(m@graph)$error    %>% optional_text,
+    doc       = igraph::V(m@graph)$doc      %>% optional_text
   ) %>% {
     if(!code)
       .$code <- NULL
@@ -29,15 +37,22 @@ mtabulate <- function(m, code=FALSE){
 #' 
 #' @family from_Rmonad
 #' @param m An Rmonad
-#' @param recurse_nests logical Should the resulting table descend into nested pipelines?
 #' @export
-missues <- function(m, recurse_nests=TRUE){
+missues <- function(m){
+  optional_text <- function(x){
+    if(is.null(x)) {
+      character(0)
+    } else {
+      unlist(x)
+    }
+  }
+
   ids      <- igraph::V(m@graph) %>% as.numeric
-  error    <- igraph::V(m@graph)$error    %>% unlist
-  warnings <- igraph::V(m@graph)$warnings %>% unlist
-  notes    <- igraph::V(m@graph)$notes    %>% unlist
+  error    <- igraph::V(m@graph)$error    %>% optional_text
+  warnings <- igraph::V(m@graph)$warnings %>% optional_text
+  notes    <- igraph::V(m@graph)$notes    %>% optional_text
   data.frame(
-    id = ids, 
+    id = ids, # FIXME: this is borken
     type = c(
       rep("error", length(error)),
       rep("warning", length(warnings)),
@@ -75,9 +90,9 @@ mreport <- function(m){
 #'        extra context. 
 #' @export 
 esc <- function(m, quiet=FALSE){
-  mtab <- mtabulate(m, recurse_nests=TRUE, code=TRUE)
+  mtab <- mtabulate(m, code=TRUE)
 
-  issues <- missues(m, recurse_nests=TRUE) %>%
+  issues <- missues(m) %>%
     { merge(mtab, .)[, c("code", "type", "issue")] }
 
   if(quiet){
