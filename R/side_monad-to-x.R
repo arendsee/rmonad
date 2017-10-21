@@ -59,63 +59,13 @@ missues <- function(m, recurse_nests=TRUE){
 
 #' Convert a pipeline to Rmarkdown
 #'
-#' This function is experimental and may change completely in the future
+#' STUB
 #'
 #' @family from_Rmonad
 #' @param m An Rmonad
-#' @param section_prefix A prefix to add to all section headers (mostly for internal use)
 #' @export
-mreport <- function(m, section_prefix=""){
-
-  template <- paste0(collapse="\n", c(
-      "## %s",
-      "%s",
-      "```{r, eval=FALSE}",
-      "%s",
-      "```",
-      "OK=%s | nparents=%s | nbranches=%s | cached=%s",
-      "%s%s%s",
-      "%s"
-  ))
-  lapply(as.list(m, recurse_nests=FALSE),
-    function(x) {
-      if(section_prefix != ""){
-        label <- paste(section_prefix, m_id(x), sep=".")
-      } else {
-        label <- m_id(x)
-      }
-      rep <- paste0(sprintf(
-        template,
-        label,
-        .make_message(m_doc(x), x$has_doc(), "  "),
-        paste(m_code(x), collapse="\n"),
-        m_OK(x), length(m_parents(x)), length(m_branch(x)), has_value(x),
-        .make_message(m_error(x), has_error(x), "Error"),
-        .make_message(m_warnings(x), has_warnings(x), "Warning"),
-        .make_message(m_notes(x), has_notes(x), "Note"),
-        .write_result(x)
-      ))
-      if(has_nest(x)){
-        section_prefix <- label
-        rep <- paste0(rep, mreport(m_nest(x), section_prefix=section_prefix), collapse="\n")
-      }
-      rep
-    }
-  ) %>% unlist %>% paste(collapse="\n")
-}
-.make_message <- function(x,has,root) {
-  if(has){
-    paste(root, x, collapse="\n")
-  } else {
-    ""
-  }
-}
-.write_result <- function(x){
-  if(has_value(x)){
-    sprintf("```\n%s\n```\n", paste0("R> ", capture.output(print(m_value(x))), collapse="\n"))
-  } else {
-    ""
-  }
+mreport <- function(m){
+  stop("NOT IMPLEMENTED")
 }
 
 #' Convert a pipeline to DiagrammeR graph
