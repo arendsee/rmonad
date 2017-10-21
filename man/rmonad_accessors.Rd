@@ -3,6 +3,7 @@
 \name{rmonad_accessors}
 \alias{rmonad_accessors}
 \alias{m_parents}
+\alias{m_branch}
 \alias{m_nest}
 \alias{m_prior}
 \alias{m_nest_depth}
@@ -18,7 +19,6 @@
 \alias{m_time}
 \alias{m_mem}
 \alias{m_summary}
-\alias{m_branch}
 \alias{m_OK<-}
 \alias{m_value<-}
 \alias{m_code<-}
@@ -41,6 +41,8 @@
 \title{get, set, and append rmonad fields}
 \usage{
 m_parents(m)
+
+m_branch(m)
 
 m_nest(m)
 
@@ -71,8 +73,6 @@ m_time(m)
 m_mem(m)
 
 m_summary(m)
-
-m_branch(m)
 
 m_OK(m) <- value
 

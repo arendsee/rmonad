@@ -4,12 +4,10 @@
 \alias{mtabulate}
 \title{Make tabular summary of a pipeline}
 \usage{
-mtabulate(m, recurse_nests = TRUE, code = FALSE)
+mtabulate(m, code = FALSE)
 }
 \arguments{
 \item{m}{An Rmonad}
-
-\item{recurse_nests}{logical Should the resulting table descend into nested pipelines?}
 
 \item{code}{logical Should the code by included?}
 }
@@ -17,7 +15,6 @@ mtabulate(m, recurse_nests = TRUE, code = FALSE)
 Make tabular summary of a pipeline
 }
 \seealso{
-Other from_Rmonad: \code{\link{as_dgr_graph}},
-  \code{\link{esc}}, \code{\link{missues}},
-  \code{\link{mreport}}
+Other from_Rmonad: \code{\link{esc}},
+  \code{\link{missues}}, \code{\link{mreport}}
 }

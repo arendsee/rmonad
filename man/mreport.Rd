@@ -4,18 +4,15 @@
 \alias{mreport}
 \title{Convert a pipeline to Rmarkdown}
 \usage{
-mreport(m, section_prefix = "")
+mreport(m)
 }
 \arguments{
 \item{m}{An Rmonad}
-
-\item{section_prefix}{A prefix to add to all section headers (mostly for internal use)}
 }
 \description{
-This function is experimental and may change completely in the future
+STUB
 }
 \seealso{
-Other from_Rmonad: \code{\link{as_dgr_graph}},
-  \code{\link{esc}}, \code{\link{missues}},
-  \code{\link{mtabulate}}
+Other from_Rmonad: \code{\link{esc}},
+  \code{\link{missues}}, \code{\link{mtabulate}}
 }

@@ -15,7 +15,6 @@ missues(m, recurse_nests = TRUE)
 Tabulates all errors, warnings and notes
 }
 \seealso{
-Other from_Rmonad: \code{\link{as_dgr_graph}},
-  \code{\link{esc}}, \code{\link{mreport}},
-  \code{\link{mtabulate}}
+Other from_Rmonad: \code{\link{esc}},
+  \code{\link{mreport}}, \code{\link{mtabulate}}
 }

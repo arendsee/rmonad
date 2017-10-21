@@ -24,7 +24,6 @@ main difference is that Rmonad appends the toplevel code that generated the
 error.
 }
 \seealso{
-Other from_Rmonad: \code{\link{as_dgr_graph}},
-  \code{\link{missues}}, \code{\link{mreport}},
-  \code{\link{mtabulate}}
+Other from_Rmonad: \code{\link{missues}},
+  \code{\link{mreport}}, \code{\link{mtabulate}}
 }
