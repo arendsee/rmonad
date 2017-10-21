@@ -135,16 +135,8 @@ has_branch   = function(m) !is.null(m_branch(m))
 
   stopifnot(length(etype) == length(edges))
 
-  vertices[etype == type]
+  vertices[etype == type] %>% as.integer
 
-  if(length(vertices) == 0){
-    # parent of root. FIXME: this is a bit arbitrary
-    m <- NULL
-  } else {
-    m@head <- vertices
-  }
-
-  m
 }
 
 # TODO: I should be able to remove most of these functions, replace them with
@@ -162,6 +154,12 @@ m_parents <- function(m) {
   .get_relative_ids(m, "in", "depend")
 }
 
+#' @rdname rmonad_accessors
+#' @export
+m_branch <- function(m) {
+  .m_check(m)
+  .get_relative_ids(m, "out", "branch")
+}
 
 #' @rdname rmonad_accessors
 #' @export
@@ -268,13 +266,6 @@ m_mem <- function(m) {
 m_summary <- function(m) {
   .m_check(m)
   .getHeadAttribute(m, "summary")
-}
-
-#' @rdname rmonad_accessors
-#' @export
-m_branch <- function(m) {
-  .m_check(m)
-  .getHeadAttribute(m, "branch")
 }
 
 
