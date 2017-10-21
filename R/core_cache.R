@@ -1,18 +1,43 @@
+#' Represent a value that has not been set
+#'
+#' This is the default value of RmonadNode@value. It should always be replaced
+#' shortly after the object is created, thus should only be encountered if 1)
+#' the user is directly creating RmonadNode objects (in which case they should
+#' be spoken to sternly) or 2) there is a bug in rmonad.
+#'
+#' @return NULL
+voidCache <- function(){
+  get <- function(warn=TRUE){
+    if(warn){
+      warning("Accessing node with no stored value, returning NULL")
+    }
+    NULL
+  }
+  new("CacheManager",
+    get = get,
+    del = nothing,
+    chk = false
+  )
+}
+
 #' Represent a value that has been deleted
 #'
 #' By default, the value of a node that has already been executed will be set
 #' to this function.
 #'
 #' @param warn logical Emit a warning on access 
-noCache <- function(warn=TRUE, check=FALSE, ...){
-  if(check){
-    FALSE
-  } else {
+noCache <- function(){
+  get <- function(warn=TRUE){
     if(warn){
       warning("Attempting to access data that has been deleted, returning NULL")
     }
     NULL
   }
+  new("CacheManager",
+    get = get,
+    del = nothing,
+    chk = false
+  )
 }
 
 #' Store a value in memory
@@ -24,13 +49,13 @@ noCache <- function(warn=TRUE, check=FALSE, ...){
 #' foo
 #' foo_proxy()
 memoryCache <- function(x){
-  function(check=FALSE, ...) {
-    if(check){
-      TRUE
-    } else {
-      x
-    }
-  }
+  # FIXME: allow deletion of x, must delete only the LOCAL x 
+  # FIXME: allow checking, must check for presence of LOCAL x
+  new("CacheManager",
+    get = function() x,
+    del = nothing,
+    chk = true
+  )
 }
 
 #' Make a function of x that caches data locally
@@ -47,19 +72,27 @@ memoryCache <- function(x){
 makeLocalCacher <- function(path){
   # Save x and return a function that can load it
   function(x){
+    path <- normalizePath(path)
     filename <- file.path(path, paste0(uuid::UUIDgenerate(), ".Rdata"))
     if(!dir.exists(path)){
       dir.create(path, recursive=TRUE)
     }
     save(x, file=filename) 
     rm(x)
-    function(check=FALSE, ...){
-      if(check){
-        TRUE
-      } else {
-        load(filename)
-        x
-      }
+    get <- function() {
+      load(filename)
+      x
     }
+    del <- function() {
+      file.remove(filename) 
+    }
+    chk <- function() {
+      file.exists(filename)
+    }
+    new("CacheManager",
+      get = get,
+      del = del,
+      chk = chk
+    )
   }
 }

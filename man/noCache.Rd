@@ -4,7 +4,7 @@
 \alias{noCache}
 \title{Represent a value that has been deleted}
 \usage{
-noCache(warn = TRUE, check = FALSE, ...)
+noCache()
 }
 \arguments{
 \item{warn}{logical Emit a warning on access}

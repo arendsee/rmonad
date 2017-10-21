@@ -1,36 +1,29 @@
-#' Represent a value that has not been set
-#'
-#' This is the default value of RmonadNode@value. It should always be replaced
-#' shortly after the object is created, thus should only be encountered if 1)
-#' the user is directly creating RmonadNode objects (in which case they should
-#' be spoken to sternly) or 2) there is a bug in rmonad.
-#'
-#' @return NULL
-voidCache <- function(check=FALSE, ...){
-  # FIXME: This function ought to be in `core_cache.R`, but this causes a
-  # collation error, i.e. "object 'voidCache' not found" in RmonadNode below.
-  # Defining this function locally fixes the problem.
-  if(check){
-    FALSE
-  } else {
-    warning("Attempting to access an a DataNode with no stored value, returning NULL")
-    NULL
-  }
-}
+setClass(
+  "CacheManager",
+  representation(
+    get = "function",
+    del = "function",
+    chk = "function"
+  )
+)
 
 setOldClass("igraph")
-Rmonad <- setClass(
+setClass(
   "Rmonad",
   representation(
     graph = "igraph",
     head = "integer"
     # TODO: add rmonad settings (e.g. default cache function)
-  ),
-  prototype(
-    graph = igraph::make_empty_graph(directed=TRUE, n=1),
-    head = 1L
   )
 )
+Rmonad <- function(){
+  m <- new("Rmonad")
+  m@graph <- igraph::make_empty_graph(directed=TRUE, n=1) %>%
+             igraph::set_vertex_attr(name="value", value=list(voidCache()))
+  m@head <- 1L
+  m
+}
+
 
 # # TODO: Do I even need this? It is an extra layer of obfuscation, why not use
 # # direct igraph attributes? Yeah, totally should.

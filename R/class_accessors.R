@@ -83,12 +83,18 @@ m_delete_value <- function(m) {
 
 .getHeadAttribute <- function(m, attribute){
   .m_check(m)
-  igraph::get.vertex.attribute(m@graph, attribute, m@head)
+  a <- igraph::get.vertex.attribute(m@graph, attribute, m@head)
+  if(is.null(a)){
+    a
+  } else {
+    a[[1]]
+  }
 }
 
 .setHeadAttribute <- function(m, attribute, value){
   .m_check(m)
-  igraph::set.vertex.attribute(m@graph, attribute, m@head, value)
+  m@graph <- igraph::set.vertex.attribute(m@graph, attribute, m@head, value)
+  m
 }
 
 # TODO: export these?
@@ -100,11 +106,11 @@ has_notes    = function(m) length(.getHeadAttribute(m, "notes"))    != 0
 has_meta     = function(m) length(.getHeadAttribute(m, "meta"))     != 0
 has_time     = function(m) .is_not_empty_real(.getHeadAttribute(m, "time"))
 has_mem      = function(m) .is_not_empty_real(.getHeadAttribute(m, "mem"))
-has_value    = function(m) .getHeadAttribute(m, "value")(check=TRUE)
-has_parents  = function(m) is.null(m_parents(m))
-has_prior    = function(m) is.null(m_prior(m))
-has_nest     = function(m) is.null(m_nest(m))
-has_branch   = function(m) is.null(m_branch(m))
+has_value    = function(m) .getHeadAttribute(m, "value")@chk()
+has_parents  = function(m) !is.null(m_parents(m))
+has_prior    = function(m) !is.null(m_prior(m))
+has_nest     = function(m) !is.null(m_nest(m))
+has_branch   = function(m) !is.null(m_branch(m))
 
 # TODO: chop these
 .m_stored <- function(m) {
@@ -183,7 +189,7 @@ m_nest_depth <- function(m) {
 m_value <- function(m, ...){
   .m_check(m)
   # ... should only ever be 'warn' at this point
-  .getHeadAttribute(m, "value")(...)
+  .getHeadAttribute(m, "value")@get(...)
 }
 
 #' @rdname rmonad_accessors
@@ -197,7 +203,7 @@ m_id <- function(m) {
 #' @export
 m_OK <- function(m) {
   .m_check(m)
-  .getHeadAttribute(m, "value")(check=TRUE)
+  .getHeadAttribute(m, "OK")
 }
 
 #' @rdname rmonad_accessors
@@ -275,6 +281,7 @@ m_branch <- function(m) {
 #' @rdname rmonad_accessors
 #' @export
 `m_OK<-` <- function(m, value) {
+  stopifnot(is.logical(value))
   .m_check(m)
   m <- .setHeadAttribute(m, "OK", value)
   m
@@ -285,7 +292,7 @@ m_branch <- function(m) {
 `m_value<-` <- function(m, value) {
   .m_check(m)
   # TODO: Don't hardcode the cache function
-  m <- .setHeadAttribute(m, "value", memoryCache(value))
+  m <- .setHeadAttribute(m, "value", list(memoryCache(value)))
   m
 }
 
