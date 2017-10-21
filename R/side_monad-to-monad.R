@@ -25,28 +25,6 @@ unnest <- function(m){
   m
 }
 
-# FIXME: This is a bit of a hack. I have had some trouble getting the recursion
-# depth set correctly at runtime, but it is fairly easy (see below) to set it
-# after the run is complete. But this is not a good solution, since it leaves
-# the monad in an incomplete state.
-recursive_set_nest_depth <- function(m, i=1L){
-
-  ms <- as.list(m, recurse_nests=FALSE)
-
-  for(x in ms){
-    if(is.na(m_nest_depth(x)))
-      x$set_nest_depth(i)
-  }
-
-  for(x in ms){
-    if(has_nest(x))
-      recursive_set_nest_depth(m_nest(x), i+1L)
-  }
-
-  m
-
-}
-
 #' Add documentation to a monad
 #'
 #' This function is deprecated. Use a docstring instead.
