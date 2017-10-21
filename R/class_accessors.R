@@ -99,18 +99,18 @@ m_delete_value <- function(m) {
 
 # TODO: export these?
 has_code     = function(m) .is_not_empty_string(.getHeadAttribute(m, "code"))
-has_error    = function(m) length(.getHeadAttribute(m, "error"))    != 0
-has_doc      = function(m) length(.getHeadAttribute(m, "doc"))      != 0
-has_warnings = function(m) length(.getHeadAttribute(m, "warnings")) != 0
-has_notes    = function(m) length(.getHeadAttribute(m, "notes"))    != 0
-has_meta     = function(m) length(.getHeadAttribute(m, "meta"))     != 0
+has_error    = function(m) length(.getHeadAttribute(m, "error"))    > 0
+has_doc      = function(m) length(.getHeadAttribute(m, "doc"))      > 0
+has_warnings = function(m) length(.getHeadAttribute(m, "warnings")) > 0
+has_notes    = function(m) length(.getHeadAttribute(m, "notes"))    > 0
+has_meta     = function(m) length(.getHeadAttribute(m, "meta"))     > 0
 has_time     = function(m) .is_not_empty_real(.getHeadAttribute(m, "time"))
 has_mem      = function(m) .is_not_empty_real(.getHeadAttribute(m, "mem"))
 has_value    = function(m) .getHeadAttribute(m, "value")@chk()
-has_parents  = function(m) !is.null(m_parents(m))
-has_prior    = function(m) !is.null(m_prior(m))
-has_nest     = function(m) !is.null(m_nest(m))
-has_branch   = function(m) !is.null(m_branch(m))
+has_parents  = function(m) length(m_parents(m)) > 0
+has_prior    = function(m) length(m_prior(m))   > 0
+has_nest     = function(m) length(m_nest(m))    > 0
+has_branch   = function(m) length(m_branch(m))  > 0
 
 # TODO: chop these
 .m_stored <- function(m) {
