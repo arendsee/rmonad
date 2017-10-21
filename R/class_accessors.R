@@ -387,21 +387,30 @@ app_notes <- function(m, value) {
 
 
 
+.add_parents <- function(child, parents, check=false, ...){
+  .m_check(child)
+  stopifnot(!check(child))
+  stopifnot(is.list(parents))
+  for(p in parents){
+    .m_check(p)
+    child@graph <- p@graph + child@graph
+    child@head <- vcount(p@graph) + child@head
+    new_edge <- edge(p@head, child@head, ...)
+    child@graph <- child@graph + new_edge
+  }
+  child
+}
 
 #' @rdname rmonad_accessors
 #' @export
 `m_parents<-` <- function(m, value) {
-  .m_check(m)
-  stop("NOT IMPLEMENTED")
-  m
+  .add_parents(m, value, check=has_parents, type="depend")
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_nest<-` <- function(m, value) {
-  .m_check(m)
-  stop("NOT IMPLEMENTED")
-  m
+  .add_parents(m, value, check=has_nest, type="nest")
 }
 
 #' @rdname rmonad_accessors
@@ -415,23 +424,17 @@ app_notes <- function(m, value) {
 #' @rdname rmonad_accessors
 #' @export
 `m_branch<-` <- function(m, value) {
-  .m_check(m)
-  stop("NOT IMPLEMENTED")
-  m
+  .add_parents(m, value, check=has_branch, type="branch")
 }
 
 #' @rdname rmonad_accessors
 #' @export
 app_branch <- function(m, value) {
-  .m_check(m)
-  stop("NOT IMPLEMENTED")
-  m
+  .add_parents(m, value, check=false, type="branch")
 }
 
 #' @rdname rmonad_accessors
 #' @export
 app_parents <- function(m, value) {
-  .m_check(m)
-  stop("NOT IMPLEMENTED")
-  m
+  .add_parents(m, value, check=false, type="parents")
 }
