@@ -39,24 +39,26 @@ mtabulate <- function(m, code=FALSE){
 #' @param m An Rmonad
 #' @export
 missues <- function(m){
-  optional_text <- function(x){
-    if(is.null(x)) {
-      character(0)
-    } else {
-      unlist(x)
-    }
-  }
 
-  ids      <- igraph::V(m@graph) %>% as.numeric
-  error    <- igraph::V(m@graph)$error    %>% optional_text
-  warnings <- igraph::V(m@graph)$warnings %>% optional_text
-  notes    <- igraph::V(m@graph)$notes    %>% optional_text
+  error_len   <- ms_error(m)    %>% sapply(length)
+  warning_len <- ms_warnings(m) %>% sapply(length)
+  note_len    <- ms_notes(m)    %>% sapply(length)
+
+  ids <- ms_id(m) %>% {c(
+    rep(., times=error_len),
+    rep(., times=warning_len),
+    rep(., times=note_len)
+  )}
+
+  error    <- ms_error(m)    %>% unlist %>% as.character
+  warnings <- ms_warnings(m) %>% unlist %>% as.character
+  notes    <- ms_notes(m)    %>% unlist %>% as.character
   data.frame(
-    id = ids, # FIXME: this is borken
+    id = ids,
     type = c(
-      rep("error", length(error)),
+      rep("error",   length(error)),
       rep("warning", length(warnings)),
-      rep("note", length(notes))
+      rep("note",    length(notes))
     ),
     issue = c(error, warnings, notes)
   )

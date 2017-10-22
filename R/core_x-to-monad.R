@@ -113,6 +113,7 @@ as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE){
   m_mem(m)      <- object.size(value)
   m_time(m)     <- signif(unname(st[1]), 2)
   m_meta(m)     <- met
+  .m_stored(m)  <- FALSE
 
   m <- apply_rewriters(m, met)
 

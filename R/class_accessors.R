@@ -107,12 +107,12 @@ m_delete_value <- function(m, index=NULL) {
 }
 
 # TODO: export these?
-has_code     = function(m) .is_not_empty_string(.getHeadAttribute(m, "code"))
-has_error    = function(m) length(.getHeadAttribute(m, "error"))    > 0
-has_doc      = function(m) length(.getHeadAttribute(m, "doc"))      > 0
-has_warnings = function(m) length(.getHeadAttribute(m, "warnings")) > 0
-has_notes    = function(m) length(.getHeadAttribute(m, "notes"))    > 0
-has_meta     = function(m) length(.getHeadAttribute(m, "meta"))     > 0
+has_code     = function(m) .is_not_empty_string(m_code(m))
+has_error    = function(m) length(m_error(m))    > 0
+has_doc      = function(m) length(m_doc(m))      > 0
+has_warnings = function(m) length(m_warnings(m)) > 0
+has_notes    = function(m) length(m_notes(m))    > 0
+has_meta     = function(m) length(m_meta(m))     > 0
 has_time     = function(m) .is_not_empty_real(.getHeadAttribute(m, "time"))
 has_mem      = function(m) .is_not_empty_real(.getHeadAttribute(m, "mem"))
 has_value    = function(m) .getHeadAttribute(m, "value")@chk()
@@ -134,7 +134,7 @@ has_branch   = function(m) length(m_branch(m))  > 0
 }
 `.m_stored<-` <- function(m, value) {
   .m_check(m)
-  .setHeadAttribute(m, "stored", value)
+  m <- .setHeadAttribute(m, "stored", value)
   m
 }
 
