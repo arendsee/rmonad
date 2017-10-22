@@ -184,7 +184,7 @@ NULL
     lhs,
     rhs,
     bind_if   = false,
-    bind_else = function(...){as_monad(eval(rhs, envir), lossy=TRUE, clone=TRUE)},
+    bind_else = function(...){as_monad(eval(rhs, envir), lossy=TRUE)},
     emit      = emit,
     expect_rhs_function = FALSE,
     envir=envir

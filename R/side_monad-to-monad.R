@@ -5,7 +5,7 @@
 #' @export
 unnest <- function(m){
   if(is_rmonad(m) && has_value(m) && is_rmonad(m_value(m))){
-    m_nest(m) <- m_value(m)$clone()
+    m_nest(m) <- m_value(m)
     m_OK(m)    <- m_OK(m_nest(m))
     # move the value from the nest to the outer position
     m_value(m) <- m_value(m_nest(m))

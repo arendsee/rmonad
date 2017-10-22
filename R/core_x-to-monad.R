@@ -20,7 +20,6 @@
 #' @param xs  A list of elements to join into a monad
 #' @param doc A docstring to associate with the monad
 #' @param desc A description of the monad (usually the producing code)
-#' @param clone logical Should the R6 object be cloned?
 #' @param keep_history merge the histories of all monads
 #' @param env Evaluation environment
 #' @param lossy logical Should unnesting with record be done?
@@ -50,7 +49,7 @@ NULL
 
 #' @rdname x_to_monad
 #' @export
-as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE, clone=FALSE){
+as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE){
 # as_monad :: a -> m a
 
   value <- NULL 
@@ -89,9 +88,6 @@ as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE, clone=FALSE){
   )
 
   if(lossy && is_rmonad(value)){
-    if(clone){
-      value <- value$clone()
-    }
     return(value)
   }
 
