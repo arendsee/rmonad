@@ -3,9 +3,13 @@
 \name{rmonad_accessors}
 \alias{rmonad_accessors}
 \alias{m_parents}
+\alias{ms_parents}
 \alias{m_branch}
+\alias{ms_branch}
 \alias{m_nest}
+\alias{ms_nest}
 \alias{m_prior}
+\alias{ms_prior}
 \alias{m_nest_depth}
 \alias{m_value}
 \alias{ms_value}
@@ -53,11 +57,19 @@
 \usage{
 m_parents(m)
 
+ms_parents(m)
+
 m_branch(m)
+
+ms_branch(m)
 
 m_nest(m)
 
+ms_nest(m)
+
 m_prior(m)
+
+ms_prior(m)
 
 m_nest_depth(m)
 

@@ -87,10 +87,10 @@ NULL
 #' @export
 `%^>%` <- function(lhs, rhs) {
   .bind_if_fb <- function(m){
-    m_branch(m) %>% sapply(m_OK) %>% all
+    all( ms_OK(m)[m_branch(m)] )
   }
   .bind_args_fb <- function(m){
-    m_branch(m) %>% lapply(m_value)
+    ms_value(m, warn=FALSE)[m_branch(m)]
   }
 
   cmd   <- list(

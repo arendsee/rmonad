@@ -138,13 +138,13 @@ has_branch   = function(m) length(m_branch(m))  > 0
   m
 }
 
-.get_relative_ids <- function(m, mode, type){
+.get_relative_ids <- function(m, mode, type, index=m@head){
   # FIXME: Directly using vertex ids is not a good idea; they are not stable in
   # general. In my particular case, I think they will be stable, but this is
   # dangerous. An alternative approach would be to add a unique name to each
   # node (e.g. a UUID) and using the names in head instead.
-  vertices <- igraph::neighbors(m@graph, m@head, mode=mode) %>% as.numeric %>% unique
-  edges <- igraph::incident_edges(m@graph, m@head, mode=mode)[[1]] %>% as.numeric
+  vertices <- igraph::neighbors(m@graph, index, mode=mode) %>% as.numeric
+  edges <- igraph::incident_edges(m@graph, index, mode=mode)[[1]] %>% as.numeric
   stopifnot(length(vertices) == length(edges))
   etype <- igraph::get.edge.attribute(m@graph, "type", edges)
   stopifnot(length(etype) == length(edges))
@@ -168,9 +168,23 @@ m_parents <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
+ms_parents <- function(m) {
+  .m_check(m)
+  lapply(ms_id(m), function(i) .get_relative_ids(m=m, mode="in", type="depend", index=i))
+}
+
+#' @rdname rmonad_accessors
+#' @export
 m_branch <- function(m) {
   .m_check(m)
-  .get_relative_ids(m, "out", "branch")
+  .get_relative_ids(m, "in", "branch")
+}
+
+#' @rdname rmonad_accessors
+#' @export
+ms_branch <- function(m) {
+  .m_check(m)
+  lapply(ms_id(m), function(i) .get_relative_ids(m=m, mode="in", type="branch", index=i))
 }
 
 #' @rdname rmonad_accessors
@@ -182,9 +196,23 @@ m_nest <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
+ms_nest <- function(m) {
+  .m_check(m)
+  lapply(ms_id(m), function(i) .get_relative_ids(m=m, mode="in", type="nest", index=i))
+}
+
+#' @rdname rmonad_accessors
+#' @export
 m_prior <- function(m) {
   .m_check(m)
   .get_relative_ids(m, "in", "prior")
+}
+
+#' @rdname rmonad_accessors
+#' @export
+ms_prior <- function(m) {
+  .m_check(m)
+  lapply(ms_id(m), function(i) .get_relative_ids(m=m, mode="in", type="prior", index=i))
 }
 
 #' @rdname rmonad_accessors
@@ -515,7 +543,9 @@ app_notes <- function(m, value) {
 .add_parents <- function(child, parents, check=false, ...){
   .m_check(child)
   stopifnot(!check(child))
-  stopifnot(is.list(parents))
+  if(!is.list(parents)){
+    parents <- list(parents)
+  }
   for(p in parents){
     .m_check(p)
     child@graph <- p@graph + child@graph
@@ -529,12 +559,14 @@ app_notes <- function(m, value) {
 #' @rdname rmonad_accessors
 #' @export
 `m_parents<-` <- function(m, value) {
+  .m_check(m)
   .add_parents(m, value, check=has_parents, type="depend")
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_nest<-` <- function(m, value) {
+  .m_check(m)
   .add_parents(m, value, check=has_nest, type="nest")
 }
 
@@ -549,17 +581,20 @@ app_notes <- function(m, value) {
 #' @rdname rmonad_accessors
 #' @export
 `m_branch<-` <- function(m, value) {
+  .m_check(m)
   .add_parents(m, value, check=has_branch, type="branch")
 }
 
 #' @rdname rmonad_accessors
 #' @export
 app_branch <- function(m, value) {
+  .m_check(m)
   .add_parents(m, value, check=false, type="branch")
 }
 
 #' @rdname rmonad_accessors
 #' @export
 app_parents <- function(m, value) {
+  .m_check(m)
   .add_parents(m, value, check=false, type="parents")
 }

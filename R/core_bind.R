@@ -184,7 +184,7 @@ branch_combine <- function(m, o, f, margs){
     m_nest(o) <- splice_function(f=f, m=m_nest(o), ms=margs)
   }
 
-  o <- inherit(child=o, parents=m, force_keep=TRUE)
+  o <- inherit(child=o, parents=m, type='branch', force_keep=TRUE)
 
   m <- app_branch(m=m, value=o)
 
