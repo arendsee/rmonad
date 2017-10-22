@@ -175,8 +175,14 @@ NULL
 .chain <- function(lhs, rhs, envir) {
 
   emit <- function(i,o) {
-    o$set_prior(i)
-    o
+    inherit(
+      child         = o,
+      parents       = i,
+      type          = "prior",
+      inherit_value = FALSE,
+      inherit_OK    = FALSE,
+      force_keep    = TRUE
+    )
   }
 
   cmd <- list(
