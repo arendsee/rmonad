@@ -1,4 +1,3 @@
-
 inherit <- function(
   child,
   parents,
@@ -39,10 +38,13 @@ inherit <- function(
     values
   }
 
-  igraph::set.vertex.attribute(
-    graph = child@graph,
-    name  = "value",
-    index = child@head,
-    value = child_value
-  )
+  if(inherit_value){
+    child <- igraph::set.vertex.attribute(
+      graph = child@graph,
+      name  = "value",
+      index = child@head,
+      value = child_value
+    )
+  }
+  child
 }

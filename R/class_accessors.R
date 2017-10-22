@@ -34,9 +34,11 @@ m_delete_value <- function(m, index=NULL) {
   if(is.null(index)){
     index <- m@head
   }
-  cache <- igraph::get.vertex.attribute(m@graph, "value", index)
-  cache@del()
-  m@graph <- igraph::set.vertex.attribute(m@graph, "value", index, noCache())
+  caches <- igraph::get.vertex.attribute(m@graph, "value", index)
+  for(cache in caches){
+    cache@del()
+  }
+  m@graph <- igraph::set.vertex.attribute(m@graph, "value", index, list(noCache()))
   m
 }
 
@@ -120,11 +122,21 @@ has_nest     = function(m) length(m_nest(m))    > 0
 has_branch   = function(m) length(m_branch(m))  > 0
 
 # TODO: chop these
+# FIXME: seriously, murder the stored field
 .m_stored <- function(m) {
   .m_check(m)
-  .getHeadAttribute(m, "stored")
+  stored <- .getHeadAttribute(m, "stored")
+  if(is.null(stored)){
+    FALSE
+  } else {
+    stored
+  }
 }
-`.m_stored<-` <- function(m, value) { m$set_stored(value) ; m }
+`.m_stored<-` <- function(m, value) {
+  .m_check(m)
+  .setHeadAttribute(m, "stored", value)
+  m
+}
 
 .get_relative_ids <- function(m, mode, type){
   # FIXME: Directly using vertex ids is not a good idea; they are not stable in
@@ -447,7 +459,7 @@ ms_summary <- function(m) {
 #' @export
 `m_meta<-` <- function(m, value) {
   .m_check(m)
-  m <- .setHeadAttribute(m, "meta", value)
+  m <- .setHeadAttribute(m, "meta", list(value))
   m
 }
 
@@ -471,7 +483,7 @@ ms_summary <- function(m) {
 #' @export
 `m_summary<-` <- function(m, value){
   .m_check(m)
-  m <- .setHeadAttribute(m, "summary", value)
+  m <- .setHeadAttribute(m, "summary", list(value))
   m
 }
 
