@@ -7,14 +7,12 @@ test_that('issue #1: "%__%" does not double nest lhs', {
 
 test_that('issue #2: funnel works with %__%', {
   expect_equal(
-    funnel(16 %v>% sqrt) %>%
-      lapply(m_value, warn=FALSE),
+    funnel(16 %v>% sqrt) %>% ms_value(warn=FALSE),
     list(16, NULL, list(4))
   )
   expect_equal(
     "hi" %__%
-      funnel(16 %v>% sqrt) %>%
-      lapply(m_value, warn=FALSE),
+      funnel(16 %v>% sqrt) %>% ms_value(warn=FALSE),
     list("hi", 16, NULL, list(4))
   ) 
 })
@@ -25,7 +23,7 @@ test_that('issue #3: nested errors are localized', {
       . %>>% paste("b") %>>% {
         . %>>% paste("c") %>>% stop
       }
-    } %>% lapply(m_value, warn=FALSE),
+    } %>% ms_value(warn=FALSE),
     list(NULL, NULL, NULL, NULL, NULL, "a b c", "a b", "a")
   )
   # The %__% operator often screws things up, best to check 
@@ -35,7 +33,7 @@ test_that('issue #3: nested errors are localized', {
       . %>>% paste("b") %>>% {
         . %>>% paste("c") %>>% stop
       }
-    } %>% lapply(m_value, warn=FALSE),
+    } %>% ms_value(warn=FALSE),
     list("yolo", NULL, NULL, NULL, NULL, NULL, "a b c", "a b", "a")
   )
 })

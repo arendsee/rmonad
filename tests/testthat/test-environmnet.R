@@ -19,5 +19,5 @@ g1 <- function(g1v1){
 }
 test_that("%__% within a nest", {
   expect_equal(6 %>>% g1 %>% sapply(m_OK), c(TRUE, TRUE, TRUE, TRUE))
-  expect_equal(6 %>>% g1 %>% lapply(m_value, warn=FALSE), list(6,NULL,NULL,5))
+  expect_equal(6 %>>% g1 %>% ms_value(warn=FALSE), list(6,NULL,NULL,5))
 })
