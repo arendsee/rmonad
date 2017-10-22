@@ -4,10 +4,12 @@
 \alias{m_delete_value}
 \title{Delete a node's value}
 \usage{
-m_delete_value(m)
+m_delete_value(m, index = NULL)
 }
 \arguments{
 \item{m}{Rmonad object}
+
+\item{index}{Delete the value contained by this vertex (if NULL, delete head value)}
 }
 \description{
 Delete a node's value

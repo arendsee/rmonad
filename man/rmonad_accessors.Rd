@@ -8,17 +8,28 @@
 \alias{m_prior}
 \alias{m_nest_depth}
 \alias{m_value}
+\alias{ms_value}
 \alias{m_id}
+\alias{ms_id}
 \alias{m_OK}
+\alias{ms_OK}
 \alias{m_code}
+\alias{ms_code}
 \alias{m_error}
+\alias{ms_error}
 \alias{m_warnings}
+\alias{ms_warnings}
 \alias{m_notes}
+\alias{ms_notes}
 \alias{m_doc}
+\alias{ms_doc}
 \alias{m_meta}
 \alias{m_time}
+\alias{ms_time}
 \alias{m_mem}
+\alias{ms_mem}
 \alias{m_summary}
+\alias{ms_summary}
 \alias{m_OK<-}
 \alias{m_value<-}
 \alias{m_code<-}
@@ -52,27 +63,49 @@ m_nest_depth(m)
 
 m_value(m, ...)
 
+ms_value(m, ...)
+
 m_id(m)
+
+ms_id(m)
 
 m_OK(m)
 
+ms_OK(m)
+
 m_code(m)
+
+ms_code(m)
 
 m_error(m)
 
+ms_error(m)
+
 m_warnings(m)
+
+ms_warnings(m)
 
 m_notes(m)
 
+ms_notes(m)
+
 m_doc(m)
+
+ms_doc(m)
 
 m_meta(m)
 
 m_time(m)
 
+ms_time(m)
+
 m_mem(m)
 
+ms_mem(m)
+
 m_summary(m)
+
+ms_summary(m)
 
 m_OK(m) <- value
 

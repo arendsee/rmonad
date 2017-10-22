@@ -18,6 +18,5 @@ The input Rmonad with an added doc string
 This function is deprecated. Use a docstring instead.
 }
 \seealso{
-Other monad-to-monad: \code{\link{forget}},
-  \code{\link{unnest}}
+Other monad-to-monad: \code{\link{unnest}}
 }

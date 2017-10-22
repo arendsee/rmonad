@@ -27,6 +27,27 @@ test_that("You can't put in illegal values", {
   expect_error(m_notes(.m)    <- FALSE )
 })
 
+m1 <- as_monad({warning("w"); message("m"); 46})
+m2 <- as_monad({warning("w1"); warning("w2"); message("m1"); message("m2"); 47})
+e1 <- as_monad({warning("w"); stop("e"); 48})
+
+test_that("m_* return unlisted results", {
+  expect_equal(m_warnings(m1), "w")
+  expect_equal(m_warnings(m2), c("w1", "w2"))
+  expect_equal(m_notes(m1), "m")
+  expect_equal(m_notes(m2), c("m1", "m2"))
+  expect_equal(m_error(e1), "e")
+})
+
+test_that("ms_* return listed results", {
+  expect_equal(ms_warnings(m1)[[1]], "w")
+  expect_equal(ms_warnings(m2)[[1]], c("w1", "w2"))
+  expect_equal(ms_notes(m1)[[1]],    "m")
+  expect_equal(ms_notes(m2)[[1]],    c("m1", "m2"))
+  expect_equal(ms_error(e1)[[1]],    "e")
+})
+
+
 ## FIXME: once binding is working again, uncomment this test
 # test_that("Attempting to access a non-existent value should raise an warning", {
 #   expect_warning({

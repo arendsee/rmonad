@@ -26,13 +26,17 @@ is_rmonad <- function(m) {
 
 #' Delete a node's value
 #'
-#' @export
 #' @param m Rmonad object
-m_delete_value <- function(m) {
+#' @param index Delete the value contained by this vertex (if NULL, delete head value)
+#' @export
+m_delete_value <- function(m, index=NULL) {
   .m_check(m)
-  cache <- igraph::get.vertex.attribute(m@graph, "value", m@head)
+  if(is.null(index)){
+    index <- m@head
+  }
+  cache <- igraph::get.vertex.attribute(m@graph, "value", index)
   cache@del()
-  m@graph <- igraph::set.vertex.attribute(m@graph, "value", m@head, noCache())
+  m@graph <- igraph::set.vertex.attribute(m@graph, "value", index, noCache())
   m
 }
 
@@ -122,24 +126,17 @@ has_branch   = function(m) length(m_branch(m))  > 0
 }
 `.m_stored<-` <- function(m, value) { m$set_stored(value) ; m }
 
-
 .get_relative_ids <- function(m, mode, type){
   # FIXME: Directly using vertex ids is not a good idea; they are not stable in
   # general. In my particular case, I think they will be stable, but this is
   # dangerous. An alternative approach would be to add a unique name to each
   # node (e.g. a UUID) and using the names in head instead.
   vertices <- igraph::neighbors(m@graph, m@head, mode=mode) %>% as.numeric %>% unique
-
   edges <- igraph::incident_edges(m@graph, m@head, mode=mode)[[1]] %>% as.numeric
-
   stopifnot(length(vertices) == length(edges))
-  
   etype <- igraph::get.edge.attribute(m@graph, "type", edges)
-
   stopifnot(length(etype) == length(edges))
-
   vertices[etype == type] %>% as.integer
-
 }
 
 # TODO: I should be able to remove most of these functions, replace them with
@@ -195,9 +192,23 @@ m_value <- function(m, ...){
 
 #' @rdname rmonad_accessors
 #' @export
+ms_value <- function(m, ...){
+  .m_check(m)
+  lapply(igraph::V(m@graph)$value, function(v) v@get(...))
+}
+
+#' @rdname rmonad_accessors
+#' @export
 m_id <- function(m) {
   .m_check(m)
   m@head
+}
+
+#' @rdname rmonad_accessors
+#' @export
+ms_id <- function(m) {
+  .m_check(m)
+  igraph::V(m@graph) %>% as.numeric
 }
 
 #' @rdname rmonad_accessors
@@ -209,9 +220,23 @@ m_OK <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
+ms_OK <- function(m) {
+  .m_check(m)
+  igraph::V(m@graph)$OK
+}
+
+#' @rdname rmonad_accessors
+#' @export
 m_code <- function(m) {
   .m_check(m)
   .getHeadAttribute(m, "code")
+}
+
+#' @rdname rmonad_accessors
+#' @export
+ms_code <- function(m) {
+  .m_check(m)
+  igraph::V(m@graph)$code
 }
 
 #' @rdname rmonad_accessors
@@ -223,9 +248,33 @@ m_error <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
+ms_error <- function(m) {
+  .m_check(m)
+  igraph::V(m@graph)$error %>% {
+    if(is.null(.)){
+      . <- rep(NA_character_, igraph::vcount(m@graph))
+    }
+    .
+  }
+}
+
+#' @rdname rmonad_accessors
+#' @export
 m_warnings <- function(m) {
   .m_check(m)
   .getHeadAttribute(m, "warnings")
+}
+
+#' @rdname rmonad_accessors
+#' @export
+ms_warnings <- function(m) {
+  .m_check(m)
+  igraph::V(m@graph)$warnings %>% {
+    if(is.null(.)){
+      . <- rep(NA_character_, igraph::vcount(m@graph))
+    }
+    .
+  }
 }
 
 #' @rdname rmonad_accessors
@@ -237,6 +286,18 @@ m_notes <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
+ms_notes <- function(m) {
+  .m_check(m)
+  igraph::V(m@graph)$notes %>% {
+    if(is.null(.)){
+      . <- rep(NA_character_, igraph::vcount(m@graph))
+    }
+    .
+  }
+}
+
+#' @rdname rmonad_accessors
+#' @export
 m_doc <- function(m) {
   .m_check(m)
   .getHeadAttribute(m, "doc")
@@ -244,9 +305,26 @@ m_doc <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
+ms_doc <- function(m) {
+  .m_check(m)
+  igraph::V(m@graph)$doc %>% {
+    if(is.null(.)){
+      . <- rep(NA_character_, igraph::vcount(m@graph))
+    }
+    .
+  }
+}
+
+#' @rdname rmonad_accessors
+#' @export
 m_meta <- function(m) {
   .m_check(m)
-  .getHeadAttribute(m, "meta")
+  igraph::V(m@graph)$meta %>% {
+    if(is.null(.)){
+      . <- rep(NA, igraph::vcount(m@graph))
+    }
+    .
+  }
 }
 
 #' @rdname rmonad_accessors
@@ -256,6 +334,17 @@ m_time <- function(m) {
   .getHeadAttribute(m, "time")
 }
 
+#' @rdname rmonad_accessors
+#' @export
+ms_time <- function(m) {
+  .m_check(m)
+  igraph::V(m@graph)$time %>% {
+    if(is.null(.)){
+      . <- rep(NA_real_, igraph::vcount(m@graph))
+    }
+    .
+  }
+}
 
 #' @rdname rmonad_accessors
 #' @export
@@ -266,11 +355,34 @@ m_mem <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
+ms_mem <- function(m) {
+  .m_check(m)
+  igraph::V(m@graph)$mem %>% {
+    if(is.null(.)){
+      . <- rep(NA_integer_, igraph::vcount(m@graph))
+    }
+    .
+  }
+}
+
+#' @rdname rmonad_accessors
+#' @export
 m_summary <- function(m) {
   .m_check(m)
   .getHeadAttribute(m, "summary")
 }
 
+#' @rdname rmonad_accessors
+#' @export
+ms_summary <- function(m) {
+  .m_check(m)
+  igraph::V(m@graph)$summary %>% {
+    if(is.null(.)){
+      . <- rep(NA, igraph::vcount(m@graph))
+    }
+    .
+  }
+}
 
 #' @rdname rmonad_accessors
 #' @export
@@ -294,7 +406,7 @@ m_summary <- function(m) {
 #' @export
 `m_code<-` <- function(m, value) {
   .m_check(m)
-  m <- .setHeadAttribute(m, "code", value)
+  m <- .setHeadAttribute(m, "code", list(value))
   m
 }
 
@@ -302,7 +414,7 @@ m_summary <- function(m) {
 #' @export
 `m_error<-` <- function(m, value) {
   .m_check(m)
-  m <- .setHeadAttribute(m, "error", value)
+  m <- .setHeadAttribute(m, "error", list(value))
   m
 }
 
@@ -311,7 +423,7 @@ m_summary <- function(m) {
 #' @export
 `m_warnings<-` <- function(m, value) {
   .m_check(m)
-  m <- .setHeadAttribute(m, "warnings", value)
+  m <- .setHeadAttribute(m, "warnings", list(value))
   m
 }
 
@@ -319,7 +431,7 @@ m_summary <- function(m) {
 #' @export
 `m_notes<-` <- function(m, value) {
   .m_check(m)
-  m <- .setHeadAttribute(m, "notes", value)
+  m <- .setHeadAttribute(m, "notes", list(value))
   m
 }
 

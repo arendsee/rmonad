@@ -13,6 +13,5 @@ unnest(m)
 Remove a level of nesting in an Rmonad
 }
 \seealso{
-Other monad-to-monad: \code{\link{doc}},
-  \code{\link{forget}}
+Other monad-to-monad: \code{\link{doc}}
 }
