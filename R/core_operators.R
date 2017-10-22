@@ -132,8 +132,7 @@ NULL
     }
     # else link the rhs to lhs input, and replace the lhs
     else {
-      output$inherit(parents=input)
-      output
+      inherit(child=output, parents=input)
     }
   }
 

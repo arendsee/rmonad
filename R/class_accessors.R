@@ -519,8 +519,8 @@ app_notes <- function(m, value) {
   for(p in parents){
     .m_check(p)
     child@graph <- p@graph + child@graph
-    child@head <- vcount(p@graph) + child@head
-    new_edge <- edge(p@head, child@head, ...)
+    child@head <- igraph::vcount(p@graph) + child@head
+    new_edge <- igraph::edge(p@head, child@head, ...)
     child@graph <- child@graph + new_edge
   }
   child

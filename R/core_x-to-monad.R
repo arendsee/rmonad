@@ -188,24 +188,17 @@ combine <- function(xs, keep_history=TRUE, desc=NULL){
   }
 
   # make a new monad that is the child of all monads in the input list
-  out <- Rmonad$new()
-
-  # clone parents. This is needed because the values of the parents should not
-  # be stored but since Rmonad objects use reference semantics, and since the
-  # parents may be used elsewhere, we cannot delete their values.
-  parents <- lapply(xs, function(x) x$clone())
+  out <- Rmonad()
 
   # store all values (even if failing, in which case should be NULL)
-  m_value(out) <- lapply(parents, m_value, warn=FALSE)
+  m_value(out) <- lapply(xs, m_value, warn=FALSE)
 
-  # Remove values of parental clones
-  parents <- lapply(parents, m_delete_value)
+  xs <- lapply(xs, m_delete_value)
 
-  m_parents(out) <- parents
-
+  m_parents(out) <- xs
 
   # monad is passing if all parents are cool
-  m_OK(out) <- all(sapply(parents, m_OK))
+  m_OK(out) <- all(sapply(xs, m_OK))
 
   if(!is.null(desc)){
     m_code(out) <- desc 
