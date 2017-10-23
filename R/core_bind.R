@@ -185,7 +185,7 @@ branch_combine <- function(m, o, f, margs){
   }
 
   # Add o as a normal child of m, preserving its value
-  o <- inherit(child=o, parents=m, type='depend', force_keep=TRUE)
+  o <- inherit(child=o, parent=m, type='depend', force_keep=TRUE)
 
   # Point head to the parent
   o@head <- m@head
@@ -211,13 +211,13 @@ default_combine <- function(m, o, f, margs){
 
   if(!m_OK(o)) m_value(o) <- val
 
-  inherit(child=o, parents=m)
+  inherit(child=o, parent=m)
 }
 
 bypass_combine <- function(m, o, f, margs){
   # # the new value inherits the old value, losing whatever it had
   # # but the pass/fail state of the child is preserved
 
-  inherit(child=o, parents=m, inherit_value=TRUE, inherit_OK=FALSE)
+  inherit(child=o, parent=m, inherit_value=TRUE, inherit_OK=FALSE)
 
 }

@@ -51,6 +51,7 @@ noCache <- function(){
 memoryCache <- function(x){
   # FIXME: allow deletion of x, must delete only the LOCAL x 
   # FIXME: allow checking, must check for presence of LOCAL x
+  force(x)
   new("CacheManager",
     get = function(...) x,
     del = nothing,

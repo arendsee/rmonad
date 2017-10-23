@@ -132,7 +132,7 @@ NULL
     }
     # else link the rhs to lhs input, and replace the lhs
     else {
-      inherit(child=output, parents=input)
+      inherit(child=output, parent=input)
     }
   }
 
@@ -177,7 +177,7 @@ NULL
   emit <- function(i,o) {
     inherit(
       child         = o,
-      parents       = i,
+      parent        = i,
       type          = "prior",
       inherit_value = FALSE,
       inherit_OK    = FALSE,

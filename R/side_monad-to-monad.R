@@ -4,6 +4,7 @@
 #' @param m An Rmonad
 #' @export
 unnest <- function(m){
+  mm <<- m
   if(is_rmonad(m) && has_value(m) && is_rmonad(m_value(m))){
     m_nest(m) <- m_value(m)
   }

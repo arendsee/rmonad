@@ -479,7 +479,7 @@ ms_summary <- function(m) {
 #' @export
 `m_doc<-` <- function(m, value) {
   .m_check(m)
-  m <- .setHeadAttribute(m, "doc", value)
+  m <- .setHeadAttribute(m, "doc", list(value))
   m
 }
 
@@ -568,7 +568,7 @@ app_notes <- function(m, value) {
 `m_nest<-` <- function(m, value) {
   .m_check(m)
   .m_check(value)
-  inherit(child=m, parents=value, inherit_value=TRUE, inherit_OK=TRUE, type="nest")
+  inherit(child=m, parent=value, inherit_value=TRUE, inherit_OK=TRUE, type="nest")
 }
 
 #' @rdname rmonad_accessors
