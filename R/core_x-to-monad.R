@@ -186,7 +186,7 @@ combine <- function(xs, keep_history=TRUE, desc=NULL){
   }
 
   # make a new monad that is the child of all monads in the input list
-  out <- Rmonad()
+  out <- as_monad(NULL)
 
   # store all values (even if failing, in which case should be NULL)
   m_value(out) <- lapply(xs, m_value, warn=FALSE)

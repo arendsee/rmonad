@@ -11,26 +11,26 @@ test_that('combine fails on non-monadic inputs in list', {
 
 test_that('combine and funnel store history in list', {
 
-  expect_equal(length(as.list(combine(l_monadic))[-1]), 2)
-  expect_equal(length(as.list(funnel("hi", 42))[-1]), 2)
+  expect_equal(length(ms_id(combine(l_monadic))[-1]), 2)
+  expect_equal(length(ms_id(funnel("hi", 42))[-1]), 2)
 
   # basic anonymous functions work
   expect_equal({
-    "a" %>>%
+    "a" %>%
        funnel(b="b", c="c") %*>%
        (function(a,b,c) {paste(a,b,c)}) %>% esc 
   }, "a b c" )
 
   # keyword arguments are respected
   expect_equal({
-    "a" %>>%
+    "a" %>%
        funnel(c="c", b="b") %*>%
        (function(a,b,c) {paste(a,b,c)}) %>% esc 
   }, "a b c" )
 
   # The value from the pipe defaults to first position
   expect_equal({
-    "a" %>>%
+    "a" %>%
        funnel("c", "b") %*>%
        (function(a,b,c) {paste(a,b,c)}) %>% esc 
   }, "a c b" )
