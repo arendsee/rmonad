@@ -184,11 +184,13 @@ branch_combine <- function(m, o, f, margs){
     m_nest(o) <- splice_function(f=f, m=m_nest(o), ms=margs)
   }
 
-  o <- inherit(child=o, parents=m, type='branch', force_keep=TRUE)
+  # Add o as a normal child of m, preserving its value
+  o <- inherit(child=o, parents=m, type='depend', force_keep=TRUE)
 
-  m <- app_branch(m=m, value=o)
+  # Point head to the parent
+  o@head <- m@head
 
-  m
+  o
 
 }
 

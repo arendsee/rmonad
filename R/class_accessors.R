@@ -116,10 +116,10 @@ has_meta     = function(m) length(m_meta(m))     > 0
 has_time     = function(m) .is_not_empty_real(.getHeadAttribute(m, "time"))
 has_mem      = function(m) .is_not_empty_real(.getHeadAttribute(m, "mem"))
 has_value    = function(m) .getHeadAttribute(m, "value")@chk()
-has_parents  = function(m) length(m_parents(m)) > 0
-has_prior    = function(m) length(m_prior(m))   > 0
-has_nest     = function(m) length(m_nest(m))    > 0
-has_branch   = function(m) length(m_branch(m))  > 0
+has_parents  = function(m) length(m_parents(m))  > 0
+has_children = function(m) length(m_children(m)) > 0
+has_prior    = function(m) length(m_prior(m))    > 0
+has_nest     = function(m) length(m_nest(m))     > 0
 
 # TODO: chop these
 # FIXME: seriously, murder the stored field
@@ -175,16 +175,16 @@ ms_parents <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_branch <- function(m) {
+m_children <- function(m) {
   .m_check(m)
-  .get_relative_ids(m, "in", "branch")
+  .get_relative_ids(m, "out", "depend")
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_branch <- function(m) {
+ms_children <- function(m) {
   .m_check(m)
-  lapply(ms_id(m), function(i) .get_relative_ids(m=m, mode="in", type="branch", index=i))
+  lapply(ms_id(m), function(i) .get_relative_ids(m=m, mode="out", type="depend", index=i))
 }
 
 #' @rdname rmonad_accessors
@@ -576,20 +576,6 @@ app_notes <- function(m, value) {
   .m_check(m)
   stop("NOT IMPLEMENTED")
   m
-}
-
-#' @rdname rmonad_accessors
-#' @export
-`m_branch<-` <- function(m, value) {
-  .m_check(m)
-  .add_parents(m, value, check=has_branch, type="branch")
-}
-
-#' @rdname rmonad_accessors
-#' @export
-app_branch <- function(m, value) {
-  .m_check(m)
-  .add_parents(m, value, check=false, type="branch")
 }
 
 #' @rdname rmonad_accessors

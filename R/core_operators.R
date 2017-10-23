@@ -87,10 +87,10 @@ NULL
 #' @export
 `%^>%` <- function(lhs, rhs) {
   .bind_if_fb <- function(m){
-    all( ms_OK(m)[m_branch(m)] )
+    all( ms_OK(m)[m_children(m)] )
   }
   .bind_args_fb <- function(m){
-    ms_value(m, warn=FALSE)[m_branch(m)]
+    ms_value(m, warn=FALSE)[m_children(m)]
   }
 
   cmd   <- list(

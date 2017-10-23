@@ -4,8 +4,8 @@
 \alias{rmonad_accessors}
 \alias{m_parents}
 \alias{ms_parents}
-\alias{m_branch}
-\alias{ms_branch}
+\alias{m_children}
+\alias{ms_children}
 \alias{m_nest}
 \alias{ms_nest}
 \alias{m_prior}
@@ -50,8 +50,6 @@
 \alias{m_parents<-}
 \alias{m_nest<-}
 \alias{m_nest_depth<-}
-\alias{m_branch<-}
-\alias{app_branch}
 \alias{app_parents}
 \title{get, set, and append rmonad fields}
 \usage{
@@ -59,9 +57,9 @@ m_parents(m)
 
 ms_parents(m)
 
-m_branch(m)
+m_children(m)
 
-ms_branch(m)
+ms_children(m)
 
 m_nest(m)
 
@@ -150,10 +148,6 @@ m_parents(m) <- value
 m_nest(m) <- value
 
 m_nest_depth(m) <- value
-
-m_branch(m) <- value
-
-app_branch(m, value)
 
 app_parents(m, value)
 }

@@ -3,8 +3,10 @@ context("accessor methods")
 m <- Rmonad()
 
 test_that("The .has_* correctly return false", {
-  expect_equal(has_branch(m),   FALSE)
   expect_equal(has_doc(m),      FALSE)
+  expect_equal(has_children(m), FALSE)
+  expect_equal(has_prior(m),    FALSE)
+  expect_equal(has_nest(m),     FALSE)
   expect_equal(has_error(m),    FALSE)
   expect_equal(has_mem(m),      FALSE)
   expect_equal(has_notes(m),    FALSE)
@@ -48,10 +50,8 @@ test_that("ms_* return listed results", {
 })
 
 
-## FIXME: once binding is working again, uncomment this test
-# test_that("Attempting to access a non-existent value should raise an warning", {
-#   expect_warning({
-#     x <- 16 %>>% sqrt %>>% sqrt
-#     m_value(as.list(x)[[1]])
-#   })
-# })
+test_that("Attempting to access a non-existent value should raise an warning", {
+  expect_warning({
+    16 %>>% sqrt %>% ms_value
+  })
+})
