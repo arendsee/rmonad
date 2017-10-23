@@ -181,7 +181,8 @@ emit_default <- function(input, output) {
 
 branch_combine <- function(m, o, f, margs){
   if(has_nest(o)){
-    m_nest(o) <- splice_function(f=f, m=m_nest(o), ms=margs)
+    o <- unnest(o)
+    # m_nest(o) <- splice_function(f=f, m=m_value(o), ms=margs)
   }
 
   # Add o as a normal child of m, preserving its value
@@ -203,9 +204,13 @@ default_combine <- function(m, o, f, margs){
   }
 
   if(has_nest(o)){
-    m_nest(o) <- splice_function(f=f, m=m_nest(o), ms=margs)
+    # m_nest(o) <- splice_function(f=f, m=m_value(o), ms=margs)
+    o <- unnest(o)
     if(!m_OK(o)){
-      m_value(m_nest(o)) <- m_value(o)
+      # If the bind function failed, copy the last succeeding value back into
+      # the nest. The preceding node's value (not the nested value) will later
+      # be copied over.
+      o@graph <- igraph::set.vertex.attribute(o@graph, "value", m_nest(o), m_value(o))
     }
   }
 
