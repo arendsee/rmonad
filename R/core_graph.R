@@ -17,8 +17,8 @@ inherit <- function(
     if(inherit_value){
       values <- append(values, igraph::get.vertex.attribute(g@graph, "value", g@head))
     }
-    if(inherit_OK && !m_OK(g@graph)){
-      child <- m_OK(child, FALSE)
+    if(inherit_OK && !m_OK(g)){
+      m_OK(m) <- m_OK(g)
     }
     if(!force_keep && !.m_stored(g)){
       g <- m_delete_value(g)
@@ -39,7 +39,7 @@ inherit <- function(
   }
 
   if(inherit_value){
-    child <- igraph::set.vertex.attribute(
+    child@graph <- igraph::set.vertex.attribute(
       graph = child@graph,
       name  = "value",
       index = child@head,

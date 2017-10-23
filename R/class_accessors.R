@@ -567,7 +567,8 @@ app_notes <- function(m, value) {
 #' @export
 `m_nest<-` <- function(m, value) {
   .m_check(m)
-  .add_parents(m, value, check=has_nest, type="nest")
+  .m_check(value)
+  inherit(child=m, parents=value, inherit_value=TRUE, inherit_OK=TRUE, type="nest")
 }
 
 #' @rdname rmonad_accessors
