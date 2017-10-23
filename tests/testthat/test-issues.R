@@ -26,7 +26,7 @@ test_that('issue #3: nested errors are localized', {
     } %>% ms_value(warn=FALSE),
     list(NULL, NULL, NULL, NULL, NULL, "a b c", "a b", "a")
   )
-  # The %__% operator often screws things up, best to check 
+  # The %__% operator often screws things up, best to check
   expect_equal(
     "yolo" %__%
     "a" %>>% {
