@@ -10,22 +10,22 @@ mtabulate <- function(m, code=FALSE){
     if(is.null(x)) {
       rep(0, igraph::vcount(m@graph))
     } else {
-      sapply(x, length)
+      sapply(x, length) %>% unname
     }
   }
   data.frame(
-    code      = igraph::V(m@graph)$code %>% sapply(paste0, collapse="\n"),
-    id        = igraph::V(m@graph) %>% as.numeric,
-    OK        = igraph::V(m@graph)$OK,
+    code      = ms_code(m) %>% sapply(paste0, collapse="\n"),
+    id        = ms_id(m) %>% as.numeric,
+    OK        = ms_OK(m),
     cached    = igraph::V(m@graph)$value %>% sapply(function(x) x@chk()),
-    time      = igraph::V(m@graph)$time %>% { signif(.[1], 2) },
-    space     = igraph::V(m@graph)$mem,
-    # is_nested = has_nest(m),
-    # nbranch   = length(m_branch(m)),
-    nnotes    = igraph::V(m@graph)$notes    %>% optional_text,
-    nwarnings = igraph::V(m@graph)$warnings %>% optional_text,
-    error     = igraph::V(m@graph)$error    %>% optional_text,
-    doc       = igraph::V(m@graph)$doc      %>% optional_text
+    time      = ms_time(m) %>% sapply(function(x) { signif(.[1], 2) }),
+    space     = ms_mem(m),
+    is_nested = ms_nest(m) %>% sapply(length),
+    nchildren = ms_children(m) %>% sapply(length),
+    nnotes    = ms_notes(m)    %>% optional_text,
+    nwarnings = ms_warnings(m) %>% optional_text,
+    error     = ms_error(m)    %>% optional_text,
+    doc       = ms_doc(m)      %>% optional_text
   ) %>% {
     if(!code)
       .$code <- NULL
