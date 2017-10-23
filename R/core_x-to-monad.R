@@ -104,16 +104,17 @@ as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE){
   if(isOK) m_value(m) <- value
 
   # These accessors do the right thing (don't mess with them)
-  m_code(m)     <- code
-  m_error(m)    <- fails
-  m_warnings(m) <- warns
-  m_notes(m)    <- notes
-  m_OK(m)       <- isOK
-  m_doc(m)      <- doc
-  m_mem(m)      <- object.size(value)
-  m_time(m)     <- signif(unname(st[1]), 2)
-  m_meta(m)     <- met
-  .m_stored(m)  <- FALSE
+  m_code(m)       <- code
+  m_error(m)      <- fails
+  m_warnings(m)   <- warns
+  m_notes(m)      <- notes
+  m_OK(m)         <- isOK
+  m_doc(m)        <- doc
+  m_mem(m)        <- object.size(value)
+  m_time(m)       <- signif(unname(st[1]), 2)
+  m_meta(m)       <- met
+  m_nest_depth(m) <- 1
+  .m_stored(m)    <- FALSE
 
   m <- apply_rewriters(m, met)
 

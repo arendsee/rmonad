@@ -224,6 +224,13 @@ m_nest_depth <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
+ms_nest_depth <- function(m) {
+  .m_check(m)
+  igraph::V(m@graph)$nest_depth
+}
+
+#' @rdname rmonad_accessors
+#' @export
 m_value <- function(m, ...){
   .m_check(m)
   # ... should only ever be 'warn' at this point
@@ -524,7 +531,7 @@ app_warnings <- function(m, value) {
   if(length(value) > 0 && nchar(value) > 0){
     warnings <- value %++% warnings
   }
-  .setHeadAttr(m, "warnings", warnings)
+  .setHeadAttribute(m, "warnings", warnings)
 }
 
 #' @rdname rmonad_accessors
@@ -535,7 +542,7 @@ app_notes <- function(m, value) {
   if(length(value) > 0 && nchar(value) > 0){
     notes <- value %++% notes
   }
-  .setHeadAttr(m, "notes", notes)
+  .setHeadAttribute(m, "notes", notes)
 }
 
 
@@ -575,8 +582,7 @@ app_notes <- function(m, value) {
 #' @export
 `m_nest_depth<-` <- function(m, value) {
   .m_check(m)
-  stop("NOT IMPLEMENTED")
-  m
+  .setHeadAttribute(m, "nest_depth", value)
 }
 
 #' @rdname rmonad_accessors

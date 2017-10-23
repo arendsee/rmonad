@@ -11,6 +11,7 @@
 \alias{m_prior}
 \alias{ms_prior}
 \alias{m_nest_depth}
+\alias{ms_nest_depth}
 \alias{m_value}
 \alias{ms_value}
 \alias{m_id}
@@ -70,6 +71,8 @@ m_prior(m)
 ms_prior(m)
 
 m_nest_depth(m)
+
+ms_nest_depth(m)
 
 m_value(m, ...)
 

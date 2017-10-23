@@ -4,9 +4,15 @@
 #' @param m An Rmonad
 #' @export
 unnest <- function(m){
-  mm <<- m
   if(is_rmonad(m) && has_value(m) && is_rmonad(m_value(m))){
-    m_nest(m) <- m_value(m)
+    mm <<- m
+    nest <- m_value(m)
+    nest@graph <- igraph::set.vertex.attribute(
+      graph = nest@graph,
+      name  = "nest_depth",
+      value = igraph::V(nest@graph)$nest_depth + (m_nest_depth(m) - m_nest_depth(nest) + 1)
+    )
+    m_nest(m) <- nest 
   }
   m
 }
