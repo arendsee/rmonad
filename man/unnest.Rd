@@ -12,6 +12,3 @@ unnest(m)
 \description{
 Remove a level of nesting in an Rmonad
 }
-\seealso{
-Other monad-to-monad: \code{\link{doc}}
-}

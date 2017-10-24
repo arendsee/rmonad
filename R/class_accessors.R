@@ -570,7 +570,27 @@ app_notes <- function(m, value) {
 `m_nest<-` <- function(m, value) {
   .m_check(m)
   .m_check(value)
-  inherit(child=m, parent=value, inherit_value=TRUE, inherit_OK=TRUE, type="nest")
+  if(m_OK(value)){
+    inherit(
+      child         = m,
+      parent        = value,
+      inherit_value = TRUE,
+      inherit_OK    = TRUE,
+      force_keep    = FALSE,
+      type          = "nest"
+    )
+  } else {
+    m <- inherit(
+      child         = m,
+      parent        = value,
+      inherit_value = FALSE,
+      inherit_OK    = TRUE,
+      force_keep    = TRUE,
+      type          = "nest"
+    )
+    m@graph <- igraph::set.vertex.attribute(m@graph, "value", m@head, voidCache())
+    m
+  }
 }
 
 #' @rdname rmonad_accessors

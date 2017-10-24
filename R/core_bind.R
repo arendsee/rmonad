@@ -191,12 +191,7 @@ default_combine <- function(m, o, f, margs){
   if(has_nest(o)){
     o <- splice_function(f=f, m=o, ms=margs)
   }
-  if(!m_OK(o)){
-    # On failure, propagate the final passing value, this allows
-    # for either degugging or passage to alternative handlers.
-    m_value(o) <- m_value(m, warn=FALSE)
-  }
-  inherit(child=o, parent=m)
+  inherit(child=o, parent=m, inherit_value=!m_OK(o))
 }
 
 bypass_combine <- function(m, o, f, margs){
