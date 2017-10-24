@@ -198,7 +198,7 @@ as_monad({
   list(
     foo = "this is metadata, you can put anything you want in here",
     bar = "maybe can pass parameters to an Rmarkdown chunk",
-    baz = "or store stuff in state, for example:"
+    baz = "or store stuff in state, for example:",
     sysinfo = devtools::session_info()
   )
 
@@ -289,40 +289,21 @@ house pipeline. Green nodes are passing and yellow nodes produced warnings.
 
 ![Plot of a large rmonad pipeline](README-big-pipeline.png)
 
-## Contributing
-
-I am looking for collaborators. There are enough unsolved problems on the
-function graph side of rmonad to easily merit co-authorship. Similarly for the
-report generation handling. In addition, there are lots of smaller problems.
-See the next section for a partial summary.
-
-
-## rmonad v0.4.0 goals
-
- - [ ] Utility functions for extracting data from Rmonad objects
-
- - [ ] Fast `as.list` function for Rmonad objects. This currently takes several
-   seconds for pipelines with hundreds of nodes.
-
- - [ ] A more elegant data structure for representing the workflow graph. I
-   want to replace my ad hoc, hand-rolled data structure with a dedicated graph
-   library (perhaps DiagrammeR).
+## rmonad v0.5.0 goals
 
  - [ ] Record all operations, even those not run. Currently if an input to a
    node fails, the node is ignored. So the ultimate graph is truncated at the
    first error.
-   
- - [ ] Full code regeneration from the `rmonad` object. Currently `rmonad`
-   stores each node's code, but it loses information.
 
  - [ ] Add function to align two `rmonad` pipelines. This function would be the
    basis for `diff` and `patch` functions. Where a `patch` function takes an
    unevaluated `rmonad` object, aligns it to a broken pipeline, and resumes
    evaluation from the failing nodes using the patch object code.
 
- - [ ] Store file and line number of all code. 
+ - [ ] Full code regeneration from the `rmonad` object. Currently `rmonad`
+   stores each node's code, but it loses information.
 
- - [ ] Persistent caching of results
+ - [ ] Store file and line number of all code. 
 
  - [ ] Job submission handling
 
