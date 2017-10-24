@@ -2,6 +2,7 @@
 #'
 #' @param m the rmonad
 #' @param value value to replace or append current value
+#' @param index The index of the node to get or set
 #' @param ... Additional arguments
 #' @name rmonad_accessors
 NULL
@@ -29,11 +30,8 @@ is_rmonad <- function(m) {
 #' @param m Rmonad object
 #' @param index Delete the value contained by this vertex (if NULL, delete head value)
 #' @export
-m_delete_value <- function(m, index=NULL) {
+m_delete_value <- function(m, index=m@head) {
   .m_check(m)
-  if(is.null(index)){
-    index <- m@head
-  }
   caches <- igraph::get.vertex.attribute(m@graph, "value", index)
   for(cache in caches){
     cache@del()
@@ -90,9 +88,9 @@ m_delete_value <- function(m, index=NULL) {
   }
 }
 
-.getHeadAttribute <- function(m, attribute){
+.getAttribute <- function(m, attribute, index){
   .m_check(m)
-  a <- igraph::get.vertex.attribute(m@graph, attribute, m@head)
+  a <- igraph::get.vertex.attribute(m@graph, attribute, index)
   if(is.null(a)){
     a
   } else {
@@ -100,32 +98,32 @@ m_delete_value <- function(m, index=NULL) {
   }
 }
 
-.setHeadAttribute <- function(m, attribute, value){
+.setAttribute <- function(m, attribute, value, index=m@head){
   .m_check(m)
-  m@graph <- igraph::set.vertex.attribute(m@graph, attribute, m@head, value)
+  m@graph <- igraph::set.vertex.attribute(m@graph, attribute, index, value)
   m
 }
 
 # TODO: export these?
-has_code     = function(m) .is_not_empty_string(m_code(m))
-has_error    = function(m) length(m_error(m))    > 0
-has_doc      = function(m) length(m_doc(m))      > 0
-has_warnings = function(m) length(m_warnings(m)) > 0
-has_notes    = function(m) length(m_notes(m))    > 0
-has_meta     = function(m) length(m_meta(m))     > 0
-has_time     = function(m) .is_not_empty_real(.getHeadAttribute(m, "time"))
-has_mem      = function(m) .is_not_empty_real(.getHeadAttribute(m, "mem"))
-has_value    = function(m) .getHeadAttribute(m, "value")@chk()
-has_parents  = function(m) length(m_parents(m))  > 0
-has_children = function(m) length(m_children(m)) > 0
-has_prior    = function(m) length(m_prior(m))    > 0
-has_nest     = function(m) length(m_nest(m))     > 0
+has_code     = function(m, index=m@head) sapply(ms_code(m), .is_not_empty_string)[index]
+has_error    = function(m, index=m@head) sapply(ms_error(m),    function(x) length(x) > 0)[index]
+has_doc      = function(m, index=m@head) sapply(ms_doc(m),      function(x) length(x) > 0)[index]
+has_warnings = function(m, index=m@head) sapply(ms_warnings(m), function(x) length(x) > 0)[index]
+has_notes    = function(m, index=m@head) sapply(ms_notes(m),    function(x) length(x) > 0)[index]
+has_meta     = function(m, index=m@head) sapply(ms_meta(m),     function(x) length(x) > 0)[index]
+has_time     = function(m, index=m@head) sapply(ms_time(m), .is_not_empty_real)[index]
+has_mem      = function(m, index=m@head) sapply(ms_mem(m), .is_not_empty_real)[index]
+has_value    = function(m, index=m@head) igraph::get.vertex.attribute(m@graph, "value") %>% sapply(function(x) x@chk())
+has_parents  = function(m, index=m@head) sapply(ms_parents(m),  function(x) length(x) > 0)[index]
+has_children = function(m, index=m@head) sapply(ms_children(m), function(x) length(x) > 0)[index]
+has_prior    = function(m, index=m@head) sapply(ms_prior(m),    function(x) length(x) > 0)[index]
+has_nest     = function(m, index=m@head) sapply(ms_nest(m),     function(x) length(x) > 0)[index]
 
 # TODO: chop these
 # FIXME: seriously, murder the stored field
-.m_stored <- function(m) {
+.m_stored <- function(m, index=m@head) {
   .m_check(m)
-  stored <- .getHeadAttribute(m, "stored")
+  stored <- .getAttribute(m, "stored", index=index)
   if(is.null(stored)){
     FALSE
   } else {
@@ -134,7 +132,7 @@ has_nest     = function(m) length(m_nest(m))     > 0
 }
 `.m_stored<-` <- function(m, value) {
   .m_check(m)
-  m <- .setHeadAttribute(m, "stored", value)
+  m <- .setAttribute(m, "stored", value)
   m
 }
 
@@ -161,9 +159,9 @@ has_nest     = function(m) length(m_nest(m))     > 0
 
 #' @rdname rmonad_accessors
 #' @export
-m_parents <- function(m) {
+m_parents <- function(m, index=m@head) {
   .m_check(m)
-  .get_relative_ids(m, "in", "depend")
+  .get_relative_ids(m, "in", "depend", index=index)
 }
 
 #' @rdname rmonad_accessors
@@ -175,9 +173,9 @@ ms_parents <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_children <- function(m) {
+m_children <- function(m, index=m@head) {
   .m_check(m)
-  .get_relative_ids(m, "out", "depend")
+  .get_relative_ids(m, "out", "depend", index=index)
 }
 
 #' @rdname rmonad_accessors
@@ -189,9 +187,9 @@ ms_children <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_nest <- function(m) {
+m_nest <- function(m, index=m@head) {
   .m_check(m)
-  .get_relative_ids(m, "in", "nest")
+  .get_relative_ids(m, "in", "nest", index=index)
 }
 
 #' @rdname rmonad_accessors
@@ -203,9 +201,9 @@ ms_nest <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_prior <- function(m) {
+m_prior <- function(m, index=m@head) {
   .m_check(m)
-  .get_relative_ids(m, "in", "prior")
+  .get_relative_ids(m, "in", "prior", index=index)
 }
 
 #' @rdname rmonad_accessors
@@ -217,9 +215,9 @@ ms_prior <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_nest_depth <- function(m) {
+m_nest_depth <- function(m, index=m@head) {
   .m_check(m)
-  .getHeadAttribute(m, "nest_depth")
+  .getAttribute(m, "nest_depth", index=index)
 }
 
 #' @rdname rmonad_accessors
@@ -231,10 +229,10 @@ ms_nest_depth <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_value <- function(m, ...){
+m_value <- function(m, index=m@head, ...){
   .m_check(m)
   # ... should only ever be 'warn' at this point
-  .getHeadAttribute(m, "value")@get(...)
+  .getAttribute(m, "value", index=index)@get(...)
 }
 
 #' @rdname rmonad_accessors
@@ -246,9 +244,9 @@ ms_value <- function(m, ...){
 
 #' @rdname rmonad_accessors
 #' @export
-m_id <- function(m) {
+m_id <- function(m, index=m@head) {
   .m_check(m)
-  m@head
+  index
 }
 
 #' @rdname rmonad_accessors
@@ -260,9 +258,9 @@ ms_id <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_OK <- function(m) {
+m_OK <- function(m, index=m@head) {
   .m_check(m)
-  .getHeadAttribute(m, "OK")
+  .getAttribute(m, "OK", index=index)
 }
 
 #' @rdname rmonad_accessors
@@ -274,9 +272,9 @@ ms_OK <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_code <- function(m) {
+m_code <- function(m, index=m@head) {
   .m_check(m)
-  .getHeadAttribute(m, "code")
+  .getAttribute(m, "code", index=index)
 }
 
 #' @rdname rmonad_accessors
@@ -288,9 +286,9 @@ ms_code <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_error <- function(m) {
+m_error <- function(m, index=m@head) {
   .m_check(m)
-  .getHeadAttribute(m, "error")
+  .getAttribute(m, "error", index=index)
 }
 
 #' @rdname rmonad_accessors
@@ -307,9 +305,9 @@ ms_error <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_warnings <- function(m) {
+m_warnings <- function(m, index=m@head) {
   .m_check(m)
-  .getHeadAttribute(m, "warnings")
+  .getAttribute(m, "warnings", index=index)
 }
 
 #' @rdname rmonad_accessors
@@ -326,9 +324,9 @@ ms_warnings <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_notes <- function(m) {
+m_notes <- function(m, index=m@head) {
   .m_check(m)
-  .getHeadAttribute(m, "notes")
+  .getAttribute(m, "notes", index=index)
 }
 
 #' @rdname rmonad_accessors
@@ -345,9 +343,9 @@ ms_notes <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_doc <- function(m) {
+m_doc <- function(m, index=m@head) {
   .m_check(m)
-  .getHeadAttribute(m, "doc")
+  .getAttribute(m, "doc", index=index)
 }
 
 #' @rdname rmonad_accessors
@@ -364,16 +362,23 @@ ms_doc <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_meta <- function(m) {
+m_meta <- function(m, index=m@head) {
   .m_check(m)
-  .getHeadAttribute(m, "meta")
+  .getAttribute(m, "meta", index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_time <- function(m) {
+ms_meta <- function(m) {
   .m_check(m)
-  .getHeadAttribute(m, "time")
+  igraph::get.vertex.attribute(m@graph, "meta")
+}
+
+#' @rdname rmonad_accessors
+#' @export
+m_time <- function(m, index=m@head) {
+  .m_check(m)
+  .getAttribute(m, "time", index=index)
 }
 
 #' @rdname rmonad_accessors
@@ -390,9 +395,9 @@ ms_time <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_mem <- function(m) {
+m_mem <- function(m, index=m@head) {
   .m_check(m)
-  .getHeadAttribute(m, "mem")
+  .getAttribute(m, "mem", index=index)
 }
 
 #' @rdname rmonad_accessors
@@ -409,9 +414,9 @@ ms_mem <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_summary <- function(m) {
+m_summary <- function(m, index=m@head) {
   .m_check(m)
-  .getHeadAttribute(m, "summary")
+  .getAttribute(m, "summary", index=index)
 }
 
 #' @rdname rmonad_accessors
@@ -431,7 +436,7 @@ ms_summary <- function(m) {
 `m_OK<-` <- function(m, value) {
   stopifnot(is.logical(value))
   .m_check(m)
-  m <- .setHeadAttribute(m, "OK", value)
+  m <- .setAttribute(m, "OK", value)
   m
 }
 
@@ -440,7 +445,7 @@ ms_summary <- function(m) {
 `m_value<-` <- function(m, value) {
   .m_check(m)
   # TODO: Don't hardcode the cache function
-  m <- .setHeadAttribute(m, "value", list(memoryCache(value)))
+  m <- .setAttribute(m, "value", list(memoryCache(value)))
   m
 }
 
@@ -448,7 +453,7 @@ ms_summary <- function(m) {
 #' @export
 `m_code<-` <- function(m, value) {
   .m_check(m)
-  m <- .setHeadAttribute(m, "code", list(value))
+  m <- .setAttribute(m, "code", list(value))
   m
 }
 
@@ -456,7 +461,7 @@ ms_summary <- function(m) {
 #' @export
 `m_error<-` <- function(m, value) {
   .m_check(m)
-  m <- .setHeadAttribute(m, "error", list(value))
+  m <- .setAttribute(m, "error", list(value))
   m
 }
 
@@ -465,7 +470,7 @@ ms_summary <- function(m) {
 #' @export
 `m_warnings<-` <- function(m, value) {
   .m_check(m)
-  m <- .setHeadAttribute(m, "warnings", list(value))
+  m <- .setAttribute(m, "warnings", list(value))
   m
 }
 
@@ -473,7 +478,7 @@ ms_summary <- function(m) {
 #' @export
 `m_notes<-` <- function(m, value) {
   .m_check(m)
-  m <- .setHeadAttribute(m, "notes", list(value))
+  m <- .setAttribute(m, "notes", list(value))
   m
 }
 
@@ -481,7 +486,7 @@ ms_summary <- function(m) {
 #' @export
 `m_doc<-` <- function(m, value) {
   .m_check(m)
-  m <- .setHeadAttribute(m, "doc", list(value))
+  m <- .setAttribute(m, "doc", list(value))
   m
 }
 
@@ -489,7 +494,7 @@ ms_summary <- function(m) {
 #' @export
 `m_meta<-` <- function(m, value) {
   .m_check(m)
-  m <- .setHeadAttribute(m, "meta", list(value))
+  m <- .setAttribute(m, "meta", list(value))
   m
 }
 
@@ -497,7 +502,7 @@ ms_summary <- function(m) {
 #' @export
 `m_time<-` <- function(m, value) {
   .m_check(m)
-  m <- .setHeadAttribute(m, "time", value)
+  m <- .setAttribute(m, "time", value)
   m
 }
 
@@ -505,7 +510,7 @@ ms_summary <- function(m) {
 #' @export
 `m_mem<-` <- function(m, value) {
   .m_check(m)
-  m <- .setHeadAttribute(m, "mem", value)
+  m <- .setAttribute(m, "mem", value)
   m
 }
 
@@ -513,31 +518,31 @@ ms_summary <- function(m) {
 #' @export
 `m_summary<-` <- function(m, value){
   .m_check(m)
-  m <- .setHeadAttribute(m, "summary", list(value))
+  m <- .setAttribute(m, "summary", list(value))
   m
 }
 
 
 #' @rdname rmonad_accessors
 #' @export
-app_warnings <- function(m, value) {
+app_warnings <- function(m, value, index=m@head) {
   .m_check(m)
-  warnings <- .getHeadAttribute(m, "warnings")
+  warnings <- .getAttribute(m, "warnings", index=index)
   if(length(value) > 0 && nchar(value) > 0){
     warnings <- value %++% warnings
   }
-  .setHeadAttribute(m, "warnings", warnings)
+  .setAttribute(m, "warnings", warnings, index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-app_notes <- function(m, value) {
+app_notes <- function(m, value, index=m@head) {
   .m_check(m)
-  notes <- .getHeadAttribute(m, "notes")
+  notes <- .getAttribute(m, "notes", index=index)
   if(length(value) > 0 && nchar(value) > 0){
     notes <- value %++% notes
   }
-  .setHeadAttribute(m, "notes", notes)
+  .setAttribute(m, "notes", notes, index=index)
 }
 
 
@@ -597,7 +602,7 @@ app_notes <- function(m, value) {
 #' @export
 `m_nest_depth<-` <- function(m, value) {
   .m_check(m)
-  .setHeadAttribute(m, "nest_depth", value)
+  .setAttribute(m, "nest_depth", value)
 }
 
 #' @rdname rmonad_accessors

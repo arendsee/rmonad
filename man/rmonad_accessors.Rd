@@ -29,6 +29,7 @@
 \alias{m_doc}
 \alias{ms_doc}
 \alias{m_meta}
+\alias{ms_meta}
 \alias{m_time}
 \alias{ms_time}
 \alias{m_mem}
@@ -54,69 +55,71 @@
 \alias{app_parents}
 \title{get, set, and append rmonad fields}
 \usage{
-m_parents(m)
+m_parents(m, index = m@head)
 
 ms_parents(m)
 
-m_children(m)
+m_children(m, index = m@head)
 
 ms_children(m)
 
-m_nest(m)
+m_nest(m, index = m@head)
 
 ms_nest(m)
 
-m_prior(m)
+m_prior(m, index = m@head)
 
 ms_prior(m)
 
-m_nest_depth(m)
+m_nest_depth(m, index = m@head)
 
 ms_nest_depth(m)
 
-m_value(m, ...)
+m_value(m, index = m@head, ...)
 
 ms_value(m, ...)
 
-m_id(m)
+m_id(m, index = m@head)
 
 ms_id(m)
 
-m_OK(m)
+m_OK(m, index = m@head)
 
 ms_OK(m)
 
-m_code(m)
+m_code(m, index = m@head)
 
 ms_code(m)
 
-m_error(m)
+m_error(m, index = m@head)
 
 ms_error(m)
 
-m_warnings(m)
+m_warnings(m, index = m@head)
 
 ms_warnings(m)
 
-m_notes(m)
+m_notes(m, index = m@head)
 
 ms_notes(m)
 
-m_doc(m)
+m_doc(m, index = m@head)
 
 ms_doc(m)
 
-m_meta(m)
+m_meta(m, index = m@head)
 
-m_time(m)
+ms_meta(m)
+
+m_time(m, index = m@head)
 
 ms_time(m)
 
-m_mem(m)
+m_mem(m, index = m@head)
 
 ms_mem(m)
 
-m_summary(m)
+m_summary(m, index = m@head)
 
 ms_summary(m)
 
@@ -142,9 +145,9 @@ m_mem(m) <- value
 
 m_summary(m) <- value
 
-app_warnings(m, value)
+app_warnings(m, value, index = m@head)
 
-app_notes(m, value)
+app_notes(m, value, index = m@head)
 
 m_parents(m) <- value
 
@@ -156,6 +159,8 @@ app_parents(m, value)
 }
 \arguments{
 \item{m}{the rmonad}
+
+\item{index}{The index of the node to get or set}
 
 \item{...}{Additional arguments}
 

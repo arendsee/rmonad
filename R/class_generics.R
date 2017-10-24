@@ -26,3 +26,69 @@
 plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   stop("NOT IMPLEMENTED")
 }
+
+.scat <- function(s, ...) cat(sprintf(s, ...)) 
+
+.print_record <- function(x, i, verbose=FALSE, print_value=TRUE) {
+
+  if(has_doc(x, i)){
+    .scat("\n\n    %s\n\n", m_doc(x, i))
+  }
+  .scat('R> "%s"', paste(m_code(x, i), collapse="\n"))
+
+  if(verbose && (has_time(x, i) || has_mem(x, i))){
+    cat("\n  ")
+    if(has_mem(x, i))  { .scat(" size: %s", m_mem(x, i))  }
+    if(has_time(x, i)) { .scat(" time: %s", m_time(x, i)) }
+  }
+  if(has_error(x, i)){
+    .scat("\n * ERROR: %s", m_error(x, i))
+  }
+  if(has_warnings(x, i)){
+    .scat("\n * WARNING: %s",
+      paste(m_warnings(x, i), collapse="\n * WARNING: ")
+    )
+  }
+  if(has_notes(x, i)){
+    .scat("\n * NOTE: %s",
+      paste(m_notes(x, i), collapse="\n * NOTE: ")
+    )
+  }
+  if(has_children(x, i)){
+    .scat("\nHas %s branches", length(m_children(x, i)))
+  }
+  if(has_value(x, i) && print_value){
+    cat("\n")
+    print(m_value(x, i))
+  }
+  cat("\n")
+}
+
+#' Rmonad print generic function
+#'
+#' @param x An Rmonad object
+#' @param verbose logical print verbose output (include benchmarking)
+#' @param print_value logical print the value wrapped in the Rmonad
+#' @param ... Additional arguments (unused)
+#' @export
+print.Rmonad <- function(x, verbose=FALSE, print_value=TRUE, ...){
+
+  for(i in seq_len(igraph::vcount(x@graph)-1)){
+    .print_record(x, i, print_value=print_value)
+  }
+  .print_record(x, igraph::vcount(x@graph), print_value=FALSE)
+
+  if(length(ms_id(x)) > 1){
+    cat("\n ----------------- \n\n")
+  }
+
+  if(print_value)
+    print(m_value(x))
+
+  if(!m_OK(x)){
+    cat(" *** FAILURE *** \n")
+  }
+}
+setMethod("show", "Rmonad",
+  function(object) print(object)
+)
