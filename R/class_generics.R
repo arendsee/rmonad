@@ -24,11 +24,61 @@
 #' @param ... Additional arguments (unused currently)
 #' @export
 plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
-  stop("NOT IMPLEMENTED")
+  y <- NULL
+
+  vertex.label <-
+  if(is.function(label)) {
+    label(x)               
+  } else if(is.null(label)){
+    ms_id(x)
+  } else if(label == "code"){
+    sapply(ms_code(x), paste0, collapse="\n")
+  } else if(label == "time") {
+    ms_time(x)
+  } else if (label == "space") {
+    ms_mem(x)
+  } else if (label == "depth") {
+    ms_nest_depth(x)
+  } else if (label == "value") {
+    ifelse(has_value(m, ms_ids(m)), ms_value(m, warn=FALSE), "-")
+  } else {
+    stop("Something is wrong with the 'label' field")
+  }
+
+  vertex.color <-
+  if(is.function(color)){
+    color(x)
+  } else if(color == 'status'){
+    ifelse(has_error(x), 'red', 'palegreen') %>%
+    {ifelse(has_warnings(x) & !has_error(x), 'yellow', .)}
+  } else {
+    stop("The 'color' field in plot.Rmonad must be either 'status' or a function")
+  }
+
+  # get the edge type, this may be
+  # * depend     - black solid  thin
+  # * nest       - red   solid  thin
+  # * transitive - gray  dotted thin
+  # * prior      - blue  dotted thick
+  etype <- igraph::E(x@graph)$type
+  edge.color <- ifelse(etype == 'depend'     , 'black'  , 'red'      )
+  edge.color <- ifelse(etype == 'transitive' , 'gray'   , edge.color )
+  edge.color <- ifelse(etype == 'prior'      , 'blue'   , edge.color )
+  edge.lty   <- ifelse(etype == 'transitive' , "dotted" , "solid"    )
+  edge.lty   <- ifelse(etype == 'prior'      , "dotted" , edge.lty   )
+  edge.width <- ifelse(etype == 'prior'      , 3        , 1          )
+
+  plot(
+    x@graph,
+    vertex.color = vertex.color,
+    vertex.label = vertex.label,
+    edge.color   = edge.color,
+    edge.lty     = edge.lty,
+    edge.width   = edge.width
+  )
 }
 
 .scat <- function(s, ...) cat(sprintf(s, ...)) 
-
 .print_record <- function(x, i, verbose=FALSE, print_value=TRUE) {
 
   if(has_doc(x, i)){
