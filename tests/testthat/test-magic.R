@@ -124,6 +124,5 @@ test_that("fields are not treated as free variables", {
       5 %>>% foo %>% ms_parents %>% sapply(length)
     },
     c(0,1,1,1)
-    # if y is counted as a child of speed, this will be c(0,1,2,1)
   )
 })

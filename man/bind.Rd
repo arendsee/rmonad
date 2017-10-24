@@ -8,7 +8,7 @@ bind(x, f, entry_lhs_transform = entry_lhs_transform_default,
   bind_if = function(m) m_OK(m), bind_else = function(...) {     NULL },
   emit = emit_default, m_on_bind = function(x, ...) {     x },
   io_combine = default_combine, bind_args = function(m) list(m_value(m, warn
-  = FALSE)), bind_monad = function(m) list(m), expect_rhs_function = TRUE,
+  = FALSE)), parent_ids = function(m) m_id(m), expect_rhs_function = TRUE,
   envir = parent.frame())
 }
 \arguments{

@@ -5,7 +5,6 @@
 #' @export
 unnest <- function(m){
   if(is_rmonad(m) && has_value(m) && is_rmonad(m_value(m))){
-    mm <<- m
     nest <- m_value(m)
     nest@graph <- igraph::set.vertex.attribute(
       graph = nest@graph,

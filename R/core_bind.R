@@ -25,7 +25,7 @@ bind <- function(
   m_on_bind           = function(x, ...){x},
   io_combine          = default_combine,
   bind_args           = function(m) list(m_value(m, warn=FALSE)),
-  bind_monad          = function(m) list(m),
+  parent_ids          = function(m) m_id(m),
   expect_rhs_function = TRUE,
   envir               = parent.frame()
 ){
@@ -108,7 +108,7 @@ bind <- function(
 
     m <- m_on_bind(m)
 
-    o <- io_combine(m=m, o=o, f=new_function, margs=bind_monad(m))
+    o <- io_combine(m=m, o=o, f=new_function, margs=parent_ids(m))
 
     apply_rewriters(o, rhs_met)
 
@@ -204,8 +204,7 @@ default_combine <- function(m, o, f, margs){
   }
 
   if(has_nest(o)){
-    # m_nest(o) <- splice_function(f=f, m=m_value(o), ms=margs)
-    o <- unnest(o)
+    o <- splice_function(f=f, m=o, ms=margs)
     if(!m_OK(o)){
       # If the bind function failed, copy the last succeeding value back into
       # the nest. The preceding node's value (not the nested value) will later

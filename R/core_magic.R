@@ -44,26 +44,27 @@ splice_function <- function(f, m, ms){
 #' @keywords internal
 relink_node <- function(m, bv, deps){
 
-  m_parents(m) <- lapply(m_parents(m), relink_node, bv, deps)
+  code <- lapply(ms_code(m), parse_as_block)
+  free_all <- lapply(code, get_free_variables)
+  free_locals <- lapply(free_all, function(x) x[ x %in% dimnames(deps)[[1]] ])
+  dependencies <- lapply(
+    free_locals,
+    function(x) {
+      bv[deps[x, , drop=FALSE] %>% colSums %>% '>'(0)]
+    }
+  ) %>% lapply(unname)
 
-  code <- parse_as_block(m_code(m))
+  if(length(dependencies) > 0){
+    for(child in dependencies){
+      if(length(child) > 0){
+        for(parent in dependencies[[child]]){
+          m@graph <- m@graph + igraph::edge(parent, child, type="depend")
+        }
+      }
+    }
+  }
 
-  free_all <- get_free_variables(code)
-  free_locals <- free_all[ free_all %in% dimnames(deps)[[1]] ]
-
-  dependencies <- bv[
-    deps[free_locals, ] %>% sum %>% '>'(0)
-  ]
-
-  # NOTE: must do this AFTER the recursion
-  inherit(
-    child         = m,
-    parent        = append(m_parents(m), dependencies),
-    inherit_value = FALSE,
-    inherit_OK    = FALSE,
-    force_keep    = FALSE
-  )
-
+  m
 }
 
 parse_as_block <- function(code_str){
