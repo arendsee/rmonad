@@ -6,9 +6,6 @@
 \usage{
 noCache()
 }
-\arguments{
-\item{warn}{logical Emit a warning on access}
-}
 \description{
 By default, the value of a node that has already been executed will be set
 to this function.

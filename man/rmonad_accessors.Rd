@@ -157,9 +157,9 @@ app_parents(m, value)
 \arguments{
 \item{m}{the rmonad}
 
-\item{value}{value to replace or append current value}
+\item{...}{Additional arguments}
 
-\item{warn}{Warn if the accessed field does not exist (value was not cached)}
+\item{value}{value to replace or append current value}
 }
 \description{
 get, set, and append rmonad fields

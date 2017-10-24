@@ -519,9 +519,9 @@ To extract particular values, we can use the `m_*` family of getters
 
 ```{r, eval=FALSE}
 # get a list of every stored value, report uncached values as NULL
-lapply(as.list(result), m_value, warn=FALSE)
+ms_value(result, warn=FALSE)
 # get a list of every docstring
-lapply(as.list(result), m_doc)
+ms_doc(result)
 ```
 
 <!--
@@ -540,6 +540,8 @@ represent errors.
 
 The generic `as.list` function extracts every node from an rmonad object. Here
 is a list of all currently supported getter functions.
+
+** TODO: UPDATE, THIS LIST IS OUT OF DATE **
 
  * `m_parents`  - list of node parents
  * `m_value`    - the value stored in the object, if any

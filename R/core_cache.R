@@ -7,6 +7,7 @@
 #'
 #' @return NULL
 voidCache <- function(){
+  # @param warn Warn if the accessed field does not exist (value was not cached)
   get <- function(warn=TRUE){
     if(warn){
       warning("Accessing node with no stored value, returning NULL")
@@ -24,9 +25,8 @@ voidCache <- function(){
 #'
 #' By default, the value of a node that has already been executed will be set
 #' to this function.
-#'
-#' @param warn logical Emit a warning on access 
 noCache <- function(){
+  # @param warn Warn if the accessed field does not exist (value was not cached)
   get <- function(warn=TRUE){
     if(warn){
       warning("Attempting to access data that has been deleted, returning NULL")
@@ -43,11 +43,12 @@ noCache <- function(){
 #' Store a value in memory
 #'
 #' @param x Value to be stored
+#' @export
 #' @examples
 #' foo <- 45
 #' foo_proxy <- memoryCache(foo)
 #' foo
-#' foo_proxy()
+#' foo_proxy@get()
 memoryCache <- function(x){
   # FIXME: allow deletion of x, must delete only the LOCAL x 
   # FIXME: allow checking, must check for presence of LOCAL x

@@ -2,7 +2,7 @@
 #'
 #' @param m the rmonad
 #' @param value value to replace or append current value
-#' @param warn Warn if the accessed field does not exist (value was not cached)
+#' @param ... Additional arguments
 #' @name rmonad_accessors
 NULL
 
@@ -522,7 +522,7 @@ ms_summary <- function(m) {
 #' @export
 app_warnings <- function(m, value) {
   .m_check(m)
-  warnings <- .getHeadAttr(m, "warnings")
+  warnings <- .getHeadAttribute(m, "warnings")
   if(length(value) > 0 && nchar(value) > 0){
     warnings <- value %++% warnings
   }
@@ -533,7 +533,7 @@ app_warnings <- function(m, value) {
 #' @export
 app_notes <- function(m, value) {
   .m_check(m)
-  notes <- .getHeadAttr(m, "notes")
+  notes <- .getHeadAttribute(m, "notes")
   if(length(value) > 0 && nchar(value) > 0){
     notes <- value %++% notes
   }

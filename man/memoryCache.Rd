@@ -16,5 +16,5 @@ Store a value in memory
 foo <- 45
 foo_proxy <- memoryCache(foo)
 foo
-foo_proxy()
+foo_proxy@get()
 }

@@ -163,21 +163,14 @@ All errors, warnings and notes can be extracted with the `missues` command
 ```
 
 The `id` column refers to row numbers in the `mtabulate` output. Internal
-values can be extracted by converting the monad to a list and indexing:
+values can be extracted:
 
 ```{r}
 result <- 1:5 %v>% sqrt %v>% sqrt %v>% sqrt
-as.list(result)[[2]] %>% esc
+ms_value(result)[[2]]
 ```
 
-An `rmonad` can be converted to a `DiagrammeR` graph (or `igraph`); in this way,
-standard tools for network analysis can be applied to pipelines. `rmonad`
-currently has built in support for plotting piplines and making markdown
-reports (experimental).
-
-```{r, eval=FALSE}
-as_dgr_graph(result)
-```
+** TODO: add plotting example **
 
 ## Handling effects
 
@@ -194,7 +187,7 @@ cars %>_% write.csv(file="cars.tab") %>>% summary
 Or plot a value along with a summary
 
 ```{r}
-cars %>_% plot(xlab="index", ylab="value") %>>% summary %>% forget
+cars %>_% plot(xlab="index", ylab="value") %>>% summary
 ```
 
 I pipe the final monad into `forget`, which is (like `esc`) a function for
@@ -207,7 +200,7 @@ You can call multiple effects
 cars                                 %>_%
     plot(xlab="index", ylab="value") %>_%
     write.csv(file="cars.tab")       %>>%
-    summary %>% forget
+    summary
 ```
 
 Since state is passed, you can make assertions about the data inside a
@@ -299,8 +292,7 @@ Branches can be used as input, as well.
 
 ```{r}
 x <- 1:10 %>^% dgamma(10, 1) %>^% dgamma(10, 5) %^>% cor
-x
-unbranch(x)
+ms_value(x)
 ```
 
 Note the branches could be long monadic chains themselves, which might have
@@ -503,7 +495,7 @@ d <- mtcars %>>% {
   subset(., mpg > 20)
 } %>>% nrow
 
-m_summary(as.list(d)[[2]])
+ms_summary(d)[[2]]
 ```
 
 The summary information will tucked away invisibly in the `Rmonad` object until
