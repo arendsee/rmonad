@@ -180,48 +180,27 @@ emit_default <- function(input, output) {
 ## io_combine options
 
 branch_combine <- function(m, o, f, margs){
-  if(has_nest(o)){
-    o <- unnest(o)
-    # m_nest(o) <- splice_function(f=f, m=m_value(o), ms=margs)
-  }
-
   # Add o as a normal child of m, preserving its value
   o <- inherit(child=o, parent=m, type='depend', force_keep=TRUE)
-
   # Point head to the parent
   o@head <- m@head
-
   o
-
 }
 
 default_combine <- function(m, o, f, margs){
-
+  if(has_nest(o)){
+    o <- splice_function(f=f, m=o, ms=margs)
+  }
   if(!m_OK(o)){
     # On failure, propagate the final passing value, this allows
     # for either degugging or passage to alternative handlers.
-    val <- m_value(m, warn=FALSE)
+    m_value(o) <- m_value(m, warn=FALSE)
   }
-
-  if(has_nest(o)){
-    o <- splice_function(f=f, m=o, ms=margs)
-    if(!m_OK(o)){
-      # If the bind function failed, copy the last succeeding value back into
-      # the nest. The preceding node's value (not the nested value) will later
-      # be copied over.
-      o@graph <- igraph::set.vertex.attribute(o@graph, "value", m_nest(o), m_value(o))
-    }
-  }
-
-  if(!m_OK(o)) m_value(o) <- val
-
   inherit(child=o, parent=m)
 }
 
 bypass_combine <- function(m, o, f, margs){
-  # # the new value inherits the old value, losing whatever it had
-  # # but the pass/fail state of the child is preserved
-
+  # the new value inherits the old value, losing whatever it had but the
+  # pass/fail state of the child is preserved
   inherit(child=o, parent=m, inherit_value=TRUE, inherit_OK=FALSE)
-
 }
