@@ -258,7 +258,7 @@ mreport(x)
 An `rmonad` pipeline can be converted to a `DiagrammeR` object. Along with many
 unexplored possibilities, this allows the pipeline to be plotted:
 
-```{r workflow-plot, results="asis"}
+```{r workflow-plot}
 # here I use the `->` operator, which is the little known twin of `<-`.
 funnel(
   "a" %v>% paste("b"), # %v>% stores the input (%>>% doesn't)
@@ -275,7 +275,7 @@ funnel(
 
 Nested pipelines can also be plotted:
 
-```{r nested-workflow-plot, results="asis"}
+```{r nested-workflow-plot}
 foo <- function(x){
     'c' %v>% paste(x) %v>% paste('d')
 }

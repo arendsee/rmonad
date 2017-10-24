@@ -40,7 +40,7 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   } else if (label == "depth") {
     ms_nest_depth(x)
   } else if (label == "value") {
-    ifelse(has_value(m, ms_ids(m)), ms_value(m, warn=FALSE), "-")
+    ifelse(has_value(x, ms_ids(x)), ms_value(x, warn=FALSE), "-")
   } else {
     stop("Something is wrong with the 'label' field")
   }
