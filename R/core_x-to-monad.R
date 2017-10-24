@@ -205,23 +205,3 @@ combine <- function(xs, keep_history=TRUE, desc=NULL){
 
   out 
 }
-
-
-
-#' Safely builds a list of monads from an argument list of expressions
-#'
-#' Deprecated, use funnel instead. \code{lsmeval} is the same as \code{funnel},
-#' but the name funnel more clearly expresses the use of this function (joining
-#' multiple pipes into one).
-#'
-#' @param ... expressions to be wrapped into monads
-#' @param keep_history Merge the histories of all monads
-#' @return A list of Rmonads
-#' @export
-lsmeval <- function(..., keep_history=TRUE){
-
-  .Deprecated("funnel")
-
-  funnel(..., keep_history=keep_history)
-
-}
