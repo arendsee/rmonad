@@ -366,12 +366,7 @@ ms_doc <- function(m) {
 #' @export
 m_meta <- function(m) {
   .m_check(m)
-  igraph::V(m@graph)$meta %>% {
-    if(is.null(.)){
-      . <- rep(NA, igraph::vcount(m@graph))
-    }
-    .
-  }
+  .getHeadAttribute(m, "meta")
 }
 
 #' @rdname rmonad_accessors

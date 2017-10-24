@@ -106,7 +106,7 @@ test_that("Multiple free variables can be handled in declarations", {
   expect_equal(
     3 %>>%
     {
-      y <- 1 
+      y <- 1
       bar <- . + y
       bar %>>% sqrt # this test MUST have a monadic operator
     } %>% esc,
@@ -114,16 +114,16 @@ test_that("Multiple free variables can be handled in declarations", {
   )
 })
 
-test_that("Fields are not treated as free variables", {
+test_that("fields are not treated as free variables", {
   expect_equal(
     {
       foo <- function(speed){
         y <- cars$speed # y should not be a child of speed
         speed %>>% { . * y }
       }
-      5 %>>% foo %>% lapply(m_parents) %>% sapply(length)
+      5 %>>% foo %>% ms_parents %>% sapply(length)
     },
     c(0,1,1,1)
-    # If y is counted as a child of speed, this will be c(0,1,2,1)
+    # if y is counted as a child of speed, this will be c(0,1,2,1)
   )
 })
