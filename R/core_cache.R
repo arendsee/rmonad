@@ -69,19 +69,19 @@ memoryCache <- function(x){
 #'   localCacher <- makeLocalCacher(".")
 #'   foo_ <- localCacher(45)
 #'   rm(foo)
-#'   foo_()
+#'   foo_@get()
 #' }
 makeLocalCacher <- function(path){
+  if(!dir.exists(path)){
+    dir.create(path, recursive=TRUE)
+  }
+  path <- normalizePath(path)
   # Save x and return a function that can load it
   function(x){
-    path <- normalizePath(path)
-    filename <- file.path(path, paste0(uuid::UUIDgenerate(), ".Rdata"))
-    if(!dir.exists(path)){
-      dir.create(path, recursive=TRUE)
-    }
+    filename <- file.path(path, paste0('rmonad-', uuid::UUIDgenerate(), ".Rdata"))
     save(x, file=filename) 
     rm(x)
-    get <- function() {
+    get <- function(...) {
       load(filename)
       x
     }

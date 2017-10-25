@@ -18,6 +18,6 @@ Make a function of x that caches data locally
   localCacher <- makeLocalCacher(".")
   foo_ <- localCacher(45)
   rm(foo)
-  foo_()
+  foo_@get()
 }
 }

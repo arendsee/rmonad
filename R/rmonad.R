@@ -1,6 +1,7 @@
 #' @importFrom utils capture.output object.size
 #' @importFrom magrittr "%>%"
 #' @importFrom methods new
+#' @importFrom graphics plot
 utils::globalVariables(c("%>%", "."))
 NULL
 
