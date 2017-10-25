@@ -5,7 +5,8 @@
 #' the user is directly creating RmonadNode objects (in which case they should
 #' be spoken to sternly) or 2) there is a bug in rmonad.
 #'
-#' @return NULL
+#' @return A function that represents a void, uncached value
+#' @export
 voidCache <- function(){
   # @param warn Warn if the accessed field does not exist (value was not cached)
   get <- function(warn=TRUE){
@@ -25,6 +26,9 @@ voidCache <- function(){
 #'
 #' By default, the value of a node that has already been executed will be set
 #' to this function.
+#'
+#' @return A function that represents a deleted value 
+#' @export
 noCache <- function(){
   # @param warn Warn if the accessed field does not exist (value was not cached)
   get <- function(warn=TRUE){
@@ -43,6 +47,7 @@ noCache <- function(){
 #' Store a value in memory
 #'
 #' @param x Value to be stored
+#' @return A function that returns a value stored in memory 
 #' @export
 #' @examples
 #' foo <- 45
@@ -63,6 +68,8 @@ memoryCache <- function(x){
 #' Make a function of x that caches data locally
 #'
 #' @param path A directory in which to cache results
+#' @return A function that builds a local cache function for a value
+#' @export
 #' @examples
 #' \dontrun{
 #'   foo <- 45
@@ -102,8 +109,21 @@ makeLocalCacher <- function(path){
 #' Make a function that taks an Rmonad and recaches it
 #'
 #' @param cacher A function of a data value
+#' @return A function that swaps the cache function of an Rmonad
 #' @export
-makeCacher <- function(cacher){
+#' @examples
+#' \dontrun{
+#'   recacher <- makeRecacher(makeLocalCacher("."))
+#'   m <- iris %>>% summary %>% recacher
+#'   # load the data from a local file
+#'   m_value(m)
+#'
+#'   recacher <- makeRecacher(memoryCache)
+#'   m <- iris %>>% summary %>% recacher
+#'   # load the data from memory
+#'   m_value(m)
+#' }
+makeRecacher <- function(cacher){
   # @param m An Rmonad object
   function(m){
     v <- cacher(m_value(m))

@@ -6,6 +6,9 @@
 \usage{
 voidCache()
 }
+\value{
+A function that represents a void, uncached value
+}
 \description{
 This is the default value of RmonadNode@value. It should always be replaced
 shortly after the object is created, thus should only be encountered if 1)

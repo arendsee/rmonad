@@ -9,6 +9,9 @@ makeLocalCacher(path)
 \arguments{
 \item{path}{A directory in which to cache results}
 }
+\value{
+A function that builds a local cache function for a value
+}
 \description{
 Make a function of x that caches data locally
 }

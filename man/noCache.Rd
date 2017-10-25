@@ -6,6 +6,9 @@
 \usage{
 noCache()
 }
+\value{
+A function that represents a deleted value
+}
 \description{
 By default, the value of a node that has already been executed will be set
 to this function.

@@ -9,6 +9,9 @@ memoryCache(x)
 \arguments{
 \item{x}{Value to be stored}
 }
+\value{
+A function that returns a value stored in memory
+}
 \description{
 Store a value in memory
 }
