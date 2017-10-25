@@ -4,13 +4,20 @@
 \alias{mreport}
 \title{Convert a pipeline to Rmarkdown}
 \usage{
-mreport(m)
+mreport(m, prefix = "report")
 }
 \arguments{
 \item{m}{An Rmonad}
+
+\item{prefix}{A file prefix for the generated report}
 }
 \description{
-STUB
+Convert a pipeline to Rmarkdown
+}
+\examples{
+\dontrun{
+mreport(-1:2 \%>>\% log \%>>\% sqrt \%__\% "asdf" \%>>\% sqrt)
+}
 }
 \seealso{
 Other from_Rmonad: \code{\link{esc}},

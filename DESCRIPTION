@@ -21,7 +21,7 @@ Imports:
     uuid,
     methods,
     magrittr,
-    DiagrammeR,
+    glue,
     pryr
 Suggests:
     testthat,
