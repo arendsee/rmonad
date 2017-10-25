@@ -98,3 +98,16 @@ makeLocalCacher <- function(path){
     )
   }
 }
+
+#' Make a function that taks an Rmonad and recaches it
+#'
+#' @param cacher A function of a data value
+#' @export
+makeCacher <- function(cacher){
+  # @param m An Rmonad object
+  function(m){
+    v <- cacher(m_value(m))
+    m@graph <- igraph::set.vertex.attribute(m@graph, "value", value=v)
+    m
+  }
+}
