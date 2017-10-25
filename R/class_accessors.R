@@ -113,7 +113,7 @@ has_notes    = function(m, index=m@head) sapply(ms_notes(m),    function(x) leng
 has_meta     = function(m, index=m@head) sapply(ms_meta(m),     function(x) length(x) > 0)[index]
 has_time     = function(m, index=m@head) sapply(ms_time(m), .is_not_empty_real)[index]
 has_mem      = function(m, index=m@head) sapply(ms_mem(m), .is_not_empty_real)[index]
-has_value    = function(m, index=m@head) igraph::get.vertex.attribute(m@graph, "value") %>% sapply(function(x) x@chk())
+has_value    = function(m, index=m@head) igraph::get.vertex.attribute(m@graph, "value", index) %>% sapply(function(x) x@chk())
 has_parents  = function(m, index=m@head) sapply(ms_parents(m),  function(x) length(x) > 0)[index]
 has_children = function(m, index=m@head) sapply(ms_children(m), function(x) length(x) > 0)[index]
 has_prior    = function(m, index=m@head) sapply(ms_prior(m),    function(x) length(x) > 0)[index]
