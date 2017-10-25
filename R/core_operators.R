@@ -155,24 +155,9 @@ NULL
 #' @rdname infix
 #' @export
 `%__%` <- function(lhs, rhs) {
-
   envir <- parent.frame()
-  .chain(substitute(lhs), substitute(rhs), envir)
-
-}
-
-#' @rdname infix
-#' @export
-`%v__%` <- function(lhs, rhs) {
-
-  .Deprecated("Use `%__%` instead, they now do the same thing")
-
-  envir <- parent.frame()
-  .chain(substitute(lhs), substitute(rhs), envir)
-
-}
-
-.chain <- function(lhs, rhs, envir) {
+  lhs <- substitute(lhs)
+  rhs <- substitute(rhs)
 
   emit <- function(i,o) {
     inherit(

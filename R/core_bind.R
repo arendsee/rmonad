@@ -131,10 +131,8 @@ bind <- function(
 }
 
 
-# FIXME: There HAS to be a better way to do this, as always in R, there is some
-# magic function, hiding in the thousands of builtins, that does just what you
-# want. But since R is a dynamic language, where no type info is available,
-# there is no good way to find them.
+# FIXME: Find a better way to do this. I need to replace a list of names with
+# an `alist` of unnamed (positional) arguments.
 .as_positional_formals <- function(arg_names){
   code_str <- sprintf("alist(%s)", paste0(arg_names, " = ", collapse=", ")) 
   eval(parse(text=code_str))

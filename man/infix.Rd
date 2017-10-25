@@ -11,7 +11,6 @@
 \alias{\%|>\%}
 \alias{\%||\%}
 \alias{\%__\%}
-\alias{\%v__\%}
 \title{Infix operators}
 \usage{
 lhs \%>>\% rhs
@@ -31,8 +30,6 @@ lhs \%|>\% rhs
 lhs \%||\% rhs
 
 lhs \%__\% rhs
-
-lhs \%v__\% rhs
 }
 \arguments{
 \item{lhs}{left hand value}

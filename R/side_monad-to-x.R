@@ -5,14 +5,6 @@
 #' @param code logical Should the code by included?
 #' @export
 mtabulate <- function(m, code=FALSE){
-  # FIXME: I shouldn't need this once the accessor refactor is done
-  optional_text <- function(x){
-    if(is.null(x)) {
-      rep(0, igraph::vcount(m@graph))
-    } else {
-      sapply(x, length) %>% unname
-    }
-  }
   data.frame(
     code      = ms_code(m) %>% sapply(paste0, collapse="\n"),
     id        = ms_id(m) %>% as.numeric,
@@ -22,10 +14,10 @@ mtabulate <- function(m, code=FALSE){
     space     = ms_mem(m),
     is_nested = ms_nest(m) %>% sapply(length),
     nchildren = ms_children(m) %>% sapply(length),
-    nnotes    = ms_notes(m)    %>% optional_text,
-    nwarnings = ms_warnings(m) %>% optional_text,
-    error     = ms_error(m)    %>% optional_text,
-    doc       = ms_doc(m)      %>% optional_text
+    nnotes    = ms_notes(m)    %>% sapply(length),
+    nwarnings = ms_warnings(m) %>% sapply(length),
+    error     = ms_error(m)    %>% sapply(length),
+    doc       = ms_doc(m)      %>% sapply(length)
   ) %>% {
     if(!code)
       .$code <- NULL
