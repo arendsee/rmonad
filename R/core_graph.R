@@ -99,6 +99,7 @@
 # @param type Edge type
 # @param index vector of indices
 .get_relative_ids <- function(m, mode, type, index=m@head){
+  .m_check(m)
   vertices <- igraph::neighbors(m@graph, index, mode=mode) %>% as.numeric
   edges <- igraph::incident_edges(m@graph, index, mode=mode)[[1]] %>% as.numeric
   stopifnot(length(vertices) == length(edges))
@@ -157,5 +158,6 @@
 # @param m Rmonad object
 # @param index vector of indices
 .get_raw_value <- function(m, index=m@head){
+  .m_check(m)
   igraph::get.vertex.attribute(m@graph, "value", index=index)
 }
