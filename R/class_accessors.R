@@ -17,14 +17,6 @@ is_rmonad <- function(m) {
   setequal(class(m), "Rmonad")
 }
 
-# internal utility for generating error messages when accessing a non-Rmonad
-.m_check <- function(m) {
-  if(!is_rmonad(m)){
-    msg="Expected an Rmonad object, got %s"
-    stop(sprintf(msg, class(m)))
-  }
-}
-
 #' Delete a node's value
 #'
 #' @param m Rmonad object
@@ -37,70 +29,6 @@ m_delete_value <- function(m, index=m@head) {
     cache@del()
   }
   m@graph <- igraph::set.vertex.attribute(m@graph, "value", index, list(noCache()))
-  m
-}
-
-
-.is_not_empty = function(x) length(x) > 0
-
-.is_not_empty_string = function(x) {
-  !is.null(x)     &&
-  !is.na(x)       &&
-  is.character(x) &&
-  (
-    length(x) > 1 ||
-    (length(x) == 1 && nchar(x) > 0)
-  )
-}
-
-.is_not_empty_integer = function(x) {
-  !is.null(x) && !is.na(x) && is.integer(x) && length(x) != 0
-}
-
-.is_not_empty_real = function(x) {
-  !is.null(x) && !is.na(x) && is.numeric(x) && length(x) != 0
-}
-
-# === A note about Maybe ======================================================
-# Some of the values stored in Rmonad could reasonably contain nothing, which
-# is not the same as NULL. The value a node wraps be anything. But intermediate
-# values are not usually stored (unless using %v>% or relatives), so we need a
-# way to distinguish between a node holding no value and NULL. My approach is
-# to emulate the Haskell Maybe by using a list of length 0 or 1. An empty list
-# is Nothing. A list with one element, is Something.
-.maybe_vector_get = function(x){
-  if(length(x) == 0){
-    NULL   # Nothing
-           # NOTE: this is still ambiguous
-  } else {
-    x$value # a
-  }
-}
-
-.maybe_vector_set = function(x, is_not_empty, expected_type=true){
-  if(is_not_empty(x)){
-    if(!expected_type(x)){
-      stop("Type error")
-    }
-    list(value=x) # Just a
-  } else {
-    list()  # Nothing
-  }
-}
-
-.getAttribute <- function(m, attribute, index){
-  .m_check(m)
-  a <- igraph::get.vertex.attribute(m@graph, attribute, index)
-  if(is.null(a)){
-    a
-  } else {
-    a[[1]]
-  }
-}
-
-.setAttribute <- function(m, attribute, value, index=m@head){
-  .m_check(m)
-  m@graph <- igraph::set.vertex.attribute(m@graph, attribute, index, value)
   m
 }
 
@@ -135,27 +63,6 @@ has_nest     = function(m, index=m@head) sapply(ms_nest(m),     function(x) leng
   m <- .setAttribute(m, "stored", value)
   m
 }
-
-.get_relative_ids <- function(m, mode, type, index=m@head){
-  # FIXME: Directly using vertex ids is not a good idea; they are not stable in
-  # general. In my particular case, I think they will be stable, but this is
-  # dangerous. An alternative approach would be to add a unique name to each
-  # node (e.g. a UUID) and using the names in head instead.
-  vertices <- igraph::neighbors(m@graph, index, mode=mode) %>% as.numeric
-  edges <- igraph::incident_edges(m@graph, index, mode=mode)[[1]] %>% as.numeric
-  stopifnot(length(vertices) == length(edges))
-  etype <- igraph::get.edge.attribute(m@graph, "type", edges)
-  stopifnot(length(etype) == length(edges))
-  vertices[etype == type] %>% as.integer
-}
-
-# TODO: I should be able to remove most of these functions, replace them with
-# generic attribute getters and setters. This would reduce code repitition.
-# However, it would also slightly complicate mapping these functions over
-# rmonads. For example, common tasks like `lapply(x, m_value)` would become
-# `lapply(x, function(y) get_attr(y, "value"))`. I am sure there is a clean
-# solution, but for now, during this refactor, I want to keep changes to a
-# minimum.
 
 #' @rdname rmonad_accessors
 #' @export
@@ -546,22 +453,6 @@ app_notes <- function(m, value, index=m@head) {
 }
 
 
-
-.add_parents <- function(child, parents, check=false, ...){
-  .m_check(child)
-  stopifnot(!check(child))
-  if(!is.list(parents)){
-    parents <- list(parents)
-  }
-  for(p in parents){
-    .m_check(p)
-    child@graph <- p@graph + child@graph
-    child@head <- igraph::vcount(p@graph) + child@head
-    new_edge <- igraph::edge(p@head, child@head, ...)
-    child@graph <- child@graph + new_edge
-  }
-  child
-}
 
 #' @rdname rmonad_accessors
 #' @export
