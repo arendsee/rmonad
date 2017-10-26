@@ -3,7 +3,16 @@
 # be in this file. Ideally, it should be possible to swap igraph for some other
 # network library by changing only this code (and the plot function).
 
-inherit <- function(
+
+# Handle linking of child node to a single parent node
+#
+# @param child R        monad object
+# @param parent         Rmonad object
+# @param type           Edge type ["depend", "nest", "prior", "transitive"]
+# @param inherit_value  logical should value be passed (on success)?
+# @param inherit_OK     logical should status be passed?
+# @param force_keep     logical should the parent value be cached?
+.inherit <- function(
   child,
   parent,
   type          = "depend",
@@ -42,8 +51,32 @@ inherit <- function(
   child
 }
 
+# If an Rmonad holds an Rmonad value, link the value as a nest parent 
+.unnest <- function(m){
+  if(is_rmonad(m) && has_value(m) && is_rmonad(m_value(m))){
+    nest <- m_value(m)
+    nest@graph <- igraph::set.vertex.attribute(
+      graph = nest@graph,
+      name  = "nest_depth",
+      value = igraph::V(nest@graph)$nest_depth + (m_nest_depth(m) - m_nest_depth(nest) + 1)
+    )
+    m_nest(m) <- nest 
+  }
+  m
+}
 
+# Make an empty, directed graph
+.new_rmonad_graph <- function(){
+  igraph::make_empty_graph(directed=TRUE, n=1)
+}
+
+# Add multiple parents to an child 
+#
+# @param child Rmonad object
+# @param parents Rmonad object or list of Rmonad objects
+# @param check function UNNECESSARY?
 .add_parents <- function(child, parents, check=false, ...){
+  # FIXME: `check` is not being used, I removed it for a reason ... 
   .m_check(child)
   stopifnot(!check(child))
   if(!is.list(parents)){
@@ -59,12 +92,13 @@ inherit <- function(
   child
 }
 
-
+# Get the ids of neighbors connected by a given edge type
+#
+# @param m Rmonad object
+# @param mode "in" or "out"
+# @param type Edge type
+# @param index vector of indices
 .get_relative_ids <- function(m, mode, type, index=m@head){
-  # FIXME: Directly using vertex ids is not a good idea; they are not stable in
-  # general. In my particular case, I think they will be stable, but this is
-  # dangerous. An alternative approach would be to add a unique name to each
-  # node (e.g. a UUID) and using the names in head instead.
   vertices <- igraph::neighbors(m@graph, index, mode=mode) %>% as.numeric
   edges <- igraph::incident_edges(m@graph, index, mode=mode)[[1]] %>% as.numeric
   stopifnot(length(vertices) == length(edges))
@@ -73,20 +107,55 @@ inherit <- function(
   vertices[etype == type] %>% as.integer
 }
 
-
-.getAttribute <- function(m, attribute, index){
+# Get attributes
+#
+# This is not the appropriate function for every attribute. Currently the
+# implementation is a bit hacky. But some things have to be stored as lists in
+# the igraph object. If the attribute is not NULL, we return the first element
+# in the list. These lists should always be of length 1.
+#
+# @param m Rmonad object
+# @param attribute The attribute name (e.g. "error")
+# @param index vector of indices
+.getAttribute <- function(m, attribute, index=m@head){
   .m_check(m)
   a <- igraph::get.vertex.attribute(m@graph, attribute, index)
   if(is.null(a)){
-    a
+    NULL
   } else {
     a[[1]]
   }
 }
 
-
+# Set an attribute
+#
+# @param m Rmonad object
+# @param attribute The attribute name (e.g. "error")
+# @param value attribute value
+# @param index vector of indices
 .setAttribute <- function(m, attribute, value, index=m@head){
   .m_check(m)
   m@graph <- igraph::set.vertex.attribute(m@graph, attribute, index, value)
   m
+}
+
+# Set the value function
+#
+# The Rmonad `value` field is internally a function that returns the stored
+# value. This function sets the cache function, not just the stored value.
+#
+# @param m Rmonad object
+# @param value A cache function
+# @param index vector of indices
+.set_raw_value <- function(m, value, index=m@head){
+  m@graph <- igraph::set.vertex.attribute(m@graph, "value", index=index, value=value)
+  m
+}
+
+# Get the value function
+#
+# @param m Rmonad object
+# @param index vector of indices
+.get_raw_value <- function(m, index=m@head){
+  igraph::get.vertex.attribute(m@graph, "value", index=index)
 }

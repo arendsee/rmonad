@@ -9,7 +9,7 @@ mtabulate <- function(m, code=FALSE){
     code      = ms_code(m) %>% sapply(paste0, collapse="\n"),
     id        = ms_id(m) %>% as.numeric,
     OK        = ms_OK(m),
-    cached    = igraph::V(m@graph)$value %>% sapply(function(x) x@chk()),
+    cached    = has_value(m, ms_id(m)),
     time      = ms_time(m) %>% sapply(function(x) { signif(.[1], 2) }),
     space     = ms_mem(m),
     is_nested = ms_nest(m) %>% sapply(length),

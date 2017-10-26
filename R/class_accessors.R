@@ -24,11 +24,11 @@ is_rmonad <- function(m) {
 #' @export
 m_delete_value <- function(m, index=m@head) {
   .m_check(m)
-  caches <- igraph::get.vertex.attribute(m@graph, "value", index)
+  caches <- .get_raw_value(m, index)
   for(cache in caches){
     cache@del()
   }
-  m@graph <- igraph::set.vertex.attribute(m@graph, "value", index, list(noCache()))
+  m <- .set_raw_value(m, list(noCache()), index)
   m
 }
 
@@ -41,7 +41,7 @@ has_notes    = function(m, index=m@head) sapply(ms_notes(m),    function(x) leng
 has_meta     = function(m, index=m@head) sapply(ms_meta(m),     function(x) length(x) > 0)[index]
 has_time     = function(m, index=m@head) sapply(ms_time(m), .is_not_empty_real)[index]
 has_mem      = function(m, index=m@head) sapply(ms_mem(m), .is_not_empty_real)[index]
-has_value    = function(m, index=m@head) igraph::get.vertex.attribute(m@graph, "value", index) %>% sapply(function(x) x@chk())
+has_value    = function(m, index=m@head) sapply(.get_raw_value(m, ms_id(m)), function(x) x@chk())
 has_parents  = function(m, index=m@head) sapply(ms_parents(m),  function(x) length(x) > 0)[index]
 has_children = function(m, index=m@head) sapply(ms_children(m), function(x) length(x) > 0)[index]
 has_prior    = function(m, index=m@head) sapply(ms_prior(m),    function(x) length(x) > 0)[index]
@@ -467,7 +467,7 @@ app_notes <- function(m, value, index=m@head) {
   .m_check(m)
   .m_check(value)
   if(m_OK(value)){
-    inherit(
+    .inherit(
       child         = m,
       parent        = value,
       inherit_value = TRUE,
@@ -476,7 +476,7 @@ app_notes <- function(m, value, index=m@head) {
       type          = "nest"
     )
   } else {
-    m <- inherit(
+    m <- .inherit(
       child         = m,
       parent        = value,
       inherit_value = FALSE,
@@ -484,7 +484,7 @@ app_notes <- function(m, value, index=m@head) {
       force_keep    = TRUE,
       type          = "nest"
     )
-    m@graph <- igraph::set.vertex.attribute(m@graph, "value", m@head, voidCache())
+    m <- .set_raw_value(m, voidCache())
     m
   }
 }

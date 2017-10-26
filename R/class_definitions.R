@@ -18,9 +18,9 @@ setClass(
 )
 Rmonad <- function(){
   m <- new("Rmonad")
-  m@graph <- igraph::make_empty_graph(directed=TRUE, n=1) %>%
-             igraph::set_vertex_attr(name="value", value=list(voidCache()))
+  m@graph <- .new_rmonad_graph()
   m@head <- 1L
+  m <- .set_raw_value(m, list(voidCache()))
   m_code(m)       <- NULL
   m_error(m)      <- NULL
   m_warnings(m)   <- NULL

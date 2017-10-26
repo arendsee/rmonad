@@ -143,7 +143,7 @@ bind <- function(
 
   st <- system.time(
     {
-      result <- as_monad( do.call(func, args, envir=env)) %>% unnest
+      result <- as_monad( do.call(func, args, envir=env)) %>% .unnest
     },
     gcFirst=FALSE # this kills performance when TRUE
   )
@@ -179,7 +179,7 @@ emit_default <- function(input, output) {
 
 branch_combine <- function(m, o, f, margs){
   # Add o as a normal child of m, preserving its value
-  o <- inherit(child=o, parent=m, type='depend', force_keep=TRUE)
+  o <- .inherit(child=o, parent=m, type='depend', force_keep=TRUE)
   # Point head to the parent
   o@head <- m@head
   o
@@ -189,11 +189,11 @@ default_combine <- function(m, o, f, margs){
   if(has_nest(o)){
     o <- splice_function(f=f, m=o, ms=margs)
   }
-  inherit(child=o, parent=m, inherit_value=!m_OK(o))
+  .inherit(child=o, parent=m, inherit_value=!m_OK(o))
 }
 
 bypass_combine <- function(m, o, f, margs){
   # the new value inherits the old value, losing whatever it had but the
   # pass/fail state of the child is preserved
-  inherit(child=o, parent=m, inherit_value=TRUE, inherit_OK=FALSE)
+  .inherit(child=o, parent=m, inherit_value=TRUE, inherit_OK=FALSE)
 }

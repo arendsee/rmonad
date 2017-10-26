@@ -132,7 +132,7 @@ NULL
     }
     # else link the rhs to lhs input, and replace the lhs
     else {
-      inherit(child=output, parent=input)
+      .inherit(child=output, parent=input)
     }
   }
 
@@ -160,7 +160,7 @@ NULL
   rhs <- substitute(rhs)
 
   emit <- function(i,o) {
-    inherit(
+    .inherit(
       child         = o,
       parent        = i,
       type          = "prior",

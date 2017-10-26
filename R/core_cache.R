@@ -126,8 +126,6 @@ makeLocalCacher <- function(path){
 makeRecacher <- function(cacher){
   # @param m An Rmonad object
   function(m){
-    v <- cacher(m_value(m))
-    m@graph <- igraph::set.vertex.attribute(m@graph, "value", value=v)
-    m
+    .set_raw_value(m, cacher(m_value(m)))
   }
 }
