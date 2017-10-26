@@ -82,3 +82,37 @@ test_that('funnel does not alter the monads it uses', {
     19
   )
 })
+
+test_that("branches of the same pipeline can be joined", {
+  expect_equal(
+    {
+      256 %v>% sqrt -> m
+      m %v>% sqrt %v>% sqrt -> a
+      m %v>% sqrt -> b
+      funnel(a, b) %*>% sum -> ab
+      ab %>% esc
+    },
+    6
+  )
+})
+
+test_that("no duplication occurs on pipelines that branch and rejoin", {
+  expect_equal(
+    {
+      256 %v>% sqrt -> m
+      m %v>% sqrt %v>% sqrt -> a
+      m %v>% sqrt -> b
+      funnel(a, b) %*>% sum -> ab
+      ab %>% ms_value(warn=FALSE)
+    },
+    list(
+      256,
+      16,
+      NULL, # 4
+      4,
+      NULL, # 2
+      NULL, # funnel
+      6     # 4+2
+    )
+  )
+})
