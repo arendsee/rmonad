@@ -17,6 +17,14 @@ is_rmonad <- function(m) {
   setequal(class(m), "Rmonad")
 }
 
+#' Return the number of nodes in the workflow
+#'
+#' @param m Rmonad object
+size <- function(m) {
+  .check_m(m)
+  igraph::vcount(m@graph)
+}
+
 #' Delete a node's value
 #'
 #' @param m Rmonad object
@@ -223,7 +231,7 @@ ms_warnings <- function(m) {
   .m_check(m)
   igraph::V(m@graph)$warnings %>% {
     if(is.null(.)){
-      . <- rep(NA_character_, igraph::vcount(m@graph))
+      . <- rep(NA_character_, size(m))
     }
     .
   }

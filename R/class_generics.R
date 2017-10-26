@@ -123,12 +123,12 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
 #' @export
 print.Rmonad <- function(x, verbose=FALSE, print_value=TRUE, ...){
 
-  for(i in seq_len(igraph::vcount(x@graph)-1)){
+  for(i in seq_len(size(x)-1)){
     .print_record(x, i, print_value=print_value)
   }
-  .print_record(x, igraph::vcount(x@graph), print_value=FALSE)
+  .print_record(x, size(x), print_value=FALSE)
 
-  if(length(ms_id(x)) > 1){
+  if(size(x) > 1){
     cat("\n ----------------- \n\n")
   }
 
