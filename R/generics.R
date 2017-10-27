@@ -84,7 +84,7 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   if(has_doc(x, i)){
     .scat("\n\n    %s\n\n", m_doc(x, i))
   }
-  .scat('R> "%s"', paste(m_code(x, i), collapse="\n"))
+  .scat('N%s> "%s"', i, paste(m_code(x, i), collapse="\n"))
 
   if(verbose && (has_time(x, i) || has_mem(x, i))){
     cat("\n  ")
@@ -104,8 +104,8 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
       paste(m_notes(x, i), collapse="\n * NOTE: ")
     )
   }
-  if(has_dependents(x, i)){
-    .scat("\nHas %s dependents", length(m_dependents(x, i)))
+  if(has_parents(x, i)){
+    .scat("\nParents: [%s]", paste0(m_parents(x, i), collapse=", "))
   }
   if(has_value(x, i) && print_value){
     cat("\n")
