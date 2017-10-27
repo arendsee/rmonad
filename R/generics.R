@@ -104,8 +104,8 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
       paste(m_notes(x, i), collapse="\n * NOTE: ")
     )
   }
-  if(has_children(x, i)){
-    .scat("\nHas %s branches", length(m_children(x, i)))
+  if(has_dependents(x, i)){
+    .scat("\nHas %s dependents", length(m_dependents(x, i)))
   }
   if(has_value(x, i) && print_value){
     cat("\n")

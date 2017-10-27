@@ -4,8 +4,8 @@
 \alias{rmonad_accessors}
 \alias{m_parents}
 \alias{ms_parents}
-\alias{m_children}
-\alias{ms_children}
+\alias{m_dependents}
+\alias{ms_dependents}
 \alias{m_nest}
 \alias{ms_nest}
 \alias{m_prior}
@@ -59,9 +59,9 @@ m_parents(m, index = m@head)
 
 ms_parents(m)
 
-m_children(m, index = m@head)
+m_dependents(m, index = m@head)
 
-ms_children(m)
+ms_dependents(m)
 
 m_nest(m, index = m@head)
 

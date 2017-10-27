@@ -60,10 +60,10 @@ has_meta     <- function(m, index=m@head) sapply(ms_meta(m),     function(x) len
 has_time     <- function(m, index=m@head) sapply(ms_time(m), .is_not_empty_real)[index]
 has_mem      <- function(m, index=m@head) sapply(ms_mem(m), .is_not_empty_real)[index]
 has_value    <- function(m, index=m@head) sapply(.get_raw_value(m, ms_id(m)), function(x) x@chk())
-has_parents  <- function(m, index=m@head) sapply(ms_parents(m),  function(x) length(x) > 0)[index]
-has_children <- function(m, index=m@head) sapply(ms_children(m), function(x) length(x) > 0)[index]
-has_prior    <- function(m, index=m@head) sapply(ms_prior(m),    function(x) length(x) > 0)[index]
-has_nest     <- function(m, index=m@head) sapply(ms_nest(m),     function(x) length(x) > 0)[index]
+has_parents    <- function(m, index=m@head) sapply(ms_parents(m),    function(x) length(x) > 0)[index]
+has_dependents <- function(m, index=m@head) sapply(ms_dependents(m), function(x) length(x) > 0)[index]
+has_prior      <- function(m, index=m@head) sapply(ms_prior(m),      function(x) length(x) > 0)[index]
+has_nest       <- function(m, index=m@head) sapply(ms_nest(m),       function(x) length(x) > 0)[index]
 
 
 # TODO: chop these
@@ -94,13 +94,13 @@ ms_parents <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_children <- function(m, index=m@head) {
+m_dependents <- function(m, index=m@head) {
   .get_relative_ids(m, "out", "depend", index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_children <- function(m) {
+ms_dependents <- function(m) {
   lapply(ms_id(m), function(i) .get_relative_ids(m=m, mode="out", type="depend", index=i))
 }
 

@@ -3,7 +3,7 @@ context("branching")
 test_that('simple branching works', {
   expect_equal(
     16 %>^% magrittr::add(1) %>>% magrittr::add(2) %>%
-      {ms_value(.)[unlist(ms_children(.))]},
+      {ms_value(.)[unlist(ms_dependents(.))]},
     list(17, 18)
   )
   expect_equal(

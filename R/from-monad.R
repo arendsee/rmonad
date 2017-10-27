@@ -6,18 +6,18 @@
 #' @export
 mtabulate <- function(m, code=FALSE){
   data.frame(
-    code      = ms_code(m) %>% sapply(paste0, collapse="\n"),
-    id        = ms_id(m) %>% as.numeric,
-    OK        = ms_OK(m),
-    cached    = has_value(m, ms_id(m)),
-    time      = ms_time(m) %>% sapply(function(x) { signif(.[1], 2) }),
-    space     = ms_mem(m),
-    is_nested = ms_nest(m) %>% sapply(length),
-    nchildren = ms_children(m) %>% sapply(length),
-    nnotes    = ms_notes(m)    %>% sapply(length),
-    nwarnings = ms_warnings(m) %>% sapply(length),
-    error     = ms_error(m)    %>% sapply(length),
-    doc       = ms_doc(m)      %>% sapply(length)
+    code        = ms_code(m) %>% sapply(paste0, collapse="\n"),
+    id          = ms_id(m) %>% as.numeric,
+    OK          = ms_OK(m),
+    cached      = has_value(m, ms_id(m)),
+    time        = ms_time(m) %>% sapply(function(x) { signif(.[1], 2) }),
+    space       = ms_mem(m),
+    is_nested   = ms_nest(m)       %>% sapply(length),
+    ndependents = ms_dependents(m) %>% sapply(length),
+    nnotes      = ms_notes(m)      %>% sapply(length),
+    nwarnings   = ms_warnings(m)   %>% sapply(length),
+    error       = ms_error(m)      %>% sapply(length),
+    doc         = ms_doc(m)        %>% sapply(length)
   ) %>% {
     if(!code)
       .$code <- NULL
