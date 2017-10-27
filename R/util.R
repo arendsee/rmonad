@@ -22,4 +22,3 @@
     stop(sprintf(msg, class(m)))
   }
 }
-
