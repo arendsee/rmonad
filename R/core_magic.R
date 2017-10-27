@@ -58,7 +58,7 @@ relink_node <- function(m, bv, deps){
     for(child in dependencies){
       if(length(child) > 0){
         for(parent in dependencies[[child]]){
-          m@graph <- m@graph + igraph::edge(parent, child, type="depend")
+          m <- .connect(m, from=parent, to=child, type='depend')
         }
       }
     }

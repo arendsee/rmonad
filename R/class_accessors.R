@@ -17,14 +17,6 @@ is_rmonad <- function(m) {
   setequal(class(m), "Rmonad")
 }
 
-#' Return the number of nodes in the workflow
-#'
-#' @param m Rmonad object
-size <- function(m) {
-  .m_check(m)
-  igraph::vcount(m@graph)
-}
-
 #' Delete a node's value
 #'
 #' @param m Rmonad object
@@ -57,7 +49,7 @@ has_nest     = function(m, index=m@head) sapply(ms_nest(m),     function(x) leng
 # TODO: chop these
 # FIXME: seriously, murder the stored field
 .m_stored <- function(m, index=m@head) {
-  stored <- .getAttribute(m, "stored", index=index)
+  stored <- .get_attribute_complex(m, "stored", index=index)
   if(is.null(stored)){
     FALSE
   } else {
@@ -65,7 +57,7 @@ has_nest     = function(m, index=m@head) sapply(ms_nest(m),     function(x) leng
   }
 }
 `.m_stored<-` <- function(m, value) {
-  .setAttribute(m, "stored", value)
+  .set_attribute(m, "stored", value)
 }
 
 #' @rdname rmonad_accessors
@@ -119,27 +111,27 @@ ms_prior <- function(m) {
 #' @rdname rmonad_accessors
 #' @export
 m_nest_depth <- function(m, index=m@head) {
-  .getAttribute(m, "nest_depth", index=index)
+  .get_attribute_complex(m, "nest_depth", index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 ms_nest_depth <- function(m) {
-  igraph::V(m@graph)$nest_depth
+  .get_all_attribute(m, 'nest_depth')
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_value <- function(m, index=m@head, ...){
   # ... should only ever be 'warn' at this point
-  .getAttribute(m, "value", index=index)@get(...)
+  .get_attribute_complex(m, "value", index=index)@get(...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 ms_value <- function(m, ...){
   .m_check(m)
-  lapply(igraph::V(m@graph)$value, function(v) v@get(...))
+  lapply(.get_all_attribute(m, 'value'), function(v) v@get(...))
 }
 
 #' @rdname rmonad_accessors
@@ -152,263 +144,217 @@ m_id <- function(m, index=m@head) {
 #' @rdname rmonad_accessors
 #' @export
 ms_id <- function(m) {
-  .m_check(m)
-  igraph::V(m@graph) %>% as.numeric
+  .get_numeric_ids(m)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_OK <- function(m, index=m@head) {
-  .getAttribute(m, "OK", index=index)
+  .get_attribute_complex(m, "OK", index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 ms_OK <- function(m) {
-  .m_check(m)
-  igraph::V(m@graph)$OK
+  .get_all_attribute(m, "OK")
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_code <- function(m, index=m@head) {
-  .getAttribute(m, "code", index=index)
+  .get_attribute_complex(m, "code", index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 ms_code <- function(m) {
-  .m_check(m)
-  igraph::V(m@graph)$code
+  .get_all_attribute(m, 'code')
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_error <- function(m, index=m@head) {
-  .getAttribute(m, "error", index=index)
+  .get_attribute_complex(m, "error", index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 ms_error <- function(m) {
-  .m_check(m)
-  igraph::V(m@graph)$error %>% {
-    if(is.null(.)){
-      . <- rep(NA_character_, size(m))
-    }
-    .
-  }
+  .get_all_attribute_complex(m, "error", default=NA_character_)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_warnings <- function(m, index=m@head) {
-  .getAttribute(m, "warnings", index=index)
+  .get_attribute_complex(m, "warnings", index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 ms_warnings <- function(m) {
-  .m_check(m)
-  igraph::V(m@graph)$warnings %>% {
-    if(is.null(.)){
-      . <- rep(NA_character_, size(m))
-    }
-    .
-  }
+  .get_all_attribute_complex(m, "warnings", default=NA_character_)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_notes <- function(m, index=m@head) {
-  .getAttribute(m, "notes", index=index)
+  .get_attribute_complex(m, "notes", index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 ms_notes <- function(m) {
-  .m_check(m)
-  igraph::V(m@graph)$notes %>% {
-    if(is.null(.)){
-      . <- rep(NA_character_, size(m))
-    }
-    .
-  }
+  .get_all_attribute_complex(m, "notes", default=NA_character_)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_doc <- function(m, index=m@head) {
-  .getAttribute(m, "doc", index=index)
+  .get_attribute_complex(m, "doc", index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 ms_doc <- function(m) {
-  .m_check(m)
-  igraph::V(m@graph)$doc %>% {
-    if(is.null(.)){
-      . <- rep(NA_character_, size(m))
-    }
-    .
-  }
+  .get_all_attribute_complex(m, "doc", default=NA_character_)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_meta <- function(m, index=m@head) {
-  .getAttribute(m, "meta", index=index)
+  .get_attribute_complex(m, "meta", index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 ms_meta <- function(m) {
-  .m_check(m)
-  igraph::get.vertex.attribute(m@graph, "meta")
+  .get_all_attribute(m, 'meta')
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_time <- function(m, index=m@head) {
-  .getAttribute(m, "time", index=index)
+  .get_attribute_complex(m, "time", index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 ms_time <- function(m) {
-  .m_check(m)
-  igraph::V(m@graph)$time %>% {
-    if(is.null(.)){
-      . <- rep(NA_real_, size(m))
-    }
-    .
-  }
+  .get_all_attribute_complex(m, "time", default=NA_real_)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_mem <- function(m, index=m@head) {
-  .getAttribute(m, "mem", index=index)
+  .get_attribute_complex(m, "mem", index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 ms_mem <- function(m) {
-  .m_check(m)
-  igraph::V(m@graph)$mem %>% {
-    if(is.null(.)){
-      . <- rep(NA_integer_, size(m))
-    }
-    .
-  }
+  .get_all_attribute_complex(m, "mem", default=NA_integer_)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 m_summary <- function(m, index=m@head) {
-  .getAttribute(m, "summary", index=index)
+  .get_attribute_complex(m, "summary", index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 ms_summary <- function(m) {
-  .m_check(m)
-  igraph::V(m@graph)$summary %>% {
-    if(is.null(.)){
-      . <- rep(NA, size(m))
-    }
-    .
-  }
+  .get_all_attribute_complex(m, "summary", default=NA)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_OK<-` <- function(m, value) {
   stopifnot(is.logical(value))
-  .setAttribute(m, "OK", value)
+  .set_attribute(m, "OK", value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_value<-` <- function(m, value) {
   # TODO: Don't hardcode the cache function
-  .setAttribute(m, "value", list(memoryCache(value)))
+  .set_attribute_complex(m, "value", memoryCache(value))
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_code<-` <- function(m, value) {
-  .setAttribute(m, "code", list(value))
+  .set_attribute_complex(m, "code", value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_error<-` <- function(m, value) {
-  .setAttribute(m, "error", list(value))
+  .set_attribute_complex(m, "error", value)
 }
 
 
 #' @rdname rmonad_accessors
 #' @export
 `m_warnings<-` <- function(m, value) {
-  .setAttribute(m, "warnings", list(value))
+  .set_attribute_complex(m, "warnings", value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_notes<-` <- function(m, value) {
-  .setAttribute(m, "notes", list(value))
+  .set_attribute_complex(m, "notes", value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_doc<-` <- function(m, value) {
-  .setAttribute(m, "doc", list(value))
+  .set_attribute_complex(m, "doc", value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_meta<-` <- function(m, value) {
-  .setAttribute(m, "meta", list(value))
+  .set_attribute_complex(m, "meta", value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_time<-` <- function(m, value) {
-  .setAttribute(m, "time", value)
+  .set_attribute(m, "time", value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_mem<-` <- function(m, value) {
-  .setAttribute(m, "mem", value)
+  .set_attribute(m, "mem", value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_summary<-` <- function(m, value){
-  .setAttribute(m, "summary", list(value))
+  .set_attribute_complex(m, "summary", value)
 }
 
 
 #' @rdname rmonad_accessors
 #' @export
 app_warnings <- function(m, value, index=m@head) {
-  warnings <- .getAttribute(m, "warnings", index=index)
+  warnings <- .get_attribute_complex(m, "warnings", index=index)
   if(length(value) > 0 && nchar(value) > 0){
     warnings <- value %++% warnings
   }
-  .setAttribute(m, "warnings", warnings, index=index)
+  .set_attribute(m, "warnings", warnings, index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 app_notes <- function(m, value, index=m@head) {
-  notes <- .getAttribute(m, "notes", index=index)
+  notes <- .get_attribute_complex(m, "notes", index=index)
   if(length(value) > 0 && nchar(value) > 0){
     notes <- value %++% notes
   }
-  .setAttribute(m, "notes", notes, index=index)
+  .set_attribute(m, "notes", notes, index=index)
 }
 
 
@@ -448,7 +394,7 @@ app_notes <- function(m, value, index=m@head) {
 #' @rdname rmonad_accessors
 #' @export
 `m_nest_depth<-` <- function(m, value) {
-  .setAttribute(m, "nest_depth", value)
+  .set_attribute(m, "nest_depth", value)
 }
 
 #' @rdname rmonad_accessors

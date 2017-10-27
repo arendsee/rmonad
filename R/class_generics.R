@@ -60,7 +60,7 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   # * nest       - red   solid  thin
   # * transitive - gray  dotted thin
   # * prior      - blue  dotted thick
-  etype <- igraph::E(x@graph)$type
+  etype <- .get_edge_types(x)
   edge.color <- ifelse(etype == 'depend'     , 'black'  , 'red'      )
   edge.color <- ifelse(etype == 'transitive' , 'gray'   , edge.color )
   edge.color <- ifelse(etype == 'prior'      , 'blue'   , edge.color )

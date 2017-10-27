@@ -1,8 +1,29 @@
-# This file contains internal functions for interfacing with the igraph object
-# wrapped by the Rmonad object. All direct calls to the igraph library should
-# be in this file. Ideally, it should be possible to swap igraph for some other
-# network library by changing only this code (and the plot function).
+# This file contains mostly internal functions for interfacing with the igraph
+# object wrapped by the Rmonad object. All direct calls to the igraph library
+# should be in this file. Ideally, it should be possible to swap igraph for
+# some other network library by changing only this code (and the plot
+# function).
 
+#' Return the number of nodes in the workflow
+#'
+#' @param m Rmonad object
+size <- function(m) {
+  .m_check(m)
+  igraph::vcount(m@graph)
+}
+
+# Add an edge between two nodes
+.connect <- function(m, from, to, type='depend'){
+  m@graph <- m@graph + igraph::edge(from, to, type=type)
+  m
+}
+
+# These edges should be in the same order as vertex parents in
+# `unlist(ms_parents(m))`
+.get_edge_types <- function(m){
+  .m_check(m)
+  igraph::E(m@graph)$type
+}
 
 # Handle linking of child node to a single parent node
 #
@@ -108,6 +129,43 @@
   vertices[etype == type] %>% as.integer
 }
 
+.get_ids <- function(m){
+  .m_check(m)
+  igraph::V(m@graph)
+}
+.get_numeric_ids <- function(m){
+  .m_check(m)
+  igraph::V(m@graph) %>% as.numeric
+}
+
+# Get attributes for specified indicies
+#
+# @param m Rmonad object
+# @param attribute The attribute name (e.g. "error")
+# @param index vector of indices
+.get_attribute <- function(m, attribute, index=m@head){
+  .m_check(m)
+  igraph::get.vertex.attribute(m@graph, attribute, index)
+}
+.get_all_attribute <- function(m, ...){
+  .get_attribute(m, index=ms_id(m), ...) 
+}
+
+# Set attributes at specified indices
+#
+# This works for simple values where `length(index)` == `length(value)`
+#
+# @param m Rmonad object
+# @param attribute The attribute name (e.g. "error")
+# @param value attribute value
+# @param index vector of indices
+.set_attribute <- function(m, attribute, value, index=m@head){
+  .m_check(m)
+  m@graph <- igraph::set.vertex.attribute(m@graph, attribute, index, value)
+  m
+}
+
+
 # Get attributes
 #
 # This is not the appropriate function for every attribute. Currently the
@@ -115,29 +173,25 @@
 # the igraph object. If the attribute is not NULL, we return the first element
 # in the list. These lists should always be of length 1.
 #
-# @param m Rmonad object
-# @param attribute The attribute name (e.g. "error")
-# @param index vector of indices
-.getAttribute <- function(m, attribute, index=m@head){
-  .m_check(m)
-  a <- igraph::get.vertex.attribute(m@graph, attribute, index)
+# @param ... Arguments passed to .get_attribute
+.get_attribute_complex <- function(...){
+  a <- .get_attribute(...)
   if(is.null(a)){
     NULL
   } else {
     a[[1]]
   }
 }
-
-# Set an attribute
-#
-# @param m Rmonad object
-# @param attribute The attribute name (e.g. "error")
-# @param value attribute value
-# @param index vector of indices
-.setAttribute <- function(m, attribute, value, index=m@head){
-  .m_check(m)
-  m@graph <- igraph::set.vertex.attribute(m@graph, attribute, index, value)
-  m
+.get_all_attribute_complex <- function(m, default=NA, ...){
+  .get_all_attribute(m, ...) %>% {
+    if(is.null(.)){
+      . <- rep(default, size(m))
+    }
+    .
+  }
+}
+.set_attribute_complex <- function(m, attribute, value, ...){
+  .set_attribute(m, attribute, list(value))
 }
 
 # Set the value function
