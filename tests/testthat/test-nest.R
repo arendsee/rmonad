@@ -45,6 +45,13 @@ test_that("Nesting works for deeply nested functions", {
    )
 })
 
+test_that("The correct parents are set when nesting", {
+  expect_equal(
+    256 %v>% { sqrt(.) %v>% sqrt } %>>% sqrt %>% ms_parents,
+    list(integer(0), 1, 2, 1, 4) 
+  )
+})
+
 
 
 a_bomb <- function(x,y){
