@@ -7,11 +7,12 @@
 \alias{combine}
 \title{Conversions to monads}
 \usage{
-as_monad(expr, desc = NULL, doc = NULL, lossy = FALSE)
+as_monad(expr, desc = .default_code(), doc = .default_doc(),
+  lossy = FALSE)
 
 funnel(..., env = parent.frame(), keep_history = TRUE)
 
-combine(xs, keep_history = TRUE, desc = NULL)
+combine(xs, keep_history = TRUE, desc = .default_code())
 }
 \arguments{
 \item{expr}{An expression}

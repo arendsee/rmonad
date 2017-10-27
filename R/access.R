@@ -31,19 +31,39 @@ m_delete_value <- function(m, index=m@head) {
   m
 }
 
-has_code     = function(m, index=m@head) sapply(ms_code(m), .is_not_empty_string)[index]
-has_error    = function(m, index=m@head) sapply(ms_error(m),    function(x) length(x) > 0)[index]
-has_doc      = function(m, index=m@head) sapply(ms_doc(m),      function(x) length(x) > 0)[index]
-has_warnings = function(m, index=m@head) sapply(ms_warnings(m), function(x) length(x) > 0)[index]
-has_notes    = function(m, index=m@head) sapply(ms_notes(m),    function(x) length(x) > 0)[index]
-has_meta     = function(m, index=m@head) sapply(ms_meta(m),     function(x) length(x) > 0)[index]
-has_time     = function(m, index=m@head) sapply(ms_time(m), .is_not_empty_real)[index]
-has_mem      = function(m, index=m@head) sapply(ms_mem(m), .is_not_empty_real)[index]
-has_value    = function(m, index=m@head) sapply(.get_raw_value(m, ms_id(m)), function(x) x@chk())
-has_parents  = function(m, index=m@head) sapply(ms_parents(m),  function(x) length(x) > 0)[index]
-has_children = function(m, index=m@head) sapply(ms_children(m), function(x) length(x) > 0)[index]
-has_prior    = function(m, index=m@head) sapply(ms_prior(m),    function(x) length(x) > 0)[index]
-has_nest     = function(m, index=m@head) sapply(ms_nest(m),     function(x) length(x) > 0)[index]
+# The purpose of the following functions are to make the setting of things to
+# blank (i.e. default, empty, or missing). Simply setting a value to NULL does
+# not clearly express intent (are we deleting the value ro do we really want a
+# NULL value?). Also there are multiple reasonable defaults (NULL, "", NA,
+# NA_integer_, logical(0), etc) and use of the wrong one can be a source of
+# subtle of reoccuring bugs. So I gather all this into one place.
+.default_value      <- function() NULL
+.default_head       <- function() 1L
+.default_code       <- function() NULL
+.default_error      <- function() NULL
+.default_warnings   <- function() NULL
+.default_notes      <- function() NULL
+.default_OK         <- function() TRUE
+.default_doc        <- function() NULL
+.default_mem        <- function() NULL
+.default_time       <- function() NULL
+.default_meta       <- function() NULL
+.default_nest_depth <- function() 1
+.default_stored     <- function() FALSE
+
+has_code     <- function(m, index=m@head) sapply(ms_code(m), .is_not_empty_string)[index]
+has_error    <- function(m, index=m@head) sapply(ms_error(m),    function(x) length(x) > 0)[index]
+has_doc      <- function(m, index=m@head) sapply(ms_doc(m),      function(x) length(x) > 0)[index]
+has_warnings <- function(m, index=m@head) sapply(ms_warnings(m), function(x) length(x) > 0)[index]
+has_notes    <- function(m, index=m@head) sapply(ms_notes(m),    function(x) length(x) > 0)[index]
+has_meta     <- function(m, index=m@head) sapply(ms_meta(m),     function(x) length(x) > 0)[index]
+has_time     <- function(m, index=m@head) sapply(ms_time(m), .is_not_empty_real)[index]
+has_mem      <- function(m, index=m@head) sapply(ms_mem(m), .is_not_empty_real)[index]
+has_value    <- function(m, index=m@head) sapply(.get_raw_value(m, ms_id(m)), function(x) x@chk())
+has_parents  <- function(m, index=m@head) sapply(ms_parents(m),  function(x) length(x) > 0)[index]
+has_children <- function(m, index=m@head) sapply(ms_children(m), function(x) length(x) > 0)[index]
+has_prior    <- function(m, index=m@head) sapply(ms_prior(m),    function(x) length(x) > 0)[index]
+has_nest     <- function(m, index=m@head) sapply(ms_nest(m),     function(x) length(x) > 0)[index]
 
 
 # TODO: chop these

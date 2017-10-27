@@ -39,7 +39,7 @@
 extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
 
   metadata <- list()
-  docstring <- NULL
+  docstring <- .default_doc()
 
   # Determine if expr has the form
   #

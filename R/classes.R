@@ -16,21 +16,22 @@ setClass(
     # TODO: add rmonad settings (e.g. default cache function)
   )
 )
+
 Rmonad <- function(){
   m <- new("Rmonad")
   m@graph <- .new_rmonad_graph()
-  m@head <- 1L
+  m@head <- .default_head()
   m <- .set_raw_value(m, list(voidCache()))
-  m_code(m)       <- NULL
-  m_error(m)      <- NULL
-  m_warnings(m)   <- NULL
-  m_notes(m)      <- NULL
-  m_OK(m)         <- TRUE
-  m_doc(m)        <- NULL
-  m_mem(m)        <- NULL
-  m_time(m)       <- NULL
-  m_meta(m)       <- NULL
-  m_nest_depth(m) <- 1
-  .m_stored(m)    <- FALSE
+  m_code(m)       <- .default_code()
+  m_error(m)      <- .default_error()
+  m_warnings(m)   <- .default_warnings()
+  m_notes(m)      <- .default_notes()
+  m_OK(m)         <- .default_OK()
+  m_doc(m)        <- .default_doc()
+  m_mem(m)        <- .default_mem()
+  m_time(m)       <- .default_time()
+  m_meta(m)       <- .default_meta()
+  m_nest_depth(m) <- .default_nest_depth()
+  .m_stored(m)    <- .default_stored()
   m
 }

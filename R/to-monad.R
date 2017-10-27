@@ -49,14 +49,14 @@ NULL
 
 #' @rdname x_to_monad
 #' @export
-as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE){
+as_monad <- function(expr, desc=.default_code(), doc=.default_doc(), lossy=FALSE){
 # TODO: 'lossy' is an lousy name, should change to 'nest', or something
 # as_monad :: a -> m a
 
   value <- NULL 
-  warns <- NULL
-  fails <- NULL
-  isOK  <- TRUE
+  warns <- .default_warnings()
+  fails <- .default_error()
+  isOK  <- .default_OK()
 
   env <- parent.frame()
   ed <- extract_metadata(substitute(expr), env=env)
@@ -113,8 +113,6 @@ as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE){
   m_mem(m)        <- object.size(value)
   m_time(m)       <- signif(unname(st[1]), 2)
   m_meta(m)       <- met
-  m_nest_depth(m) <- 1
-  .m_stored(m)    <- FALSE
 
   m <- apply_rewriters(m, met)
 
@@ -179,7 +177,7 @@ funnel <- function(..., env=parent.frame(), keep_history=TRUE){
 
 #' @rdname x_to_monad
 #' @export
-combine <- function(xs, keep_history=TRUE, desc=NULL){
+combine <- function(xs, keep_history=TRUE, desc=.default_code()){
 # combine :: [m *] -> m [*]
 
   if(!all(sapply(xs, is_rmonad))){
@@ -187,7 +185,7 @@ combine <- function(xs, keep_history=TRUE, desc=NULL){
   }
 
   # make a new monad that is the child of all monads in the input list
-  out <- as_monad(NULL)
+  out <- Rmonad() 
 
   # store all values (even if failing, in which case should be NULL)
   m_value(out) <- lapply(xs, m_value, warn=FALSE)

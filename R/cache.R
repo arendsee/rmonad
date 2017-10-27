@@ -11,9 +11,9 @@ voidCache <- function(){
   # @param warn Warn if the accessed field does not exist (value was not cached)
   get <- function(warn=TRUE){
     if(warn){
-      warning("Accessing node with no stored value, returning NULL")
+      warning(sprintf("Accessing node with no stored value, returning '%s'", .default_value()))
     }
-    NULL
+    .default_value()
   }
   new("CacheManager",
     get = get,
@@ -33,9 +33,9 @@ noCache <- function(){
   # @param warn Warn if the accessed field does not exist (value was not cached)
   get <- function(warn=TRUE){
     if(warn){
-      warning("Attempting to access data that has been deleted, returning NULL")
+      warning(sprintf("Attempting to access data that has been deleted, returning '%s'", .default_value()))
     }
-    NULL
+    .default_value() 
   }
   new("CacheManager",
     get = get,
