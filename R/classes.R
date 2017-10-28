@@ -32,6 +32,7 @@ Rmonad <- function(){
   m_time(m)       <- .default_time()
   m_meta(m)       <- .default_meta()
   m_nest_depth(m) <- .default_nest_depth()
+  m_summary(m)    <- .default_summary()
   .m_stored(m)    <- .default_stored()
   m
 }

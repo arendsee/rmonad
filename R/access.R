@@ -51,6 +51,7 @@ m_delete_value <- function(m, index=m@head) {
 .default_nest_depth <- function() 1
 .default_stored     <- function() FALSE
 .default_id         <- function() integer(0)
+.default_summary    <- function() NULL
 
 has_code     <- function(m, index=m@head) sapply(ms_code(m), .is_not_empty_string)[index]
 has_error    <- function(m, index=m@head) sapply(ms_error(m),    function(x) length(x) > 0)[index]
@@ -291,7 +292,7 @@ m_summary <- function(m, index=m@head) {
 #' @rdname rmonad_accessors
 #' @export
 ms_summary <- function(m) {
-  .get_all_attribute_complex(m, "summary", default=NULL)
+  .get_all_attribute_complex(m, "summary", default=.default_summary())
 }
 
 #' @rdname rmonad_accessors

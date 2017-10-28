@@ -1,7 +1,7 @@
 context("vectorized accessor methods")
 
 # This is a pipeline that does almost everything
-a <- c(-1,256) %v>% { sqrt(.) %v>% { list(summarize=identity); sqrt(.) } }
+a <- c(-1,256) %v>% { sqrt(.) %v>% { "summarized"; list(summarize=identity); sqrt(.) } }
 b <- "a" %v>% {"this does stuff"; list(x=1); message("yolo"); paste(., "b")}
 ab <- "hi" %__% funnel(a, b) %*>% (function(x,y) { stop("die die") })
 
@@ -79,7 +79,7 @@ test_that("Access works for multiple values", {
       .default_id(), #2
       2,             #3
       .default_id(), #4
-      7,             #5
+      4,             #5
       5,             #6
       4,             #7
       c(3,7),        #8
@@ -108,9 +108,9 @@ test_that("Access works for multiple values", {
       NULL,
       NULL,
       NULL,
-      4,
       NULL,
       NULL,
+      c(NaN, 4),
       NULL,
       NULL,
       NULL
