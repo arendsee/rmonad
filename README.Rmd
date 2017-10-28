@@ -289,6 +289,15 @@ house pipeline. Green nodes are passing and yellow nodes produced warnings.
 
 ![Plot of a large rmonad pipeline](README-big-pipeline.png)
 
+## Recursion
+
+```{r recursion}
+countdown <- function(x) {
+    x %>_% {if(. == 0) stop('boom')} %>>% { countdown(.-1) }
+}
+10 %>>% countdown %>% plot
+```
+
 ## rmonad v0.5.0 goals
 
  - [ ] Record all operations, even those not run. Currently if an input to a

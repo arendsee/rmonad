@@ -59,11 +59,11 @@ library(rmonad)
     sqrt
 #> An object of class "Rmonad"
 #> Slot "graph":
-#> IGRAPH c7ffe1b D--- 4 3 -- 
+#> IGRAPH 5d6c1ce D--- 4 3 -- 
 #> + attr: value (v/x), code (v/x), error (v/x), warnings (v/x),
 #> | notes (v/x), OK (v/l), doc (v/x), meta (v/x), nest_depth (v/n),
 #> | stored (v/l), mem (v/n), time (v/n), type (e/c)
-#> + edges from c7ffe1b:
+#> + edges from 5d6c1ce:
 #> [1] 1->2 2->3 3->4
 #> 
 #> Slot "head":
@@ -112,11 +112,11 @@ funnel(
 )
 #> An object of class "Rmonad"
 #> Slot "graph":
-#> IGRAPH ed0a657 D--- 5 4 -- 
+#> IGRAPH c3da80a D--- 5 4 -- 
 #> + attr: value (v/x), code (v/x), error (v/x), warnings (v/x),
 #> | notes (v/x), OK (v/l), doc (v/x), meta (v/x), nest_depth (v/n),
 #> | stored (v/l), mem (v/n), time (v/n), type (e/c)
-#> + edges from ed0a657:
+#> + edges from c3da80a:
 #> [1] 4->5 3->5 2->5 1->5
 #> 
 #> Slot "head":
@@ -207,11 +207,11 @@ analysis <-
 analysis
 #> An object of class "Rmonad"
 #> Slot "graph":
-#> IGRAPH 8739539 D--- 10 9 -- 
+#> IGRAPH b389412 D--- 10 9 -- 
 #> + attr: value (v/x), code (v/x), error (v/x), warnings (v/x),
 #> | notes (v/x), OK (v/l), doc (v/x), meta (v/x), nest_depth (v/n),
 #> | stored (v/l), mem (v/n), time (v/n), type (e/c)
-#> + edges from 8739539:
+#> + edges from b389412:
 #> [1] 1-> 2 2-> 3 3-> 4 4-> 5 5-> 6 6-> 7 7-> 8 8-> 9 9->10
 #> 
 #> Slot "head":
@@ -325,6 +325,20 @@ foo <- function(x){
 house pipeline. Green nodes are passing and yellow nodes produced warnings.
 
 ![Plot of a large rmonad pipeline](README-big-pipeline.png)
+
+## Recursion
+
+
+```r
+countdown <- function(x) {
+    x %>_% {if(. == 0) stop('boom')} %>>% { countdown(.-1) }
+}
+10 %>>% countdown %>% plot
+#> Warning in `[<-`(`*tmp*`, index, value = value): implicit list embedding of
+#> S4 objects is deprecated
+```
+
+![plot of chunk recursion](README-recursion-1.png)
 
 ## rmonad v0.5.0 goals
 
