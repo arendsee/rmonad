@@ -19,7 +19,7 @@ rmonad_ops <- c(
 #' @param f The function
 #' @param m The monadic result of running f(ms)
 #' @param ms The list of inputs passed to f
-splice_function <- function(f, m, ms){
+splice_function <- function(f, m, ms, ...){
 
   ops <- get_monadic_operators(f)
 
@@ -32,17 +32,17 @@ splice_function <- function(f, m, ms){
 
   deps <- get_dependency_matrix(decs, names(bv))
 
-  relink_node(m=m, bv=bv, deps=deps)
+  add_transitive_edges(m=m, bv=bv, deps=deps, ...)
 
 }
 
-#' The recursive function for adding dependencies
+#' Find inputs to a nest
 #'
 #' @param m The current monadic node
 #' @param bv A named list of bound variables
 #' @param deps A mapping local variables to bound variable dependencies
 #' @keywords internal
-relink_node <- function(m, bv, deps){
+add_transitive_edges <- function(m, bv, deps, final, parent){
 
   code <- lapply(ms_code(m), parse_as_block)
   free_all <- lapply(code, get_free_variables)
@@ -54,17 +54,22 @@ relink_node <- function(m, bv, deps){
     }
   ) %>% lapply(unname)
 
+  transitive_edges <- list()
+
   if(length(dependencies) > 0){
-    for(child in dependencies){
-      if(length(child) > 0){
-        for(parent in dependencies[[child]]){
-          m <- .connect(m, from=parent, to=child, type='depend')
-        }
+    for(child_id in seq_along(dependencies)){
+      for(parent_id in dependencies[[child_id]]){
+        final <- .connect(
+          final,
+          from = parent_id,
+          to   = child_id + size(parent),
+          type = 'transitive'
+        )
       }
     }
   }
 
-  m
+  final 
 }
 
 parse_as_block <- function(code_str){

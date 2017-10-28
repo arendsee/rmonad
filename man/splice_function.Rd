@@ -4,7 +4,7 @@
 \alias{splice_function}
 \title{Take a monadic bind operation's result and splice histories}
 \usage{
-splice_function(f, m, ms)
+splice_function(f, m, ms, ...)
 }
 \arguments{
 \item{f}{The function}

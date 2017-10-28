@@ -186,10 +186,11 @@ branch_combine <- function(m, o, f, margs){
 }
 
 default_combine <- function(m, o, f, margs){
+  o2 <- .inherit(child=o, parent=m, inherit_value=!m_OK(o))
   if(has_nest(o)){
-    o <- splice_function(f=f, m=o, ms=margs)
+    o2 <- splice_function(f=f, m=o, ms=margs, final=o2, parent=m)
   }
-  .inherit(child=o, parent=m, inherit_value=!m_OK(o))
+  o2
 }
 
 bypass_combine <- function(m, o, f, margs){

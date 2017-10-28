@@ -22,7 +22,7 @@ test_that("Access works for multiple values", {
   )
 
   expect_equal(
-    ms_code(ab)[c(1,6)], list('"hi"', "sqrt")
+    ms_code(ab)[c(1,2)], list('"hi"', '"a"')
   )
 
   expect_equal(
