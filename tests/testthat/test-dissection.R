@@ -15,14 +15,14 @@ test_that("missues finds the correct errors and warnings", {
     funnel(
       {warning("goo"); warning("roo")} %__% warning("poo") %>% esc(quiet=TRUE)
     ) %>% ms_warnings,
-    list(c("goo", "roo", "poo"), NULL)
+    list(c("goo", "roo", "poo"), character(0))
   )
   expect_equal(
     funnel(warning("goo") %__% warning("roo") %>% esc(quiet=TRUE)) %>% ms_warnings,
-    list(c("goo", "roo"), NULL)
+    list(c("goo", "roo"), character(0))
   )
   expect_equal(
     funnel(-2:3 %>>% sqrt %>>% sum %>% esc(quiet=TRUE)) %>% ms_warnings,
-    list("NaNs produced", NULL)
+    list("NaNs produced", character(0))
   )
 })

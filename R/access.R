@@ -39,17 +39,18 @@ m_delete_value <- function(m, index=m@head) {
 # subtle of reoccuring bugs. So I gather all this into one place.
 .default_value      <- function() NULL
 .default_head       <- function() 1L
-.default_code       <- function() NULL
-.default_error      <- function() NULL
-.default_warnings   <- function() NULL
-.default_notes      <- function() NULL
+.default_code       <- function() character(0)
+.default_error      <- function() character(0)
+.default_warnings   <- function() character(0)
+.default_notes      <- function() character(0)
 .default_OK         <- function() TRUE
-.default_doc        <- function() NULL
-.default_mem        <- function() NULL
-.default_time       <- function() NULL
+.default_doc        <- function() character(0)
+.default_mem        <- function() NA
+.default_time       <- function() NA
 .default_meta       <- function() NULL
 .default_nest_depth <- function() 1
 .default_stored     <- function() FALSE
+.default_id         <- function() integer(0)
 
 has_code     <- function(m, index=m@head) sapply(ms_code(m), .is_not_empty_string)[index]
 has_error    <- function(m, index=m@head) sapply(ms_error(m),    function(x) length(x) > 0)[index]
@@ -290,7 +291,7 @@ m_summary <- function(m, index=m@head) {
 #' @rdname rmonad_accessors
 #' @export
 ms_summary <- function(m) {
-  .get_all_attribute_complex(m, "summary", default=NA)
+  .get_all_attribute_complex(m, "summary", default=NULL)
 }
 
 #' @rdname rmonad_accessors

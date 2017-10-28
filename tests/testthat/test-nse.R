@@ -3,15 +3,15 @@ context("non-standard evaluation")
 test_that("when expression is not a lambda", {
   expect_equal(
     extract_metadata(2),
-    list(expr=2, docstring=NULL, metadata=list())
+    list(expr=2, docstring=.default_doc(), metadata=list())
   )
   expect_equal(
     extract_metadata("adsf"),
-    list(expr="adsf", docstring=NULL, metadata=list())
+    list(expr="adsf", docstring=.default_doc(), metadata=list())
   )
   expect_equal(
     extract_metadata(c("adsf", "df")),
-    list(expr=c("adsf", "df"), docstring=NULL, metadata=list())
+    list(expr=c("adsf", "df"), docstring=.default_doc(), metadata=list())
   )
 })
 
@@ -35,7 +35,7 @@ test_that("when lambda is only a string", {
     extract_metadata(substitute({"this is not a docstring"})),
     list(
       expr      = substitute({"this is not a docstring"}),
-      docstring = NULL,
+      docstring = .default_doc(),
       metadata  = list()
     )
   )
@@ -46,7 +46,7 @@ test_that("when lambda has no docstring", {
     extract_metadata(substitute({2*2;5*x})),
     list(
       expr=substitute({2*2;5*x}),
-      docstring=NULL,
+      docstring=.default_doc(),
       metadata=list()
     )
   )
@@ -68,7 +68,7 @@ test_that("when lambda starts with string that is part of an expression", {
     extract_metadata(substitute({"this is not a docstring" %>% foo;NULL})),
     list(
       expr=substitute({"this is not a docstring" %>% foo;NULL}),
-      docstring=NULL,
+      docstring=.default_doc(),
       metadata=list()
     )
   )
@@ -83,7 +83,7 @@ test_that("docstrings work on rhs", {
 test_that("docstrings work on lhs", {
   expect_equal({"adsf"; 4} %>>% sqrt %>% esc, 2)
   expect_true( {"adsf"; 4} %>>% sqrt %>% m_OK)
-  expect_equal({"adsf"; 4} %>>% sqrt %>% ms_doc, list("adsf", NULL))
+  expect_equal({"adsf"; 4} %>>% sqrt %>% ms_doc, list("adsf", .default_doc()))
 })
 
 test_that("docstrings work with %__%", {
@@ -91,7 +91,7 @@ test_that("docstrings work with %__%", {
     {"qwer"; 5} %__%
     {"asdf"; 4} %>>%
     sqrt        %>% ms_doc,
-    list("qwer", "asdf", NULL)
+    list("qwer", "asdf", .default_doc())
   )
 })
 
@@ -131,7 +131,7 @@ test_that("metadata is extracted", {
     extract_metadata(substitute({list(k=1); NULL})),
     list(
       expr      = substitute({NULL}),
-      docstring = NULL,
+      docstring = .default_doc(),
       metadata  = list(k=1)
     )
   )
