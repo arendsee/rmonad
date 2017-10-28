@@ -12,6 +12,8 @@ splice_function(f, m, ms, ...)
 \item{m}{The monadic result of running f(ms)}
 
 \item{ms}{The list of inputs passed to f}
+
+\item{...}{additional arguments passed to add_transitive_edges}
 }
 \description{
 We need to link input variables to the nodes in the nested pipeline that use

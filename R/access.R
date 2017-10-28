@@ -83,13 +83,19 @@ has_nest       <- function(m, index=m@head) sapply(ms_nest(m),       function(x)
 #' @rdname rmonad_accessors
 #' @export
 m_parents <- function(m, index=m@head) {
-  .get_relative_ids(m, "in", "depend", index=index)
+  .get_relative_ids(m, "in", c("depend", "transitive"), index=index)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 ms_parents <- function(m) {
-  lapply(ms_id(m), function(i) .get_relative_ids(m=m, mode="in", type="depend", index=i))
+  lapply(ms_id(m), function(i)
+    .get_relative_ids(
+      m     = m,
+      mode  = "in",
+      type  = c("depend", "transitive"),
+      index = i
+    ))
 }
 
 #' @rdname rmonad_accessors

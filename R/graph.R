@@ -117,7 +117,7 @@ size <- function(m) {
 #
 # @param m Rmonad object
 # @param mode "in" or "out"
-# @param type Edge type
+# @param type Edge types to consider
 # @param index vector of indices
 .get_relative_ids <- function(m, mode, type, index=m@head){
   .m_check(m)
@@ -126,7 +126,7 @@ size <- function(m) {
   stopifnot(length(vertices) == length(edges))
   etype <- igraph::get.edge.attribute(m@graph, "type", edges)
   stopifnot(length(etype) == length(edges))
-  vertices[etype == type] %>% as.integer
+  vertices[etype %in% type] %>% as.integer
 }
 
 .get_ids <- function(m){

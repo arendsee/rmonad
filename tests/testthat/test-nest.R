@@ -19,8 +19,14 @@ test_that("Nesting works for named functions", {
     c("4", "45", "addit(x)", "subit(k)", "foo")
   )
   expect_equal(
-    4 %>>% foo %>% ms_parents %>% sapply(length),
-    c(0,0,1,1,1)
+    4 %>>% foo %>% ms_parents,
+    list(
+      integer(0),
+      integer(0),
+      c(1,2),     # 1: 'transitive' edge, 2: 'depend' edge
+      3,
+      1
+    )
   )
   expect_equal(
     4 %>>% foo %>% ms_nest %>% sapply(length),

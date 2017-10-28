@@ -19,6 +19,7 @@ rmonad_ops <- c(
 #' @param f The function
 #' @param m The monadic result of running f(ms)
 #' @param ms The list of inputs passed to f
+#' @param ... additional arguments passed to add_transitive_edges
 splice_function <- function(f, m, ms, ...){
 
   ops <- get_monadic_operators(f)
