@@ -53,19 +53,63 @@ m_delete_value <- function(m, ...) {
 .default_id         <- function() integer(0)
 .default_summary    <- function() NULL
 
-has_code       <- function(m, ...) sapply(ms_code(m              , ...), .is_not_empty_string      )
-has_error      <- function(m, ...) sapply(ms_error(m             , ...), function(x) length(x) > 0 )
-has_doc        <- function(m, ...) sapply(ms_doc(m               , ...), function(x) length(x) > 0 )
-has_warnings   <- function(m, ...) sapply(ms_warnings(m          , ...), function(x) length(x) > 0 )
-has_notes      <- function(m, ...) sapply(ms_notes(m             , ...), function(x) length(x) > 0 )
-has_meta       <- function(m, ...) sapply(ms_meta(m              , ...), function(x) length(x) > 0 )
-has_time       <- function(m, ...) sapply(ms_time(m              , ...), .is_not_empty_real        )
-has_mem        <- function(m, ...) sapply(ms_mem(m               , ...), .is_not_empty_real        )
-has_value      <- function(m, ...) sapply(.get_many_raw_values(m , ...), function(x) x@chk()       )
-has_parents    <- function(m, ...) sapply(ms_parents(m           , ...), function(x) length(x) > 0 )
-has_dependents <- function(m, ...) sapply(ms_dependents(m        , ...), function(x) length(x) > 0 )
-has_prior      <- function(m, ...) sapply(ms_prior(m             , ...), function(x) length(x) > 0 )
-has_nest       <- function(m, ...) sapply(ms_nest(m              , ...), function(x) length(x) > 0 )
+
+#' @rdname rmonad_accessors
+#' @export
+has_code <- function(m, ...) sapply(ms_code(m , ...), .is_not_empty_string)
+
+#' @rdname rmonad_accessors
+#' @export
+has_error <- function(m, ...) sapply(ms_error(m , ...), function(x) length(x) > 0)
+
+#' @rdname rmonad_accessors
+#' @export
+has_doc <- function(m, ...) sapply(ms_doc(m , ...), function(x) length(x) > 0)
+
+#' @rdname rmonad_accessors
+#' @export
+has_warnings <- function(m, ...) sapply(ms_warnings(m , ...), function(x) length(x) > 0)
+
+#' @rdname rmonad_accessors
+#' @export
+has_notes <- function(m, ...) sapply(ms_notes(m , ...), function(x) length(x) > 0)
+
+#' @rdname rmonad_accessors
+#' @export
+has_meta <- function(m, ...) sapply(ms_meta(m , ...), function(x) length(x) > 0)
+
+#' @rdname rmonad_accessors
+#' @export
+has_time <- function(m, ...) sapply(ms_time(m , ...), .is_not_empty_real)
+
+#' @rdname rmonad_accessors
+#' @export
+has_mem <- function(m, ...) sapply(ms_mem(m , ...), .is_not_empty_real)
+
+#' @rdname rmonad_accessors
+#' @export
+has_value <- function(m, ...) sapply(.get_many_raw_values(m , ...), function(x) x@chk())
+
+#' @rdname rmonad_accessors
+#' @export
+has_parents <- function(m, ...) sapply(ms_parents(m , ...), function(x) length(x) > 0)
+
+#' @rdname rmonad_accessors
+#' @export
+has_dependents <- function(m, ...) sapply(ms_dependents(m , ...), function(x) length(x) > 0)
+
+#' @rdname rmonad_accessors
+#' @export
+has_prior <- function(m, ...) sapply(ms_prior(m , ...), function(x) length(x) > 0)
+
+#' @rdname rmonad_accessors
+#' @export
+has_nest <- function(m, ...) sapply(ms_nest(m , ...), function(x) length(x) > 0)
+
+#' @rdname rmonad_accessors
+#' @export
+has_summary <- function(m, ...) sapply(ms_summary(m , ...), function(x) !is.null(x))
+
 
 # TODO: chop these
 # FIXME: seriously, murder the stored field

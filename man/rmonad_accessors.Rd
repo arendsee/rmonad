@@ -2,6 +2,20 @@
 % Please edit documentation in R/access.R
 \name{rmonad_accessors}
 \alias{rmonad_accessors}
+\alias{has_code}
+\alias{has_error}
+\alias{has_doc}
+\alias{has_warnings}
+\alias{has_notes}
+\alias{has_meta}
+\alias{has_time}
+\alias{has_mem}
+\alias{has_value}
+\alias{has_parents}
+\alias{has_dependents}
+\alias{has_prior}
+\alias{has_nest}
+\alias{has_summary}
 \alias{m_parents}
 \alias{ms_parents}
 \alias{m_dependents}
@@ -55,6 +69,34 @@
 \alias{app_parents}
 \title{get, set, and append rmonad fields}
 \usage{
+has_code(m, ...)
+
+has_error(m, ...)
+
+has_doc(m, ...)
+
+has_warnings(m, ...)
+
+has_notes(m, ...)
+
+has_meta(m, ...)
+
+has_time(m, ...)
+
+has_mem(m, ...)
+
+has_value(m, ...)
+
+has_parents(m, ...)
+
+has_dependents(m, ...)
+
+has_prior(m, ...)
+
+has_nest(m, ...)
+
+has_summary(m, ...)
+
 m_parents(m, ...)
 
 ms_parents(m, ...)

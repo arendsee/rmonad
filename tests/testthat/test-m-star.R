@@ -270,3 +270,70 @@ test_that("ms_* subsetting works", {
   )
 
 })
+
+
+
+
+test_that("has_* works", {
+  expect_equal(
+    has_dependents(ab, index=c(1,8,9)),
+    c(FALSE, TRUE, FALSE)
+  )
+
+  expect_equal(
+    has_code(ab, index=c(1,2)), c(TRUE, TRUE)
+  )
+
+  expect_equal(
+    has_doc(ab, index=c(3,9)), c(TRUE, FALSE)
+  )
+
+  expect_equal(
+    has_error(ab, index=c(1,9)), c(FALSE, TRUE)
+  )
+
+  expect_true(
+    all(has_mem(ab)) && length(has_mem(ab)) == 9
+  )
+
+  expect_equal(
+    has_meta(ab, index=c(1,3)), c(FALSE, TRUE)
+  )
+
+  expect_equal(
+    has_nest(ab, index=c(1,7)), c(FALSE, TRUE)
+  )
+
+  expect_equal(
+    has_notes(ab, index=c(1,3,9)),
+    c(FALSE,TRUE,FALSE)
+  )
+
+  expect_equal(
+    has_parents(ab, index=c(1,3,8)),
+    c(FALSE, TRUE, TRUE)
+  )
+
+  expect_equal(
+    has_prior(ab, index=c(1,3,8)),
+    c(FALSE, FALSE, TRUE)
+  )
+
+  expect_equal(
+    has_summary(ab, index=c(1,6,9)),
+    c(FALSE, TRUE, FALSE)
+  )
+
+  expect_equal(
+    has_time(ab, index=8:9), c(FALSE, TRUE)
+  )
+
+  expect_equal(
+    has_value(ab, index=1:3), c(TRUE, TRUE, FALSE)
+  )
+
+  expect_equal(
+    has_warnings(ab, index=c(1,5,9)),
+    c(FALSE, TRUE, FALSE)
+  )
+})
