@@ -101,18 +101,18 @@ as_monad <- function(expr, desc=.default_code(), doc=.default_doc(), lossy=FALSE
   m <- Rmonad()
 
   # The default value is Nothing
-  if(isOK) m_value(m) <- value
+  if(isOK) .single_value(m) <- value
 
   # These accessors do the right thing (don't mess with them)
-  m_code(m)       <- code
-  m_error(m)      <- fails
-  m_warnings(m)   <- warns
-  m_notes(m)      <- notes
-  m_OK(m)         <- isOK
-  m_doc(m)        <- doc
-  m_mem(m)        <- object.size(value)
-  m_time(m)       <- signif(unname(st[1]), 2)
-  m_meta(m)       <- met
+  .single_code(m)       <- code
+  .single_error(m)      <- fails
+  .single_warnings(m)   <- warns
+  .single_notes(m)      <- notes
+  .single_OK(m)         <- isOK
+  .single_doc(m)        <- doc
+  .single_mem(m)        <- object.size(value)
+  .single_time(m)       <- signif(unname(st[1]), 2)
+  .single_meta(m)       <- met
 
   m <- apply_rewriters(m, met)
 
@@ -188,17 +188,17 @@ combine <- function(xs, keep_history=TRUE, desc=.default_code()){
   out <- Rmonad() 
 
   # store all values (even if failing, in which case should be NULL)
-  m_value(out) <- lapply(xs, m_value, warn=FALSE)
+  .single_value(out) <- lapply(xs, .single_value, warn=FALSE)
 
-  xs <- lapply(xs, m_delete_value)
+  xs <- lapply(xs, .single_delete_value)
 
-  m_parents(out) <- xs
+  .single_parents(out) <- xs
 
   # monad is passing if all parents are cool
-  m_OK(out) <- all(sapply(xs, m_OK))
+  .single_OK(out) <- all(sapply(xs, .single_OK))
 
   if(!is.null(desc)){
-    m_code(out) <- desc 
+    .single_code(out) <- desc 
   }
 
   out 

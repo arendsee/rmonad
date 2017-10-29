@@ -76,13 +76,13 @@ test_that("when lambda starts with string that is part of an expression", {
 
 test_that("docstrings work on rhs", {
   expect_equal(4 %>>% {"hi"; sqrt(.)} %>% esc, 2)
-  expect_true( 4 %>>% {"hi"; sqrt(.)} %>% m_OK)
-  expect_equal(4 %>>% {"hi"; sqrt(.)} %>% m_doc, "hi")
+  expect_true( 4 %>>% {"hi"; sqrt(.)} %>% .single_OK)
+  expect_equal(4 %>>% {"hi"; sqrt(.)} %>% .single_doc, "hi")
 })
 
 test_that("docstrings work on lhs", {
   expect_equal({"adsf"; 4} %>>% sqrt %>% esc, 2)
-  expect_true( {"adsf"; 4} %>>% sqrt %>% m_OK)
+  expect_true( {"adsf"; 4} %>>% sqrt %>% .single_OK)
   expect_equal({"adsf"; 4} %>>% sqrt %>% ms_doc, list("adsf", .default_doc()))
 })
 
@@ -96,7 +96,7 @@ test_that("docstrings work with %__%", {
 })
 
 test_that("as_monad handles docstrings", {
-  expect_equal(as_monad({"asdf"; 5}) %>% m_doc, "asdf")
+  expect_equal(as_monad({"asdf"; 5}) %>% .single_doc, "asdf")
   expect_equal(as_monad({"asdf"; 5}) %>% esc, 5)
   # no funny business is going on ...
   expect_equal(as_monad({"asdf"; 5}) %>>% '*'(6) %>% esc, 30)
@@ -105,23 +105,23 @@ test_that("as_monad handles docstrings", {
   expect_true(
     {
       x <- as_monad({"asdf"; list(k=1); 5})
-      m_doc(x) == "asdf" && identical(m_meta(x), list(k=1))
+      .single_doc(x) == "asdf" && identical(.single_meta(x), list(k=1))
     }
   )
 
 })
 
 test_that("anonymous functions handle docstrings and metadata", {
-  expect_equal(16 %>>% (function(x){"asdf"; sqrt(x)}) %>% m_doc, "asdf")
+  expect_equal(16 %>>% (function(x){"asdf"; sqrt(x)}) %>% .single_doc, "asdf")
   expect_equal(16 %>>% (function(x){"asdf"; sqrt(x)}) %>% esc, 4)
 
-  expect_equal(16 %>>% (function(x){list(k=1); sqrt(x)}) %>% m_meta, list(k=1))
+  expect_equal(16 %>>% (function(x){list(k=1); sqrt(x)}) %>% .single_meta, list(k=1))
   expect_equal(16 %>>% (function(x){list(k=1); sqrt(x)}) %>% esc, 4)
 
   expect_true(
     {
       x <- 16 %>>% (function(x){"asdf"; list(k=1); sqrt(x)})
-      m_doc(x) == "asdf" && identical(m_meta(x), list(k=1))
+      .single_doc(x) == "asdf" && identical(.single_meta(x), list(k=1))
     }
   )
 })
@@ -148,7 +148,7 @@ test_that("metadata is extracted", {
 test_that("docstrings are correct in anonymous bind expressions", {
   expect_equal(
     16 %>>% {"asdf"; list(k=1); sqrt(.)} %>%
-       m_code %>% gsub(pattern=" |\n", replacement="") %>%
+       .single_code %>% gsub(pattern=" |\n", replacement="") %>%
        paste(collapse=""),
     'function(.){sqrt(.)}'
   )
@@ -161,7 +161,7 @@ test_that("metadata lists are evaluated in the proper environment", {
       36 %>>% {
         list(foo = x)
         NULL
-      } %>% m_meta %>% { .$foo }
+      } %>% .single_meta %>% { .$foo }
     },
     42
   )
@@ -171,7 +171,7 @@ test_that("metadata lists are evaluated in the proper environment", {
       "wrench" %>>% {
         list(format_error=do_error)
         log(.)
-      } %>% m_error
+      } %>% .single_error
     },
     "dang it"
   )

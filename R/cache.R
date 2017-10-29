@@ -116,16 +116,16 @@ makeLocalCacher <- function(path){
 #'   recacher <- makeRecacher(makeLocalCacher("."))
 #'   m <- iris %>>% summary %>% recacher
 #'   # load the data from a local file
-#'   m_value(m)
+#'   .single_value(m)
 #'
 #'   recacher <- makeRecacher(memoryCache)
 #'   m <- iris %>>% summary %>% recacher
 #'   # load the data from memory
-#'   m_value(m)
+#'   .single_value(m)
 #' }
 makeRecacher <- function(cacher){
   # @param m An Rmonad object
   function(m){
-    .set_raw_value(m, cacher(m_value(m)))
+    .set_raw_value(m, cacher(.single_value(m)))
   }
 }

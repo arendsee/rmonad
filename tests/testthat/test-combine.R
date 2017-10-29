@@ -38,25 +38,25 @@ test_that('combine and funnel store history in list', {
 })
 
 test_that('combine and funnel store all results into an order preserving list', {
-  expect_equal(combine(c(as_monad(3), as_monad(5), as_monad(1))) %>% m_value %>% unlist, c(3, 5, 1))
-  expect_equal(funnel(3, 5, 1) %>% m_value %>% unlist, c(3, 5, 1))
+  expect_equal(combine(c(as_monad(3), as_monad(5), as_monad(1))) %>% .single_value %>% unlist, c(3, 5, 1))
+  expect_equal(funnel(3, 5, 1) %>% .single_value %>% unlist, c(3, 5, 1))
 
-  expect_true(is.list(funnel(3, 5, 1) %>% m_value))
-  expect_true(is.list(combine(list(as_monad(3), as_monad(5), as_monad(1))) %>% m_value))
+  expect_true(is.list(funnel(3, 5, 1) %>% .single_value))
+  expect_true(is.list(combine(list(as_monad(3), as_monad(5), as_monad(1))) %>% .single_value))
 })
 
 
 test_that('combine and funnel work with expressions', {
-  expect_equal( combine(list(as_monad(max(3, 2)), as_monad(prod(2, 3)))) %>% m_value %>% unlist, c(3, 6))
-  expect_equal( funnel(               max(3, 2) ,          prod(2, 3))   %>% m_value %>% unlist, c(3, 6))
+  expect_equal( combine(list(as_monad(max(3, 2)), as_monad(prod(2, 3)))) %>% .single_value %>% unlist, c(3, 6))
+  expect_equal( funnel(               max(3, 2) ,          prod(2, 3))   %>% .single_value %>% unlist, c(3, 6))
 
-  expect_true( combine( list(as_monad(max(3,2)), as_monad(prod(2,3))) ) %>% m_OK )
-  expect_true( funnel(                max(3,2) ,          prod(2,3)   ) %>% m_OK )
+  expect_true( combine( list(as_monad(max(3,2)), as_monad(prod(2,3))) ) %>% .single_OK )
+  expect_true( funnel(                max(3,2) ,          prod(2,3)   ) %>% .single_OK )
 })
 
 test_that('funnel handles errors in expressions', {
-  expect_equal(funnel(5, stop(1)) %>% m_value, list(5, NULL))
-  expect_false(funnel(5, stop(1)) %>% m_OK)
+  expect_equal(funnel(5, stop(1)) %>% .single_value, list(5, NULL))
+  expect_false(funnel(5, stop(1)) %>% .single_OK)
 })
 
 test_that('funnel intermediate values are deleted', {

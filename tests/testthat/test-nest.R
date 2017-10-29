@@ -36,7 +36,7 @@ test_that("Nesting works for named functions", {
 
 test_that("Nesting works for deeply nested functions", {
    expect_equal(20 %>>% bar %>% esc, 35)
-   expect_true(20 %>>% bar %>% m_OK)
+   expect_true(20 %>>% bar %>% .single_OK)
    expect_equal(
      20 %>>% bar %>% ms_nest_depth,
      c(1,2,3,3,3,2,1)
@@ -78,8 +78,8 @@ h_bomb <- function(x){
 }
 test_that("Nothing explodes when NSE is used in nested declarations", {
    expect_equal(
-     funnel(x=mtcars) %*>% h_bomb %>% m_value,
-     h_bomb(mtcars) %>% m_value
+     funnel(x=mtcars) %*>% h_bomb %>% .single_value,
+     h_bomb(mtcars) %>% .single_value
   )
-  expect_true(funnel(x=mtcars) %*>% h_bomb %>% m_OK)
+  expect_true(funnel(x=mtcars) %*>% h_bomb %>% .single_OK)
 })

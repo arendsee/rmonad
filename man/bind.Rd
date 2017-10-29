@@ -5,11 +5,11 @@
 \title{Apply f to the contents of a monad and merge messages}
 \usage{
 bind(x, f, entry_lhs_transform = entry_lhs_transform_default,
-  bind_if = function(m) m_OK(m), bind_else = function(...) {     NULL },
-  emit = emit_default, m_on_bind = function(x, ...) {     x },
-  io_combine = default_combine, bind_args = function(m) list(m_value(m, warn
-  = FALSE)), parent_ids = function(m) m_id(m), expect_rhs_function = TRUE,
-  envir = parent.frame())
+  bind_if = function(m) .single_OK(m), bind_else = function(...) {     NULL
+  }, emit = emit_default, m_on_bind = function(x, ...) {     x },
+  io_combine = default_combine, bind_args = function(m)
+  list(.single_value(m, warn = FALSE)), parent_ids = function(m)
+  .single_id(m), expect_rhs_function = TRUE, envir = parent.frame())
 }
 \arguments{
 \item{x}{The input, may or may not be a monad report}
@@ -24,11 +24,11 @@ bind(x, f, entry_lhs_transform = entry_lhs_transform_default,
 
 \item{emit}{f(i,o) Emit the input or the output}
 
-\item{m_on_bind}{f(m) Action to perform on input monad when binding}
-
 \item{io_combine}{f(m,o) weave m and f(m) into final output}
 
 \item{bind_args}{function to retrieve the arguments}
+
+\item{.single_on_bind}{f(m) Action to perform on input monad when binding}
 }
 \value{
 A monad report

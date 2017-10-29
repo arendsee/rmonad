@@ -112,11 +112,11 @@ esc <- function(m, quiet=FALSE){
       fn(issues[i, "code"], issues[i, "issue"])
     }
   }
-  if(! m_OK(m)){
-    fe(m_code(m), m_error(m))
+  if(! .single_OK(m)){
+    fe(.single_code(m), .single_error(m))
   }
 
-  m_value(m)
+  .single_value(m)
 }
 
 #' Convert a pipeline to Rmarkdown
@@ -155,10 +155,10 @@ mreport <- function(
   }
 
   strsummary <- function(m, i){
-    if(is.null(m_summary(m, i))){
+    if(is.null(.single_summary(m, i))){
       ""
     } else {
-      sprintf("```{r, echo=FALSE}\nm_summary(m, %s)\n```", i)
+      sprintf("```{r, echo=FALSE}\n.single_summary(m, %s)\n```", i)
     }
   }
 
@@ -181,16 +181,16 @@ mreport <- function(
       {{summary}}
       ",
       id       = i,
-      ok       = m_OK(m, i),
-      parents  = paste0("[", paste(m_parents(m, i), collapse=", "), "]"),
+      ok       = .single_OK(m, i),
+      parents  = paste0("[", paste(.single_parents(m, i), collapse=", "), "]"),
       cached   = has_value(m, index=i),
-      time     = m_time(m, i),
-      mem      = m_mem(m, i),
-      doc      = tostr(m_doc(m, i)),
-      code     = paste0(m_code(m, i), collapse="\n"),
-      error    = tostr(m_error(m, i), "ERROR: "),
-      warnings = tostr(m_warnings(m, i), "WARNING: "),
-      notes    = tostr(m_notes(m, i), "NOTE: "),
+      time     = .single_time(m, i),
+      mem      = .single_mem(m, i),
+      doc      = tostr(.single_doc(m, i)),
+      code     = paste0(.single_code(m, i), collapse="\n"),
+      error    = tostr(.single_error(m, i), "ERROR: "),
+      warnings = tostr(.single_warnings(m, i), "WARNING: "),
+      notes    = tostr(.single_notes(m, i), "NOTE: "),
       summary  = strsummary(m, i)
     )) %>% paste0(collapse="\n")
 

@@ -8,7 +8,7 @@ test_that("empty anonymouse functions", {
 
   # This just can never work, because bind wants to pass a value
   # It might be preferable to catch this and throw a special error
-  expect_false(16 %>>% (function(){}) %>% m_OK)
+  expect_false(16 %>>% (function(){}) %>% .single_OK)
 
 })
 

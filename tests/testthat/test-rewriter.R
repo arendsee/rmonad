@@ -4,14 +4,14 @@ test_that("format warnings", {
   expect_equal(
     -1 %>>%
       { list(format_warnings=function(x, w){ "oops" }); log(.) } %>%
-      m_warnings,
+      .single_warnings,
     c("oops")
   )
   expect_equal(
     as_monad({
       list(format_warnings=function(x, w) { "oops" } )
       log(-1)
-    }) %>% m_warnings,
+    }) %>% .single_warnings,
     c("oops")
   )
   # Ensure the function isn't called when no warnings are raised
@@ -27,7 +27,7 @@ test_that("format warnings with output data", {
   expect_equal(
     -1 %>>%
       { list(format_warnings=function(x, w){ paste0("made a ", x) }); log(.) } %>%
-      m_warnings,
+      .single_warnings,
     c("made a NaN")
   )
 })

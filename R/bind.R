@@ -10,7 +10,7 @@
 #' @param bind_if f(m) bind rhs to lhs if TRUE
 #' @param bind_else f(m,f) action to take if bind_if is FALSE
 #' @param emit f(i,o) Emit the input or the output
-#' @param m_on_bind f(m) Action to perform on input monad when binding
+#' @param .single_on_bind f(m) Action to perform on input monad when binding
 #' @param bind_args function to retrieve the arguments
 #' @param io_combine f(m,o) weave m and f(m) into final output
 #' @keywords internal
@@ -19,13 +19,13 @@ bind <- function(
   x,
   f,
   entry_lhs_transform = entry_lhs_transform_default,
-  bind_if             = function(m) m_OK(m),
+  bind_if             = function(m) .single_OK(m),
   bind_else           = function(...){NULL},
   emit                = emit_default,
   m_on_bind           = function(x, ...){x},
   io_combine          = default_combine,
-  bind_args           = function(m) list(m_value(m, warn=FALSE)),
-  parent_ids          = function(m) m_id(m),
+  bind_args           = function(m) list(.single_value(m, warn=FALSE)),
+  parent_ids          = function(m) .single_id(m),
   expect_rhs_function = TRUE,
   envir               = parent.frame()
 ){
@@ -44,10 +44,10 @@ bind <- function(
   m <- entry_lhs_transform(x, f, desc=lhs_str)
 
   if(!has_doc(m, index=m@head)){
-    m_doc(m) <- lhs_doc
+    .single_doc(m) <- lhs_doc
   }
   if(!has_meta(m, index=m@head)){
-    m_meta(m) <- lhs_met
+    .single_meta(m) <- lhs_met
   }
 
   o <- if(bind_if(m))
@@ -120,13 +120,13 @@ bind <- function(
   # forgotten. There should be a more natural place to set this info. This
   # sometimes overwrites previous settings creating the most subtle bugs.
   if(!is.null(o)){
-    m_doc(o)  <- rhs_doc
-    m_meta(o) <- rhs_met
-    m_code(o) <- rhs_str
+    .single_doc(o)  <- rhs_doc
+    .single_meta(o) <- rhs_met
+    .single_code(o) <- rhs_str
   }
 
   result <- emit(m, o)
-  m_mem(result) <- as.integer(object.size(m_value(result, warn=FALSE)))
+  .single_mem(result) <- as.integer(object.size(.single_value(result, warn=FALSE)))
   result
 }
 
@@ -147,7 +147,7 @@ bind <- function(
     },
     gcFirst=FALSE # this kills performance when TRUE
   )
-  m_time(result) <- signif(unname(st[1]), 2)
+  .single_time(result) <- signif(unname(st[1]), 2)
 
   result
 }
@@ -156,7 +156,7 @@ bind <- function(
 ## m_on_bind options
 
 # preserve value upon future bind
-store_value <- function(m) { .m_stored(m) <- TRUE ; m }
+store_value <- function(m) { .single_stored(m) <- TRUE ; m }
 
 entry_lhs_transform_default <- function(m, f, ...) {
   # FIXME: This is a sneaky way of safely evaluating the lhs without nesting
@@ -186,7 +186,7 @@ branch_combine <- function(m, o, f, margs){
 }
 
 default_combine <- function(m, o, f, margs){
-  o2 <- .inherit(child=o, parent=m, inherit_value=!m_OK(o))
+  o2 <- .inherit(child=o, parent=m, inherit_value=!.single_OK(o))
   if(has_nest(o, index=o@head)){
     o2 <- splice_function(f=f, m=o, ms=margs, final=o2, parent=m)
   }

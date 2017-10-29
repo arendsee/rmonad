@@ -30,7 +30,7 @@ test_that("correct for funnel", {
 test_that("funnel taking from pipe", {
 # # TODO: better handling for this case
 #   expect_equal(
-#     1:10 %>>% funnel(stop("hi"), sqrt(1)) %>% as.list %>% lapply(m_code),
+#     1:10 %>>% funnel(stop("hi"), sqrt(1)) %>% as.list %>% lapply(.single_code),
 #     list("1:10", 'funnel(stop("hi"), sqrt(1))')
 #   )
   expect_equal(
@@ -43,7 +43,7 @@ test_that("funnel taking from pipe", {
 test_that("Blocks are expanded into functions", {
   expect_equal(
     2 %>>% { . * 3 } %>%
-      m_code %>%
+      .single_code %>%
       paste0(collapse=" ") %>%
       gsub(pattern=" ", replacement=""),
     "function(.){.*3}"
@@ -54,7 +54,7 @@ test_that("Blocks are expanded into functions", {
 test_that("partially applied functions are as expected", {
   expect_equal(
     2 %*>% rbinom(size=3, prob=.2) %>%
-      m_code %>%
+      .single_code %>%
       paste0(collapse=" ") %>%
       gsub(pattern=" ", replacement=""),
     "rbinom(size=3,prob=0.2)"
@@ -65,7 +65,7 @@ test_that("partially applied functions are as expected", {
 # test_that("%*>% doesn't do anything weird", {
 #   expect_equal(
 #     list(d=iris, i=2) %*>% { head(d, i) } %>%
-#       lapply(m_code) %>%
+#       lapply(.single_code) %>%
 #       lapply(paste0, collapse=" ") %>%
 #       gsub(pattern=" ", replacement=""),
 #     c('2', 'iris', 'function(d,i){head(d,i)}')
@@ -75,7 +75,7 @@ test_that("partially applied functions are as expected", {
 # test_that("funnel doesn't do anything weird", {
 #   expect_equal(
 #     funnel(d=iris, i=2) %*>% { head(d, i) } %>%
-#       lapply(m_code) %>%
+#       lapply(.single_code) %>%
 #       lapply(paste0, collapse=" ") %>%
 #       gsub(pattern=" ", replacement=""),
 #     c('2', 'iris', 'function(d,i){head(d,i)}')

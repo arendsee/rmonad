@@ -2,7 +2,7 @@ context("github issues")
 
 test_that('issue #1: "%__%" does not double nest lhs', {
   expect_silent(5 %__% as_monad(4) %>>% sqrt)
-  expect_equal(5 %__% as_monad(4) %>>% sqrt %>% m_value, 2)
+  expect_equal(5 %__% as_monad(4) %>>% sqrt %>% .single_value, 2)
 })
 
 test_that('issue #2: funnel works with %__%', {

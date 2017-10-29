@@ -16,57 +16,23 @@
 \alias{has_prior}
 \alias{has_nest}
 \alias{has_summary}
-\alias{m_parents}
 \alias{ms_parents}
-\alias{m_dependents}
 \alias{ms_dependents}
-\alias{m_nest}
 \alias{ms_nest}
-\alias{m_prior}
 \alias{ms_prior}
-\alias{m_nest_depth}
 \alias{ms_nest_depth}
-\alias{m_value}
 \alias{ms_value}
-\alias{m_id}
 \alias{ms_id}
-\alias{m_OK}
 \alias{ms_OK}
-\alias{m_code}
 \alias{ms_code}
-\alias{m_error}
 \alias{ms_error}
-\alias{m_warnings}
 \alias{ms_warnings}
-\alias{m_notes}
 \alias{ms_notes}
-\alias{m_doc}
 \alias{ms_doc}
-\alias{m_meta}
 \alias{ms_meta}
-\alias{m_time}
 \alias{ms_time}
-\alias{m_mem}
 \alias{ms_mem}
-\alias{m_summary}
 \alias{ms_summary}
-\alias{m_OK<-}
-\alias{m_value<-}
-\alias{m_code<-}
-\alias{m_error<-}
-\alias{m_warnings<-}
-\alias{m_notes<-}
-\alias{m_doc<-}
-\alias{m_meta<-}
-\alias{m_time<-}
-\alias{m_mem<-}
-\alias{m_summary<-}
-\alias{app_warnings}
-\alias{app_notes}
-\alias{m_parents<-}
-\alias{m_nest<-}
-\alias{m_nest_depth<-}
-\alias{app_parents}
 \title{get, set, and append rmonad fields}
 \usage{
 has_code(m, ...)
@@ -97,116 +63,48 @@ has_nest(m, ...)
 
 has_summary(m, ...)
 
-m_parents(m, ...)
-
 ms_parents(m, ...)
-
-m_dependents(m, ...)
 
 ms_dependents(m, ...)
 
-m_nest(m, ...)
-
 ms_nest(m, ...)
-
-m_prior(m, ...)
 
 ms_prior(m, ...)
 
-m_nest_depth(m, ...)
-
 ms_nest_depth(m, ...)
-
-m_value(m, warn = TRUE, ...)
 
 ms_value(m, warn = TRUE, ...)
 
-m_id(m, index = m@head)
-
 ms_id(m, ...)
-
-m_OK(m, ...)
 
 ms_OK(m, ...)
 
-m_code(m, ...)
-
 ms_code(m, ...)
-
-m_error(m, ...)
 
 ms_error(m, ...)
 
-m_warnings(m, ...)
-
 ms_warnings(m, ...)
-
-m_notes(m, ...)
 
 ms_notes(m, ...)
 
-m_doc(m, ...)
-
 ms_doc(m, ...)
-
-m_meta(m, ...)
 
 ms_meta(m, ...)
 
-m_time(m, ...)
-
 ms_time(m, ...)
-
-m_mem(m, ...)
 
 ms_mem(m, ...)
 
-m_summary(m, ...)
-
 ms_summary(m, ...)
-
-m_OK(m) <- value
-
-m_value(m) <- value
-
-m_code(m) <- value
-
-m_error(m) <- value
-
-m_warnings(m) <- value
-
-m_notes(m) <- value
-
-m_doc(m) <- value
-
-m_meta(m) <- value
-
-m_time(m) <- value
-
-m_mem(m) <- value
-
-m_summary(m) <- value
-
-app_warnings(m, value, ...)
-
-app_notes(m, value, ...)
-
-m_parents(m) <- value
-
-m_nest(m) <- value
-
-m_nest_depth(m) <- value
-
-app_parents(m, value)
 }
 \arguments{
 \item{m}{the rmonad}
 
 \item{...}{Additional arguments}
 
-\item{index}{The index of the node to get or set}
-
 \item{value}{value to replace or append current value}
+
+\item{index}{The index of the node to get or set}
 }
 \description{
 get, set, and append rmonad fields

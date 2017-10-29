@@ -4,7 +4,7 @@
 \alias{apply_rewriters}
 \title{Apply rewriters to an Rmonad}
 \usage{
-apply_rewriters(x, meta = m_meta(x))
+apply_rewriters(x, meta = .single_meta(x))
 }
 \arguments{
 \item{x}{The Rmonad}

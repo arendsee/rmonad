@@ -83,34 +83,34 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
 .print_record <- function(x, i, verbose=FALSE, print_value=TRUE) {
 
   if(has_doc(x, index=i)){
-    .scat("\n\n    %s\n\n", m_doc(x, i))
+    .scat("\n\n    %s\n\n", .single_doc(x, i))
   }
-  .scat('N%s> "%s"', i, paste(m_code(x, i), collapse="\n"))
+  .scat('N%s> "%s"', i, paste(.single_code(x, i), collapse="\n"))
 
   if(verbose && (has_time(x, index=i) || has_mem(x, index=i))){
     cat("\n  ")
-    if(has_mem(x, index=i))  { .scat(" size: %s", m_mem(x, index=i))  }
-    if(has_time(x, index=i)) { .scat(" time: %s", m_time(x, index=i)) }
+    if(has_mem(x, index=i))  { .scat(" size: %s", .single_mem(x, index=i))  }
+    if(has_time(x, index=i)) { .scat(" time: %s", .single_time(x, index=i)) }
   }
   if(has_error(x, index=i)){
-    .scat("\n * ERROR: %s", m_error(x, index=i))
+    .scat("\n * ERROR: %s", .single_error(x, index=i))
   }
   if(has_warnings(x, index=i)){
     .scat("\n * WARNING: %s",
-      paste(m_warnings(x, index=i), collapse="\n * WARNING: ")
+      paste(.single_warnings(x, index=i), collapse="\n * WARNING: ")
     )
   }
   if(has_notes(x, index=i)){
     .scat("\n * NOTE: %s",
-      paste(m_notes(x, index=i), collapse="\n * NOTE: ")
+      paste(.single_notes(x, index=i), collapse="\n * NOTE: ")
     )
   }
   if(has_parents(x, index=i)){
-    .scat("\nParents: [%s]", paste0(m_parents(x, index=i), collapse=", "))
+    .scat("\nParents: [%s]", paste0(.single_parents(x, index=i), collapse=", "))
   }
   if(has_value(x, index=i) && print_value){
     cat("\n")
-    print(m_value(x, index=i))
+    print(.single_value(x, index=i))
   }
   cat("\n")
 }
@@ -134,9 +134,9 @@ print.Rmonad <- function(x, verbose=FALSE, print_value=TRUE, ...){
   }
 
   if(print_value)
-    print(m_value(x))
+    print(.single_value(x))
 
-  if(!m_OK(x)){
+  if(!.single_OK(x)){
     cat(" *** FAILURE *** \n")
   }
 }

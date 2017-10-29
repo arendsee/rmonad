@@ -20,11 +20,11 @@ Make a function that taks an Rmonad and recaches it
   recacher <- makeRecacher(makeLocalCacher("."))
   m <- iris \%>>\% summary \%>\% recacher
   # load the data from a local file
-  m_value(m)
+  .single_value(m)
 
   recacher <- makeRecacher(memoryCache)
   m <- iris \%>>\% summary \%>\% recacher
   # load the data from memory
-  m_value(m)
+  .single_value(m)
 }
 }

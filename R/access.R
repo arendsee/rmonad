@@ -17,12 +17,11 @@ is_rmonad <- function(m) {
   setequal(class(m), "Rmonad")
 }
 
-#' Delete a node's value
-#'
-#' @param m Rmonad object
-#' @param index Delete the value contained by this vertex (if NULL, delete head value)
-#' @export
-m_delete_value <- function(m, ...) {
+# Delete a node's value
+#
+# @param m Rmonad object
+# @param index Delete the value contained by this vertex (if NULL, delete head value)
+.single_delete_value <- function(m, ...) {
   caches <- .get_raw_value(m, ...)
   for(cache in caches){
     cache@del()
@@ -53,6 +52,9 @@ m_delete_value <- function(m, ...) {
 .default_id         <- function() integer(0)
 .default_summary    <- function() NULL
 
+
+
+# ======================== Vectorized existence checkers =======================
 
 #' @rdname rmonad_accessors
 #' @export
@@ -111,25 +113,8 @@ has_nest <- function(m, ...) sapply(ms_nest(m , ...), function(x) length(x) > 0)
 has_summary <- function(m, ...) sapply(ms_summary(m , ...), function(x) !is.null(x))
 
 
-# TODO: chop these
-# FIXME: seriously, murder the stored field
-.m_stored <- function(m, ...) {
-  stored <- .get_single_attribute_complex(m, default=FALSE, attribute="stored", ...)
-  if(is.null(stored)){
-    FALSE
-  } else {
-    stored
-  }
-}
-`.m_stored<-` <- function(m, value) {
-  .set_single_attribute(m, attribute="stored", value=value)
-}
 
-#' @rdname rmonad_accessors
-#' @export
-m_parents <- function(m, ...) {
-  .get_single_relative_ids(m, "in", c("depend", "transitive"), ...)
-}
+# ============================= Vectorized Getters =============================
 
 #' @rdname rmonad_accessors
 #' @export
@@ -144,20 +129,8 @@ ms_parents <- function(m, ...) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_dependents <- function(m, ...) {
-  .get_single_relative_ids(m, "out", "depend", ...)
-}
-
-#' @rdname rmonad_accessors
-#' @export
 ms_dependents <- function(m, ...) {
   .get_many_relative_ids(m=m, mode="out", type="depend", ...)
-}
-
-#' @rdname rmonad_accessors
-#' @export
-m_nest <- function(m, ...) {
-  .get_single_relative_ids(m, "in", "nest", ...)
 }
 
 #' @rdname rmonad_accessors
@@ -168,20 +141,8 @@ ms_nest <- function(m, ...) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_prior <- function(m, ...) {
-  .get_single_relative_ids(m, "in", "prior", ...)
-}
-
-#' @rdname rmonad_accessors
-#' @export
 ms_prior <- function(m, ...) {
   .get_many_relative_ids(m=m, mode="in", type="prior", ...)
-}
-
-#' @rdname rmonad_accessors
-#' @export
-m_nest_depth <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_nest_depth(), attribute="nest_depth", ...)
 }
 
 #' @rdname rmonad_accessors
@@ -192,22 +153,8 @@ ms_nest_depth <- function(m, ...) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_value <- function(m, warn=TRUE, ...){
-  # ... should only ever be 'warn' at this point
-  .get_single_attribute_complex(m, default=.default_value(), attribute="value", ...)@get(warn)
-}
-
-#' @rdname rmonad_accessors
-#' @export
 ms_value <- function(m, warn=TRUE, ...){
   lapply(.get_many_attributes(m, attribute='value', ...), function(v) v@get(warn))
-}
-
-#' @rdname rmonad_accessors
-#' @export
-m_id <- function(m, index=m@head) {
-  .m_check(m)
-  index
 }
 
 #' @rdname rmonad_accessors
@@ -218,20 +165,8 @@ ms_id <- function(m, ...) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_OK <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_OK(), attribute="OK", ...)
-}
-
-#' @rdname rmonad_accessors
-#' @export
 ms_OK <- function(m, ...) {
   .get_many_attributes(m, attribute="OK", ...)
-}
-
-#' @rdname rmonad_accessors
-#' @export
-m_code <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_code(), attribute="code", ...)
 }
 
 #' @rdname rmonad_accessors
@@ -242,20 +177,8 @@ ms_code <- function(m, ...) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_error <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_error(), attribute="error", ...)
-}
-
-#' @rdname rmonad_accessors
-#' @export
 ms_error <- function(m, ...) {
   .get_many_attributes_complex(m, attribute="error", default=NA_character_, ...)
-}
-
-#' @rdname rmonad_accessors
-#' @export
-m_warnings <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_warnings(), attribute="warnings", ...)
 }
 
 #' @rdname rmonad_accessors
@@ -266,20 +189,8 @@ ms_warnings <- function(m, ...) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_notes <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_notes(), attribute="notes", ...)
-}
-
-#' @rdname rmonad_accessors
-#' @export
 ms_notes <- function(m, ...) {
   .get_many_attributes_complex(m, attribute="notes", default=NA_character_, ...)
-}
-
-#' @rdname rmonad_accessors
-#' @export
-m_doc <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_doc(), attribute="doc", ...)
 }
 
 #' @rdname rmonad_accessors
@@ -290,20 +201,8 @@ ms_doc <- function(m, ...) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_meta <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_meta(), attribute="meta", ...)
-}
-
-#' @rdname rmonad_accessors
-#' @export
 ms_meta <- function(m, ...) {
   .get_many_attributes(m, attribute='meta', ...)
-}
-
-#' @rdname rmonad_accessors
-#' @export
-m_time <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_time(), attribute="time", ...)
 }
 
 #' @rdname rmonad_accessors
@@ -314,20 +213,8 @@ ms_time <- function(m, ...) {
 
 #' @rdname rmonad_accessors
 #' @export
-m_mem <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_mem(), attribute="mem", ...)
-}
-
-#' @rdname rmonad_accessors
-#' @export
 ms_mem <- function(m, ...) {
   .get_many_attributes_complex(m, attribute="mem", default=NA_integer_, ...)
-}
-
-#' @rdname rmonad_accessors
-#' @export
-m_summary <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_summary(), attribute="summary", ...)
 }
 
 #' @rdname rmonad_accessors
@@ -336,108 +223,130 @@ ms_summary <- function(m, ...) {
   .get_many_attributes_complex(m, attribute="summary", default=.default_summary(), ...)
 }
 
-#' @rdname rmonad_accessors
-#' @export
-`m_OK<-` <- function(m, value) {
+
+
+# ============== Singular getters and setters (internal use only) ==============
+
+.single_stored <- function(m, ...) {
+  stored <- .get_single_attribute_complex(m, default=FALSE, attribute="stored", ...)
+  if(is.null(stored)){
+    FALSE
+  } else {
+    stored
+  }
+}
+`.single_stored<-` <- function(m, value) {
+  .set_single_attribute(m, attribute="stored", value=value)
+}
+
+.single_dependents <- function(m, ...) {
+  .get_single_relative_ids(m, "out", "depend", ...)
+}
+# no setter - see inherit
+
+.single_prior <- function(m, ...) {
+  .get_single_relative_ids(m, "in", "prior", ...)
+}
+# no setter - see inherit
+
+.single_id <- function(m, index=m@head) {
+  .m_check(m)
+  index
+}
+# no setter - automatically handled
+
+.single_OK <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_OK(), attribute="OK", ...)
+}
+`.single_OK<-` <- function(m, value) {
   stopifnot(is.logical(value))
   .set_single_attribute(m, attribute="OK", value=value)
 }
 
-#' @rdname rmonad_accessors
-#' @export
-`m_value<-` <- function(m, value) {
+.single_value <- function(m, warn=TRUE, ...){
+  # ... should only ever be 'warn' at this point
+  .get_single_attribute_complex(m, default=.default_value(), attribute="value", ...)@get(warn)
+}
+`.single_value<-` <- function(m, value) {
   # TODO: Don't hardcode the cache function
   .set_single_attribute_complex(m, attribute="value", value=memoryCache(value))
 }
 
-#' @rdname rmonad_accessors
-#' @export
-`m_code<-` <- function(m, value) {
+.single_code <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_code(), attribute="code", ...)
+}
+`.single_code<-` <- function(m, value) {
   .set_single_attribute_complex(m, attribute="code", value=value)
 }
 
-#' @rdname rmonad_accessors
-#' @export
-`m_error<-` <- function(m, value) {
+.single_error <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_error(), attribute="error", ...)
+}
+`.single_error<-` <- function(m, value) {
   .set_single_attribute_complex(m, attribute="error", value=value)
 }
 
-
-#' @rdname rmonad_accessors
-#' @export
-`m_warnings<-` <- function(m, value) {
+.single_warnings <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_warnings(), attribute="warnings", ...)
+}
+`.single_warnings<-` <- function(m, value) {
   .set_single_attribute_complex(m, attribute="warnings", value=value)
 }
 
-#' @rdname rmonad_accessors
-#' @export
-`m_notes<-` <- function(m, value) {
+.single_notes <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_notes(), attribute="notes", ...)
+}
+`.single_notes<-` <- function(m, value) {
   .set_single_attribute_complex(m, attribute="notes", value=value)
 }
 
-#' @rdname rmonad_accessors
-#' @export
-`m_doc<-` <- function(m, value) {
+.single_doc <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_doc(), attribute="doc", ...)
+}
+`.single_doc<-` <- function(m, value) {
   .set_single_attribute_complex(m, attribute="doc", value=value)
 }
 
-#' @rdname rmonad_accessors
-#' @export
-`m_meta<-` <- function(m, value) {
+.single_meta <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_meta(), attribute="meta", ...)
+}
+`.single_meta<-` <- function(m, value) {
   .set_single_attribute_complex(m, attribute="meta", value=value)
 }
 
-#' @rdname rmonad_accessors
-#' @export
-`m_time<-` <- function(m, value) {
+.single_time <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_time(), attribute="time", ...)
+}
+`.single_time<-` <- function(m, value) {
   .set_single_attribute(m, attribute="time", value=value)
 }
 
-#' @rdname rmonad_accessors
-#' @export
-`m_mem<-` <- function(m, value) {
+.single_mem <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_mem(), attribute="mem", ...)
+}
+`.single_mem<-` <- function(m, value) {
   .set_single_attribute(m, attribute="mem", value=value)
 }
 
-#' @rdname rmonad_accessors
-#' @export
-`m_summary<-` <- function(m, value){
+.single_summary <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_summary(), attribute="summary", ...)
+}
+`.single_summary<-` <- function(m, value){
   .set_single_attribute_complex(m, attribute="summary", value=value)
 }
 
-
-#' @rdname rmonad_accessors
-#' @export
-app_warnings <- function(m, value, ...) {
-  warnings <- .get_single_attribute_complex(m, attribute="warnings", ...)
-  if(length(value) > 0 && nchar(value) > 0){
-    warnings <- value %++% warnings
-  }
-  .set_single_attribute(m, attribute="warnings", warnings, ...)
+.single_parents <- function(m, ...) {
+  .get_single_relative_ids(m, "in", c("depend", "transitive"), ...)
 }
-
-#' @rdname rmonad_accessors
-#' @export
-app_notes <- function(m, value, ...) {
-  notes <- .get_single_attribute_complex(m, attribute="notes", ...)
-  if(length(value) > 0 && nchar(value) > 0){
-    notes <- value %++% notes
-  }
-  .set_single_attribute(m, attribute="notes", notes, ...)
-}
-
-
-
-#' @rdname rmonad_accessors
-#' @export
-`m_parents<-` <- function(m, value) {
+`.single_parents<-` <- function(m, value) {
   .add_parents(m, value, check=has_parents, type="depend")
 }
 
-#' @rdname rmonad_accessors
-#' @export
-`m_nest<-` <- function(m, value) {
-  if(m_OK(value)){
+.single_nest <- function(m, ...) {
+  .get_single_relative_ids(m, "in", "nest", ...)
+}
+`.single_nest<-` <- function(m, value) {
+  if(.single_OK(value)){
     .inherit(
       child         = m,
       parent        = value,
@@ -460,14 +369,9 @@ app_notes <- function(m, value, ...) {
   }
 }
 
-#' @rdname rmonad_accessors
-#' @export
-`m_nest_depth<-` <- function(m, value) {
-  .set_single_attribute(m, attribute="nest_depth", value=value)
+.single_nest_depth <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_nest_depth(), attribute="nest_depth", ...)
 }
-
-#' @rdname rmonad_accessors
-#' @export
-app_parents <- function(m, value) {
-  .add_parents(m, value, check=false, type="parents")
+`.single_nest_depth<-` <- function(m, value) {
+  .set_single_attribute(m, attribute="nest_depth", value=value)
 }

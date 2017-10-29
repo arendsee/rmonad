@@ -55,14 +55,14 @@ size <- function(m) {
       value = igraph::get.vertex.attribute(parent@graph, name="value", index=parent@head)
     )
 
-  if(inherit_OK && !m_OK(parent))
-    m_OK(child) <- m_OK(parent)
+  if(inherit_OK && !.single_OK(parent))
+    .single_OK(child) <- .single_OK(parent)
 
-  if(!force_keep && !.m_stored(parent)){
-    parent <- m_delete_value(parent)
-    .m_stored(parent) <- FALSE
+  if(!force_keep && !.single_stored(parent)){
+    parent <- .single_delete_value(parent)
+    .single_stored(parent) <- FALSE
   } else {
-    .m_stored(parent) <- TRUE
+    .single_stored(parent) <- TRUE
   }
 
   child@graph <- parent@graph + child@graph
@@ -74,14 +74,14 @@ size <- function(m) {
 
 # If an Rmonad holds an Rmonad value, link the value as a nest parent 
 .unnest <- function(m){
-  if(is_rmonad(m) && has_value(m, index=m@head) && is_rmonad(m_value(m))){
-    nest <- m_value(m)
+  if(is_rmonad(m) && has_value(m, index=m@head) && is_rmonad(.single_value(m))){
+    nest <- .single_value(m)
     nest@graph <- igraph::set.vertex.attribute(
       graph = nest@graph,
       name  = "nest_depth",
-      value = igraph::V(nest@graph)$nest_depth + (m_nest_depth(m) - m_nest_depth(nest) + 1)
+      value = igraph::V(nest@graph)$nest_depth + (.single_nest_depth(m) - .single_nest_depth(nest) + 1)
     )
-    m_nest(m) <- nest 
+    .single_nest(m) <- nest 
   }
   m
 }
@@ -158,7 +158,7 @@ size <- function(m) {
 }
 .get_single_attribute <- function(m, default, index=m@head, ...){
   if(length(index) != 1){
-    stop("m_* accessors only take a single index, to get multiple values, use the ms_* accessors")
+    stop(".single_* accessors only take a single index, to get multiple values, use the ms_* accessors")
   }
   a <- .get_attribute(m, ...)
   if(is.null(a) || length(a) == 0){
@@ -178,7 +178,7 @@ size <- function(m) {
 .set_single_attribute <- function(m, attribute, value, index=m@head){
   .m_check(m)
   if(length(index) != 1){
-    stop("ERROR: Can only set one attribute at a time in m_* setters")
+    stop("ERROR: Can only set one attribute at a time in .single_* setters")
   }
   m@graph <- igraph::set.vertex.attribute(m@graph, name=attribute, index=index, value=value)
   m

@@ -16,29 +16,29 @@ test_that("The .has_* correctly return false", {
 })
 
 test_that("You get out what you put in", {
-  expect_equal({m_OK(m)       <- FALSE;      m_OK(m)       }, FALSE      )
-  expect_equal({m_doc(m)      <- "doc";      m_doc(m)      }, "doc"      )
-  expect_equal({m_error(m)    <- "error";    m_error(m)    }, "error"    )
-  expect_equal({m_notes(m)    <- "notes";    m_notes(m)    }, "notes"    )
-  expect_equal({m_value(m)    <- "value";    m_value(m)    }, "value"    )
-  expect_equal({m_warnings(m) <- "warnings"; m_warnings(m) }, "warnings" )
+  expect_equal({.single_OK(m)       <- FALSE;      .single_OK(m)       }, FALSE      )
+  expect_equal({.single_doc(m)      <- "doc";      .single_doc(m)      }, "doc"      )
+  expect_equal({.single_error(m)    <- "error";    .single_error(m)    }, "error"    )
+  expect_equal({.single_notes(m)    <- "notes";    .single_notes(m)    }, "notes"    )
+  expect_equal({.single_value(m)    <- "value";    .single_value(m)    }, "value"    )
+  expect_equal({.single_warnings(m) <- "warnings"; .single_warnings(m) }, "warnings" )
 })
 
 test_that("You can't put in illegal values", {
-  expect_error(m_warnings(.m) <- 34    )
-  expect_error(m_notes(.m)    <- FALSE )
+  expect_error(.single_warnings(.m) <- 34    )
+  expect_error(.single_notes(.m)    <- FALSE )
 })
 
 m1 <- as_monad({warning("w"); message("m"); 46})
 m2 <- as_monad({warning("w1"); warning("w2"); message("m1"); message("m2"); 47})
 e1 <- as_monad({warning("w"); stop("e"); 48})
 
-test_that("m_* return unlisted results", {
-  expect_equal(m_warnings(m1), "w")
-  expect_equal(m_warnings(m2), c("w1", "w2"))
-  expect_equal(m_notes(m1), "m")
-  expect_equal(m_notes(m2), c("m1", "m2"))
-  expect_equal(m_error(e1), "e")
+test_that(".single_* return unlisted results", {
+  expect_equal(.single_warnings(m1), "w")
+  expect_equal(.single_warnings(m2), c("w1", "w2"))
+  expect_equal(.single_notes(m1), "m")
+  expect_equal(.single_notes(m2), c("m1", "m2"))
+  expect_equal(.single_error(e1), "e")
 })
 
 test_that("ms_* return listed results", {
