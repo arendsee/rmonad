@@ -4,7 +4,7 @@
 \alias{m_delete_value}
 \title{Delete a node's value}
 \usage{
-m_delete_value(m, index = m@head)
+m_delete_value(m, ...)
 }
 \arguments{
 \item{m}{Rmonad object}

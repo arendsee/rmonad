@@ -22,12 +22,12 @@ is_rmonad <- function(m) {
 #' @param m Rmonad object
 #' @param index Delete the value contained by this vertex (if NULL, delete head value)
 #' @export
-m_delete_value <- function(m, index=m@head) {
-  caches <- .get_raw_value(m, index)
+m_delete_value <- function(m, ...) {
+  caches <- .get_raw_value(m, ...)
   for(cache in caches){
     cache@del()
   }
-  m <- .set_raw_value(m, list(noCache()), index)
+  m <- .set_raw_value(m, list(noCache()), ...)
   m
 }
 
@@ -70,8 +70,8 @@ has_nest       <- function(m, index=m@head) sapply(ms_nest(m),       function(x)
 
 # TODO: chop these
 # FIXME: seriously, murder the stored field
-.m_stored <- function(m, index=m@head) {
-  stored <- .get_attribute_complex(m, "stored", index=index)
+.m_stored <- function(m, ...) {
+  stored <- .get_single_attribute_complex(m, default=FALSE, attribute="stored", ...)
   if(is.null(stored)){
     FALSE
   } else {
@@ -79,87 +79,85 @@ has_nest       <- function(m, index=m@head) sapply(ms_nest(m),       function(x)
   }
 }
 `.m_stored<-` <- function(m, value) {
-  .set_attribute(m, "stored", value)
+  .set_single_attribute(m, attribute="stored", value=value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_parents <- function(m, index=m@head) {
-  .get_relative_ids(m, "in", c("depend", "transitive"), index=index)
+m_parents <- function(m, ...) {
+  .get_single_relative_ids(m, "in", c("depend", "transitive"), ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_parents <- function(m) {
-  lapply(ms_id(m), function(i)
-    .get_relative_ids(
-      m     = m,
-      mode  = "in",
-      type  = c("depend", "transitive"),
-      index = i
-    ))
+ms_parents <- function(m, ...) {
+  .get_many_relative_ids(
+    m     = m,
+    mode  = "in",
+    type  = c("depend", "transitive"),
+    ...
+  )
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_dependents <- function(m, index=m@head) {
-  .get_relative_ids(m, "out", "depend", index=index)
+m_dependents <- function(m, ...) {
+  .get_single_relative_ids(m, "out", "depend", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_dependents <- function(m) {
-  lapply(ms_id(m), function(i) .get_relative_ids(m=m, mode="out", type="depend", index=i))
+ms_dependents <- function(m, ...) {
+  .get_many_relative_ids(m=m, mode="out", type="depend", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_nest <- function(m, index=m@head) {
-  .get_relative_ids(m, "in", "nest", index=index)
+m_nest <- function(m, ...) {
+  .get_single_relative_ids(m, "in", "nest", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_nest <- function(m) {
-  lapply(ms_id(m), function(i) .get_relative_ids(m=m, mode="in", type="nest", index=i))
+ms_nest <- function(m, ...) {
+  .get_many_relative_ids(m=m, mode="in", type="nest", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_prior <- function(m, index=m@head) {
-  .get_relative_ids(m, "in", "prior", index=index)
+m_prior <- function(m, ...) {
+  .get_single_relative_ids(m, "in", "prior", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_prior <- function(m) {
-  lapply(ms_id(m), function(i) .get_relative_ids(m=m, mode="in", type="prior", index=i))
+ms_prior <- function(m, ...) {
+  .get_many_relative_ids(m=m, mode="in", type="prior", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_nest_depth <- function(m, index=m@head) {
-  .get_attribute_complex(m, "nest_depth", index=index)
+m_nest_depth <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_nest_depth(), attribute="nest_depth", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_nest_depth <- function(m) {
-  .get_all_attribute(m, 'nest_depth')
+ms_nest_depth <- function(m, ...) {
+  .get_many_attributes(m, attribute='nest_depth', ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_value <- function(m, index=m@head, ...){
+m_value <- function(m, warn=TRUE, ...){
   # ... should only ever be 'warn' at this point
-  .get_attribute_complex(m, "value", index=index)@get(...)
+  .get_single_attribute_complex(m, default=.default_value(), attribute="value", ...)@get(warn)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_value <- function(m, ...){
-  .m_check(m)
-  lapply(.get_all_attribute(m, 'value'), function(v) v@get(...))
+ms_value <- function(m, warn=TRUE, ...){
+  lapply(.get_many_attributes(m, attribute='value', ...), function(v) v@get(warn))
 }
 
 #' @rdname rmonad_accessors
@@ -171,218 +169,218 @@ m_id <- function(m, index=m@head) {
 
 #' @rdname rmonad_accessors
 #' @export
-ms_id <- function(m) {
-  .get_numeric_ids(m)
+ms_id <- function(m, ...) {
+  .get_numeric_ids(m, ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_OK <- function(m, index=m@head) {
-  .get_attribute_complex(m, "OK", index=index)
+m_OK <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_OK(), attribute="OK", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_OK <- function(m) {
-  .get_all_attribute(m, "OK")
+ms_OK <- function(m, ...) {
+  .get_many_attributes(m, attribute="OK", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_code <- function(m, index=m@head) {
-  .get_attribute_complex(m, "code", index=index)
+m_code <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_code(), attribute="code", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_code <- function(m) {
-  .get_all_attribute(m, 'code')
+ms_code <- function(m, ...) {
+  .get_many_attributes(m, attribute='code', ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_error <- function(m, index=m@head) {
-  .get_attribute_complex(m, "error", index=index)
+m_error <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_error(), attribute="error", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_error <- function(m) {
-  .get_all_attribute_complex(m, "error", default=NA_character_)
+ms_error <- function(m, ...) {
+  .get_many_attributes_complex(m, attribute="error", default=NA_character_, ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_warnings <- function(m, index=m@head) {
-  .get_attribute_complex(m, "warnings", index=index)
+m_warnings <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_warnings(), attribute="warnings", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_warnings <- function(m) {
-  .get_all_attribute_complex(m, "warnings", default=NA_character_)
+ms_warnings <- function(m, ...) {
+  .get_many_attributes_complex(m, attribute="warnings", default=NA_character_, ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_notes <- function(m, index=m@head) {
-  .get_attribute_complex(m, "notes", index=index)
+m_notes <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_notes(), attribute="notes", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_notes <- function(m) {
-  .get_all_attribute_complex(m, "notes", default=NA_character_)
+ms_notes <- function(m, ...) {
+  .get_many_attributes_complex(m, attribute="notes", default=NA_character_, ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_doc <- function(m, index=m@head) {
-  .get_attribute_complex(m, "doc", index=index)
+m_doc <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_doc(), attribute="doc", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_doc <- function(m) {
-  .get_all_attribute_complex(m, "doc", default=NA_character_)
+ms_doc <- function(m, ...) {
+  .get_many_attributes_complex(m, attribute="doc", default=NA_character_, ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_meta <- function(m, index=m@head) {
-  .get_attribute_complex(m, "meta", index=index)
+m_meta <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_meta(), attribute="meta", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_meta <- function(m) {
-  .get_all_attribute(m, 'meta')
+ms_meta <- function(m, ...) {
+  .get_many_attributes(m, attribute='meta', ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_time <- function(m, index=m@head) {
-  .get_attribute_complex(m, "time", index=index)
+m_time <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_time(), attribute="time", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_time <- function(m) {
-  .get_all_attribute_complex(m, "time", default=NA_real_)
+ms_time <- function(m, ...) {
+  .get_many_attributes_complex(m, attribute="time", default=NA_real_, ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_mem <- function(m, index=m@head) {
-  .get_attribute_complex(m, "mem", index=index)
+m_mem <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_mem(), attribute="mem", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_mem <- function(m) {
-  .get_all_attribute_complex(m, "mem", default=NA_integer_)
+ms_mem <- function(m, ...) {
+  .get_many_attributes_complex(m, attribute="mem", default=NA_integer_, ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-m_summary <- function(m, index=m@head) {
-  .get_attribute_complex(m, "summary", index=index)
+m_summary <- function(m, ...) {
+  .get_single_attribute_complex(m, default=.default_summary(), attribute="summary", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_summary <- function(m) {
-  .get_all_attribute_complex(m, "summary", default=.default_summary())
+ms_summary <- function(m, ...) {
+  .get_many_attributes_complex(m, attribute="summary", default=.default_summary(), ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_OK<-` <- function(m, value) {
   stopifnot(is.logical(value))
-  .set_attribute(m, "OK", value)
+  .set_single_attribute(m, attribute="OK", value=value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_value<-` <- function(m, value) {
   # TODO: Don't hardcode the cache function
-  .set_attribute_complex(m, "value", memoryCache(value))
+  .set_single_attribute_complex(m, attribute="value", value=memoryCache(value))
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_code<-` <- function(m, value) {
-  .set_attribute_complex(m, "code", value)
+  .set_single_attribute_complex(m, attribute="code", value=value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_error<-` <- function(m, value) {
-  .set_attribute_complex(m, "error", value)
+  .set_single_attribute_complex(m, attribute="error", value=value)
 }
 
 
 #' @rdname rmonad_accessors
 #' @export
 `m_warnings<-` <- function(m, value) {
-  .set_attribute_complex(m, "warnings", value)
+  .set_single_attribute_complex(m, attribute="warnings", value=value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_notes<-` <- function(m, value) {
-  .set_attribute_complex(m, "notes", value)
+  .set_single_attribute_complex(m, attribute="notes", value=value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_doc<-` <- function(m, value) {
-  .set_attribute_complex(m, "doc", value)
+  .set_single_attribute_complex(m, attribute="doc", value=value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_meta<-` <- function(m, value) {
-  .set_attribute_complex(m, "meta", value)
+  .set_single_attribute_complex(m, attribute="meta", value=value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_time<-` <- function(m, value) {
-  .set_attribute(m, "time", value)
+  .set_single_attribute(m, attribute="time", value=value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_mem<-` <- function(m, value) {
-  .set_attribute(m, "mem", value)
+  .set_single_attribute(m, attribute="mem", value=value)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 `m_summary<-` <- function(m, value){
-  .set_attribute_complex(m, "summary", value)
+  .set_single_attribute_complex(m, attribute="summary", value=value)
 }
 
 
 #' @rdname rmonad_accessors
 #' @export
-app_warnings <- function(m, value, index=m@head) {
-  warnings <- .get_attribute_complex(m, "warnings", index=index)
+app_warnings <- function(m, value, ...) {
+  warnings <- .get_single_attribute_complex(m, attribute="warnings", ...)
   if(length(value) > 0 && nchar(value) > 0){
     warnings <- value %++% warnings
   }
-  .set_attribute(m, "warnings", warnings, index=index)
+  .set_single_attribute(m, attribute="warnings", warnings, ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-app_notes <- function(m, value, index=m@head) {
-  notes <- .get_attribute_complex(m, "notes", index=index)
+app_notes <- function(m, value, ...) {
+  notes <- .get_single_attribute_complex(m, attribute="notes", ...)
   if(length(value) > 0 && nchar(value) > 0){
     notes <- value %++% notes
   }
-  .set_attribute(m, "notes", notes, index=index)
+  .set_single_attribute(m, attribute="notes", notes, ...)
 }
 
 
@@ -422,7 +420,7 @@ app_notes <- function(m, value, index=m@head) {
 #' @rdname rmonad_accessors
 #' @export
 `m_nest_depth<-` <- function(m, value) {
-  .set_attribute(m, "nest_depth", value)
+  .set_single_attribute(m, attribute="nest_depth", value=value)
 }
 
 #' @rdname rmonad_accessors

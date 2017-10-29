@@ -55,73 +55,73 @@
 \alias{app_parents}
 \title{get, set, and append rmonad fields}
 \usage{
-m_parents(m, index = m@head)
+m_parents(m, ...)
 
-ms_parents(m)
+ms_parents(m, ...)
 
-m_dependents(m, index = m@head)
+m_dependents(m, ...)
 
-ms_dependents(m)
+ms_dependents(m, ...)
 
-m_nest(m, index = m@head)
+m_nest(m, ...)
 
-ms_nest(m)
+ms_nest(m, ...)
 
-m_prior(m, index = m@head)
+m_prior(m, ...)
 
-ms_prior(m)
+ms_prior(m, ...)
 
-m_nest_depth(m, index = m@head)
+m_nest_depth(m, ...)
 
-ms_nest_depth(m)
+ms_nest_depth(m, ...)
 
-m_value(m, index = m@head, ...)
+m_value(m, warn = TRUE, ...)
 
-ms_value(m, ...)
+ms_value(m, warn = TRUE, ...)
 
 m_id(m, index = m@head)
 
-ms_id(m)
+ms_id(m, ...)
 
-m_OK(m, index = m@head)
+m_OK(m, ...)
 
-ms_OK(m)
+ms_OK(m, ...)
 
-m_code(m, index = m@head)
+m_code(m, ...)
 
-ms_code(m)
+ms_code(m, ...)
 
-m_error(m, index = m@head)
+m_error(m, ...)
 
-ms_error(m)
+ms_error(m, ...)
 
-m_warnings(m, index = m@head)
+m_warnings(m, ...)
 
-ms_warnings(m)
+ms_warnings(m, ...)
 
-m_notes(m, index = m@head)
+m_notes(m, ...)
 
-ms_notes(m)
+ms_notes(m, ...)
 
-m_doc(m, index = m@head)
+m_doc(m, ...)
 
-ms_doc(m)
+ms_doc(m, ...)
 
-m_meta(m, index = m@head)
+m_meta(m, ...)
 
-ms_meta(m)
+ms_meta(m, ...)
 
-m_time(m, index = m@head)
+m_time(m, ...)
 
-ms_time(m)
+ms_time(m, ...)
 
-m_mem(m, index = m@head)
+m_mem(m, ...)
 
-ms_mem(m)
+ms_mem(m, ...)
 
-m_summary(m, index = m@head)
+m_summary(m, ...)
 
-ms_summary(m)
+ms_summary(m, ...)
 
 m_OK(m) <- value
 
@@ -145,9 +145,9 @@ m_mem(m) <- value
 
 m_summary(m) <- value
 
-app_warnings(m, value, index = m@head)
+app_warnings(m, value, ...)
 
-app_notes(m, value, index = m@head)
+app_notes(m, value, ...)
 
 m_parents(m) <- value
 
@@ -160,9 +160,9 @@ app_parents(m, value)
 \arguments{
 \item{m}{the rmonad}
 
-\item{index}{The index of the node to get or set}
-
 \item{...}{Additional arguments}
+
+\item{index}{The index of the node to get or set}
 
 \item{value}{value to replace or append current value}
 }

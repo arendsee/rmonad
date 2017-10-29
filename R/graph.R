@@ -52,7 +52,7 @@ size <- function(m) {
       graph = child@graph,
       name  = "value",
       index = child@head,
-      value = igraph::get.vertex.attribute(parent@graph, "value", parent@head)
+      value = igraph::get.vertex.attribute(parent@graph, name="value", index=parent@head)
     )
 
   if(inherit_OK && !m_OK(parent))
@@ -91,6 +91,18 @@ size <- function(m) {
   igraph::make_empty_graph(directed=TRUE, n=1)
 }
 
+.get_ids <- function(m, index=NULL){
+  .m_check(m)
+  ids <- igraph::V(m@graph)
+  if(!is.null(index)){
+    ids <- ids[index]
+  }
+  ids
+}
+.get_numeric_ids <- function(...){
+  .get_ids(...) %>% as.numeric
+}
+
 # Add multiple parents to an child 
 #
 # @param child Rmonad object
@@ -119,7 +131,7 @@ size <- function(m) {
 # @param mode "in" or "out"
 # @param type Edge types to consider
 # @param index vector of indices
-.get_relative_ids <- function(m, mode, type, index=m@head){
+.get_single_relative_ids <- function(m, mode, type, index=m@head){
   .m_check(m)
   vertices <- igraph::neighbors(m@graph, index, mode=mode) %>% as.numeric
   edges <- igraph::incident_edges(m@graph, index, mode=mode)[[1]] %>% as.numeric
@@ -128,14 +140,8 @@ size <- function(m) {
   stopifnot(length(etype) == length(edges))
   vertices[etype %in% type] %>% as.integer
 }
-
-.get_ids <- function(m){
-  .m_check(m)
-  igraph::V(m@graph)
-}
-.get_numeric_ids <- function(m){
-  .m_check(m)
-  igraph::V(m@graph) %>% as.numeric
+.get_many_relative_ids <- function(m, index=.get_numeric_ids(m), ...){
+  lapply(index, function(i) .get_single_relative_ids(m, index=i, ...))
 }
 
 # Get attributes for specified indicies
@@ -145,10 +151,20 @@ size <- function(m) {
 # @param index vector of indices
 .get_attribute <- function(m, attribute, index=m@head){
   .m_check(m)
-  igraph::get.vertex.attribute(m@graph, attribute, index)
+  igraph::get.vertex.attribute(m@graph, name=attribute, index=index)
 }
-.get_all_attribute <- function(m, ...){
-  .get_attribute(m, index=ms_id(m), ...) 
+.get_many_attributes <- function(m, index=.get_numeric_ids(m), ...){
+  .get_attribute(m, index=index, ...) 
+}
+.get_single_attribute <- function(m, default, index=m@head, ...){
+  if(length(index) != 1){
+    stop("m_* accessors only take a single index, to get multiple values, use the ms_* accessors")
+  }
+  a <- .get_attribute(m, ...)
+  if(is.null(a) || length(a) == 0){
+    a <- default
+  }
+  a
 }
 
 # Set attributes at specified indices
@@ -159,9 +175,12 @@ size <- function(m) {
 # @param attribute The attribute name (e.g. "error")
 # @param value attribute value
 # @param index vector of indices
-.set_attribute <- function(m, attribute, value, index=m@head){
+.set_single_attribute <- function(m, attribute, value, index=m@head){
   .m_check(m)
-  m@graph <- igraph::set.vertex.attribute(m@graph, attribute, index, value)
+  if(length(index) != 1){
+    stop("ERROR: Can only set one attribute at a time in m_* setters")
+  }
+  m@graph <- igraph::set.vertex.attribute(m@graph, name=attribute, index=index, value=value)
   m
 }
 
@@ -174,24 +193,24 @@ size <- function(m) {
 # in the list. These lists should always be of length 1.
 #
 # @param ... Arguments passed to .get_attribute
-.get_attribute_complex <- function(...){
-  a <- .get_attribute(...)
+.get_single_attribute_complex <- function(...){
+  a <- .get_single_attribute(...)
   if(is.null(a)){
-    NULL
+    NULL # FIXME: should not assume a NULL as default
   } else {
     a[[1]]
   }
 }
-.get_all_attribute_complex <- function(m, default=NA, ...){
-  .get_all_attribute(m, ...) %>% {
+.get_many_attributes_complex <- function(m, default=NA, ...){
+  .get_many_attributes(m, ...) %>% {
     if(is.null(.)){
       . <- rep(default, size(m))
     }
     .
   }
 }
-.set_attribute_complex <- function(m, attribute, value, ...){
-  .set_attribute(m, attribute, list(value))
+.set_single_attribute_complex <- function(m, value, ...){
+  .set_single_attribute(m, value=list(value), ...)
 }
 
 # Set the value function
@@ -203,7 +222,7 @@ size <- function(m) {
 # @param value A cache function
 # @param index vector of indices
 .set_raw_value <- function(m, value, index=m@head){
-  m@graph <- igraph::set.vertex.attribute(m@graph, "value", index=index, value=value)
+  m@graph <- igraph::set.vertex.attribute(m@graph, name="value", index=index, value=value)
   m
 }
 
@@ -213,5 +232,5 @@ size <- function(m) {
 # @param index vector of indices
 .get_raw_value <- function(m, index=m@head){
   .m_check(m)
-  igraph::get.vertex.attribute(m@graph, "value", index=index)
+  igraph::get.vertex.attribute(m@graph, name="value", index=index)
 }

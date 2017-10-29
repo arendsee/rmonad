@@ -156,3 +156,117 @@ test_that("Access works for multiple values", {
   )
 
 })
+
+
+
+test_that("ms_* subsetting works", {
+  expect_equal(
+    ms_dependents(ab, index=c(1,8,9)),
+    list(
+      .default_id(), #1
+      9,             #8
+      .default_id()  #9
+    )
+  )
+
+  expect_equal(
+    ms_code(ab, index=c(1,2)), list('"hi"', '"a"')
+  )
+
+  expect_equal(
+    ms_doc(ab, index=c(3,9)), list("this does stuff", .default_doc())
+  )
+
+  expect_equal(
+    ms_error(ab, index=c(1,9)), list(.default_error(), "die die")
+  )
+
+  expect_equal(
+    ms_id(ab, index=1:3), 1:3
+  )
+
+  expect_true(
+    is.numeric(ms_mem(ab, index=1:2)) &&
+    all(ms_mem(ab, index=1:2) > 0) &&
+    length(ms_mem(ab, index=1:2)) == 2
+  )
+
+  expect_equal(
+    ms_meta(ab, index=c(1,3)), list(list(), list(x=1))
+  )
+
+  expect_equal(
+    ms_nest(ab, index=c(1,7)), list(.default_id(), 6)
+  )
+
+  expect_equal(
+    ms_nest_depth(ab, index=c(1,5,9)), c(1,2,1)
+  )
+
+  expect_equal(
+    ms_notes(ab, index=c(1,3,9)),
+    list(
+      .default_notes(),
+      "yolo",
+      .default_notes()
+    )
+  )
+
+  expect_equal(
+    ms_OK(ab, index=c(1,3,9)), c(T,T,F)
+  )
+
+  expect_equal(
+    ms_parents(ab, index=c(1,3,8)),
+    list(
+      .default_id(), #1
+      2,             #3
+      c(3,7)         #8
+    )
+  )
+
+  expect_equal(
+    ms_prior(ab, index=c(1,3,8)),
+    list(
+      .default_id(), #1
+      .default_id(), #3
+      1              #8
+    )
+  )
+
+  expect_equal(
+    ms_summary(ab, index=c(1,6,9)),
+    list(
+      NULL,      #1
+      c(NaN, 4), #6
+      NULL       #9
+    )
+  )
+
+  expect_true(
+    is.numeric(ms_time(ab, index=8:9)) &&
+    is.na(ms_time(ab, index=8:9)[1])    # This is the container created by funnel
+  )
+
+  expect_equal(
+    ms_value(ab, warn=FALSE, index=c(1,5,9)),
+    list(
+      "hi",       #1
+      c(NaN, 16), #5
+      list(       #9
+        c(NaN, 4),
+        "a b"
+      )
+    )
+  )
+
+  expect_equal(
+    ms_warnings(ab, index=c(1,5,9)),
+    list(
+      .default_warnings(), #1
+      "NaNs produced",     #5
+      .default_warnings()  #9
+    )
+  )
+
+})
