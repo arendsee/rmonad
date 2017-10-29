@@ -15,11 +15,11 @@ bar <- function(x, j=4){
 test_that("Nesting works for named functions", {
   expect_equal(4 %>>% foo %>% esc, 46)
   expect_equal(
-    4 %>>% foo %>% ms_code %>% unlist,
+    4 %>>% foo %>% get_code %>% unlist,
     c("4", "45", "addit(x)", "subit(k)", "foo")
   )
   expect_equal(
-    4 %>>% foo %>% ms_parents,
+    4 %>>% foo %>% get_parents,
     list(
       integer(0),
       integer(0),
@@ -29,7 +29,7 @@ test_that("Nesting works for named functions", {
     )
   )
   expect_equal(
-    4 %>>% foo %>% ms_nest %>% sapply(length),
+    4 %>>% foo %>% get_nest %>% sapply(length),
     c(0,0,0,0,1)
   )
 })
@@ -38,22 +38,22 @@ test_that("Nesting works for deeply nested functions", {
    expect_equal(20 %>>% bar %>% esc, 35)
    expect_true(20 %>>% bar %>% .single_OK)
    expect_equal(
-     20 %>>% bar %>% ms_nest_depth,
+     20 %>>% bar %>% get_nest_depth,
      c(1,2,3,3,3,2,1)
    )
    expect_equal(
-     20 %>>% bar %>% ms_value(warn=FALSE),
+     20 %>>% bar %>% get_value(warn=FALSE),
      list(NULL,NULL,NULL,NULL,NULL,NULL,35)
    )
    expect_equal(
-     20 %>>% bar %>% ms_code %>% unlist,
+     20 %>>% bar %>% get_code %>% unlist,
      c("20", "10", "45", "addit(x)", "subit(k)", "foo(k = x)", "bar")
    )
 })
 
 test_that("The correct parents are set when nesting", {
   expect_equal(
-    256 %v>% { sqrt(.) %v>% sqrt } %>>% sqrt %>% ms_parents,
+    256 %v>% { sqrt(.) %v>% sqrt } %>>% sqrt %>% get_parents,
     list(integer(0), 1, 2, 1, 4) 
   )
 })

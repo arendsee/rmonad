@@ -121,7 +121,7 @@ test_that("fields are not treated as free variables", {
         y <- cars$speed # y should not be a child of speed
         speed %>>% { . * y }
       }
-      5 %>>% foo %>% ms_parents %>% sapply(length)
+      5 %>>% foo %>% get_parents %>% sapply(length)
     },
     c(0,1,1,1)
   )

@@ -167,7 +167,7 @@ values can be extracted:
 
 ```{r}
 result <- 1:5 %v>% sqrt %v>% sqrt %v>% sqrt
-ms_value(result)[[2]]
+get_value(result)[[2]]
 ```
 
 ** TODO: add plotting example **
@@ -292,7 +292,7 @@ Branches can be used as input, as well.
 
 ```{r}
 x <- 1:10 %>^% dgamma(10, 1) %>^% dgamma(10, 5) %^>% cor
-ms_value(x)
+get_value(x)
 ```
 
 Note the branches could be long monadic chains themselves, which might have
@@ -495,7 +495,7 @@ d <- mtcars %>>% {
   subset(., mpg > 20)
 } %>>% nrow
 
-ms_summary(d)[[2]]
+get_summary(d)[[2]]
 ```
 
 The summary information will tucked away invisibly in the `Rmonad` object until

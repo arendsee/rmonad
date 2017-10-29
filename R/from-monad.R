@@ -6,18 +6,18 @@
 #' @export
 mtabulate <- function(m, code=FALSE){
   data.frame(
-    code        = ms_code(m) %>% sapply(paste0, collapse="\n"),
-    id          = ms_id(m) %>% as.numeric,
-    OK          = ms_OK(m),
+    code        = get_code(m) %>% sapply(paste0, collapse="\n"),
+    id          = get_id(m) %>% as.numeric,
+    OK          = get_OK(m),
     cached      = has_value(m),
-    time        = ms_time(m) %>% sapply(function(x) { signif(.[1], 2) }),
-    space       = ms_mem(m),
-    is_nested   = ms_nest(m)       %>% sapply(length),
-    ndependents = ms_dependents(m) %>% sapply(length),
-    nnotes      = ms_notes(m)      %>% sapply(length),
-    nwarnings   = ms_warnings(m)   %>% sapply(length),
-    error       = ms_error(m)      %>% sapply(length),
-    doc         = ms_doc(m)        %>% sapply(length)
+    time        = get_time(m) %>% sapply(function(x) { signif(.[1], 2) }),
+    space       = get_mem(m),
+    is_nested   = get_nest(m)       %>% sapply(length),
+    ndependents = get_dependents(m) %>% sapply(length),
+    nnotes      = get_notes(m)      %>% sapply(length),
+    nwarnings   = get_warnings(m)   %>% sapply(length),
+    error       = get_error(m)      %>% sapply(length),
+    doc         = get_doc(m)        %>% sapply(length)
   ) %>% {
     if(!code)
       .$code <- NULL
@@ -32,19 +32,19 @@ mtabulate <- function(m, code=FALSE){
 #' @export
 missues <- function(m){
 
-  error_len   <- ms_error(m)    %>% sapply(length)
-  warning_len <- ms_warnings(m) %>% sapply(length)
-  note_len    <- ms_notes(m)    %>% sapply(length)
+  error_len   <- get_error(m)    %>% sapply(length)
+  warning_len <- get_warnings(m) %>% sapply(length)
+  note_len    <- get_notes(m)    %>% sapply(length)
 
-  ids <- ms_id(m) %>% {c(
+  ids <- get_id(m) %>% {c(
     rep(., times=error_len),
     rep(., times=warning_len),
     rep(., times=note_len)
   )}
 
-  error    <- ms_error(m)    %>% unlist %>% as.character
-  warnings <- ms_warnings(m) %>% unlist %>% as.character
-  notes    <- ms_notes(m)    %>% unlist %>% as.character
+  error    <- get_error(m)    %>% unlist %>% as.character
+  warnings <- get_warnings(m) %>% unlist %>% as.character
+  notes    <- get_notes(m)    %>% unlist %>% as.character
   data.frame(
     id = ids,
     type = c(
@@ -162,7 +162,7 @@ mreport <- function(
     }
   }
 
-  entries <- ms_id(m) %>% sapply( function(i)
+  entries <- get_id(m) %>% sapply( function(i)
     glue::glue(.open='{{', .close='}}',
       "
       ## {{id}}

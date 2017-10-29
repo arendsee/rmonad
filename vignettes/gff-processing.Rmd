@@ -515,13 +515,14 @@ missues(result)
 
 The `id` column corresponds to a row number in the `mtabulate` result.
 
-To extract particular values, we can use the `m_*` family of getters
+To extract particular values, we can use the `get_*` family of vectorized
+getters
 
 ```{r, eval=FALSE}
 # get a list of every stored value, report uncached values as NULL
-ms_value(result, warn=FALSE)
+get_value(result, warn=FALSE)
 # get a list of every docstring
-ms_doc(result)
+get_doc(result)
 ```
 
 <!--
@@ -538,22 +539,19 @@ are the `rmonad` ids. The red arrow indicates a 'nest' relationship. Green nodes
 are OK, orange nodes raised a warning, red nodes (none appear in this graph)
 represent errors.
 
-The generic `as.list` function extracts every node from an rmonad object. Here
-is a list of all currently supported getter functions.
+Here is a list of all currently supported getter functions.
 
-** TODO: UPDATE, THIS LIST IS OUT OF DATE **
-
- * `m_parents`  - list of node parents
- * `m_value`    - the value stored in the object, if any
- * `m_ok`       - is the node in a passing state?
- * `m_code`     - the code chunk (minus the docstring)
- * `m_error`    - any errors that were raised
- * `m_warnings` - any warnings that were raised
- * `m_notes`    - any messages that were printed
- * `m_doc`      - the docstring
- * `m_time`     - the time required to evaluate the chunk
- * `m_mem`      - the size of the resulting value, in bytes
- * `m_branch`   - nodes branching from this node (not used in this pipeline)
+ * `get_parents`  - list of node parents
+ * `get_value`    - the value stored in the object, if any
+ * `get_ok`       - is the node in a passing state?
+ * `get_code`     - the code chunk (minus the docstring)
+ * `get_error`    - any errors that were raised
+ * `get_warnings` - any warnings that were raised
+ * `get_notes`    - any messages that were printed
+ * `get_doc`      - the docstring
+ * `get_time`     - the time required to evaluate the chunk
+ * `get_mem`      - the size of the resulting value, in bytes
+ * `get_branch`   - nodes branching from this node (not used in this pipeline)
 
 
 If the pipeline fails, the last valid result is saved,

@@ -30,17 +30,17 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   if(is.function(label)) {
     label(x)               
   } else if(is.null(label)){
-    ms_id(x)
+    get_id(x)
   } else if(label == "code"){
-    sapply(ms_code(x), paste0, collapse="\n")
+    sapply(get_code(x), paste0, collapse="\n")
   } else if(label == "time") {
-    ms_time(x)
+    get_time(x)
   } else if (label == "space") {
-    ms_mem(x)
+    get_mem(x)
   } else if (label == "depth") {
-    ms_nest_depth(x)
+    get_nest_depth(x)
   } else if (label == "value") {
-    ifelse(has_value(x), ms_value(x, warn=FALSE), "-")
+    ifelse(has_value(x), get_value(x, warn=FALSE), "-")
   } else {
     stop("Something is wrong with the 'label' field")
   }

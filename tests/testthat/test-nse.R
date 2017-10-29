@@ -83,14 +83,14 @@ test_that("docstrings work on rhs", {
 test_that("docstrings work on lhs", {
   expect_equal({"adsf"; 4} %>>% sqrt %>% esc, 2)
   expect_true( {"adsf"; 4} %>>% sqrt %>% .single_OK)
-  expect_equal({"adsf"; 4} %>>% sqrt %>% ms_doc, list("adsf", .default_doc()))
+  expect_equal({"adsf"; 4} %>>% sqrt %>% get_doc, list("adsf", .default_doc()))
 })
 
 test_that("docstrings work with %__%", {
   expect_equal(
     {"qwer"; 5} %__%
     {"asdf"; 4} %>>%
-    sqrt        %>% ms_doc,
+    sqrt        %>% get_doc,
     list("qwer", "asdf", .default_doc())
   )
 })

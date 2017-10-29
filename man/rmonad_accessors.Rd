@@ -16,23 +16,23 @@
 \alias{has_prior}
 \alias{has_nest}
 \alias{has_summary}
-\alias{ms_parents}
-\alias{ms_dependents}
-\alias{ms_nest}
-\alias{ms_prior}
-\alias{ms_nest_depth}
-\alias{ms_value}
-\alias{ms_id}
-\alias{ms_OK}
-\alias{ms_code}
-\alias{ms_error}
-\alias{ms_warnings}
-\alias{ms_notes}
-\alias{ms_doc}
-\alias{ms_meta}
-\alias{ms_time}
-\alias{ms_mem}
-\alias{ms_summary}
+\alias{get_parents}
+\alias{get_dependents}
+\alias{get_nest}
+\alias{get_prior}
+\alias{get_nest_depth}
+\alias{get_value}
+\alias{get_id}
+\alias{get_OK}
+\alias{get_code}
+\alias{get_error}
+\alias{get_warnings}
+\alias{get_notes}
+\alias{get_doc}
+\alias{get_meta}
+\alias{get_time}
+\alias{get_mem}
+\alias{get_summary}
 \title{get, set, and append rmonad fields}
 \usage{
 has_code(m, ...)
@@ -63,39 +63,39 @@ has_nest(m, ...)
 
 has_summary(m, ...)
 
-ms_parents(m, ...)
+get_parents(m, ...)
 
-ms_dependents(m, ...)
+get_dependents(m, ...)
 
-ms_nest(m, ...)
+get_nest(m, ...)
 
-ms_prior(m, ...)
+get_prior(m, ...)
 
-ms_nest_depth(m, ...)
+get_nest_depth(m, ...)
 
-ms_value(m, warn = TRUE, ...)
+get_value(m, warn = TRUE, ...)
 
-ms_id(m, ...)
+get_id(m, ...)
 
-ms_OK(m, ...)
+get_OK(m, ...)
 
-ms_code(m, ...)
+get_code(m, ...)
 
-ms_error(m, ...)
+get_error(m, ...)
 
-ms_warnings(m, ...)
+get_warnings(m, ...)
 
-ms_notes(m, ...)
+get_notes(m, ...)
 
-ms_doc(m, ...)
+get_doc(m, ...)
 
-ms_meta(m, ...)
+get_meta(m, ...)
 
-ms_time(m, ...)
+get_time(m, ...)
 
-ms_mem(m, ...)
+get_mem(m, ...)
 
-ms_summary(m, ...)
+get_summary(m, ...)
 }
 \arguments{
 \item{m}{the rmonad}

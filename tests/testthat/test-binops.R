@@ -48,7 +48,7 @@ test_that('function passing works with package labels', {
 
 test_that('input storing works', {
   expect_equal(
-    256 %v>% sqrt %>>% sqrt %v>% sqrt %>% ms_value(warn=FALSE),
+    256 %v>% sqrt %>>% sqrt %v>% sqrt %>% get_value(warn=FALSE),
     list(256,NULL,4,2)
   )
 })
@@ -62,12 +62,12 @@ test_that('Alteratives (%|>%) work', {
 })
 
 test_that('Alteratives (%||%) work', {
-  expect_equal(1 %||% 5 %>>% sqrt %>% ms_code, list("1", "sqrt"))
+  expect_equal(1 %||% 5 %>>% sqrt %>% get_code, list("1", "sqrt"))
   expect_true(1 %||% 5 %>>% sqrt %>% .single_OK)
 })
 
 test_that('output toss works %>_%', {
-  expect_equal(1 %>_% '*'(3) %>>% '*'(2) %>% ms_code, list("1", "*3", "*2"))
+  expect_equal(1 %>_% '*'(3) %>>% '*'(2) %>% get_code, list("1", "*3", "*2"))
   expect_equal(1 %>_% '*'(3) %>>% '*'(2) %>% .single_value, 2)
   expect_true( 1 %>_% '*'(3) %>>% '*'(2) %>% .single_OK)
 
@@ -127,6 +127,6 @@ test_that('"%__%" works', {
   expect_equal( stop("hi") %__% 1:10 %>% esc, 1:10 )
   expect_true(  stop("hi") %__% 1:10 %>% .single_OK )
 
-  expect_equal( 1:5 %__% 1:10 %>% ms_value(warn=FALSE), list(1:5, 1:10) )
+  expect_equal( 1:5 %__% 1:10 %>% get_value(warn=FALSE), list(1:5, 1:10) )
   expect_true(  1:5 %__% 1:10 %>% .single_OK )
 })

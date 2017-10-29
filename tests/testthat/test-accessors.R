@@ -41,17 +41,17 @@ test_that(".single_* return unlisted results", {
   expect_equal(.single_error(e1), "e")
 })
 
-test_that("ms_* return listed results", {
-  expect_equal(ms_warnings(m1)[[1]], "w")
-  expect_equal(ms_warnings(m2)[[1]], c("w1", "w2"))
-  expect_equal(ms_notes(m1)[[1]],    "m")
-  expect_equal(ms_notes(m2)[[1]],    c("m1", "m2"))
-  expect_equal(ms_error(e1)[[1]],    "e")
+test_that("get_* return listed results", {
+  expect_equal(get_warnings(m1)[[1]], "w")
+  expect_equal(get_warnings(m2)[[1]], c("w1", "w2"))
+  expect_equal(get_notes(m1)[[1]],    "m")
+  expect_equal(get_notes(m2)[[1]],    c("m1", "m2"))
+  expect_equal(get_error(e1)[[1]],    "e")
 })
 
 
 test_that("Attempting to access a non-existent value should raise an warning", {
   expect_warning({
-    16 %>>% sqrt %>% ms_value
+    16 %>>% sqrt %>% get_value
   })
 })

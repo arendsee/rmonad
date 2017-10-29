@@ -7,7 +7,7 @@ ab <- "hi" %__% funnel(a, b) %*>% (function(x,y) { stop("die die") })
 
 test_that("Access works for multiple values", {
   expect_equal(
-    ms_dependents(ab),
+    get_dependents(ab),
     list(
       .default_id(), #1
       3,             #2
@@ -22,39 +22,39 @@ test_that("Access works for multiple values", {
   )
 
   expect_equal(
-    ms_code(ab)[c(1,2)], list('"hi"', '"a"')
+    get_code(ab)[c(1,2)], list('"hi"', '"a"')
   )
 
   expect_equal(
-    ms_doc(ab)[c(3,9)], list("this does stuff", .default_doc())
+    get_doc(ab)[c(3,9)], list("this does stuff", .default_doc())
   )
 
   expect_equal(
-    ms_error(ab)[c(1,9)], list(.default_error(), "die die")
+    get_error(ab)[c(1,9)], list(.default_error(), "die die")
   )
 
   expect_equal(
-    ms_id(ab), 1:9
+    get_id(ab), 1:9
   )
 
   expect_true(
-    is.numeric(ms_mem(ab)) && ms_mem(ab) > 0 && length(ms_mem(ab)) == 9
+    is.numeric(get_mem(ab)) && get_mem(ab) > 0 && length(get_mem(ab)) == 9
   )
 
   expect_equal(
-    ms_meta(ab)[c(1,3)], list(list(), list(x=1))
+    get_meta(ab)[c(1,3)], list(list(), list(x=1))
   )
 
   expect_equal(
-    ms_nest(ab)[c(1,7)], list(.default_id(), 6)
+    get_nest(ab)[c(1,7)], list(.default_id(), 6)
   )
 
   expect_equal(
-    ms_nest_depth(ab), c(1,1,1,1,2,2,1,1,1)
+    get_nest_depth(ab), c(1,1,1,1,2,2,1,1,1)
   )
 
   expect_equal(
-    ms_notes(ab),
+    get_notes(ab),
     list(
       .default_notes(),
       .default_notes(),
@@ -69,11 +69,11 @@ test_that("Access works for multiple values", {
   )
 
   expect_equal(
-    ms_OK(ab), c(T,T,T,T,T,T,T,T,F)
+    get_OK(ab), c(T,T,T,T,T,T,T,T,F)
   )
 
   expect_equal(
-    ms_parents(ab),
+    get_parents(ab),
     list(
       .default_id(), #1
       .default_id(), #2
@@ -88,7 +88,7 @@ test_that("Access works for multiple values", {
   )
 
   expect_equal(
-    ms_prior(ab),
+    get_prior(ab),
     list(
       .default_id(), #1
       .default_id(), #2
@@ -103,7 +103,7 @@ test_that("Access works for multiple values", {
   )
 
   expect_equal(
-    ms_summary(ab),
+    get_summary(ab),
     list(
       NULL,
       NULL,
@@ -118,12 +118,12 @@ test_that("Access works for multiple values", {
   )
 
   expect_true(
-    is.numeric(ms_time(ab)) &&
-    is.na(ms_time(ab)[8])    # This is the container created by funnel
+    is.numeric(get_time(ab)) &&
+    is.na(get_time(ab)[8])    # This is the container created by funnel
   )
 
   expect_equal(
-    ms_value(ab, warn=FALSE),
+    get_value(ab, warn=FALSE),
     list(
       "hi",       #1
       "a",        #2
@@ -141,7 +141,7 @@ test_that("Access works for multiple values", {
   )
 
   expect_equal(
-    ms_warnings(ab),
+    get_warnings(ab),
     list(
       .default_warnings(),
       .default_warnings(),
@@ -159,9 +159,9 @@ test_that("Access works for multiple values", {
 
 
 
-test_that("ms_* subsetting works", {
+test_that("get_* subsetting works", {
   expect_equal(
-    ms_dependents(ab, index=c(1,8,9)),
+    get_dependents(ab, index=c(1,8,9)),
     list(
       .default_id(), #1
       9,             #8
@@ -170,41 +170,41 @@ test_that("ms_* subsetting works", {
   )
 
   expect_equal(
-    ms_code(ab, index=c(1,2)), list('"hi"', '"a"')
+    get_code(ab, index=c(1,2)), list('"hi"', '"a"')
   )
 
   expect_equal(
-    ms_doc(ab, index=c(3,9)), list("this does stuff", .default_doc())
+    get_doc(ab, index=c(3,9)), list("this does stuff", .default_doc())
   )
 
   expect_equal(
-    ms_error(ab, index=c(1,9)), list(.default_error(), "die die")
+    get_error(ab, index=c(1,9)), list(.default_error(), "die die")
   )
 
   expect_equal(
-    ms_id(ab, index=1:3), 1:3
+    get_id(ab, index=1:3), 1:3
   )
 
   expect_true(
-    is.numeric(ms_mem(ab, index=1:2)) &&
-    all(ms_mem(ab, index=1:2) > 0) &&
-    length(ms_mem(ab, index=1:2)) == 2
+    is.numeric(get_mem(ab, index=1:2)) &&
+    all(get_mem(ab, index=1:2) > 0) &&
+    length(get_mem(ab, index=1:2)) == 2
   )
 
   expect_equal(
-    ms_meta(ab, index=c(1,3)), list(list(), list(x=1))
+    get_meta(ab, index=c(1,3)), list(list(), list(x=1))
   )
 
   expect_equal(
-    ms_nest(ab, index=c(1,7)), list(.default_id(), 6)
+    get_nest(ab, index=c(1,7)), list(.default_id(), 6)
   )
 
   expect_equal(
-    ms_nest_depth(ab, index=c(1,5,9)), c(1,2,1)
+    get_nest_depth(ab, index=c(1,5,9)), c(1,2,1)
   )
 
   expect_equal(
-    ms_notes(ab, index=c(1,3,9)),
+    get_notes(ab, index=c(1,3,9)),
     list(
       .default_notes(),
       "yolo",
@@ -213,11 +213,11 @@ test_that("ms_* subsetting works", {
   )
 
   expect_equal(
-    ms_OK(ab, index=c(1,3,9)), c(T,T,F)
+    get_OK(ab, index=c(1,3,9)), c(T,T,F)
   )
 
   expect_equal(
-    ms_parents(ab, index=c(1,3,8)),
+    get_parents(ab, index=c(1,3,8)),
     list(
       .default_id(), #1
       2,             #3
@@ -226,7 +226,7 @@ test_that("ms_* subsetting works", {
   )
 
   expect_equal(
-    ms_prior(ab, index=c(1,3,8)),
+    get_prior(ab, index=c(1,3,8)),
     list(
       .default_id(), #1
       .default_id(), #3
@@ -235,7 +235,7 @@ test_that("ms_* subsetting works", {
   )
 
   expect_equal(
-    ms_summary(ab, index=c(1,6,9)),
+    get_summary(ab, index=c(1,6,9)),
     list(
       NULL,      #1
       c(NaN, 4), #6
@@ -244,12 +244,12 @@ test_that("ms_* subsetting works", {
   )
 
   expect_true(
-    is.numeric(ms_time(ab, index=8:9)) &&
-    is.na(ms_time(ab, index=8:9)[1])    # This is the container created by funnel
+    is.numeric(get_time(ab, index=8:9)) &&
+    is.na(get_time(ab, index=8:9)[1])    # This is the container created by funnel
   )
 
   expect_equal(
-    ms_value(ab, warn=FALSE, index=c(1,5,9)),
+    get_value(ab, warn=FALSE, index=c(1,5,9)),
     list(
       "hi",       #1
       c(NaN, 16), #5
@@ -261,7 +261,7 @@ test_that("ms_* subsetting works", {
   )
 
   expect_equal(
-    ms_warnings(ab, index=c(1,5,9)),
+    get_warnings(ab, index=c(1,5,9)),
     list(
       .default_warnings(), #1
       "NaNs produced",     #5

@@ -11,8 +11,8 @@ test_that('combine fails on non-monadic inputs in list', {
 
 test_that('combine and funnel store history in list', {
 
-  expect_equal(length(ms_id(combine(l_monadic))[-1]), 2)
-  expect_equal(length(ms_id(funnel("hi", 42))[-1]), 2)
+  expect_equal(length(get_id(combine(l_monadic))[-1]), 2)
+  expect_equal(length(get_id(funnel("hi", 42))[-1]), 2)
 
   # basic anonymous functions work
   expect_equal({
@@ -63,7 +63,7 @@ test_that('funnel intermediate values are deleted', {
   expect_equal(
     funnel(1:10, 11:20)              %*>%
       (function(x,y){ sum(c(x,y)) }) %>%
-      ms_value(warn=FALSE),
+      get_value(warn=FALSE),
     list(NULL, NULL, NULL, 210)
   )
 })
@@ -103,7 +103,7 @@ test_that("no duplication occurs on pipelines that branch and rejoin", {
       m %v>% sqrt %v>% sqrt -> a
       m %v>% sqrt -> b
       funnel(a, b) %*>% sum -> ab
-      ab %>% ms_value(warn=FALSE)
+      ab %>% get_value(warn=FALSE)
     },
     list(
       256,

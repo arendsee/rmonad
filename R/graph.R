@@ -19,7 +19,7 @@ size <- function(m) {
 }
 
 # These edges should be in the same order as vertex parents in
-# `unlist(ms_parents(m))`
+# `unlist(get_parents(m))`
 .get_edge_types <- function(m){
   .m_check(m)
   igraph::E(m@graph)$type
@@ -158,7 +158,7 @@ size <- function(m) {
 }
 .get_single_attribute <- function(m, default, index=m@head, ...){
   if(length(index) != 1){
-    stop(".single_* accessors only take a single index, to get multiple values, use the ms_* accessors")
+    stop(".single_* accessors only take a single index, to get multiple values, use the get_* accessors")
   }
   a <- .get_attribute(m, ...)
   if(is.null(a) || length(a) == 0){

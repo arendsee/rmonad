@@ -58,35 +58,35 @@ is_rmonad <- function(m) {
 
 #' @rdname rmonad_accessors
 #' @export
-has_code <- function(m, ...) sapply(ms_code(m , ...), .is_not_empty_string)
+has_code <- function(m, ...) sapply(get_code(m , ...), .is_not_empty_string)
 
 #' @rdname rmonad_accessors
 #' @export
-has_error <- function(m, ...) sapply(ms_error(m , ...), function(x) length(x) > 0)
+has_error <- function(m, ...) sapply(get_error(m , ...), function(x) length(x) > 0)
 
 #' @rdname rmonad_accessors
 #' @export
-has_doc <- function(m, ...) sapply(ms_doc(m , ...), function(x) length(x) > 0)
+has_doc <- function(m, ...) sapply(get_doc(m , ...), function(x) length(x) > 0)
 
 #' @rdname rmonad_accessors
 #' @export
-has_warnings <- function(m, ...) sapply(ms_warnings(m , ...), function(x) length(x) > 0)
+has_warnings <- function(m, ...) sapply(get_warnings(m , ...), function(x) length(x) > 0)
 
 #' @rdname rmonad_accessors
 #' @export
-has_notes <- function(m, ...) sapply(ms_notes(m , ...), function(x) length(x) > 0)
+has_notes <- function(m, ...) sapply(get_notes(m , ...), function(x) length(x) > 0)
 
 #' @rdname rmonad_accessors
 #' @export
-has_meta <- function(m, ...) sapply(ms_meta(m , ...), function(x) length(x) > 0)
+has_meta <- function(m, ...) sapply(get_meta(m , ...), function(x) length(x) > 0)
 
 #' @rdname rmonad_accessors
 #' @export
-has_time <- function(m, ...) sapply(ms_time(m , ...), .is_not_empty_real)
+has_time <- function(m, ...) sapply(get_time(m , ...), .is_not_empty_real)
 
 #' @rdname rmonad_accessors
 #' @export
-has_mem <- function(m, ...) sapply(ms_mem(m , ...), .is_not_empty_real)
+has_mem <- function(m, ...) sapply(get_mem(m , ...), .is_not_empty_real)
 
 #' @rdname rmonad_accessors
 #' @export
@@ -94,23 +94,23 @@ has_value <- function(m, ...) sapply(.get_many_raw_values(m , ...), function(x) 
 
 #' @rdname rmonad_accessors
 #' @export
-has_parents <- function(m, ...) sapply(ms_parents(m , ...), function(x) length(x) > 0)
+has_parents <- function(m, ...) sapply(get_parents(m , ...), function(x) length(x) > 0)
 
 #' @rdname rmonad_accessors
 #' @export
-has_dependents <- function(m, ...) sapply(ms_dependents(m , ...), function(x) length(x) > 0)
+has_dependents <- function(m, ...) sapply(get_dependents(m , ...), function(x) length(x) > 0)
 
 #' @rdname rmonad_accessors
 #' @export
-has_prior <- function(m, ...) sapply(ms_prior(m , ...), function(x) length(x) > 0)
+has_prior <- function(m, ...) sapply(get_prior(m , ...), function(x) length(x) > 0)
 
 #' @rdname rmonad_accessors
 #' @export
-has_nest <- function(m, ...) sapply(ms_nest(m , ...), function(x) length(x) > 0)
+has_nest <- function(m, ...) sapply(get_nest(m , ...), function(x) length(x) > 0)
 
 #' @rdname rmonad_accessors
 #' @export
-has_summary <- function(m, ...) sapply(ms_summary(m , ...), function(x) !is.null(x))
+has_summary <- function(m, ...) sapply(get_summary(m , ...), function(x) !is.null(x))
 
 
 
@@ -118,7 +118,7 @@ has_summary <- function(m, ...) sapply(ms_summary(m , ...), function(x) !is.null
 
 #' @rdname rmonad_accessors
 #' @export
-ms_parents <- function(m, ...) {
+get_parents <- function(m, ...) {
   .get_many_relative_ids(
     m     = m,
     mode  = "in",
@@ -129,97 +129,97 @@ ms_parents <- function(m, ...) {
 
 #' @rdname rmonad_accessors
 #' @export
-ms_dependents <- function(m, ...) {
+get_dependents <- function(m, ...) {
   .get_many_relative_ids(m=m, mode="out", type="depend", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_nest <- function(m, ...) {
+get_nest <- function(m, ...) {
   .get_many_relative_ids(m=m, mode="in", type="nest", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_prior <- function(m, ...) {
+get_prior <- function(m, ...) {
   .get_many_relative_ids(m=m, mode="in", type="prior", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_nest_depth <- function(m, ...) {
+get_nest_depth <- function(m, ...) {
   .get_many_attributes(m, attribute='nest_depth', ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_value <- function(m, warn=TRUE, ...){
+get_value <- function(m, warn=TRUE, ...){
   lapply(.get_many_attributes(m, attribute='value', ...), function(v) v@get(warn))
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_id <- function(m, ...) {
+get_id <- function(m, ...) {
   .get_numeric_ids(m, ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_OK <- function(m, ...) {
+get_OK <- function(m, ...) {
   .get_many_attributes(m, attribute="OK", ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_code <- function(m, ...) {
+get_code <- function(m, ...) {
   .get_many_attributes(m, attribute='code', ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_error <- function(m, ...) {
+get_error <- function(m, ...) {
   .get_many_attributes_complex(m, attribute="error", default=NA_character_, ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_warnings <- function(m, ...) {
+get_warnings <- function(m, ...) {
   .get_many_attributes_complex(m, attribute="warnings", default=NA_character_, ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_notes <- function(m, ...) {
+get_notes <- function(m, ...) {
   .get_many_attributes_complex(m, attribute="notes", default=NA_character_, ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_doc <- function(m, ...) {
+get_doc <- function(m, ...) {
   .get_many_attributes_complex(m, attribute="doc", default=NA_character_, ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_meta <- function(m, ...) {
+get_meta <- function(m, ...) {
   .get_many_attributes(m, attribute='meta', ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_time <- function(m, ...) {
+get_time <- function(m, ...) {
   .get_many_attributes_complex(m, attribute="time", default=NA_real_, ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_mem <- function(m, ...) {
+get_mem <- function(m, ...) {
   .get_many_attributes_complex(m, attribute="mem", default=NA_integer_, ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
-ms_summary <- function(m, ...) {
+get_summary <- function(m, ...) {
   .get_many_attributes_complex(m, attribute="summary", default=.default_summary(), ...)
 }
 

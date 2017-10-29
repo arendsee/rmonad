@@ -45,7 +45,7 @@ splice_function <- function(f, m, ms, ...){
 #' @keywords internal
 add_transitive_edges <- function(m, bv, deps, final, parent){
 
-  code <- lapply(ms_code(m), parse_as_block)
+  code <- lapply(get_code(m), parse_as_block)
   free_all <- lapply(code, get_free_variables)
   free_locals <- lapply(free_all, function(x) x[ x %in% dimnames(deps)[[1]] ])
   dependencies <- lapply(

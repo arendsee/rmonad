@@ -87,10 +87,10 @@ NULL
 #' @export
 `%^>%` <- function(lhs, rhs) {
   .bind_if_fb <- function(m){
-    all( ms_OK(m)[.single_dependents(m)] )
+    all( get_OK(m)[.single_dependents(m)] )
   }
   .bind_args_fb <- function(m){
-    ms_value(m, warn=FALSE)[.single_dependents(m)]
+    get_value(m, warn=FALSE)[.single_dependents(m)]
   }
 
   cmd   <- list(
