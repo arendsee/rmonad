@@ -74,7 +74,7 @@ size <- function(m) {
 
 # If an Rmonad holds an Rmonad value, link the value as a nest parent 
 .unnest <- function(m){
-  if(is_rmonad(m) && has_value(m) && is_rmonad(m_value(m))){
+  if(is_rmonad(m) && has_value(m, index=m@head) && is_rmonad(m_value(m))){
     nest <- m_value(m)
     nest@graph <- igraph::set.vertex.attribute(
       graph = nest@graph,
@@ -233,4 +233,7 @@ size <- function(m) {
 .get_raw_value <- function(m, index=m@head){
   .m_check(m)
   igraph::get.vertex.attribute(m@graph, name="value", index=index)
+}
+.get_many_raw_values <- function(m, index=.get_numeric_ids(m)){
+  .get_raw_value(m, index)
 }

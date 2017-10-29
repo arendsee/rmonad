@@ -53,20 +53,19 @@ m_delete_value <- function(m, ...) {
 .default_id         <- function() integer(0)
 .default_summary    <- function() NULL
 
-has_code     <- function(m, index=m@head) sapply(ms_code(m), .is_not_empty_string)[index]
-has_error    <- function(m, index=m@head) sapply(ms_error(m),    function(x) length(x) > 0)[index]
-has_doc      <- function(m, index=m@head) sapply(ms_doc(m),      function(x) length(x) > 0)[index]
-has_warnings <- function(m, index=m@head) sapply(ms_warnings(m), function(x) length(x) > 0)[index]
-has_notes    <- function(m, index=m@head) sapply(ms_notes(m),    function(x) length(x) > 0)[index]
-has_meta     <- function(m, index=m@head) sapply(ms_meta(m),     function(x) length(x) > 0)[index]
-has_time     <- function(m, index=m@head) sapply(ms_time(m), .is_not_empty_real)[index]
-has_mem      <- function(m, index=m@head) sapply(ms_mem(m), .is_not_empty_real)[index]
-has_value    <- function(m, index=m@head) sapply(.get_raw_value(m, ms_id(m)), function(x) x@chk())
-has_parents    <- function(m, index=m@head) sapply(ms_parents(m),    function(x) length(x) > 0)[index]
-has_dependents <- function(m, index=m@head) sapply(ms_dependents(m), function(x) length(x) > 0)[index]
-has_prior      <- function(m, index=m@head) sapply(ms_prior(m),      function(x) length(x) > 0)[index]
-has_nest       <- function(m, index=m@head) sapply(ms_nest(m),       function(x) length(x) > 0)[index]
-
+has_code       <- function(m, ...) sapply(ms_code(m              , ...), .is_not_empty_string      )
+has_error      <- function(m, ...) sapply(ms_error(m             , ...), function(x) length(x) > 0 )
+has_doc        <- function(m, ...) sapply(ms_doc(m               , ...), function(x) length(x) > 0 )
+has_warnings   <- function(m, ...) sapply(ms_warnings(m          , ...), function(x) length(x) > 0 )
+has_notes      <- function(m, ...) sapply(ms_notes(m             , ...), function(x) length(x) > 0 )
+has_meta       <- function(m, ...) sapply(ms_meta(m              , ...), function(x) length(x) > 0 )
+has_time       <- function(m, ...) sapply(ms_time(m              , ...), .is_not_empty_real        )
+has_mem        <- function(m, ...) sapply(ms_mem(m               , ...), .is_not_empty_real        )
+has_value      <- function(m, ...) sapply(.get_many_raw_values(m , ...), function(x) x@chk()       )
+has_parents    <- function(m, ...) sapply(ms_parents(m           , ...), function(x) length(x) > 0 )
+has_dependents <- function(m, ...) sapply(ms_dependents(m        , ...), function(x) length(x) > 0 )
+has_prior      <- function(m, ...) sapply(ms_prior(m             , ...), function(x) length(x) > 0 )
+has_nest       <- function(m, ...) sapply(ms_nest(m              , ...), function(x) length(x) > 0 )
 
 # TODO: chop these
 # FIXME: seriously, murder the stored field

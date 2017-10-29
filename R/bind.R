@@ -43,10 +43,10 @@ bind <- function(
 
   m <- entry_lhs_transform(x, f, desc=lhs_str)
 
-  if(!has_doc(m)){
+  if(!has_doc(m, index=m@head)){
     m_doc(m) <- lhs_doc
   }
-  if(!has_meta(m)){
+  if(!has_meta(m, index=m@head)){
     m_meta(m) <- lhs_met
   }
 
@@ -187,7 +187,7 @@ branch_combine <- function(m, o, f, margs){
 
 default_combine <- function(m, o, f, margs){
   o2 <- .inherit(child=o, parent=m, inherit_value=!m_OK(o))
-  if(has_nest(o)){
+  if(has_nest(o, index=o@head)){
     o2 <- splice_function(f=f, m=o, ms=margs, final=o2, parent=m)
   }
   o2

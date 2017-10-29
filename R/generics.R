@@ -40,7 +40,7 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   } else if (label == "depth") {
     ms_nest_depth(x)
   } else if (label == "value") {
-    ifelse(has_value(x, ms_id(x)), ms_value(x, warn=FALSE), "-")
+    ifelse(has_value(x), ms_value(x, warn=FALSE), "-")
   } else {
     stop("Something is wrong with the 'label' field")
   }
@@ -50,8 +50,8 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   if(is.function(color)){
     color(x)
   } else if(color == 'status'){
-    ifelse(has_error(x, ms_id(x)), 'red', 'palegreen') %>%
-    {ifelse(has_warnings(x, ms_id(x)) & !has_error(x, ms_id(x)), 'yellow', .)}
+    ifelse(has_error(x), 'red', 'palegreen') %>%
+    {ifelse(has_warnings(x) & !has_error(x), 'yellow', .)}
   } else {
     stop("The 'color' field in plot.Rmonad must be either 'status' or a function")
   }
@@ -82,35 +82,35 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
 .scat <- function(s, ...) cat(sprintf(s, ...)) 
 .print_record <- function(x, i, verbose=FALSE, print_value=TRUE) {
 
-  if(has_doc(x, i)){
+  if(has_doc(x, index=i)){
     .scat("\n\n    %s\n\n", m_doc(x, i))
   }
   .scat('N%s> "%s"', i, paste(m_code(x, i), collapse="\n"))
 
-  if(verbose && (has_time(x, i) || has_mem(x, i))){
+  if(verbose && (has_time(x, index=i) || has_mem(x, index=i))){
     cat("\n  ")
-    if(has_mem(x, i))  { .scat(" size: %s", m_mem(x, i))  }
-    if(has_time(x, i)) { .scat(" time: %s", m_time(x, i)) }
+    if(has_mem(x, index=i))  { .scat(" size: %s", m_mem(x, index=i))  }
+    if(has_time(x, index=i)) { .scat(" time: %s", m_time(x, index=i)) }
   }
-  if(has_error(x, i)){
-    .scat("\n * ERROR: %s", m_error(x, i))
+  if(has_error(x, index=i)){
+    .scat("\n * ERROR: %s", m_error(x, index=i))
   }
-  if(has_warnings(x, i)){
+  if(has_warnings(x, index=i)){
     .scat("\n * WARNING: %s",
-      paste(m_warnings(x, i), collapse="\n * WARNING: ")
+      paste(m_warnings(x, index=i), collapse="\n * WARNING: ")
     )
   }
-  if(has_notes(x, i)){
+  if(has_notes(x, index=i)){
     .scat("\n * NOTE: %s",
-      paste(m_notes(x, i), collapse="\n * NOTE: ")
+      paste(m_notes(x, index=i), collapse="\n * NOTE: ")
     )
   }
-  if(has_parents(x, i)){
-    .scat("\nParents: [%s]", paste0(m_parents(x, i), collapse=", "))
+  if(has_parents(x, index=i)){
+    .scat("\nParents: [%s]", paste0(m_parents(x, index=i), collapse=", "))
   }
-  if(has_value(x, i) && print_value){
+  if(has_value(x, index=i) && print_value){
     cat("\n")
-    print(m_value(x, i))
+    print(m_value(x, index=i))
   }
   cat("\n")
 }
