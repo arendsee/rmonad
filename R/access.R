@@ -1,12 +1,20 @@
-#' get, set, and append rmonad fields
+#' Vectorized getters for public Rmonad fields
 #'
-#' @param m the rmonad
-#' @param value value to replace or append current value
-#' @param index The index of the node to get or set
+#' @param m An Rmonad object
+#' @param index Selection of indices to extract (all by default). The indices
+#'              may be a vector of integers, node names, or igraph vertices
+#'              (\code{igraph.vs}).
+#' @param warn logical In get_value, raise a warning on an attempt to access an uncached node
 #' @param ... Additional arguments
-#' @name rmonad_accessors
+#' @name rmonad_getters
 NULL
 
+#' Vectorized existence checkers for public Rmonad fields
+#'
+#' @param m An Rmonad object
+#' @param ... Additional arguments passed to \code{get_*} functions
+#' @name rmonad_checkers
+NULL
 
 
 #' Determine wether something is an Rmonad object
@@ -52,179 +60,179 @@ is_rmonad <- function(m) {
 
 # ======================== Vectorized existence checkers =======================
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_checkers
 #' @export
-has_code <- function(m, ...) sapply(get_code(m , ...), .is_not_empty_string)
+has_code <- function(m, ...) sapply(get_code(m, ...), .is_not_empty_string)
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_checkers
 #' @export
-has_error <- function(m, ...) sapply(get_error(m , ...), function(x) length(x) > 0)
+has_error <- function(m, ...) sapply(get_error(m, ...), function(x) length(x) > 0)
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_checkers
 #' @export
-has_doc <- function(m, ...) sapply(get_doc(m , ...), function(x) length(x) > 0)
+has_doc <- function(m, ...) sapply(get_doc(m, ...), function(x) length(x) > 0)
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_checkers
 #' @export
 has_warnings <- function(m, ...) sapply(get_warnings(m , ...), function(x) length(x) > 0)
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_checkers
 #' @export
-has_notes <- function(m, ...) sapply(get_notes(m , ...), function(x) length(x) > 0)
+has_notes <- function(m, ...) sapply(get_notes(m, ...), function(x) length(x) > 0)
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_checkers
 #' @export
-has_meta <- function(m, ...) sapply(get_meta(m , ...), function(x) length(x) > 0)
+has_meta <- function(m, ...) sapply(get_meta(m, ...), function(x) length(x) > 0)
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_checkers
 #' @export
-has_time <- function(m, ...) sapply(get_time(m , ...), .is_not_empty_real)
+has_time <- function(m, ...) sapply(get_time(m, ...), .is_not_empty_real)
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_checkers
 #' @export
-has_mem <- function(m, ...) sapply(get_mem(m , ...), .is_not_empty_real)
+has_mem <- function(m, ...) sapply(get_mem(m, ...), .is_not_empty_real)
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_checkers
 #' @export
 has_value <- function(m, ...) {
   sapply(
-    .get_many_raw_values(m , ...),
+    .get_many_raw_values(m, ...),
     function(x) {
       (class(x) == "CacheManager") && x@chk()
     }
   )
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_checkers
 #' @export
-has_parents <- function(m, ...) sapply(get_parents(m , ...), function(x) length(x) > 0)
+has_parents <- function(m, ...) sapply(get_parents(m, ...), function(x) length(x) > 0)
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_checkers
 #' @export
-has_dependents <- function(m, ...) sapply(get_dependents(m , ...), function(x) length(x) > 0)
+has_dependents <- function(m, ...) sapply(get_dependents(m, ...), function(x) length(x) > 0)
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_checkers
 #' @export
-has_prior <- function(m, ...) sapply(get_prior(m , ...), function(x) length(x) > 0)
+has_prior <- function(m, ...) sapply(get_prior(m, ...), function(x) length(x) > 0)
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_checkers
 #' @export
-has_nest <- function(m, ...) sapply(get_nest(m , ...), function(x) length(x) > 0)
+has_nest <- function(m, ...) sapply(get_nest(m, ...), function(x) length(x) > 0)
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_checkers
 #' @export
-has_summary <- function(m, ...) sapply(get_summary(m , ...), function(x) length(x) > 0)
+has_summary <- function(m, ...) sapply(get_summary(m, ...), function(x) length(x) > 0)
 
 
 
 # ============================= Vectorized Getters =============================
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_parents <- function(m, ...) {
+get_parents <- function(m, index=.get_ids(m)) {
   .get_many_relative_ids(
     m     = m,
+    index = index,
     mode  = "in",
-    type  = c("depend", "transitive"),
-    ...
+    type  = c("depend", "transitive")
   )
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_dependents <- function(m, ...) {
-  .get_many_relative_ids(m=m, mode="out", type="depend", ...)
+get_dependents <- function(m, index=.get_ids(m)) {
+  .get_many_relative_ids(m, index=index, mode="out", type="depend")
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_nest <- function(m, ...) {
-  .get_many_relative_ids(m=m, mode="in", type="nest", ...)
+get_nest <- function(m, index=.get_ids(m)) {
+  .get_many_relative_ids(m, index=index, mode="in", type="nest")
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_prior <- function(m, ...) {
-  .get_many_relative_ids(m=m, mode="in", type="prior", ...)
+get_prior <- function(m, index=.get_ids(m)) {
+  .get_many_relative_ids(m, index=index, mode="in", type="prior")
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_nest_depth <- function(m, ...) {
-  .get_many_attributes(m, attribute='nest_depth', ...)
+get_nest_depth <- function(m, index=.get_ids(m)) {
+  .get_many_attributes(m, index=index, attribute='nest_depth')
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_value <- function(m, warn=TRUE, ...){
-  lapply(.get_many_raw_values(m, ...), function(v) v@get(warn))
+get_value <- function(m, warn=TRUE, index=.get_ids(m)){
+  lapply(.get_many_raw_values(m, index=index), function(v) v@get(warn))
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_id <- function(m, ...) {
+get_id <- function(m, index=.get_ids(m)) {
   # FIXME: should I use numeric or vertex ids?
-  .get_numeric_ids(m, ...)
+  .get_numeric_ids(m, index=index)
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_OK <- function(m, ...) {
-  .get_many_attributes(m, attribute="OK", ...)
+get_OK <- function(m, index=.get_ids(m)) {
+  .get_many_attributes(m, index=index, attribute="OK")
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_code <- function(m, ...) {
-  .get_many_attributes(m, attribute='code', ...)
+get_code <- function(m, index=.get_ids(m)) {
+  .get_many_attributes(m, index=index, attribute='code')
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_error <- function(m, ...) {
-  .get_many_attributes_complex(m, attribute="error", default=.default_error(), ...)
+get_error <- function(m, index=.get_ids(m)) {
+  .get_many_attributes_complex(m, index=index, attribute="error", default=.default_error())
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_warnings <- function(m, ...) {
-  .get_many_attributes_complex(m, attribute="warnings", default=.default_warnings(), ...)
+get_warnings <- function(m, index=.get_ids(m)) {
+  .get_many_attributes_complex(m, index=index, attribute="warnings", default=.default_warnings())
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_notes <- function(m, ...) {
-  .get_many_attributes_complex(m, attribute="notes", default=.default_notes(), ...)
+get_notes <- function(m, index=.get_ids(m)) {
+  .get_many_attributes_complex(m, index=index, attribute="notes", default=.default_notes())
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_doc <- function(m, ...) {
-  .get_many_attributes_complex(m, attribute="doc", default=.default_doc(), ...)
+get_doc <- function(m, index=.get_ids(m)) {
+  .get_many_attributes_complex(m, index=index, attribute="doc", default=.default_doc())
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_meta <- function(m, ...) {
-  .get_many_attributes(m, attribute='meta', ...)
+get_meta <- function(m, index=.get_ids(m)) {
+  .get_many_attributes(m, index=index, attribute='meta')
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_time <- function(m, ...) {
-  .get_many_attributes_complex(m, attribute="time", default=.default_time(), ...)
+get_time <- function(m, index=.get_ids(m)) {
+  .get_many_attributes_complex(m, index=index, attribute="time", default=.default_time())
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_mem <- function(m, ...) {
-  .get_many_attributes_complex(m, attribute="mem", default=.default_mem(), ...)
+get_mem <- function(m, index=.get_ids(m)) {
+  .get_many_attributes_complex(m, index=index, attribute="mem", default=.default_mem())
 }
 
-#' @rdname rmonad_accessors
+#' @rdname rmonad_getters
 #' @export
-get_summary <- function(m, ...) {
-  .get_many_attributes_complex(m, attribute="summary", default=.default_summary(), ...)
+get_summary <- function(m, index=.get_ids(m)) {
+  .get_many_attributes_complex(m, index=index, attribute="summary", default=.default_summary())
 }
 
 
@@ -244,12 +252,12 @@ get_summary <- function(m, ...) {
 }
 
 .single_dependents <- function(m, ...) {
-  .get_single_relative_ids(m, "out", "depend", ...)
+  .get_single_relative_ids(m, mode="out", type="depend", ...)
 }
 # no setter - see inherit
 
 .single_prior <- function(m, ...) {
-  .get_single_relative_ids(m, "in", "prior", ...)
+  .get_single_relative_ids(m, mode="in", type="prior", ...)
 }
 # no setter - see inherit
 
@@ -339,14 +347,14 @@ get_summary <- function(m, ...) {
 }
 
 .single_parents <- function(m, ...) {
-  .get_single_relative_ids(m, "in", c("depend", "transitive"), ...)
+  .get_single_relative_ids(m, mode="in", type=c("depend", "transitive"), ...)
 }
 `.single_parents<-` <- function(m, value) {
   .add_parents(m, value, check=has_parents, type="depend")
 }
 
 .single_nest <- function(m, ...) {
-  .get_single_relative_ids(m, "in", "nest", ...)
+  .get_single_relative_ids(m, mode="in", type="nest", ...)
 }
 `.single_nest<-` <- function(m, value) {
   if(.single_OK(value)){
