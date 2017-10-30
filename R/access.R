@@ -36,7 +36,7 @@ is_rmonad <- function(m) {
 # NULL value?). Also there are multiple reasonable defaults (NULL, "", NA,
 # NA_integer_, logical(0), etc) and use of the wrong one can be a source of
 # subtle of reoccuring bugs. So I gather all this into one place.
-.default_value      <- function() NULL
+.default_value      <- function() voidCache()
 .default_head       <- function() 1L
 .default_code       <- function() character(0)
 .default_error      <- function() character(0)
@@ -161,7 +161,7 @@ get_nest_depth <- function(m, ...) {
 #' @rdname rmonad_accessors
 #' @export
 get_value <- function(m, warn=TRUE, ...){
-  lapply(.get_many_attributes(m, attribute='value', ...), function(v) v@get(warn))
+  lapply(.get_many_raw_values(m, ...), function(v) v@get(warn))
 }
 
 #' @rdname rmonad_accessors
@@ -273,11 +273,10 @@ get_summary <- function(m, ...) {
 
 .single_value <- function(m, warn=TRUE, ...){
   # ... should only ever be 'warn' at this point
-  .get_single_attribute_complex(m, default=.default_value(), attribute="value", ...)@get(warn)
+  .get_raw_value(m, default=.default_value(), ...)@get(warn=warn)
 }
 `.single_value<-` <- function(m, value) {
-  # TODO: Don't hardcode the cache function
-  .set_single_attribute_complex(m, attribute="value", value=memoryCache(value))
+  .set_raw_value(m, value=memoryCache(value))
 }
 
 .single_code <- function(m, ...) {

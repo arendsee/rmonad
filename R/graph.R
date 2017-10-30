@@ -315,19 +315,17 @@ size <- function(m) {
 # @param m Rmonad object
 # @param value A cache function
 # @param index vector of indices
-.set_raw_value <- function(m, value, index=m@head){
-  m@graph <- igraph::set_vertex_attr(m@graph, name="value", index=index, value=value)
-  m
+.set_raw_value <- function(m, value, ...){
+  .set_single_attribute_complex(m, attribute='value', value=value, ...)
 }
 
 # Get the value function
 #
 # @param m Rmonad object
 # @param index vector of indices
-.get_raw_value <- function(m, index=m@head){
-  .m_check(m)
-  igraph::get.vertex.attribute(m@graph, name="value", index=index)
+.get_raw_value <- function(m, default=.default_value(), ...){
+  .get_single_attribute_complex(m, attribute='value', ...)
 }
-.get_many_raw_values <- function(m, index=.get_ids(m)){
-  .get_raw_value(m, index)
+.get_many_raw_values <- function(m, ...){
+  .get_many_attributes_complex(m, attribute='value', ...)
 }
