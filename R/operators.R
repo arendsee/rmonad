@@ -52,8 +52,8 @@ NULL
   }
 
   get_parent_ids <- function(m){
-    pnames <- names(m_value(m))
-    pids <- names(.get_ids(m)[.single_parents(m)])
+    pnames <- names(.single_value(m))
+    pids <- lapply(.single_parents(m), function(i) .get_ids(m, index=i))
     names(pids) <- pnames
     pids
   }

@@ -5,21 +5,21 @@ addit <- function(x,y) x + y
 subit <- function(x,y) x - y
 
 foo <- function(x,k=3){
-  45 %>>% addit(x) %>>% subit(k)
+  45 %v>% addit(x) %v>% subit(k)
 }
 
 bar <- function(x, j=4){
-  10 %>>% foo(k=x)
+  10 %v>% foo(k=x)
 }
 
 test_that("Nesting works for named functions", {
   expect_equal(4 %>>% foo %>% esc, 46)
   expect_equal(
-    4 %>>% foo %>% get_code %>% unlist,
+    4 %v>% foo %>% get_code %>% unlist,
     c("4", "45", "addit(x)", "subit(k)", "foo")
   )
   expect_equal(
-    4 %>>% foo %>% get_parents,
+    4 %v>% foo %>% get_parents,
     list(
       integer(0),
       integer(0),
@@ -29,7 +29,7 @@ test_that("Nesting works for named functions", {
     )
   )
   expect_equal(
-    4 %>>% foo %>% get_nest %>% sapply(length),
+    4 %v>% foo %>% get_nest %>% sapply(length),
     c(0,0,0,0,1)
   )
 })
@@ -43,7 +43,7 @@ test_that("Nesting works for deeply nested functions", {
    )
    expect_equal(
      20 %>>% bar %>% get_value(warn=FALSE),
-     list(NULL,NULL,NULL,NULL,NULL,NULL,35)
+     list(NULL,10,45,55,NULL,NULL,35)
    )
    expect_equal(
      20 %>>% bar %>% get_code %>% unlist,

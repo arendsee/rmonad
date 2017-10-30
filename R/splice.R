@@ -53,9 +53,9 @@ add_transitive_edges <- function(m, bv, deps, final){
     is.matrix(x) && is.logical(as.vector(x))
   }
   .check_type(deps,  test=is_logical_matrix, type='logical matrix')
-  .check_type(m,     test=is_rmonad,         type='Rmonad')
-  .check_type(bv,    test=is.list,           type='list')
-  .check_type(final, test=is_rmonad,         type='Rmonad')
+  .check_type(m,     type='Rmonad')
+  .check_type(bv,    type='list')
+  .check_type(final, type='Rmonad')
 
   code <- lapply(get_code(m), parse_as_block)
   free_all <- lapply(code, get_free_variables)
@@ -70,13 +70,19 @@ add_transitive_edges <- function(m, bv, deps, final){
   if(length(dependencies) > 0){
     for(child_id in seq_along(dependencies)){
       for(parent_id in dependencies[[child_id]]){
+
+        child_id <- .get_ids(m)[child_id]
+
+        .check_type(final,     type='Rmonad')
+        .check_type(child_id,  type='igraph.vs')
+        .check_type(parent_id, type='igraph.vs')
+
         final <- .connect(
           final,
           from = parent_id,
-          to   = .get_ids(m)[child_id],
+          to   = child_id,
           type = 'transitive'
         )
-
       }
     }
   }
