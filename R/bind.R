@@ -178,15 +178,14 @@ emit_default <- function(input, output) {
 ## io_combine options
 
 branch_combine <- function(m, o, f, margs){
-
-  # FIXME: this needs to be spliced, there is a bug lurking here, but my tests
-  # don't see it (none of my tests include both branching and nesting)
-
   # Add o as a normal child of m, preserving its value
-  o <- .inherit(child=o, parent=m, force_keep=TRUE)
+  o2 <- .inherit(child=o, parent=m, force_keep=TRUE)
+  if(has_nest(o, index=o@head)){
+    o2 <- splice_function(f=f, m=o, ms=margs, final=o2)
+  }
   # Point head to the parent
-  o@head <- m@head
-  o
+  o2@head <- m@head
+  o2
 }
 
 default_combine <- function(m, o, f, margs){

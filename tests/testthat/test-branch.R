@@ -69,5 +69,6 @@ paste0('f') %v>% paste0('g') %v>% paste0('h')
 # =============================================================================
 test_that('Branching into nests correctly makes transitive links', {
   expect_equal(get_value(m,F), list("a", "ab", "ab-c", "ab-cd", NULL, "ab-cde-", "abf", "abfg", "abfgh"))
-  expect_equal(get_dependents(m), list(2, c(3,6,7), 4, 5, integer(0), integer(0), 8, 9, integer(0)))
+  expect_equal(get_dependents(m), list(2, c(6,7), 4, 5, integer(0), integer(0), 8, 9, integer(0)))
+  expect_equal(get_parents(m), list(integer(0), 1, 2, 3, 4, 2, 2, 7, 8))
 })
