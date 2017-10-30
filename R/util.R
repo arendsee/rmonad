@@ -15,10 +15,24 @@
   !is.null(x) && !is.na(x) && is.numeric(x) && length(x) != 0
 }
 
-# internal utility for generating error messages when accessing a non-Rmonad
-.m_check <- function(m) {
-  if(!is_rmonad(m)){
-    msg="Expected an Rmonad object, got %s"
-    stop(sprintf(msg, class(m)))
+.check_type <- function(
+  m,
+  type,
+  test   = function(x) { setequal(class(x), type) },
+  nframe = sys.nframe()-1,
+  place  = if(nframe > 0) { deparse(sys.calls()[[nframe]]) } else { 'global' }
+){
+  if(!test(m)){
+    varname <- deparse(substitute(m)) # NOTE: this has to be outside of glue
+    stop(glue::glue(
+      "In 'Rmonad::{place}', expected '{name}' to be of class {exp_type} but got '{obs_type}'",
+      obs_type = class(m),
+      name     = varname,
+      place    = place,
+      exp_type = type
+    ))
   }
+}
+.m_check <- function(m, ...) {
+  .check_type(m, test=is_rmonad, type='Rmonad', nframe=sys.nframe()-1, ...)
 }

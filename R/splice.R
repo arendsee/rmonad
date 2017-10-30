@@ -22,6 +22,10 @@ rmonad_ops <- c(
 #' @param ... additional arguments passed to add_transitive_edges
 splice_function <- function(f, m, ms, ...){
 
+  .check_type(f,  test=is_function, type='function or function call')
+  .check_type(ms, test=is.list,     type='list')
+  .check_type(m,  test=is_rmonad,   type='Rmonad')
+
   ops <- get_monadic_operators(f)
 
   if(length(ops) == 0)
@@ -44,6 +48,14 @@ splice_function <- function(f, m, ms, ...){
 #' @param deps A mapping local variables to bound variable dependencies
 #' @keywords internal
 add_transitive_edges <- function(m, bv, deps, final){
+
+  is_logical_matrix <- function(x) {
+    is.matrix(x) && is.logical(as.vector(x))
+  }
+  .check_type(deps,  test=is_logical_matrix, type='logical matrix')
+  .check_type(m,     test=is_rmonad,         type='Rmonad')
+  .check_type(bv,    test=is.list,           type='list')
+  .check_type(final, test=is_rmonad,         type='Rmonad')
 
   code <- lapply(get_code(m), parse_as_block)
   free_all <- lapply(code, get_free_variables)
@@ -238,6 +250,9 @@ get_lhs <- function(expr){
 # Map the names of variables in a function to an input list. The main purpose
 # is to check for mismatches and give explicit names to positional arguments.
 get_bound_variables <- function(e, ms){
+
+  .check_type(e, test=is_function, type='function or function call')
+  .check_type(ms, test=is.list, type='list')
 
   if(length(ms) == 0)
     return(list())
