@@ -323,9 +323,9 @@ size <- function(m) {
 #
 # @param m Rmonad object
 # @param index vector of indices
-.get_raw_value <- function(m, default=.default_value(), ...){
-  .get_single_attribute_complex(m, attribute='value', ...)
+.get_raw_value <- function(m, ...){
+  .get_single_attribute_complex(m, default=.default_value(), attribute='value', ...)
 }
 .get_many_raw_values <- function(m, ...){
-  .get_many_attributes_complex(m, attribute='value', ...)
+  .get_many_attributes_complex(m, attribute='value', default=.default_value(), ...)
 }

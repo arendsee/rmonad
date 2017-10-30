@@ -11,9 +11,9 @@ voidCache <- function(){
   # @param warn Warn if the accessed field does not exist (value was not cached)
   get <- function(warn=TRUE){
     if(warn){
-      warning(sprintf("Accessing node with no stored value, returning '%s'", .default_value()))
+      warning("Accessing node with no stored value, returning 'NULL'")
     }
-    .default_value()
+    NULL
   }
   new("CacheManager",
     get = get,
@@ -33,9 +33,9 @@ noCache <- function(){
   # @param warn Warn if the accessed field does not exist (value was not cached)
   get <- function(warn=TRUE){
     if(warn){
-      warning(sprintf("Attempting to access data that has been deleted, returning '%s'", .default_value()))
+      warning("Attempting to access data that has been deleted, returning 'NULL'")
     }
-    .default_value() 
+    NULL
   }
   new("CacheManager",
     get = get,
@@ -126,6 +126,6 @@ makeLocalCacher <- function(path){
 makeRecacher <- function(cacher){
   # @param m An Rmonad object
   function(m){
-    .set_raw_value(m, cacher(.single_value(m)))
+    .set_raw_value(m, value=cacher(.single_value(m)))
   }
 }

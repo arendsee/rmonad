@@ -22,11 +22,7 @@ is_rmonad <- function(m) {
 # @param m Rmonad object
 # @param index Delete the value contained by this vertex (if NULL, delete head value)
 .single_delete_value <- function(m, ...) {
-  caches <- .get_raw_value(m, ...)
-  for(cache in caches){
-    cache@del()
-  }
-  m <- .set_raw_value(m, list(noCache()), ...)
+  m <- .set_raw_value(m, value=noCache(), ...)
   m
 }
 
@@ -273,7 +269,7 @@ get_summary <- function(m, ...) {
 
 .single_value <- function(m, warn=TRUE, ...){
   # ... should only ever be 'warn' at this point
-  .get_raw_value(m, default=.default_value(), ...)@get(warn=warn)
+  .get_raw_value(m, ...)@get(warn=warn)
 }
 `.single_value<-` <- function(m, value) {
   .set_raw_value(m, value=memoryCache(value))
@@ -371,7 +367,7 @@ get_summary <- function(m, ...) {
       force_keep    = TRUE,
       type          = "nest"
     )
-    m <- .set_raw_value(m, voidCache())
+    m <- .set_raw_value(m, value=voidCache())
     m
   }
 }
