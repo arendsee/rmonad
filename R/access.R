@@ -160,7 +160,7 @@ get_value <- function(m, warn=TRUE, ...){
 #' @rdname rmonad_accessors
 #' @export
 get_id <- function(m, ...) {
-  .get_numeric_ids(m, ...)
+  .get_ids(m, ...)
 }
 
 #' @rdname rmonad_accessors

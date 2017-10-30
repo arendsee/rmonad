@@ -12,15 +12,14 @@ setClass(
   "Rmonad",
   representation(
     graph = "igraph",
-    head = "integer"
+    head = "character"
     # TODO: add rmonad settings (e.g. default cache function)
   )
 )
 
 Rmonad <- function(){
   m <- new("Rmonad")
-  m@graph <- .new_rmonad_graph()
-  m@head <- .default_head()
+  m <- .new_rmonad_graph(m)
   m <- .set_raw_value(m, list(voidCache()))
   .single_code(m)       <- .default_code()
   .single_error(m)      <- .default_error()

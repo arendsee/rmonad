@@ -48,12 +48,7 @@ size <- function(m) {
     stop("In 'inherit', child must be an Rmonad object")
 
   if(inherit_value)
-    child@graph <- igraph::set.vertex.attribute(
-      graph = child@graph,
-      name  = "value",
-      index = child@head,
-      value = igraph::get.vertex.attribute(parent@graph, name="value", index=parent@head)
-    )
+    child <- .set_raw_value(child, .get_raw_value(parent))
 
   if(inherit_OK && !.single_OK(parent))
     .single_OK(child) <- .single_OK(parent)
@@ -65,12 +60,51 @@ size <- function(m) {
     .single_stored(parent) <- TRUE
   }
 
-  child@graph <- parent@graph + child@graph
-  child@head  <- child@head   + igraph::vcount(parent@graph)
+  child@graph <- .rmonad_union(parent@graph, child@graph)
   child@graph <- child@graph  + igraph::edge(parent@head, child@head, type=type)
 
   child
 }
+
+
+# The following functions resolve conflicts in attributes that arise with the
+# union of two igraph objects. If any attributes are shared between the graphs,
+# then they are copied into new vectors with the prefixes `_1` and `_2` added.
+# -----------------------------------------------------------------------------
+# This function does NOT create an edge between the two graphs, it only merges
+# them into one and handles attributes.
+.rmonad_union <- function(a, b){
+  ab <- a + b
+  ab <- .resolve(ab, 'value')
+  ab <- .resolve(ab, 'code')
+  ab <- .resolve(ab, 'error')
+  ab <- .resolve(ab, 'warnings')
+  ab <- .resolve(ab, 'notes')
+  ab <- .resolve(ab, 'OK')
+  ab <- .resolve(ab, 'doc')
+  ab <- .resolve(ab, 'mem')
+  ab <- .resolve(ab, 'time')
+  ab <- .resolve(ab, 'meta')
+  ab <- .resolve(ab, 'nest_depth')
+  ab <- .resolve(ab, 'summary')
+  ab <- .resolve(ab, 'stored')
+  ab
+}
+# Resolve field IF there is no conflict
+# FIXME: this dies on overlapping graphs
+.resolve <- function(ab, field){
+  xs <- igraph::get.vertex.attribute(ab, paste0(field, "_1"))
+  ys <- igraph::get.vertex.attribute(ab, paste0(field, "_2"))
+  if(all(xor(is.na(xs), is.na(ys)))){
+    ab <- igraph::set.vertex.attribute(ab, field, value=ifelse(is.na(xs), ys, xs))
+    ab <- igraph::delete_vertex_attr(ab, paste0(field, "_1"))
+    ab <- igraph::delete_vertex_attr(ab, paste0(field, "_2"))
+  } else {
+    stop("Rmonad error: cannot handle conflicts")
+  }
+  ab
+}
+# -----------------------------------------------------------------------------
 
 # If an Rmonad holds an Rmonad value, link the value as a nest parent 
 .unnest <- function(m){
@@ -87,8 +121,12 @@ size <- function(m) {
 }
 
 # Make an empty, directed graph
-.new_rmonad_graph <- function(){
-  igraph::make_empty_graph(directed=TRUE, n=1)
+.new_rmonad_graph <- function(m){
+  node_id <- uuid::UUIDgenerate()
+  m@graph <- igraph::make_empty_graph(directed=TRUE, n=1)
+  m@graph <- igraph::set.vertex.attribute(m@graph, "name", value=node_id)
+  m@head <- node_id
+  m
 }
 
 .get_ids <- function(m, index=NULL){
@@ -118,7 +156,6 @@ size <- function(m) {
   for(p in parents){
     .m_check(p)
     child@graph <- p@graph + child@graph
-    child@head <- igraph::vcount(p@graph) + child@head
     new_edge <- igraph::edge(p@head, child@head, ...)
     child@graph <- child@graph + new_edge
   }
@@ -140,7 +177,7 @@ size <- function(m) {
   stopifnot(length(etype) == length(edges))
   vertices[etype %in% type] %>% as.integer
 }
-.get_many_relative_ids <- function(m, index=.get_numeric_ids(m), ...){
+.get_many_relative_ids <- function(m, index=.get_ids(m), ...){
   lapply(index, function(i) .get_single_relative_ids(m, index=i, ...))
 }
 
@@ -153,14 +190,14 @@ size <- function(m) {
   .m_check(m)
   igraph::get.vertex.attribute(m@graph, name=attribute, index=index)
 }
-.get_many_attributes <- function(m, index=.get_numeric_ids(m), ...){
+.get_many_attributes <- function(m, index=.get_ids(m), ...){
   .get_attribute(m, index=index, ...) 
 }
 .get_single_attribute <- function(m, default, index=m@head, ...){
   if(length(index) != 1){
     stop(".single_* accessors only take a single index, to get multiple values, use the get_* accessors")
   }
-  a <- .get_attribute(m, ...)
+  a <- .get_attribute(m, index=index, ...)
   if(is.null(a) || length(a) == 0){
     a <- default
   }
@@ -234,6 +271,6 @@ size <- function(m) {
   .m_check(m)
   igraph::get.vertex.attribute(m@graph, name="value", index=index)
 }
-.get_many_raw_values <- function(m, index=.get_numeric_ids(m)){
+.get_many_raw_values <- function(m, index=.get_ids(m)){
   .get_raw_value(m, index)
 }
