@@ -43,7 +43,7 @@ splice_function <- function(f, m, ms, ...){
 #' @param bv A named list of bound variables
 #' @param deps A mapping local variables to bound variable dependencies
 #' @keywords internal
-add_transitive_edges <- function(m, bv, deps, final, parent){
+add_transitive_edges <- function(m, bv, deps, final){
 
   code <- lapply(get_code(m), parse_as_block)
   free_all <- lapply(code, get_free_variables)
@@ -55,17 +55,16 @@ add_transitive_edges <- function(m, bv, deps, final, parent){
     }
   ) %>% lapply(unname)
 
-  transitive_edges <- list()
-
   if(length(dependencies) > 0){
     for(child_id in seq_along(dependencies)){
       for(parent_id in dependencies[[child_id]]){
         final <- .connect(
           final,
           from = parent_id,
-          to   = get_id(m)[child_id],
+          to   = .get_ids(m)[child_id],
           type = 'transitive'
         )
+
       }
     }
   }

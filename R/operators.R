@@ -51,12 +51,19 @@ NULL
     on_entry <- entry_lhs_transform_default
   }
 
-  cmd   <- list(
+  get_parent_ids <- function(m){
+    pnames <- names(m_value(m))
+    pids <- names(.get_ids(m)[.single_parents(m)])
+    names(pids) <- pnames
+    pids
+  }
+
+  cmd <- list(
     bind,
     lhs_expr,
     substitute(rhs),
     bind_args=.single_value,
-    parent_ids=function(m) .single_parents(m, as_integer=FALSE),
+    parent_ids=get_parent_ids,
     entry_lhs_transform=on_entry
   )
   eval(as.call(cmd), envir=envir)

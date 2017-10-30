@@ -25,7 +25,7 @@ bind <- function(
   m_on_bind           = function(x, ...){x},
   io_combine          = default_combine,
   bind_args           = function(m) list(.single_value(m, warn=FALSE)),
-  parent_ids          = function(m) .single_parents(m, as_integer=FALSE),
+  parent_ids          = function(m) list(.get_ids(m)[.single_id(m)]),
   expect_rhs_function = TRUE,
   envir               = parent.frame()
 ){
@@ -192,7 +192,7 @@ branch_combine <- function(m, o, f, margs){
 default_combine <- function(m, o, f, margs){
   o2 <- .inherit(child=o, parent=m, inherit_value=!.single_OK(o))
   if(has_nest(o, index=o@head)){
-    o2 <- splice_function(f=f, m=o, ms=margs, final=o2, parent=m)
+    o2 <- splice_function(f=f, m=o, ms=margs, final=o2)
   }
   o2
 }

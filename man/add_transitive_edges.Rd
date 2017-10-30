@@ -4,7 +4,7 @@
 \alias{add_transitive_edges}
 \title{Find inputs to a nest}
 \usage{
-add_transitive_edges(m, bv, deps, final, parent)
+add_transitive_edges(m, bv, deps, final)
 }
 \arguments{
 \item{m}{The current monadic node}
