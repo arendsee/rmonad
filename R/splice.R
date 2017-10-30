@@ -63,7 +63,7 @@ add_transitive_edges <- function(m, bv, deps, final, parent){
         final <- .connect(
           final,
           from = parent_id,
-          to   = child_id + size(parent),
+          to   = get_id(m)[child_id],
           type = 'transitive'
         )
       }

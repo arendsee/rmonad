@@ -22,7 +22,10 @@ apply_rewriters <- function(x, meta=.single_meta(x)){
   }
 
   if(is.function(meta$summarize) && .single_OK(x)){
-    .single_summary(x) <- meta$summarize(.single_value(x))
+    .single_summary(x) <- list(meta$summarize(.single_value(x)))
+  }
+  if(is.list(meta$summarize) && all(sapply(meta$summarize, is.function)) && .single_OK(x)){
+    .single_summary(x) <- lapply(meta$summarize, function(f) f(.single_value(x)))
   }
 
   if(is.function(meta$cache) && .single_OK(x)){

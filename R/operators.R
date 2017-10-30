@@ -56,7 +56,7 @@ NULL
     lhs_expr,
     substitute(rhs),
     bind_args=.single_value,
-    parent_ids=function(m) .single_parents(m),
+    parent_ids=function(m) .single_parents(m, as_integer=FALSE),
     entry_lhs_transform=on_entry
   )
   eval(as.call(cmd), envir=envir)

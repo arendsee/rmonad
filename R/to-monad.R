@@ -53,7 +53,7 @@ as_monad <- function(expr, desc=.default_code(), doc=.default_doc(), lossy=FALSE
 # TODO: 'lossy' is an lousy name, should change to 'nest', or something
 # as_monad :: a -> m a
 
-  value <- NULL 
+  value <- .default_value()
   warns <- .default_warnings()
   fails <- .default_error()
   isOK  <- .default_OK()
@@ -100,8 +100,11 @@ as_monad <- function(expr, desc=.default_code(), doc=.default_doc(), lossy=FALSE
 
   m <- Rmonad()
 
-  # The default value is Nothing
-  if(isOK) .single_value(m) <- value
+  if(isOK){
+    .single_value(m) <- value
+  } else {
+    m <- .set_raw_value(m, voidCache())
+  }
 
   # These accessors do the right thing (don't mess with them)
   .single_code(m)       <- code
@@ -113,6 +116,7 @@ as_monad <- function(expr, desc=.default_code(), doc=.default_doc(), lossy=FALSE
   .single_mem(m)        <- object.size(value)
   .single_time(m)       <- signif(unname(st[1]), 2)
   .single_meta(m)       <- met
+  .single_summary(m)    <- .default_summary()
 
   m <- apply_rewriters(m, met)
 

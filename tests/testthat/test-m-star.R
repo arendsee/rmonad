@@ -105,15 +105,15 @@ test_that("Access works for multiple values", {
   expect_equal(
     get_summary(ab),
     list(
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      c(NaN, 4),
-      NULL,
-      NULL,
-      NULL
+      list(),
+      list(),
+      list(),
+      list(),
+      list(),
+      list(c(NaN, 4)),
+      list(),
+      list(),
+      list() 
     )
   )
 
@@ -237,9 +237,9 @@ test_that("get_* subsetting works", {
   expect_equal(
     get_summary(ab, index=c(1,6,9)),
     list(
-      NULL,      #1
-      c(NaN, 4), #6
-      NULL       #9
+      list(),          #1
+      list(c(NaN, 4)), #6
+      list()           #9
     )
   )
 

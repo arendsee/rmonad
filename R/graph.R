@@ -74,37 +74,89 @@ size <- function(m) {
 # This function does NOT create an edge between the two graphs, it only merges
 # them into one and handles attributes.
 .rmonad_union <- function(a, b){
-  ab <- a + b
-  ab <- .resolve(ab, 'value')
-  ab <- .resolve(ab, 'code')
-  ab <- .resolve(ab, 'error')
-  ab <- .resolve(ab, 'warnings')
-  ab <- .resolve(ab, 'notes')
-  ab <- .resolve(ab, 'OK')
-  ab <- .resolve(ab, 'doc')
-  ab <- .resolve(ab, 'mem')
-  ab <- .resolve(ab, 'time')
-  ab <- .resolve(ab, 'meta')
-  ab <- .resolve(ab, 'nest_depth')
-  ab <- .resolve(ab, 'summary')
-  ab <- .resolve(ab, 'stored')
+  ab <- igraph::union(a, b, byname=TRUE)
+  ab <- .resolve_edge_attributes(ab)
+  ab <- .resolve(ab, 'value',      .by_value)
+  ab <- .resolve(ab, 'code',       .by_1)
+  ab <- .resolve(ab, 'error',      .by_1)
+  ab <- .resolve(ab, 'warnings',   .by_1)
+  ab <- .resolve(ab, 'notes',      .by_1)
+  ab <- .resolve(ab, 'OK',         .by_1)
+  ab <- .resolve(ab, 'doc',        .by_1)
+  ab <- .resolve(ab, 'mem',        .by_1)
+  ab <- .resolve(ab, 'time',       .by_1)
+  ab <- .resolve(ab, 'meta',       .by_1)
+  ab <- .resolve(ab, 'nest_depth', .by_1)
+  ab <- .resolve(ab, 'summary',    .by_1)
+  ab <- .resolve(ab, 'stored',     .by_1)
+  ab
+}
+.resolve_edge_attributes <- function(ab){
+  xs <- igraph::get.edge.attribute(ab, "type_1")
+  ys <- igraph::get.edge.attribute(ab, "type_2")
+
+  if(is.null(xs)){
+    return(ab)
+  }
+
+  if(any(xs != ys, na.rm=TRUE)){
+    stop("Edge type conflict, either you were being naughty or there is a bug in Rmonad")
+  }
+
+  if(any(is.na(xs) & is.na(ys))){
+    stop("Untyped edge, either you were being naughty or there is a bug in Rmonad")
+  }
+
+  ab <- igraph::set.edge.attribute(ab, 'type', value=ifelse(is.na(xs), ys, xs))
+  ab <- igraph::delete_edge_attr(ab, "type_1")
+  ab <- igraph::delete_edge_attr(ab, "type_2")
   ab
 }
 # Resolve field IF there is no conflict
 # FIXME: this dies on overlapping graphs
-.resolve <- function(ab, field){
+.resolve <- function(ab, field, merger, ...){
   xs <- igraph::get.vertex.attribute(ab, paste0(field, "_1"))
   ys <- igraph::get.vertex.attribute(ab, paste0(field, "_2"))
+
+  if(is.null(xs)){
+    return(ab)
+  }
+
+  ab <- igraph::set.vertex.attribute(ab, field, value=merger(xs, ys, ...))
+  ab <- igraph::delete_vertex_attr(ab, paste0(field, "_1"))
+  ab <- igraph::delete_vertex_attr(ab, paste0(field, "_2"))
+
+  ab
+}
+.by_1 <- function(xs, ys, ...){
+  has_y <- !is.na(ys)
+  has_x <- !is.na(xs)
+  joint <- rep(NA, length(xs))
+  joint[!(has_y | has_x)] <- NA
+  joint[has_y] <- ys[has_y]
+  joint[has_x] <- xs[has_x]
+  joint
+}
+.by_or_die <- function(xs, ys, ...){
   if(all(xor(is.na(xs), is.na(ys)))){
-    ab <- igraph::set.vertex.attribute(ab, field, value=ifelse(is.na(xs), ys, xs))
-    ab <- igraph::delete_vertex_attr(ab, paste0(field, "_1"))
-    ab <- igraph::delete_vertex_attr(ab, paste0(field, "_2"))
+    ifelse(is.na(xs), ys, xs)
   } else {
     stop("Rmonad error: cannot handle conflicts")
   }
-  ab
+}
+.by_value <- function(xs, ys, ...){
+  x_has_value <- sapply(xs, function(x) (class(x) == 'CacheManager') && x@chk())
+  y_has_value <- sapply(ys, function(y) (class(y) == 'CacheManager') && y@chk())
+  x_is_managed <- sapply(xs, function(x) class(x) == 'CacheManager')
+  y_is_managed <- sapply(ys, function(y) class(y) == 'CacheManager')
+  joint <- ifelse(y_has_value, ys, NA)
+  joint <- ifelse(x_has_value, xs, joint)
+  joint <- ifelse(y_is_managed, ys, joint)
+  joint <- ifelse(x_is_managed, xs, joint)
+  joint
 }
 # -----------------------------------------------------------------------------
+
 
 # If an Rmonad holds an Rmonad value, link the value as a nest parent 
 .unnest <- function(m){
@@ -155,7 +207,7 @@ size <- function(m) {
   }
   for(p in parents){
     .m_check(p)
-    child@graph <- p@graph + child@graph
+    child@graph <- .rmonad_union(p@graph, child@graph)
     new_edge <- igraph::edge(p@head, child@head, ...)
     child@graph <- child@graph + new_edge
   }
@@ -168,17 +220,22 @@ size <- function(m) {
 # @param mode "in" or "out"
 # @param type Edge types to consider
 # @param index vector of indices
-.get_single_relative_ids <- function(m, mode, type, index=m@head){
+.get_single_relative_ids <- function(m, mode, type, index=m@head, as_integer=TRUE){
   .m_check(m)
-  vertices <- igraph::neighbors(m@graph, index, mode=mode) %>% as.numeric
-  edges <- igraph::incident_edges(m@graph, index, mode=mode)[[1]] %>% as.numeric
+  vertices <- igraph::neighbors(m@graph, index, mode=mode)
+  edges <- igraph::incident_edges(m@graph, index, mode=mode)[[1]]
   stopifnot(length(vertices) == length(edges))
   etype <- igraph::get.edge.attribute(m@graph, "type", edges)
   stopifnot(length(etype) == length(edges))
-  vertices[etype %in% type] %>% as.integer
+  parents <- vertices[etype %in% type]
+  if(as_integer){
+    as.integer(parents)
+  } else { 
+    parents
+  }
 }
 .get_many_relative_ids <- function(m, index=.get_ids(m), ...){
-  lapply(index, function(i) .get_single_relative_ids(m, index=i, ...))
+  lapply(index, function(i) .get_single_relative_ids(m, index=i, ...)) %>% unname
 }
 
 # Get attributes for specified indicies
@@ -259,7 +316,7 @@ size <- function(m) {
 # @param value A cache function
 # @param index vector of indices
 .set_raw_value <- function(m, value, index=m@head){
-  m@graph <- igraph::set.vertex.attribute(m@graph, name="value", index=index, value=value)
+  m@graph <- igraph::set_vertex_attr(m@graph, name="value", index=index, value=value)
   m
 }
 

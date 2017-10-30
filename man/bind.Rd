@@ -9,7 +9,8 @@ bind(x, f, entry_lhs_transform = entry_lhs_transform_default,
   }, emit = emit_default, m_on_bind = function(x, ...) {     x },
   io_combine = default_combine, bind_args = function(m)
   list(.single_value(m, warn = FALSE)), parent_ids = function(m)
-  .single_id(m), expect_rhs_function = TRUE, envir = parent.frame())
+  .single_parents(m, as_integer = FALSE), expect_rhs_function = TRUE,
+  envir = parent.frame())
 }
 \arguments{
 \item{x}{The input, may or may not be a monad report}

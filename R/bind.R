@@ -25,7 +25,7 @@ bind <- function(
   m_on_bind           = function(x, ...){x},
   io_combine          = default_combine,
   bind_args           = function(m) list(.single_value(m, warn=FALSE)),
-  parent_ids          = function(m) .single_id(m),
+  parent_ids          = function(m) .single_parents(m, as_integer=FALSE),
   expect_rhs_function = TRUE,
   envir               = parent.frame()
 ){
@@ -178,8 +178,12 @@ emit_default <- function(input, output) {
 ## io_combine options
 
 branch_combine <- function(m, o, f, margs){
+
+  # FIXME: this needs to be spliced, there is a bug lurking here, but my tests
+  # don't see it (none of my tests include both branching and nesting)
+
   # Add o as a normal child of m, preserving its value
-  o <- .inherit(child=o, parent=m, type='depend', force_keep=TRUE)
+  o <- .inherit(child=o, parent=m, force_keep=TRUE)
   # Point head to the parent
   o@head <- m@head
   o

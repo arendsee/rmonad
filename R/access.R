@@ -46,11 +46,11 @@ is_rmonad <- function(m) {
 .default_doc        <- function() character(0)
 .default_mem        <- function() NA
 .default_time       <- function() NA
-.default_meta       <- function() NULL
+.default_meta       <- function() list()
 .default_nest_depth <- function() 1
 .default_stored     <- function() FALSE
 .default_id         <- function() integer(0)
-.default_summary    <- function() NULL
+.default_summary    <- function() list()
 
 
 
@@ -90,7 +90,14 @@ has_mem <- function(m, ...) sapply(get_mem(m , ...), .is_not_empty_real)
 
 #' @rdname rmonad_accessors
 #' @export
-has_value <- function(m, ...) sapply(.get_many_raw_values(m , ...), function(x) x@chk())
+has_value <- function(m, ...) {
+  sapply(
+    .get_many_raw_values(m , ...),
+    function(x) {
+      (class(x) == "CacheManager") && x@chk()
+    }
+  )
+}
 
 #' @rdname rmonad_accessors
 #' @export
@@ -110,7 +117,7 @@ has_nest <- function(m, ...) sapply(get_nest(m , ...), function(x) length(x) > 0
 
 #' @rdname rmonad_accessors
 #' @export
-has_summary <- function(m, ...) sapply(get_summary(m , ...), function(x) !is.null(x))
+has_summary <- function(m, ...) sapply(get_summary(m , ...), function(x) length(x) > 0)
 
 
 
@@ -160,7 +167,8 @@ get_value <- function(m, warn=TRUE, ...){
 #' @rdname rmonad_accessors
 #' @export
 get_id <- function(m, ...) {
-  .get_ids(m, ...)
+  # FIXME: should I use numeric or vertex ids?
+  .get_numeric_ids(m, ...)
 }
 
 #' @rdname rmonad_accessors
@@ -178,25 +186,25 @@ get_code <- function(m, ...) {
 #' @rdname rmonad_accessors
 #' @export
 get_error <- function(m, ...) {
-  .get_many_attributes_complex(m, attribute="error", default=NA_character_, ...)
+  .get_many_attributes_complex(m, attribute="error", default=.default_error(), ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 get_warnings <- function(m, ...) {
-  .get_many_attributes_complex(m, attribute="warnings", default=NA_character_, ...)
+  .get_many_attributes_complex(m, attribute="warnings", default=.default_warnings(), ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 get_notes <- function(m, ...) {
-  .get_many_attributes_complex(m, attribute="notes", default=NA_character_, ...)
+  .get_many_attributes_complex(m, attribute="notes", default=.default_notes(), ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 get_doc <- function(m, ...) {
-  .get_many_attributes_complex(m, attribute="doc", default=NA_character_, ...)
+  .get_many_attributes_complex(m, attribute="doc", default=.default_doc(), ...)
 }
 
 #' @rdname rmonad_accessors
@@ -208,13 +216,13 @@ get_meta <- function(m, ...) {
 #' @rdname rmonad_accessors
 #' @export
 get_time <- function(m, ...) {
-  .get_many_attributes_complex(m, attribute="time", default=NA_real_, ...)
+  .get_many_attributes_complex(m, attribute="time", default=.default_time(), ...)
 }
 
 #' @rdname rmonad_accessors
 #' @export
 get_mem <- function(m, ...) {
-  .get_many_attributes_complex(m, attribute="mem", default=NA_integer_, ...)
+  .get_many_attributes_complex(m, attribute="mem", default=.default_mem(), ...)
 }
 
 #' @rdname rmonad_accessors
