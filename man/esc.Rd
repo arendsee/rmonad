@@ -25,5 +25,5 @@ error.
 }
 \seealso{
 Other from_Rmonad: \code{\link{missues}},
-  \code{\link{mreport}}, \code{\link{mtabulate}}
+  \code{\link{mtabulate}}, \code{\link{report}}
 }

@@ -16,5 +16,5 @@ Make tabular summary of a pipeline
 }
 \seealso{
 Other from_Rmonad: \code{\link{esc}},
-  \code{\link{missues}}, \code{\link{mreport}}
+  \code{\link{missues}}, \code{\link{report}}
 }

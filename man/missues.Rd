@@ -14,5 +14,5 @@ Tabulates all errors, warnings and notes
 }
 \seealso{
 Other from_Rmonad: \code{\link{esc}},
-  \code{\link{mreport}}, \code{\link{mtabulate}}
+  \code{\link{mtabulate}}, \code{\link{report}}
 }

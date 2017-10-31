@@ -132,9 +132,9 @@ esc <- function(m, quiet=FALSE){
 #' @export
 #' @examples
 #' \dontrun{
-#' mreport(-1:2 %>>% log %>>% sqrt %__% "asdf" %>>% sqrt)
+#' report(-1:2 %>>% log %>>% sqrt %__% "asdf" %>>% sqrt)
 #' }
-mreport <- function(
+report <- function(
   m,
   prefix='report'
 ){
@@ -155,14 +155,28 @@ mreport <- function(
   }
 
   strsummary <- function(m, i){
-    if(is.null(.single_summary(m, i))){
-      ""
+    summaries <- .single_summary(m, index=i)
+    headers <- if(!is.null(names(summaries))){
+      names(summaries)
     } else {
-      sprintf("```{r, echo=FALSE}\n.single_summary(m, %s)\n```", i)
+      paste('summary', letters[seq_along(summaries)])
     }
+    vapply(FUN.VALUE=character(1),
+      seq_along(summaries),
+      function(j)
+        glue::glue(.open='{{', .close='}}',
+          "
+          ### {{headers[[j]]}}
+
+          ```{r, echo=FALSE}
+          get_summary(m)[[{{i}}]][[{{j}}]]
+          ```
+          "
+        )
+    ) %>% paste(collapse="\n")
   }
 
-  entries <- get_id(m) %>% sapply( function(i)
+  entries <- get_id(m) %>% vapply(FUN.VALUE=character(1), function(i)
     glue::glue(.open='{{', .close='}}',
       "
       ## {{id}}
@@ -181,16 +195,16 @@ mreport <- function(
       {{summary}}
       ",
       id       = i,
-      ok       = .single_OK(m, i),
-      parents  = paste0("[", paste(.single_parents(m, i), collapse=", "), "]"),
+      ok       = .single_OK(m, index=i),
+      parents  = paste0("[", paste(.single_parents(m, index=i), collapse=", "), "]"),
       cached   = has_value(m, index=i),
-      time     = .single_time(m, i),
-      mem      = .single_mem(m, i),
-      doc      = tostr(.single_doc(m, i)),
-      code     = paste0(.single_code(m, i), collapse="\n"),
-      error    = tostr(.single_error(m, i), "ERROR: "),
-      warnings = tostr(.single_warnings(m, i), "WARNING: "),
-      notes    = tostr(.single_notes(m, i), "NOTE: "),
+      time     = .single_time(m, index=i),
+      mem      = .single_mem(m, index=i),
+      doc      = tostr(.single_doc(m, index=i)),
+      code     = paste0(.single_code(m, index=i), collapse="\n"),
+      error    = tostr(.single_error(m, index=i), "ERROR: "),
+      warnings = tostr(.single_warnings(m, index=i), "WARNING: "),
+      notes    = tostr(.single_notes(m, index=i), "NOTE: "),
       summary  = strsummary(m, i)
     )) %>% paste0(collapse="\n")
 
