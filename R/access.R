@@ -30,8 +30,7 @@ is_rmonad <- function(m) {
 # @param m Rmonad object
 # @param index Delete the value contained by this vertex (if NULL, delete head value)
 .single_delete_value <- function(m, ...) {
-  m <- .set_raw_value(m, value=noCache(), ...)
-  m
+  .set_raw_value(m, value=noCache(), ...)
 }
 
 # The purpose of the following functions are to make the setting of things to
@@ -247,8 +246,8 @@ get_summary <- function(m, index=.get_ids(m)) {
     stored
   }
 }
-`.single_stored<-` <- function(m, value) {
-  .set_single_attribute(m, attribute="stored", value=value)
+`.single_stored<-` <- function(m, value, ...) {
+  .set_single_attribute(m, attribute="stored", value=value, ...)
 }
 
 .single_dependents <- function(m, ...) {
@@ -270,87 +269,86 @@ get_summary <- function(m, index=.get_ids(m)) {
 .single_OK <- function(m, ...) {
   .get_single_attribute_complex(m, default=.default_OK(), attribute="OK", ...)
 }
-`.single_OK<-` <- function(m, value) {
+`.single_OK<-` <- function(m, value, ...) {
   stopifnot(is.logical(value))
-  .set_single_attribute(m, attribute="OK", value=value)
+  .set_single_attribute(m, attribute="OK", value=value, ...)
 }
 
 .single_value <- function(m, warn=TRUE, ...){
-  # ... should only ever be 'warn' at this point
   .get_raw_value(m, ...)@get(warn=warn)
 }
-`.single_value<-` <- function(m, value) {
-  .set_raw_value(m, value=memoryCache(value))
+`.single_value<-` <- function(m, value, ...) {
+  .set_raw_value(m, value=memoryCache(value), ...)
 }
 
 .single_code <- function(m, ...) {
   .get_single_attribute_complex(m, default=.default_code(), attribute="code", ...)
 }
-`.single_code<-` <- function(m, value) {
-  .set_single_attribute_complex(m, attribute="code", value=value)
+`.single_code<-` <- function(m, value, ...) {
+  .set_single_attribute_complex(m, attribute="code", value=value, ...)
 }
 
 .single_error <- function(m, ...) {
   .get_single_attribute_complex(m, default=.default_error(), attribute="error", ...)
 }
-`.single_error<-` <- function(m, value) {
-  .set_single_attribute_complex(m, attribute="error", value=value)
+`.single_error<-` <- function(m, value, ...) {
+  .set_single_attribute_complex(m, attribute="error", value=value, ...)
 }
 
 .single_warnings <- function(m, ...) {
   .get_single_attribute_complex(m, default=.default_warnings(), attribute="warnings", ...)
 }
-`.single_warnings<-` <- function(m, value) {
-  .set_single_attribute_complex(m, attribute="warnings", value=value)
+`.single_warnings<-` <- function(m, value, ...) {
+  .set_single_attribute_complex(m, attribute="warnings", value=value, ...)
 }
 
 .single_notes <- function(m, ...) {
   .get_single_attribute_complex(m, default=.default_notes(), attribute="notes", ...)
 }
-`.single_notes<-` <- function(m, value) {
-  .set_single_attribute_complex(m, attribute="notes", value=value)
+`.single_notes<-` <- function(m, value, ...) {
+  .set_single_attribute_complex(m, attribute="notes", value=value, ...)
 }
 
 .single_doc <- function(m, ...) {
   .get_single_attribute_complex(m, default=.default_doc(), attribute="doc", ...)
 }
-`.single_doc<-` <- function(m, value) {
-  .set_single_attribute_complex(m, attribute="doc", value=value)
+`.single_doc<-` <- function(m, value, ...) {
+  .set_single_attribute_complex(m, attribute="doc", value=value, ...)
 }
 
 .single_meta <- function(m, ...) {
   .get_single_attribute_complex(m, default=.default_meta(), attribute="meta", ...)
 }
-`.single_meta<-` <- function(m, value) {
-  .set_single_attribute_complex(m, attribute="meta", value=value)
+`.single_meta<-` <- function(m, value, ...) {
+  .set_single_attribute_complex(m, attribute="meta", value=value, ...)
 }
 
 .single_time <- function(m, ...) {
   .get_single_attribute_complex(m, default=.default_time(), attribute="time", ...)
 }
-`.single_time<-` <- function(m, value) {
-  .set_single_attribute(m, attribute="time", value=value)
+`.single_time<-` <- function(m, value, ...) {
+  .set_single_attribute(m, attribute="time", value=value, ...)
 }
 
 .single_mem <- function(m, ...) {
   .get_single_attribute_complex(m, default=.default_mem(), attribute="mem", ...)
 }
-`.single_mem<-` <- function(m, value) {
-  .set_single_attribute(m, attribute="mem", value=value)
+`.single_mem<-` <- function(m, value, ...) {
+  .set_single_attribute(m, attribute="mem", value=value, ...)
 }
 
 .single_summary <- function(m, ...) {
   .get_single_attribute_complex(m, default=.default_summary(), attribute="summary", ...)
 }
-`.single_summary<-` <- function(m, value){
-  .set_single_attribute_complex(m, attribute="summary", value=value)
+`.single_summary<-` <- function(m, value, ...){
+  .set_single_attribute_complex(m, attribute="summary", value=value, ...)
 }
 
 .single_parents <- function(m, ...) {
   .get_single_relative_ids(m, mode="in", type=c("depend", "transitive"), ...)
 }
-`.single_parents<-` <- function(m, value) {
-  .add_parents(m, value, check=has_parents, type="depend")
+`.single_parents<-` <- function(m, value, ...) {
+  .add_parents(m, value, check=has_parents, type="depend", ...)
 }
 
 .single_nest <- function(m, ...) {
@@ -383,6 +381,6 @@ get_summary <- function(m, index=.get_ids(m)) {
 .single_nest_depth <- function(m, ...) {
   .get_single_attribute_complex(m, default=.default_nest_depth(), attribute="nest_depth", ...)
 }
-`.single_nest_depth<-` <- function(m, value) {
-  .set_single_attribute(m, attribute="nest_depth", value=value)
+`.single_nest_depth<-` <- function(m, value, ...) {
+  .set_single_attribute(m, attribute="nest_depth", value=value, ...)
 }

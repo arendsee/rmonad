@@ -27,7 +27,7 @@ size <- function(m) {
 
 # Handle linking of child node to a single parent node
 #
-# @param child R        monad object
+# @param child          Rmonad object
 # @param parent         Rmonad object
 # @param type           Edge type ["depend", "nest", "prior", "transitive"]
 # @param inherit_value  logical should value be passed (on success)?
