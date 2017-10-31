@@ -45,7 +45,6 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
     stop("Something is wrong with the 'label' field")
   }
 
-  # FIXME: transform time and space
   vertex.color <-
   if(is.function(color)){
     color(x)

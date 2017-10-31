@@ -73,25 +73,30 @@ size <- function(m) {
 # -----------------------------------------------------------------------------
 # This function does NOT create an edge between the two graphs, it only merges
 # them into one and handles attributes.
+#
+# FIXME: Damn this is all so ugly. There has to be a better way ...
+# FIXME: Also, there is little real detection or handling of conflicts here.
+# This ought to holler if nodes with the same uuid have conflicting values, but
+# instead I just grab the value from the parent.
 .rmonad_union <- function(a, b){
   ab <- igraph::union(a, b, byname=TRUE)
-  ab <- .resolve_edge_attributes(ab)
-  ab <- .resolve(ab, 'value',      .by_value)
-  ab <- .resolve(ab, 'code',       .by_1)
-  ab <- .resolve(ab, 'error',      .by_1)
-  ab <- .resolve(ab, 'warnings',   .by_1)
-  ab <- .resolve(ab, 'notes',      .by_1)
-  ab <- .resolve(ab, 'OK',         .by_1)
-  ab <- .resolve(ab, 'doc',        .by_1)
-  ab <- .resolve(ab, 'mem',        .by_1)
-  ab <- .resolve(ab, 'time',       .by_1)
-  ab <- .resolve(ab, 'meta',       .by_1)
-  ab <- .resolve(ab, 'nest_depth', .by_1)
-  ab <- .resolve(ab, 'summary',    .by_1)
-  ab <- .resolve(ab, 'stored',     .by_1)
+  ab <- .zip_edge(ab)
+  ab <- .zip_vertex(ab, 'value',      .by_value)
+  ab <- .zip_vertex(ab, 'code',       .by_1)
+  ab <- .zip_vertex(ab, 'error',      .by_1)
+  ab <- .zip_vertex(ab, 'warnings',   .by_1)
+  ab <- .zip_vertex(ab, 'notes',      .by_1)
+  ab <- .zip_vertex(ab, 'OK',         .by_1)
+  ab <- .zip_vertex(ab, 'doc',        .by_1)
+  ab <- .zip_vertex(ab, 'mem',        .by_1)
+  ab <- .zip_vertex(ab, 'time',       .by_1)
+  ab <- .zip_vertex(ab, 'meta',       .by_1)
+  ab <- .zip_vertex(ab, 'nest_depth', .by_1)
+  ab <- .zip_vertex(ab, 'summary',    .by_1)
+  ab <- .zip_vertex(ab, 'stored',     .by_1)
   ab
 }
-.resolve_edge_attributes <- function(ab){
+.zip_edge <- function(ab){
   xs <- igraph::get.edge.attribute(ab, "type_1")
   ys <- igraph::get.edge.attribute(ab, "type_2")
 
@@ -112,9 +117,7 @@ size <- function(m) {
   ab <- igraph::delete_edge_attr(ab, "type_2")
   ab
 }
-# Resolve field IF there is no conflict
-# FIXME: this dies on overlapping graphs
-.resolve <- function(ab, field, merger, ...){
+.zip_vertex <- function(ab, field, merger, ...){
   xs <- igraph::get.vertex.attribute(ab, paste0(field, "_1"))
   ys <- igraph::get.vertex.attribute(ab, paste0(field, "_2"))
 
@@ -136,13 +139,6 @@ size <- function(m) {
   joint[has_y] <- ys[has_y]
   joint[has_x] <- xs[has_x]
   joint
-}
-.by_or_die <- function(xs, ys, ...){
-  if(all(xor(is.na(xs), is.na(ys)))){
-    ifelse(is.na(xs), ys, xs)
-  } else {
-    stop("Rmonad error: cannot handle conflicts")
-  }
 }
 .by_value <- function(xs, ys, ...){
   x_has_value  <- vapply(FUN.VALUE=logical(1), xs, function(x) (class(x) == 'CacheManager') && x@chk())
@@ -199,7 +195,6 @@ size <- function(m) {
 # @param parents Rmonad object or list of Rmonad objects
 # @param check function UNNECESSARY?
 .add_parents <- function(child, parents, check=false, ...){
-  # FIXME: `check` is not being used, I removed it for a reason ... 
   .m_check(child)
   stopifnot(!check(child))
   if(!is.list(parents)){
