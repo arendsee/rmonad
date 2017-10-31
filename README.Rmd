@@ -1,13 +1,6 @@
 [![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=dev)](https://travis-ci.org/arendsee/rmonad)
 [![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/dev.svg)](https://codecov.io/github/arendsee/rmonad?branch=dev)
 
----
-output: markdown_github 
----
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-
 ```{r, echo = FALSE}
 set.seed(210)
 knitr::opts_chunk$set(
@@ -250,13 +243,13 @@ x <-
   NULL
 
 }
-mreport(x)
+report(x)
 ```
 
 ### Graphing pipelines
 
-An `rmonad` pipeline can be converted to a `DiagrammeR` object. Along with many
-unexplored possibilities, this allows the pipeline to be plotted:
+Internally an `Rmonad` object wraps an `igraph` object, and can thus be easily
+plotted:
 
 ```{r workflow-plot}
 # here I use the `->` operator, which is the little known twin of `<-`.

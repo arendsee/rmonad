@@ -525,14 +525,9 @@ get_value(result, warn=FALSE)
 get_doc(result)
 ```
 
-<!--
-Unfortunately, knitr imports 5Mb of junk when I build this plot directly, so
-instead I am importing a static image. There should be a way to avoid this
---!>
 ```{r gff-workflow-plot, eval=FALSE}
 plot(result)
 ```
-![plot of chunk gff-workflow-plot](gff-workflow-plot-1.png)
 
 A plot of the connections between functions in the pipeline. The node labels
 are the `rmonad` ids. The red arrow indicates a 'nest' relationship. Green nodes

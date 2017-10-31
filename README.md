@@ -1,6 +1,8 @@
 [![Travis-CI Build Status](https://travis-ci.org/arendsee/rmonad.svg?branch=dev)](https://travis-ci.org/arendsee/rmonad)
 [![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/dev.svg)](https://codecov.io/github/arendsee/rmonad?branch=dev)
 
+
+
 # `rmonad`
 
 Chain monadic sequences into stateful, branching pipelines. As nodes in the
@@ -57,17 +59,19 @@ library(rmonad)
     sqrt %v>% # record an intermediate value
     sqrt %>>%
     sqrt
-#> An object of class "Rmonad"
-#> Slot "graph":
-#> IGRAPH 5d6c1ce D--- 4 3 -- 
-#> + attr: value (v/x), code (v/x), error (v/x), warnings (v/x),
-#> | notes (v/x), OK (v/l), doc (v/x), meta (v/x), nest_depth (v/n),
-#> | stored (v/l), mem (v/n), time (v/n), type (e/c)
-#> + edges from 5d6c1ce:
-#> [1] 1->2 2->3 3->4
+#> N1> "1:5"
+#> N2> "sqrt"
+#> Parents: [1]
+#> [1] 1.000000 1.414214 1.732051 2.000000 2.236068
 #> 
-#> Slot "head":
-#> [1] 4
+#> N3> "sqrt"
+#> Parents: [2]
+#> N4> "sqrt"
+#> Parents: [3]
+#> 
+#>  ----------------- 
+#> 
+#> [1] 1.000000 1.090508 1.147203 1.189207 1.222845
 ```
 
 
@@ -110,17 +114,31 @@ funnel(
     runif("df"),
     1:10
 )
-#> An object of class "Rmonad"
-#> Slot "graph":
-#> IGRAPH c3da80a D--- 5 4 -- 
-#> + attr: value (v/x), code (v/x), error (v/x), warnings (v/x),
-#> | notes (v/x), OK (v/l), doc (v/x), meta (v/x), nest_depth (v/n),
-#> | stored (v/l), mem (v/n), time (v/n), type (e/c)
-#> + edges from c3da80a:
-#> [1] 4->5 3->5 2->5 1->5
+#> N1> "1:10"
+#> N2> "runif("df")"
+#>  * ERROR: invalid arguments
+#>  * WARNING: NAs introduced by coercion
+#> N3> "stop("stop, drop and die")"
+#>  * ERROR: stop, drop and die
+#> N4> "runif(5)"
+#> N5> "funnel(runif(5), stop("stop, drop and die"), runif("df"), 1:10)"
+#> Parents: [1, 2, 3, 4]
 #> 
-#> Slot "head":
-#> [1] 5
+#>  ----------------- 
+#> 
+#> [[1]]
+#> [1] 0.5120101 0.8351271 0.8930770 0.4460601 0.2983039
+#> 
+#> [[2]]
+#> NULL
+#> 
+#> [[3]]
+#> NULL
+#> 
+#> [[4]]
+#>  [1]  1  2  3  4  5  6  7  8  9 10
+#> 
+#>  *** FAILURE ***
 ```
 
 
@@ -205,17 +223,56 @@ analysis <-
 } %>>% '^'(2) %>>% sum
 
 analysis
-#> An object of class "Rmonad"
-#> Slot "graph":
-#> IGRAPH b389412 D--- 10 9 -- 
-#> + attr: value (v/x), code (v/x), error (v/x), warnings (v/x),
-#> | notes (v/x), OK (v/l), doc (v/x), meta (v/x), nest_depth (v/n),
-#> | stored (v/l), mem (v/n), time (v/n), type (e/c)
-#> + edges from b389412:
-#> [1] 1-> 2 2-> 3 3-> 4 4-> 5 5-> 6 6-> 7 7-> 8 8-> 9 9->10
 #> 
-#> Slot "head":
-#> [1] 10
+#> 
+#>     This analysis begins with 5 uniform random variables
+#> 
+#> N1> "{
+#>     runif(5)
+#> }"
+#> N2> "`^`(2)"
+#> Parents: [1]
+#> N3> "sum"
+#> Parents: [2]
+#> [1] 0.3401932
+#> 
+#> 
+#> 
+#>     The next step is to take 6 normal random variables
+#> 
+#> N4> "{
+#>     rnorm(6)
+#> }"
+#> N5> "`^`(2)"
+#> Parents: [4]
+#> N6> "sum"
+#> Parents: [5]
+#> [1] 10.78472
+#> 
+#> 
+#> 
+#>     And this is were the magic happens, we take 'a' random normal variables
+#> 
+#> N7> "{
+#>     rnorm("a")
+#> }"
+#>  * ERROR: invalid arguments
+#>  * WARNING: NAs introduced by coercion
+#> 
+#> 
+#>     Then, just for good measure, we toss in six exponentials
+#> 
+#> N8> "{
+#>     rexp(6)
+#> }"
+#> N9> "`^`(2)"
+#> Parents: [8]
+#> N10> "sum"
+#> Parents: [9]
+#> 
+#>  ----------------- 
+#> 
+#> [1] 29.97433
 ```
 
 ### Add metadata to chunk
@@ -281,13 +338,13 @@ x <-
   NULL
 
 }
-mreport(x)
+report(x)
 ```
 
 ### Graphing pipelines
 
-An `rmonad` pipeline can be converted to a `DiagrammeR` object. Along with many
-unexplored possibilities, this allows the pipeline to be plotted:
+Internally an `Rmonad` object wraps an `igraph` object, and can thus be easily
+plotted:
 
 
 ```r
@@ -334,8 +391,6 @@ countdown <- function(x) {
     x %>_% {if(. == 0) stop('boom')} %>>% { countdown(.-1) }
 }
 10 %>>% countdown %>% plot
-#> Warning in `[<-`(`*tmp*`, index, value = value): implicit list embedding of
-#> S4 objects is deprecated
 ```
 
 ![plot of chunk recursion](README-recursion-1.png)
