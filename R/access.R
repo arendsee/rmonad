@@ -30,7 +30,7 @@ is_rmonad <- function(m) {
 # @param m Rmonad object
 # @param index Delete the value contained by this vertex (if NULL, delete head value)
 .single_delete_value <- function(m, ...) {
-  .set_raw_value(m, value=noCache(), ...)
+  .set_raw_value(m, value=no_cache(), ...)
 }
 
 # The purpose of the following functions are to make the setting of things to
@@ -39,7 +39,7 @@ is_rmonad <- function(m) {
 # NULL value?). Also there are multiple reasonable defaults (NULL, "", NA,
 # NA_integer_, logical(0), etc) and use of the wrong one can be a source of
 # subtle of reoccuring bugs. So I gather all this into one place.
-.default_value      <- function() voidCache()
+.default_value      <- function() void_cache()
 .default_head       <- function() 1L
 .default_code       <- function() character(0)
 .default_error      <- function() character(0)
@@ -278,7 +278,7 @@ get_summary <- function(m, index=.get_ids(m)) {
   .get_raw_value(m, ...)@get(warn=warn)
 }
 `.single_value<-` <- function(m, value) {
-  .set_raw_value(m, value=memoryCache(value))
+  .set_raw_value(m, value=memory_cache(value))
 }
 
 .single_code <- function(m, ...) {
@@ -373,7 +373,7 @@ get_summary <- function(m, index=.get_ids(m)) {
       force_keep    = TRUE,
       type          = "nest"
     )
-    m <- .set_raw_value(m, value=voidCache())
+    m <- .set_raw_value(m, value=void_cache())
     m
   }
 }

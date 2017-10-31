@@ -20,7 +20,7 @@ setClass(
 Rmonad <- function(){
   m <- new("Rmonad")
   m <- .new_rmonad_graph(m)
-  m <- .set_raw_value(m, value=voidCache())
+  m <- .set_raw_value(m, value=void_cache())
   .single_code(m)       <- .default_code()
   .single_error(m)      <- .default_error()
   .single_warnings(m)   <- .default_warnings()

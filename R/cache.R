@@ -7,7 +7,7 @@
 #'
 #' @return A function that represents a void, uncached value
 #' @export
-voidCache <- function(){
+void_cache <- function(){
   # @param warn Warn if the accessed field does not exist (value was not cached)
   get <- function(warn=TRUE){
     if(warn){
@@ -29,7 +29,7 @@ voidCache <- function(){
 #'
 #' @return A function that represents a deleted value 
 #' @export
-noCache <- function(){
+no_cache <- function(){
   # @param warn Warn if the accessed field does not exist (value was not cached)
   get <- function(warn=TRUE){
     if(warn){
@@ -51,10 +51,10 @@ noCache <- function(){
 #' @export
 #' @examples
 #' foo <- 45
-#' foo_proxy <- memoryCache(foo)
+#' foo_proxy <- memory_cache(foo)
 #' foo
 #' foo_proxy@get()
-memoryCache <- function(x){
+memory_cache <- function(x){
   # FIXME: allow deletion of x, must delete only the LOCAL x 
   # FIXME: allow checking, must check for presence of LOCAL x
   force(x)
@@ -73,12 +73,12 @@ memoryCache <- function(x){
 #' @examples
 #' \dontrun{
 #'   foo <- 45
-#'   localCacher <- makeLocalCacher(".")
-#'   foo_ <- localCacher(45)
+#'   cacher <- make_local_cacher(".")
+#'   foo_ <- cacher(45)
 #'   rm(foo)
 #'   foo_@get()
 #' }
-makeLocalCacher <- function(path){
+make_local_cacher <- function(path){
   if(!dir.exists(path)){
     dir.create(path, recursive=TRUE)
   }
@@ -109,23 +109,26 @@ makeLocalCacher <- function(path){
 #' Make a function that taks an Rmonad and recaches it
 #'
 #' @param cacher A function of a data value
+#' @param preserve logical Should the cached value be preserved across bind operations?
 #' @return A function that swaps the cache function of an Rmonad
 #' @export
 #' @examples
 #' \dontrun{
-#'   recacher <- makeRecacher(makeLocalCacher("."))
+#'   recacher <- make_recacher(make_local_cacher("."))
 #'   m <- iris %>>% summary %>% recacher
 #'   # load the data from a local file
 #'   .single_value(m)
 #'
-#'   recacher <- makeRecacher(memoryCache)
+#'   recacher <- make_recacher(memory_cache)
 #'   m <- iris %>>% summary %>% recacher
 #'   # load the data from memory
 #'   .single_value(m)
 #' }
-makeRecacher <- function(cacher){
+make_recacher <- function(cacher, preserve=TRUE){
   # @param m An Rmonad object
   function(m){
-    .set_raw_value(m, value=cacher(.single_value(m)))
+    m <- .set_raw_value(m, value=cacher(.single_value(m)))
+    .single_stored(m) <- preserve
+    m
   }
 }

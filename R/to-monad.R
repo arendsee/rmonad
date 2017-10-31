@@ -103,7 +103,7 @@ as_monad <- function(expr, desc=.default_code(), doc=.default_doc(), lossy=FALSE
   if(isOK){
     .single_value(m) <- value
   } else {
-    m <- .set_raw_value(m, value=voidCache())
+    m <- .set_raw_value(m, value=void_cache())
   }
 
   # These accessors do the right thing (don't mess with them)
