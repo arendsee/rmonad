@@ -145,10 +145,10 @@ size <- function(m) {
   }
 }
 .by_value <- function(xs, ys, ...){
-  x_has_value <- sapply(xs, function(x) (class(x) == 'CacheManager') && x@chk())
-  y_has_value <- sapply(ys, function(y) (class(y) == 'CacheManager') && y@chk())
-  x_is_managed <- sapply(xs, function(x) class(x) == 'CacheManager')
-  y_is_managed <- sapply(ys, function(y) class(y) == 'CacheManager')
+  x_has_value  <- vapply(FUN.VALUE=logical(1), xs, function(x) (class(x) == 'CacheManager') && x@chk())
+  y_has_value  <- vapply(FUN.VALUE=logical(1), ys, function(y) (class(y) == 'CacheManager') && y@chk())
+  x_is_managed <- vapply(FUN.VALUE=logical(1), xs, function(x)  class(x) == 'CacheManager')
+  y_is_managed <- vapply(FUN.VALUE=logical(1), ys, function(y)  class(y) == 'CacheManager')
   joint <- ifelse(y_has_value, ys, NA)
   joint <- ifelse(x_has_value, xs, joint)
   joint <- ifelse(y_is_managed, ys, joint)

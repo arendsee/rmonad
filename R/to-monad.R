@@ -184,7 +184,7 @@ funnel <- function(..., env=parent.frame(), keep_history=TRUE){
 combine <- function(xs, keep_history=TRUE, desc=.default_code()){
 # combine :: [m *] -> m [*]
 
-  if(!all(sapply(xs, is_rmonad))){
+  if(!all(vapply(FUN.VALUE=logical(1), xs, is_rmonad))){
     stop("'combine' works only on lists of Rmonad objects")
   }
 
@@ -199,7 +199,7 @@ combine <- function(xs, keep_history=TRUE, desc=.default_code()){
   .single_parents(out) <- xs
 
   # monad is passing if all parents are cool
-  .single_OK(out) <- all(sapply(xs, .single_OK))
+  .single_OK(out) <- all(vapply(FUN.VALUE=logical(1), xs, .single_OK))
 
   if(!is.null(desc)){
     .single_code(out) <- desc 

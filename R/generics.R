@@ -32,7 +32,7 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   } else if(is.null(label)){
     get_id(x)
   } else if(label == "code"){
-    sapply(get_code(x), paste0, collapse="\n")
+    vapply(FUN.VALUE=character(1), get_code(x), paste0, collapse="\n")
   } else if(label == "time") {
     get_time(x)
   } else if (label == "space") {

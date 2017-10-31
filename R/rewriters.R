@@ -24,7 +24,10 @@ apply_rewriters <- function(x, meta=.single_meta(x)){
   if(is.function(meta$summarize) && .single_OK(x)){
     .single_summary(x) <- list(meta$summarize(.single_value(x)))
   }
-  if(is.list(meta$summarize) && all(sapply(meta$summarize, is.function)) && .single_OK(x)){
+  if(is.list(meta$summarize) &&
+     all(vapply(FUN.VALUE=logical(1), meta$summarize, is.function)) &&
+     .single_OK(x)
+  ){
     .single_summary(x) <- lapply(meta$summarize, function(f) f(.single_value(x)))
   }
 

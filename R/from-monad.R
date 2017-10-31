@@ -6,18 +6,18 @@
 #' @export
 mtabulate <- function(m, code=FALSE){
   data.frame(
-    code        = get_code(m) %>% sapply(paste0, collapse="\n"),
+    code        = get_code(m) %>% vapply(FUN.VALUE=character(1), paste0, collapse="\n"),
     id          = get_id(m) %>% as.numeric,
     OK          = get_OK(m),
     cached      = has_value(m),
-    time        = get_time(m) %>% sapply(function(x) { signif(.[1], 2) }),
+    time        = get_time(m) %>% vapply(FUN.VALUE=numeric(1), function(x) { signif(.[1], 2) }),
     space       = get_mem(m),
-    is_nested   = get_nest(m)       %>% sapply(length),
-    ndependents = get_dependents(m) %>% sapply(length),
-    nnotes      = get_notes(m)      %>% sapply(length),
-    nwarnings   = get_warnings(m)   %>% sapply(length),
-    error       = get_error(m)      %>% sapply(length),
-    doc         = get_doc(m)        %>% sapply(length)
+    is_nested   = get_nest(m)       %>% vapply(FUN.VALUE=integer(1), length),
+    ndependents = get_dependents(m) %>% vapply(FUN.VALUE=integer(1), length),
+    nnotes      = get_notes(m)      %>% vapply(FUN.VALUE=integer(1), length),
+    nwarnings   = get_warnings(m)   %>% vapply(FUN.VALUE=integer(1), length),
+    error       = get_error(m)      %>% vapply(FUN.VALUE=integer(1), length),
+    doc         = get_doc(m)        %>% vapply(FUN.VALUE=integer(1), length)
   ) %>% {
     if(!code)
       .$code <- NULL
@@ -32,9 +32,9 @@ mtabulate <- function(m, code=FALSE){
 #' @export
 missues <- function(m){
 
-  error_len   <- get_error(m)    %>% sapply(length)
-  warning_len <- get_warnings(m) %>% sapply(length)
-  note_len    <- get_notes(m)    %>% sapply(length)
+  error_len   <- get_error(m)    %>% vapply(FUN.VALUE=integer(1), length)
+  warning_len <- get_warnings(m) %>% vapply(FUN.VALUE=integer(1), length)
+  note_len    <- get_notes(m)    %>% vapply(FUN.VALUE=integer(1), length)
 
   ids <- get_id(m) %>% {c(
     rep(., times=error_len),
