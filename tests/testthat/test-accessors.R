@@ -1,6 +1,6 @@
 context("accessor methods")
 
-m <- Rmonad()
+m <- as_monad(42)
 
 test_that("The .has_* correctly return false", {
   expect_equal(has_doc(m),        FALSE)
@@ -8,10 +8,10 @@ test_that("The .has_* correctly return false", {
   expect_equal(has_prior(m),      FALSE)
   expect_equal(has_nest(m),       FALSE)
   expect_equal(has_error(m),      FALSE)
-  expect_equal(has_mem(m),        FALSE)
+  expect_equal(has_mem(m),        TRUE )
   expect_equal(has_notes(m),      FALSE)
-  expect_equal(has_time(m),       FALSE)
-  expect_equal(has_value(m),      FALSE)
+  expect_equal(has_time(m),       TRUE )
+  expect_equal(has_value(m),      TRUE )
   expect_equal(has_warnings(m),   FALSE)
 })
 

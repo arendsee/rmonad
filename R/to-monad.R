@@ -59,10 +59,6 @@ as_monad <- function(expr, desc=.default_code(), doc=.default_doc(), lossy=FALSE
   isOK  <- .default_OK()
 
   env <- parent.frame()
-  ed <- extract_metadata(substitute(expr), env=env)
-  expr <- ed$expr
-  doc <- ed$docstring
-  met <- ed$metadata
 
   st <- system.time(
     {
@@ -92,13 +88,20 @@ as_monad <- function(expr, desc=.default_code(), doc=.default_doc(), lossy=FALSE
     return(value)
   }
 
+  ed <- extract_metadata(substitute(expr), env=env)
+  expr <- ed$expr
+  doc <- ed$docstring
+  met <- ed$metadata
+
   code <- if(is.null(desc)) {
     deparse(substitute(expr))
   } else {
     desc
   }
 
-  m <- Rmonad()
+  m <- new("Rmonad")
+  m <- .new_rmonad_graph(m)
+  m <- .set_raw_value(m, value=void_cache())
 
   if(isOK){
     .single_value(m) <- value
@@ -117,6 +120,8 @@ as_monad <- function(expr, desc=.default_code(), doc=.default_doc(), lossy=FALSE
   .single_time(m)       <- signif(unname(st[1]), 2)
   .single_meta(m)       <- met
   .single_summary(m)    <- .default_summary()
+  .single_nest_depth(m) <- .default_nest_depth()
+  .single_stored(m)     <- .default_stored()
 
   m <- apply_rewriters(m, met)
 
@@ -188,15 +193,16 @@ combine <- function(xs, keep_history=TRUE, desc=.default_code()){
     stop("'combine' works only on lists of Rmonad objects")
   }
 
-  # make a new monad that is the child of all monads in the input list
-  out <- Rmonad() 
-
   # store all values (even if failing, in which case should be NULL)
-  .single_value(out) <- lapply(xs, .single_value, warn=FALSE)
+  value <- lapply(xs, .single_value, warn=FALSE)
+
+  # make a new monad that is the child of all monads in the input list
+  out <- as_monad(value)
 
   xs <- lapply(xs, .single_delete_value)
 
   .single_parents(out) <- xs
+  .single_time(out) <- .default_time()
 
   # monad is passing if all parents are cool
   .single_OK(out) <- all(vapply(FUN.VALUE=logical(1), xs, .single_OK))
