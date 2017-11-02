@@ -4,3 +4,4 @@
 inst/doc
 tags
 ..Rcheck
+*.out
