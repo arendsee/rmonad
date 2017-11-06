@@ -158,10 +158,11 @@ size <- function(m) {
 .unnest <- function(m){
   if(is_rmonad(m) && has_value(m, index=m@head) && is_rmonad(.single_value(m))){
     nest <- .single_value(m)
-    nest@graph <- igraph::set.vertex.attribute(
-      graph = nest@graph,
-      name  = "nest_depth",
-      value = igraph::V(nest@graph)$nest_depth + (.single_nest_depth(m) - .single_nest_depth(nest) + 1)
+    nest <- .set_many_attributes(
+      nest,
+      attribute='nest_depth',
+      value = igraph::V(nest@graph)$nest_depth +
+              (.single_nest_depth(m) - .single_nest_depth(nest) + 1)
     )
     .single_nest(m) <- nest 
   }
@@ -273,6 +274,23 @@ size <- function(m) {
   m
 }
 
+# Set attributes at specified indices
+#
+# This works for simple values where `length(index)` == `length(value)`
+#
+# @param m Rmonad object
+# @param attribute The attribute name (e.g. "error")
+# @param value attribute value
+# @param index vector of indices
+.set_many_attributes <- function(m, attribute, value, index=.get_ids(m), ...){
+  m@graph <- igraph::set.vertex.attribute(
+    graph = m@graph,
+    name  = attribute,
+    index = index,
+    value = value
+  )
+  m
+}
 
 # Get attributes
 #
