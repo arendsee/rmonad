@@ -47,10 +47,10 @@ is_rmonad <- function(m) {
 .default_notes      <- function() character(0)
 .default_OK         <- function() TRUE
 .default_doc        <- function() character(0)
-.default_mem        <- function() NA
-.default_time       <- function() NA
+.default_mem        <- function() NA_real_
+.default_time       <- function() NA_real_
 .default_meta       <- function() list()
-.default_nest_depth <- function() 1
+.default_nest_depth <- function() 1L
 .default_stored     <- function() FALSE
 .default_id         <- function() integer(0)
 .default_summary    <- function() list()

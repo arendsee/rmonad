@@ -99,9 +99,7 @@ as_monad <- function(expr, desc=.default_code(), doc=.default_doc(), lossy=FALSE
     desc
   }
 
-  m <- new("Rmonad")
-  m <- .new_rmonad_graph(m)
-  m <- .set_raw_value(m, value=void_cache())
+  m <- Rmonad()
 
   if(isOK){
     .single_value(m) <- value

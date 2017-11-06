@@ -62,6 +62,8 @@ size <- function(m) {
 
   child@graph <- .rmonad_union(parent@graph, child@graph)
   child@graph <- child@graph  + igraph::edge(parent@head, child@head, type=type)
+  # FIXME: need to resolve any possible name conflicts here
+  child@data <- append(parent@data, child@data)
 
   child
 }
@@ -74,94 +76,40 @@ size <- function(m) {
 # This function does NOT create an edge between the two graphs, it only merges
 # them into one and handles attributes.
 #
-# FIXME: Damn this is all so ugly. There has to be a better way ...
 # FIXME: Also, there is little real detection or handling of conflicts here.
 # This ought to holler if nodes with the same uuid have conflicting values, but
 # instead I just grab the value from the parent.
 .rmonad_union <- function(a, b){
   ab <- igraph::union(a, b, byname=TRUE)
   ab <- .zip_edge(ab)
-  ab <- .zip_vertex(ab, 'value',      .by_value)
-  ab <- .zip_vertex(ab, 'code',       .by_1)
-  ab <- .zip_vertex(ab, 'error',      .by_1)
-  ab <- .zip_vertex(ab, 'warnings',   .by_1)
-  ab <- .zip_vertex(ab, 'notes',      .by_1)
-  ab <- .zip_vertex(ab, 'OK',         .by_1)
-  ab <- .zip_vertex(ab, 'doc',        .by_1)
-  ab <- .zip_vertex(ab, 'mem',        .by_1)
-  ab <- .zip_vertex(ab, 'time',       .by_1)
-  ab <- .zip_vertex(ab, 'meta',       .by_1)
-  ab <- .zip_vertex(ab, 'nest_depth', .by_1)
-  ab <- .zip_vertex(ab, 'summary',    .by_1)
-  ab <- .zip_vertex(ab, 'stored',     .by_1)
   ab
 }
 .zip_edge <- function(ab){
   xs <- igraph::get.edge.attribute(ab, "type_1")
   ys <- igraph::get.edge.attribute(ab, "type_2")
-
   if(is.null(xs)){
     return(ab)
   }
-
   if(any(xs != ys, na.rm=TRUE)){
     stop("Edge type conflict, either you were being naughty or there is a bug in Rmonad")
   }
-
   if(any(is.na(xs) & is.na(ys))){
     stop("Untyped edge, either you were being naughty or there is a bug in Rmonad")
   }
-
   ab <- igraph::set.edge.attribute(ab, 'type', value=ifelse(is.na(xs), ys, xs))
   ab <- igraph::delete_edge_attr(ab, "type_1")
   ab <- igraph::delete_edge_attr(ab, "type_2")
   ab
 }
-.zip_vertex <- function(ab, field, merger, ...){
-  xs <- igraph::get.vertex.attribute(ab, paste0(field, "_1"))
-  ys <- igraph::get.vertex.attribute(ab, paste0(field, "_2"))
-
-  if(is.null(xs)){
-    return(ab)
-  }
-
-  ab <- igraph::set.vertex.attribute(ab, field, value=merger(xs, ys, ...))
-  ab <- igraph::delete_vertex_attr(ab, paste0(field, "_1"))
-  ab <- igraph::delete_vertex_attr(ab, paste0(field, "_2"))
-
-  ab
-}
-.by_1 <- function(xs, ys, ...){
-  has_y <- !is.na(ys)
-  has_x <- !is.na(xs)
-  joint <- rep(NA, length(xs))
-  joint[!(has_y | has_x)] <- NA
-  joint[has_y] <- ys[has_y]
-  joint[has_x] <- xs[has_x]
-  joint
-}
-.by_value <- function(xs, ys, ...){
-  x_has_value  <- vapply(FUN.VALUE=logical(1), xs, function(x) (class(x) == 'CacheManager') && x@chk())
-  y_has_value  <- vapply(FUN.VALUE=logical(1), ys, function(y) (class(y) == 'CacheManager') && y@chk())
-  x_is_managed <- vapply(FUN.VALUE=logical(1), xs, function(x)  class(x) == 'CacheManager')
-  y_is_managed <- vapply(FUN.VALUE=logical(1), ys, function(y)  class(y) == 'CacheManager')
-  joint <- ifelse(y_has_value, ys, NA)
-  joint <- ifelse(x_has_value, xs, joint)
-  joint <- ifelse(y_is_managed, ys, joint)
-  joint <- ifelse(x_is_managed, xs, joint)
-  joint
-}
-# -----------------------------------------------------------------------------
-
 
 # If an Rmonad holds an Rmonad value, link the value as a nest parent 
 .unnest <- function(m){
   if(is_rmonad(m) && has_value(m, index=m@head) && is_rmonad(.single_value(m))){
     nest <- .single_value(m)
-    nest <- .set_many_attributes(
-      nest,
+    m <- .set_many_attributes(
+      m,
       attribute='nest_depth',
-      value = igraph::V(nest@graph)$nest_depth +
+      value = .get_many_attributes(m, attribute='nest_depth') +
               (.single_nest_depth(m) - .single_nest_depth(nest) + 1)
     )
     .single_nest(m) <- nest 
@@ -188,6 +136,13 @@ size <- function(m) {
 }
 .get_numeric_ids <- function(...){
   .get_ids(...) %>% as.numeric
+}
+
+.as_index <- function(m, index){
+  if(is.numeric(index)){
+    index <- igraph::get.vertex.attribute(m@graph, name='name', index=index)
+  }
+  index
 }
 
 # Add multiple parents to an child 
@@ -241,7 +196,7 @@ size <- function(m) {
 # @param index vector of indices
 .get_attribute <- function(m, attribute, index=m@head){
   .m_check(m)
-  igraph::get.vertex.attribute(m@graph, name=attribute, index=index)
+  lapply(m@data[.as_index(m, index)], function(x) x[[attribute]])
 }
 .get_many_attributes <- function(m, index=.get_ids(m), ...){
   .get_attribute(m, index=index, ...) 
@@ -252,9 +207,10 @@ size <- function(m) {
   }
   a <- .get_attribute(m, index=index, ...)
   if(is.null(a) || length(a) == 0){
-    a <- default
+    default
+  } else {
+    a[[1]]
   }
-  a
 }
 
 # Set attributes at specified indices
@@ -270,7 +226,7 @@ size <- function(m) {
   if(length(index) != 1){
     stop("ERROR: Can only set one attribute at a time in .single_* setters")
   }
-  m@graph <- igraph::set.vertex.attribute(m@graph, name=attribute, index=index, value=value)
+  m@data[[.as_index(m, index)]][[attribute]] <- value
   m
 }
 
@@ -283,12 +239,10 @@ size <- function(m) {
 # @param value attribute value
 # @param index vector of indices
 .set_many_attributes <- function(m, attribute, value, index=.get_ids(m), ...){
-  m@graph <- igraph::set.vertex.attribute(
-    graph = m@graph,
-    name  = attribute,
-    index = index,
-    value = value
-  )
+  m@data[.as_index(m, index)] <- lapply(
+    m@data[.as_index(m, index)],
+    function(x) { x[[attribute]] <- value }
+  ) 
   m
 }
 
