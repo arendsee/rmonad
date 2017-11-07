@@ -20,6 +20,7 @@ Rmonad <- function(){
   m <- new("Rmonad")
   m <- .new_rmonad_graph(m)
   m@data <- list(RmonadData())
+  names(m@data) <- m@head
   m
 }
 

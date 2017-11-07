@@ -104,7 +104,7 @@ as_monad <- function(expr, desc=.default_code(), doc=.default_doc(), lossy=FALSE
   if(isOK){
     .single_value(m) <- value
   } else {
-    m <- .set_raw_value(m, value=void_cache())
+    .single_raw_value(m) <- void_cache()
   }
 
   # These accessors do the right thing (don't mess with them)
@@ -114,7 +114,7 @@ as_monad <- function(expr, desc=.default_code(), doc=.default_doc(), lossy=FALSE
   .single_notes(m)      <- notes
   .single_OK(m)         <- isOK
   .single_doc(m)        <- doc
-  .single_mem(m)        <- object.size(value)
+  .single_mem(m)        <- as.integer(object.size(value))
   .single_time(m)       <- signif(unname(st[1]), 2)
   .single_meta(m)       <- met
   .single_summary(m)    <- .default_summary()

@@ -127,7 +127,7 @@ make_local_cacher <- function(path){
 make_recacher <- function(cacher, preserve=TRUE){
   # @param m An Rmonad object
   function(m){
-    m <- .set_raw_value(m, value=cacher(.single_value(m)))
+    .single_raw_value(m) <- cacher(.single_value(m))
     .single_stored(m) <- preserve
     m
   }

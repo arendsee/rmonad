@@ -28,9 +28,9 @@ is_rmonad <- function(m) {
 # Delete a node's value
 #
 # @param m Rmonad object
-# @param index Delete the value contained by this vertex (if NULL, delete head value)
-.single_delete_value <- function(m, ...) {
-  .set_raw_value(m, value=no_cache(), ...)
+.single_delete_value <- function(m) {
+  .single_raw_value(m) <- no_cache()
+  m
 }
 
 # The purpose of the following functions are to make the setting of things to
@@ -61,66 +61,66 @@ is_rmonad <- function(m) {
 
 #' @rdname rmonad_checkers
 #' @export
-has_code <- function(m, ...) sapply(get_code(m, ...), .is_not_empty_string)
+has_code <- function(m, ...) sapply(get_code(m, ...), .is_not_empty_string) %>% unname
 
 #' @rdname rmonad_checkers
 #' @export
-has_error <- function(m, ...) sapply(get_error(m, ...), function(x) length(x) > 0)
+has_error <- function(m, ...) sapply(get_error(m, ...), function(x) length(x) > 0) %>% unname
 
 #' @rdname rmonad_checkers
 #' @export
-has_doc <- function(m, ...) sapply(get_doc(m, ...), function(x) length(x) > 0)
+has_doc <- function(m, ...) sapply(get_doc(m, ...), function(x) length(x) > 0) %>% unname
 
 #' @rdname rmonad_checkers
 #' @export
-has_warnings <- function(m, ...) sapply(get_warnings(m , ...), function(x) length(x) > 0)
+has_warnings <- function(m, ...) sapply(get_warnings(m , ...), function(x) length(x) > 0) %>% unname
 
 #' @rdname rmonad_checkers
 #' @export
-has_notes <- function(m, ...) sapply(get_notes(m, ...), function(x) length(x) > 0)
+has_notes <- function(m, ...) sapply(get_notes(m, ...), function(x) length(x) > 0) %>% unname
 
 #' @rdname rmonad_checkers
 #' @export
-has_meta <- function(m, ...) sapply(get_meta(m, ...), function(x) length(x) > 0)
+has_meta <- function(m, ...) sapply(get_meta(m, ...), function(x) length(x) > 0) %>% unname
 
 #' @rdname rmonad_checkers
 #' @export
-has_time <- function(m, ...) sapply(get_time(m, ...), .is_not_empty_real)
+has_time <- function(m, ...) sapply(get_time(m, ...), .is_not_empty_real) %>% unname
 
 #' @rdname rmonad_checkers
 #' @export
-has_mem <- function(m, ...) sapply(get_mem(m, ...), .is_not_empty_real)
+has_mem <- function(m, ...) sapply(get_mem(m, ...), .is_not_empty_real) %>% unname
 
 #' @rdname rmonad_checkers
 #' @export
 has_value <- function(m, ...) {
   sapply(
-    .get_many_raw_values(m, ...),
+    .get_many_attributes(m, attribute='value', ...),
     function(x) {
       (class(x) == "CacheManager") && x@chk()
     }
-  )
+  ) %>% unname
 }
 
 #' @rdname rmonad_checkers
 #' @export
-has_parents <- function(m, ...) sapply(get_parents(m, ...), function(x) length(x) > 0)
+has_parents <- function(m, ...) sapply(get_parents(m, ...), function(x) length(x) > 0) %>% unname
 
 #' @rdname rmonad_checkers
 #' @export
-has_dependents <- function(m, ...) sapply(get_dependents(m, ...), function(x) length(x) > 0)
+has_dependents <- function(m, ...) sapply(get_dependents(m, ...), function(x) length(x) > 0) %>% unname
 
 #' @rdname rmonad_checkers
 #' @export
-has_prior <- function(m, ...) sapply(get_prior(m, ...), function(x) length(x) > 0)
+has_prior <- function(m, ...) sapply(get_prior(m, ...), function(x) length(x) > 0) %>% unname
 
 #' @rdname rmonad_checkers
 #' @export
-has_nest <- function(m, ...) sapply(get_nest(m, ...), function(x) length(x) > 0)
+has_nest <- function(m, ...) sapply(get_nest(m, ...), function(x) length(x) > 0) %>% unname
 
 #' @rdname rmonad_checkers
 #' @export
-has_summary <- function(m, ...) sapply(get_summary(m, ...), function(x) length(x) > 0)
+has_summary <- function(m, ...) sapply(get_summary(m, ...), function(x) length(x) > 0) %>% unname
 
 
 
@@ -158,26 +158,26 @@ get_prior <- function(m, index=.get_ids(m)) {
 #' @rdname rmonad_getters
 #' @export
 get_nest_depth <- function(m, index=.get_ids(m)) {
-  .get_many_attributes(m, index=index, attribute='nest_depth')
+  .get_many_attributes(m, index=index, attribute='nest_depth') %>% as.integer
 }
 
 #' @rdname rmonad_getters
 #' @export
 get_value <- function(m, warn=TRUE, index=.get_ids(m)){
-  lapply(.get_many_raw_values(m, index=index), function(v) v@get(warn))
+  lapply(.get_many_attributes(m, index=index, attribute='value'), function(v) v@get(warn))
 }
 
 #' @rdname rmonad_getters
 #' @export
 get_id <- function(m, index=.get_ids(m)) {
   # FIXME: should I use numeric or vertex ids?
-  .get_numeric_ids(m, index=index)
+  .get_numeric_ids(m, index=index) %>% as.integer
 }
 
 #' @rdname rmonad_getters
 #' @export
 get_OK <- function(m, index=.get_ids(m)) {
-  .get_many_attributes(m, index=index, attribute="OK")
+  .get_many_attributes(m, index=index, attribute="OK") %>% as.logical
 }
 
 #' @rdname rmonad_getters
@@ -189,25 +189,25 @@ get_code <- function(m, index=.get_ids(m)) {
 #' @rdname rmonad_getters
 #' @export
 get_error <- function(m, index=.get_ids(m)) {
-  .get_many_attributes_complex(m, index=index, attribute="error", default=.default_error())
+  .get_many_attributes(m, index=index, attribute="error")
 }
 
 #' @rdname rmonad_getters
 #' @export
 get_warnings <- function(m, index=.get_ids(m)) {
-  .get_many_attributes_complex(m, index=index, attribute="warnings", default=.default_warnings())
+  .get_many_attributes(m, index=index, attribute="warnings")
 }
 
 #' @rdname rmonad_getters
 #' @export
 get_notes <- function(m, index=.get_ids(m)) {
-  .get_many_attributes_complex(m, index=index, attribute="notes", default=.default_notes())
+  .get_many_attributes(m, index=index, attribute="notes")
 }
 
 #' @rdname rmonad_getters
 #' @export
 get_doc <- function(m, index=.get_ids(m)) {
-  .get_many_attributes_complex(m, index=index, attribute="doc", default=.default_doc())
+  .get_many_attributes(m, index=index, attribute="doc")
 }
 
 #' @rdname rmonad_getters
@@ -219,27 +219,26 @@ get_meta <- function(m, index=.get_ids(m)) {
 #' @rdname rmonad_getters
 #' @export
 get_time <- function(m, index=.get_ids(m)) {
-  .get_many_attributes_complex(m, index=index, attribute="time", default=.default_time())
+  .get_many_attributes(m, index=index, attribute="time") %>% as.numeric
 }
 
 #' @rdname rmonad_getters
 #' @export
 get_mem <- function(m, index=.get_ids(m)) {
-  .get_many_attributes_complex(m, index=index, attribute="mem", default=.default_mem())
+  .get_many_attributes(m, index=index, attribute="mem") %>% as.numeric
 }
 
 #' @rdname rmonad_getters
 #' @export
 get_summary <- function(m, index=.get_ids(m)) {
-  .get_many_attributes_complex(m, index=index, attribute="summary", default=.default_summary())
+  .get_many_attributes(m, index=index, attribute="summary")
 }
-
 
 
 # ============== Singular getters and setters (internal use only) ==============
 
 .single_stored <- function(m, ...) {
-  stored <- .get_single_attribute_complex(m, default=FALSE, attribute="stored", ...)
+  stored <- .get_single_attribute(m, attribute="stored", ...)
   if(is.null(stored)){
     FALSE
   } else {
@@ -267,7 +266,7 @@ get_summary <- function(m, index=.get_ids(m)) {
 # no setter - automatically handled
 
 .single_OK <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_OK(), attribute="OK", ...)
+  .get_single_attribute(m, attribute="OK", ...)
 }
 `.single_OK<-` <- function(m, value) {
   stopifnot(is.logical(value))
@@ -275,73 +274,74 @@ get_summary <- function(m, index=.get_ids(m)) {
 }
 
 .single_value <- function(m, warn=TRUE, ...){
-  .get_raw_value(m, ...)@get(warn=warn)
+  .single_raw_value(m, ...)@get(warn=warn)
 }
 `.single_value<-` <- function(m, value) {
-  .set_raw_value(m, value=memory_cache(value))
+  .single_raw_value(m) <- memory_cache(value)
+  m
 }
 
 .single_code <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_code(), attribute="code", ...)
+  .get_single_attribute(m, attribute="code", ...)
 }
 `.single_code<-` <- function(m, value) {
-  .set_single_attribute_complex(m, attribute="code", value=value)
+  .set_single_attribute(m, attribute="code", value=value)
 }
 
 .single_error <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_error(), attribute="error", ...)
+  .get_single_attribute(m, attribute="error", ...)
 }
 `.single_error<-` <- function(m, value) {
-  .set_single_attribute_complex(m, attribute="error", value=value)
+  .set_single_attribute(m, attribute="error", value=value)
 }
 
 .single_warnings <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_warnings(), attribute="warnings", ...)
+  .get_single_attribute(m, attribute="warnings", ...)
 }
 `.single_warnings<-` <- function(m, value) {
-  .set_single_attribute_complex(m, attribute="warnings", value=value)
+  .set_single_attribute(m, attribute="warnings", value=value)
 }
 
 .single_notes <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_notes(), attribute="notes", ...)
+  .get_single_attribute(m, attribute="notes", ...)
 }
 `.single_notes<-` <- function(m, value) {
-  .set_single_attribute_complex(m, attribute="notes", value=value)
+  .set_single_attribute(m, attribute="notes", value=value)
 }
 
 .single_doc <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_doc(), attribute="doc", ...)
+  .get_single_attribute(m, attribute="doc", ...)
 }
 `.single_doc<-` <- function(m, value) {
-  .set_single_attribute_complex(m, attribute="doc", value=value)
+  .set_single_attribute(m, attribute="doc", value=value)
 }
 
 .single_meta <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_meta(), attribute="meta", ...)
+  .get_single_attribute(m, attribute="meta", ...)
 }
 `.single_meta<-` <- function(m, value) {
-  .set_single_attribute_complex(m, attribute="meta", value=value)
+  .set_single_attribute(m, attribute="meta", value=value)
 }
 
 .single_time <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_time(), attribute="time", ...)
+  .get_single_attribute(m, attribute="time", ...)
 }
 `.single_time<-` <- function(m, value) {
   .set_single_attribute(m, attribute="time", value=value)
 }
 
 .single_mem <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_mem(), attribute="mem", ...)
+  .get_single_attribute(m, attribute="mem", ...)
 }
 `.single_mem<-` <- function(m, value) {
   .set_single_attribute(m, attribute="mem", value=value)
 }
 
 .single_summary <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_summary(), attribute="summary", ...)
+  .get_single_attribute(m, attribute="summary", ...)
 }
 `.single_summary<-` <- function(m, value){
-  .set_single_attribute_complex(m, attribute="summary", value=value)
+  .set_single_attribute(m, attribute="summary", value=value)
 }
 
 .single_parents <- function(m, ...) {
@@ -379,7 +379,7 @@ get_summary <- function(m, index=.get_ids(m)) {
 }
 
 .single_nest_depth <- function(m, ...) {
-  .get_single_attribute_complex(m, default=.default_nest_depth(), attribute="nest_depth", ...)
+  .get_single_attribute(m, attribute="nest_depth", ...)
 }
 `.single_nest_depth<-` <- function(m, value) {
   .set_single_attribute(m, attribute="nest_depth", value=value)

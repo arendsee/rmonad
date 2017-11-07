@@ -48,7 +48,7 @@ size <- function(m) {
     stop("In 'inherit', child must be an Rmonad object")
 
   if(inherit_value)
-    child <- .set_raw_value(child, .get_raw_value(parent))
+    .single_raw_value(child) <- .single_raw_value(parent)
 
   if(inherit_OK && !.single_OK(parent))
     .single_OK(child) <- .single_OK(parent)
@@ -196,21 +196,16 @@ size <- function(m) {
 # @param index vector of indices
 .get_attribute <- function(m, attribute, index=m@head){
   .m_check(m)
-  lapply(m@data[.as_index(m, index)], function(x) x[[attribute]])
+  lapply(m@data[.as_index(m, index)], slot, attribute)
 }
 .get_many_attributes <- function(m, index=.get_ids(m), ...){
-  .get_attribute(m, index=index, ...) 
+  .get_attribute(m, index=index, ...) %>% unname
 }
-.get_single_attribute <- function(m, default, index=m@head, ...){
+.get_single_attribute <- function(m, index=m@head, ...){
   if(length(index) != 1){
     stop(".single_* accessors only take a single index, to get multiple values, use the get_* accessors")
   }
-  a <- .get_attribute(m, index=index, ...)
-  if(is.null(a) || length(a) == 0){
-    default
-  } else {
-    a[[1]]
-  }
+  .get_attribute(m, index=index, ...)[[1]]
 }
 
 # Set attributes at specified indices
@@ -226,18 +221,9 @@ size <- function(m) {
   if(length(index) != 1){
     stop("ERROR: Can only set one attribute at a time in .single_* setters")
   }
-  m@data[[.as_index(m, index)]][[attribute]] <- value
+  slot(m@data[[.as_index(m, index)]], attribute) <- value
   m
 }
-
-# Set attributes at specified indices
-#
-# This works for simple values where `length(index)` == `length(value)`
-#
-# @param m Rmonad object
-# @param attribute The attribute name (e.g. "error")
-# @param value attribute value
-# @param index vector of indices
 .set_many_attributes <- function(m, attribute, value, index=.get_ids(m), ...){
   m@data[.as_index(m, index)] <- lapply(
     m@data[.as_index(m, index)],
@@ -246,53 +232,9 @@ size <- function(m) {
   m
 }
 
-# Get attributes
-#
-# This is not the appropriate function for every attribute. Currently the
-# implementation is a bit hacky. But some things have to be stored as lists in
-# the igraph object. If the attribute is not NULL, we return the first element
-# in the list. These lists should always be of length 1.
-#
-# @param ... Arguments passed to .get_attribute
-.get_single_attribute_complex <- function(...){
-  a <- .get_single_attribute(...)
-  if(is.null(a)){
-    NULL # FIXME: should not assume a NULL as default
-  } else {
-    a[[1]]
-  }
+.single_raw_value <- function(m, ...){
+  .get_single_attribute(m, attribute = 'value', ...)
 }
-.get_many_attributes_complex <- function(m, default=NA, ...){
-  .get_many_attributes(m, ...) %>% {
-    if(is.null(.)){
-      . <- rep(default, size(m))
-    }
-    .
-  }
-}
-.set_single_attribute_complex <- function(m, value, ...){
-  .set_single_attribute(m, value=list(value), ...)
-}
-
-# Set the value function
-#
-# The Rmonad `value` field is internally a function that returns the stored
-# value. This function sets the cache function, not just the stored value.
-#
-# @param m Rmonad object
-# @param value A cache function
-# @param index vector of indices
-.set_raw_value <- function(m, value, ...){
-  .set_single_attribute_complex(m, attribute='value', value=value, ...)
-}
-
-# Get the value function
-#
-# @param m Rmonad object
-# @param index vector of indices
-.get_raw_value <- function(m, ...){
-  .get_single_attribute_complex(m, default=.default_value(), attribute='value', ...)
-}
-.get_many_raw_values <- function(m, ...){
-  .get_many_attributes_complex(m, attribute='value', default=.default_value(), ...)
+`.single_raw_value<-` <- function(m, value) {
+  .set_single_attribute(m, attribute="value", value=value)
 }
