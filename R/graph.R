@@ -109,8 +109,8 @@ size <- function(m) {
     m <- .set_many_attributes(
       m,
       attribute='nest_depth',
-      value = .get_many_attributes(m, attribute='nest_depth') +
-              (.single_nest_depth(m) - .single_nest_depth(nest) + 1)
+      value = get_nest_depth(m) +
+              (.single_nest_depth(m) - .single_nest_depth(nest) + 1L)
     )
     .single_nest(m) <- nest 
   }
@@ -227,8 +227,8 @@ size <- function(m) {
 .set_many_attributes <- function(m, attribute, value, index=.get_ids(m), ...){
   m@data[.as_index(m, index)] <- lapply(
     m@data[.as_index(m, index)],
-    function(x) { x[[attribute]] <- value }
-  ) 
+    function(x) { slot(x, attribute) <- value; x}
+  )
   m
 }
 
