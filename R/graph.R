@@ -60,10 +60,8 @@ size <- function(m) {
     .single_stored(parent) <- TRUE
   }
 
-  child@graph <- .rmonad_union(parent@graph, child@graph)
-  child@graph <- child@graph  + igraph::edge(parent@head, child@head, type=type)
-  # FIXME: need to resolve any possible name conflicts here
-  child@data <- append(parent@data, child@data)
+  child <- .rmonad_union(parent, child)
+  child@graph <- child@graph + igraph::edge(parent@head, child@head, type=type)
 
   child
 }
@@ -80,9 +78,11 @@ size <- function(m) {
 # This ought to holler if nodes with the same uuid have conflicting values, but
 # instead I just grab the value from the parent.
 .rmonad_union <- function(a, b){
-  ab <- igraph::union(a, b, byname=TRUE)
-  ab <- .zip_edge(ab)
-  ab
+  b@graph <- igraph::union(a@graph, b@graph, byname=TRUE)
+  b@graph <- .zip_edge(b@graph)
+  # FIXME: need to resolve any possible name conflicts here
+  b@data <- append(a@data[setdiff(names(a@data), names(b@data))], b@data)
+  b
 }
 .zip_edge <- function(ab){
   xs <- igraph::get.edge.attribute(ab, "type_1")
@@ -158,7 +158,7 @@ size <- function(m) {
   }
   for(p in parents){
     .m_check(p)
-    child@graph <- .rmonad_union(p@graph, child@graph)
+    child <- .rmonad_union(p, child)
     new_edge <- igraph::edge(p@head, child@head, ...)
     child@graph <- child@graph + new_edge
   }
