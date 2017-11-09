@@ -274,11 +274,17 @@ get_summary <- function(m, index=.get_ids(m)) {
 }
 
 .single_value <- function(m, warn=TRUE, ...){
-  .single_raw_value(m, ...)@get(warn=warn)
+  .get_single_attribute(m, attribute = 'value', ...)@get(warn=warn)
 }
 `.single_value<-` <- function(m, value) {
-  .single_raw_value(m) <- memory_cache(value)
-  m
+  .set_single_attribute(m, attribute="value", value=memory_cache(value))
+}
+
+.single_raw_value <- function(m, ...){
+  .get_single_attribute(m, attribute = 'value', ...)
+}
+`.single_raw_value<-` <- function(m, value) {
+  .set_single_attribute(m, attribute="value", value=value)
 }
 
 .single_code <- function(m, ...) {
