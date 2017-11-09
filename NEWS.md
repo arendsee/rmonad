@@ -1,11 +1,82 @@
 # rmonad 0.4.0
 
+## Miscellaneous
+
+ * Update report 
+
  * Add rewriter functions that can reformat warning, error, and note message,
    or summarize the result, after an Rmonad is built.
 
  * Free values stored in the Rmonad objects combined with funnel
 
  * Evaluate metadata in the correct environment
+
+ * export `size` function that returns the number of nodes in a workflow
+
+ * Replace 'children field with 'dependents' (and the associated accessors
+   `get_children` and `has_children`). The reason is the `transitive` and
+   `nest` edges are both also variants parent/child relationships.
+
+ * Do no export `unnest` (you don't need it)
+
+ * Fix 
+
+ * Completely remove deprecated `%v__%` operator and the `doc` and `lsmeval`
+   functions.
+
+ * Replace the whole "branch" thing with children. There isn't anything so
+   branchy about them, they are just multiple children of a node in a directed
+   graph.
+
+ * Remove `unbranch`
+
+ * Remove the `recurse_nests` option in `mtabulate` and `missues`
+
+## Internal
+
+ * Remove `recursive_set_nest_depth` function. This was super kludgy internal function.
+
+## Vectorize accessors
+
+ * The vectorized `ms_*` are renamed as `get_*`.
+
+ * Fixed a lot of bugs and inconsistencies in the vectorized getters.
+
+ * The `m_*` functions are now deprecated. They provided access to the "head"
+   of the workflow, but this isn't really all that well defined, since `rmonad`
+   supports branching.
+
+ * Add `has_*` vectorized accessors for the existence of fields (e.g.
+   `has_value`, `has_error`).
+
+## use `igraph` as graph datastructure
+
+ * remove `as_dgr_graph`
+
+ * `Rmonad` is now an S4 class
+ 
+   - The raw igraph object is stored in the `graph` slot.
+
+   - The vertex attributes are stored in a list in the `data` slot.
+
+ * Plot with igraph, now `...` is passed to igraph.plot
+
+## add cache system
+
+The default is to store data in memory (as before).
+
+New cache related functions:
+
+<!-- TODO: describe a little about how caching works, introduce CacheManager -->
+
+ * `make_local_cacher` - build a cache function that stores data as Rdata
+   objects in a specified folder.
+
+ * `memory_cache` - cache a value in memory
+
+ * `make_recacher` - build a function to reset an `Rmonad` object's cacher
+
+ * `no_cache` - xxx
 
 # rmonad 0.3.0
 
