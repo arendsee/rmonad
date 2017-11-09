@@ -7,6 +7,7 @@
 #' Return the number of nodes in the workflow
 #'
 #' @param m Rmonad object
+#' @export
 size <- function(m) {
   .m_check(m)
   igraph::vcount(m@graph)
