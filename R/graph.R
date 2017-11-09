@@ -106,13 +106,13 @@ size <- function(m) {
 .unnest <- function(m){
   if(is_rmonad(m) && has_value(m, index=m@head) && is_rmonad(.single_value(m))){
     nest <- .single_value(m)
-    m <- .set_many_attributes(
-      m,
+    nest <- .set_many_attributes(
+      nest,
       attribute='nest_depth',
-      value = get_nest_depth(m) +
+      value = get_nest_depth(nest) +
               (.single_nest_depth(m) - .single_nest_depth(nest) + 1L)
     )
-    .single_nest(m) <- nest 
+    .single_nest(m) <- nest
   }
   m
 }
@@ -225,9 +225,10 @@ size <- function(m) {
   m
 }
 .set_many_attributes <- function(m, attribute, value, index=.get_ids(m), ...){
+  dat <- m@data[.as_index(m, index)]
   m@data[.as_index(m, index)] <- lapply(
-    m@data[.as_index(m, index)],
-    function(x) { slot(x, attribute) <- value; x}
+    seq_along(dat),
+    function(i) { slot(dat[[i]], attribute) <- value[[i]]; dat[[i]]}
   )
   m
 }

@@ -373,7 +373,7 @@ get_summary <- function(m, index=.get_ids(m)) {
       force_keep    = TRUE,
       type          = "nest"
     )
-    m <- .set_raw_value(m, value=void_cache())
+    .single_raw_value(m) <- void_cache()
     m
   }
 }
