@@ -170,8 +170,6 @@ result <- 1:5 %v>% sqrt %v>% sqrt %v>% sqrt
 get_value(result)[[2]]
 ```
 
-** TODO: add plotting example **
-
 ## Handling effects
 
 The `%>_%` operator is useful when you want to include a function inside a

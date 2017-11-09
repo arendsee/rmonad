@@ -525,7 +525,7 @@ get_value(result, warn=FALSE)
 get_doc(result)
 ```
 
-```{r gff-workflow-plot, eval=FALSE}
+```{r gff-workflow-plot, fig.width=6, fig.height=6}
 plot(result)
 ```
 
@@ -534,22 +534,7 @@ are the `rmonad` ids. The red arrow indicates a 'nest' relationship. Green nodes
 are OK, orange nodes raised a warning, red nodes (none appear in this graph)
 represent errors.
 
-Here is a list of all currently supported getter functions.
-
- * `get_parents`  - list of node parents
- * `get_value`    - the value stored in the object, if any
- * `get_ok`       - is the node in a passing state?
- * `get_code`     - the code chunk (minus the docstring)
- * `get_error`    - any errors that were raised
- * `get_warnings` - any warnings that were raised
- * `get_notes`    - any messages that were printed
- * `get_doc`      - the docstring
- * `get_time`     - the time required to evaluate the chunk
- * `get_mem`      - the size of the resulting value, in bytes
- * `get_branch`   - nodes branching from this node (not used in this pipeline)
-
-
-If the pipeline fails, the last valid result is saved,
+If the pipeline fails, the last valid result is saved, for example
 
 ```{r}
 read_gff(gff$not_a_gff1)
