@@ -21,7 +21,7 @@ string.}
 for passing, orange for warning, and red for error. Alternatively, color can
 be a function of an Rmonad object, which will be applied to each node.}
 
-\item{...}{Additional arguments (unused currently)}
+\item{...}{Additional arguments passed to plot.igraph}
 }
 \description{
 Convert the Rmonad object to a DiagrammeR graph and then render it

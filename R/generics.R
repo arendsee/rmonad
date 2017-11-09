@@ -21,7 +21,7 @@
 #' @param color How to color the nodes. Default is 'status', which colors green
 #' for passing, orange for warning, and red for error. Alternatively, color can
 #' be a function of an Rmonad object, which will be applied to each node.
-#' @param ... Additional arguments (unused currently)
+#' @param ... Additional arguments passed to plot.igraph
 #' @export
 plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   y <- NULL
