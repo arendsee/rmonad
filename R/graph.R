@@ -78,10 +78,27 @@ size <- function(m) {
 # This ought to holler if nodes with the same uuid have conflicting values, but
 # instead I just grab the value from the parent.
 .rmonad_union <- function(a, b){
-  b@graph <- igraph::union(a@graph, b@graph, byname=TRUE)
-  b@graph <- .zip_edge(b@graph)
-  # FIXME: need to resolve any possible name conflicts here
-  b@data <- append(a@data[setdiff(names(a@data), names(b@data))], b@data)
+  # if we are just adding one simple node, don't do union
+  #  
+  # While this adds complexity, it makes a real difference in performance:
+  #
+  # Unit: microseconds
+  #      expr      min        lq      mean    median        uq      max neval
+  #  r1(a, b) 2122.212 2159.6610 2344.1545 2179.7555 2224.4760 8071.165   100
+  #  r2(a, b)  260.574  270.6305  286.6318  279.3095  286.6885  519.892   100
+  # where r1 is without special one-node handling and r2 is the implementation below
+  #
+  # Overall, there is about a 30% linear speed up (based on a comparison with sequences of 10 to 100)
+  if(size(b) == 1 && !(b@head %in% igraph::get.vertex.attribute(a@graph, 'name'))){
+    b@graph <- a@graph %>% igraph::add_vertices(1)
+    b@graph <- igraph::set.vertex.attribute(b@graph, 'name', igraph::vcount(b@graph), b@head)
+    b@data <- c(a@data, b@data)
+  } else {
+    b@graph <- igraph::union(a@graph, b@graph, byname=TRUE)
+    b@graph <- .zip_edge(b@graph)
+    # FIXME: need to resolve any possible name conflicts here
+    b@data <- append(a@data[setdiff(names(a@data), names(b@data))], b@data)
+  }
   b
 }
 .zip_edge <- function(ab){
@@ -231,11 +248,4 @@ size <- function(m) {
     function(i) { slot(dat[[i]], attribute) <- value[[i]]; dat[[i]]}
   )
   m
-}
-
-.single_raw_value <- function(m, ...){
-  .get_single_attribute(m, attribute = 'value', ...)
-}
-`.single_raw_value<-` <- function(m, value) {
-  .set_single_attribute(m, attribute="value", value=value)
 }
