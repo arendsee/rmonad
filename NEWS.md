@@ -1,82 +1,86 @@
 # rmonad 0.4.0
 
-## Miscellaneous
+## Conceptual changes
 
- * Update report 
+ * Replace the internal ad hoc graph system with 'igraph'
 
- * Add rewriter functions that can reformat warning, error, and note message,
-   or summarize the result, after an Rmonad is built.
-
- * Free values stored in the Rmonad objects combined with funnel
-
- * Evaluate metadata in the correct environment
-
- * export `size` function that returns the number of nodes in a workflow
-
- * Replace 'children field with 'dependents' (and the associated accessors
-   `get_children` and `has_children`). The reason is the `transitive` and
-   `nest` edges are both also variants parent/child relationships.
-
- * Do no export `unnest` (you don't need it)
-
- * Fix 
-
- * Completely remove deprecated `%v__%` operator and the `doc` and `lsmeval`
-   functions.
-
- * Replace the whole "branch" thing with children. There isn't anything so
-   branchy about them, they are just multiple children of a node in a directed
-   graph.
-
- * Remove `unbranch`
-
- * Remove the `recurse_nests` option in `mtabulate` and `missues`
-
-## Internal
-
- * Remove `recursive_set_nest_depth` function. This was super kludgy internal function.
-
-## Vectorize accessors
-
- * The vectorized `ms_*` are renamed as `get_*`.
-
- * Fixed a lot of bugs and inconsistencies in the vectorized getters.
-
- * The `m_*` functions are now deprecated. They provided access to the "head"
-   of the workflow, but this isn't really all that well defined, since `rmonad`
-   supports branching.
-
- * Add `has_*` vectorized accessors for the existence of fields (e.g.
-   `has_value`, `has_error`).
-
-## use `igraph` as graph datastructure
-
- * remove `as_dgr_graph`
-
- * `Rmonad` is now an S4 class
+   - `Rmonad` is now an S4 class
  
    - The raw igraph object is stored in the `graph` slot.
 
    - The vertex attributes are stored in a list in the `data` slot.
 
+ * Replace the concept of "branches" (e.g. the `%>^%` operator) with
+   "children". These are just multiple children of a node in a directed graph.
+
+ * Add a cache system
+
+## New functions and arguments
+
+ * Export `size` function that returns the number of nodes in a workflow.
+
+ * The vectorized `ms_*` are renamed as `get_*`.
+
+ * Add `has_*` vectorized accessors for the existence of fields (e.g.
+   `has_value`, `has_error`).
+
  * Plot with igraph, now `...` is passed to igraph.plot
 
-## add cache system
+ * Cache functions, these new functions are somewhat experimental:
 
-The default is to store data in memory (as before).
+   - `make_local_cacher` - build a cache function that stores data as Rdata
+     objects in a specified folder.
 
-New cache related functions:
+   - `memory_cache` - cache a value in memory
 
-<!-- TODO: describe a little about how caching works, introduce CacheManager -->
+   - `make_recacher` - build a function to reset an `Rmonad` object's cacher
 
- * `make_local_cacher` - build a cache function that stores data as Rdata
-   objects in a specified folder.
+   - `no_cache` - xxx
 
- * `memory_cache` - cache a value in memory
+## Deprecated/internalized functions
 
- * `make_recacher` - build a function to reset an `Rmonad` object's cacher
+ * Remove `unbranch`
 
- * `no_cache` - xxx
+ * Remove `as_dgr_graph`, now the underlying graph is already an igraph object,
+   which can be converted easily to a DiagrammeR graph, if desired
+
+ * Remove all the `ms_*` functions
+
+ * Remove all `m_*` functions. They provided access to the "head" of the
+   workflow, but this isn't really all that well defined, since `rmonad`
+   supports branching.
+
+ * Completely remove deprecated `%v__%` operator and the `doc` and `lsmeval`
+   functions.
+
+ * Do no export `unnest` (you don't need it)
+
+## Bug fixes
+
+ * Evaluate metadata in the correct environment
+
+ * Now `nest_depth` is set as the Rmonad grows (in the past it wasn't added
+   until mtabulate was run).
+
+ * Free values stored in the Rmonad objects when they are combined with
+   `funnel`, previously these values were stored even when they should have
+   been removed.
+
+ * Fixed a lot of bugs and inconsistencies in the vectorized getters.
+
+## Other
+
+ * Rename `mreport` as `report`. The content of the report is updated somewhat,
+   but still should be considered as a template.
+
+ * Add rewriter functions that can reformat warning, error, and note message,
+   or summarize the result, after an Rmonad is built.
+
+ * Replace 'children' field with 'dependents' (and the associated accessors
+   `get_children` and `has_children`). The reason is the `transitive` and
+   `nest` edges are both also variants parent/child relationships.
+
+ * Deprecate the `recurse_nests` option in `mtabulate` and `missues`
 
 # rmonad 0.3.0
 
