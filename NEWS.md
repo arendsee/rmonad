@@ -35,7 +35,7 @@
 
    - `make_recacher` - build a function to reset an `Rmonad` object's cacher
 
-   - `no_cache` - xxx
+   - `no_cache` - do not cache the value
 
 ## Deprecated/internalized functions
 
