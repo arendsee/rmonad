@@ -67,18 +67,19 @@ memory_cache <- function(x){
 
 #' Make a function of x that caches data locally
 #'
-#' @param path A directory in which to cache results
+#' @param path A directory in which to cache results. A temporary directory is
+#' created if none is given.
 #' @return A function that builds a local cache function for a value
 #' @export
 #' @examples
 #' \dontrun{
 #'   foo <- 45
-#'   cacher <- make_local_cacher(".")
+#'   cacher <- make_local_cacher()
 #'   foo_ <- cacher(45)
 #'   rm(foo)
 #'   foo_@get()
 #' }
-make_local_cacher <- function(path){
+make_local_cacher <- function(path=tempdir()){
   if(!dir.exists(path)){
     dir.create(path, recursive=TRUE)
   }
@@ -93,7 +94,7 @@ make_local_cacher <- function(path){
       x
     }
     del <- function() {
-      file.remove(filename) 
+      unlink(filename) 
     }
     chk <- function() {
       file.exists(filename)
@@ -106,7 +107,25 @@ make_local_cacher <- function(path){
   }
 }
 
-#' Make a function that taks an Rmonad and recaches it
+#' Clear cached values and delete temporary files
+#'
+#' @param m Rmonad object
+#' @param index indices to clear (all indices by default)
+#' @return Rmonad object
+#' @export
+clear_cache <- function(m, index=.get_ids(m)){
+  for(cc in .get_many_attributes(m, attribute='value', index=index)){
+    cc@del()
+  }
+  .set_many_attributes(
+    m,
+    attribute = 'value',
+    value     = lapply(seq_along(index), function(x) no_cache()),
+    index     = index
+  )
+}
+
+#' Make a function that takes an Rmonad and recaches it
 #'
 #' @param cacher A function of a data value
 #' @param preserve logical Should the cached value be preserved across bind operations?
@@ -114,7 +133,7 @@ make_local_cacher <- function(path){
 #' @export
 #' @examples
 #' \dontrun{
-#'   recacher <- make_recacher(make_local_cacher("."))
+#'   recacher <- make_recacher(make_local_cacher())
 #'   m <- iris %>>% summary %>% recacher
 #'   # load the data from a local file
 #'   .single_value(m)
@@ -124,6 +143,13 @@ make_local_cacher <- function(path){
 #'   # load the data from memory
 #'   .single_value(m)
 #' }
+#'
+#' add1 <- function(x) x+1
+#' add2 <- function(x) x+2
+#' add3 <- function(x) x+3
+#' cc <- make_recacher(make_local_cacher())
+#' 3 %>>% add1 %>% cc %>>% add2 %>>% add3 -> m
+#' m
 make_recacher <- function(cacher, preserve=TRUE){
   # @param m An Rmonad object
   function(m){

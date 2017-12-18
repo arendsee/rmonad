@@ -4,10 +4,11 @@
 \alias{make_local_cacher}
 \title{Make a function of x that caches data locally}
 \usage{
-make_local_cacher(path)
+make_local_cacher(path = tempdir())
 }
 \arguments{
-\item{path}{A directory in which to cache results}
+\item{path}{A directory in which to cache results. A temporary directory is
+created if none is given.}
 }
 \value{
 A function that builds a local cache function for a value
@@ -18,7 +19,7 @@ Make a function of x that caches data locally
 \examples{
 \dontrun{
   foo <- 45
-  cacher <- make_local_cacher(".")
+  cacher <- make_local_cacher()
   foo_ <- cacher(45)
   rm(foo)
   foo_@get()

@@ -2,7 +2,7 @@
 % Please edit documentation in R/cache.R
 \name{make_recacher}
 \alias{make_recacher}
-\title{Make a function that taks an Rmonad and recaches it}
+\title{Make a function that takes an Rmonad and recaches it}
 \usage{
 make_recacher(cacher, preserve = TRUE)
 }
@@ -15,11 +15,11 @@ make_recacher(cacher, preserve = TRUE)
 A function that swaps the cache function of an Rmonad
 }
 \description{
-Make a function that taks an Rmonad and recaches it
+Make a function that takes an Rmonad and recaches it
 }
 \examples{
 \dontrun{
-  recacher <- make_recacher(make_local_cacher("."))
+  recacher <- make_recacher(make_local_cacher())
   m <- iris \%>>\% summary \%>\% recacher
   # load the data from a local file
   .single_value(m)
@@ -29,4 +29,11 @@ Make a function that taks an Rmonad and recaches it
   # load the data from memory
   .single_value(m)
 }
+
+add1 <- function(x) x+1
+add2 <- function(x) x+2
+add3 <- function(x) x+3
+cc <- make_recacher(make_local_cacher())
+3 \%>>\% add1 \%>\% cc \%>>\% add2 \%>>\% add3 -> m
+m
 }

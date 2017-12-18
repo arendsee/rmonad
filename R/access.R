@@ -29,6 +29,7 @@ is_rmonad <- function(m) {
 #
 # @param m Rmonad object
 .single_delete_value <- function(m) {
+  .single_raw_value(m)@del()
   .single_raw_value(m) <- no_cache()
   m
 }
