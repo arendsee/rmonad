@@ -13,7 +13,7 @@
  * Replace the concept of "branches" (e.g. the `%>^%` operator) with
    "children". These are just multiple children of a node in a directed graph.
 
- * Add a cache system
+ * Add a flexible cache system
 
 ## New functions and arguments
 
@@ -44,7 +44,16 @@
  * Completely remove deprecated `%v__%` operator and the `doc` and `lsmeval`
    functions.
 
- * Do no export `unnest` (you don't need it)
+ * Do not export `unnest` (you don't need it)
+
+ * Rename `mreport` as `report`. The content of the report is updated somewhat,
+   but still should be considered as a template.
+
+## Changed parameters
+
+ * in `mtabulate` and `missues`: Deprecate the `recurse_nests` option 
+
+ * in `plot.Rmonad`: pass '...' to `igraph.plot`
 
 ## Bug fixes
 
@@ -58,17 +67,6 @@
    have been removed.
 
  * Fixed lots of bugs and inconsistencies in the vectorized getters.
-
-## Other
-
- * Rename `mreport` as `report`. The content of the report is updated somewhat,
-   but still should be considered as a template.
-
- * Replace 'children' field with 'dependents' (also in the associated accessors
-   `get_children` and `has_children`). The reason is the `transitive` and
-   `nest` edges are both also variants parent/child relationships.
-
- * Deprecate the `recurse_nests` option in `mtabulate` and `missues`
 
 ## Experimental
 
@@ -86,11 +84,11 @@
    - `cache` - set the caching function
    - `log` - write log
 
- * A cache system, where values are stored as CacheManager objects which have
-   three slots: `get`, `del`, and `chk`. These are functions for getting,
-   deleting, and checking values in a cache, respectively. Internally, the `get`
-   functions may store values in memory (in a closure), locally as a Rdata
-   object, or not at all. The following new functions are exported:
+ * Add a cache system, where values are stored as CacheManager objects which
+   have three slots: `get`, `del`, and `chk`. These are functions for getting,
+   deleting, and checking values in a cache, respectively. Internally, the
+   `get` functions may store values in memory (in a closure), locally as
+   a Rdata object, or not at all. The following new functions are exported:
 
    - `make_local_cacher` - build a cache function that stores data as Rdata
      objects in a specified folder.
@@ -181,7 +179,7 @@
  * as.list now lists elements in the expected order
 
  * Errors raised are stored even if they are not non-empty strings. Previously
-   calls like `stop()` would be reconed as passing.
+   calls like `stop()` would be reckoned as passing.
 
 ## Minor
 
