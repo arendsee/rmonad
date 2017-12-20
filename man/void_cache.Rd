@@ -10,8 +10,8 @@ void_cache()
 A function that represents a void, uncached value
 }
 \description{
-This is the default value of RmonadNode@value. It should always be replaced
+This is the default value of RmonadData@value. It should always be replaced
 shortly after the object is created, thus should only be encountered if 1)
-the user is directly creating RmonadNode objects (in which case they should
+the user is directly creating RmonadData objects (in which case they should
 be spoken to sternly) or 2) there is a bug in rmonad.
 }
