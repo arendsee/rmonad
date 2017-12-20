@@ -59,3 +59,7 @@ test_that("Attempting to access a non-existent value should raise an warning", {
     16 %>>% sqrt %>% get_value
   })
 })
+
+test_that("Size works", {
+  expect_equal(256 %>>% sqrt %>>% sqrt %>% size, 3)
+})
