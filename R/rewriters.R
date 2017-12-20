@@ -1,5 +1,3 @@
-# TODO: document this
-
 #' Apply rewriters to an Rmonad
 #'
 #' Rewriters are functions stored in an Rmonad's metadata list that operate on
@@ -32,7 +30,7 @@ apply_rewriters <- function(x, meta=.single_meta(x)){
   }
 
   if(is.function(meta$cache) && .single_OK(x)){
-    meta$cache(.single_value(x))
+    x <- make_recacher(meta$cache)(x)
   }
 
   if(is.function(meta$log)){
