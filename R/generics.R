@@ -25,6 +25,12 @@
 #' override rmonad plotting defaults and behavior specified by the 'label' and
 #' 'color' parameters.
 #' @export
+#' @examples
+#' data(gff)
+#' # default plot
+#' plot(gff$good_result)
+#' # turn off vertex labels and set vertex size
+#' plot(gff$good_result, vertex.size=10, vertex.label=NA)
 plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   y <- NULL
 

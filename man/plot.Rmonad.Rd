@@ -38,3 +38,10 @@ line); a nest edge linking a node to the nested node that produced its value
 (solid red line); a 'prior' edge for pipelines coupled with the \code{\%__\%}
 operator (thick dotted blue line).
 }
+\examples{
+data(gff)
+# default plot
+plot(gff$good_result)
+# turn off vertex labels and set vertex size
+plot(gff$good_result, vertex.size=10, vertex.label=NA)
+}
