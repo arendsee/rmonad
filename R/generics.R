@@ -21,12 +21,16 @@
 #' @param color How to color the nodes. Default is 'status', which colors green
 #' for passing, orange for warning, and red for error. Alternatively, color can
 #' be a function of an Rmonad object, which will be applied to each node.
-#' @param ... Additional arguments passed to plot.igraph
+#' @param ... Additional arguments passed to plot.igraph. These arguments may
+#' override rmonad plotting defaults and behavior specified by the 'label' and
+#' 'color' parameters.
 #' @export
 plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   y <- NULL
 
-  vertex.label <-
+  opts <- list()
+
+  opts$vertex.label <-
   if(is.function(label)) {
     label(x)               
   } else if(is.null(label)){
@@ -45,7 +49,7 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
     stop("Something is wrong with the 'label' field")
   }
 
-  vertex.color <-
+  opts$vertex.color <-
   if(is.function(color)){
     color(x)
   } else if(color == 'status'){
@@ -61,21 +65,21 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   # * transitive - gray  dotted thin
   # * prior      - blue  dotted thick
   etype <- .get_edge_types(x)
-  edge.color <- ifelse(etype == 'depend'     , 'black'  , 'red'      )
-  edge.color <- ifelse(etype == 'transitive' , 'gray'   , edge.color )
-  edge.color <- ifelse(etype == 'prior'      , 'blue'   , edge.color )
-  edge.lty   <- ifelse(etype == 'transitive' , "dotted" , "solid"    )
-  edge.lty   <- ifelse(etype == 'prior'      , "dotted" , edge.lty   )
-  edge.width <- ifelse(etype == 'prior'      , 3        , 1          )
+  opts$edge.color <- ifelse(etype == 'depend'     , 'black'  , 'red'           )
+  opts$edge.color <- ifelse(etype == 'transitive' , 'gray'   , opts$edge.color )
+  opts$edge.color <- ifelse(etype == 'prior'      , 'blue'   , opts$edge.color )
+  opts$edge.lty   <- ifelse(etype == 'transitive' , "dotted" , "solid"         )
+  opts$edge.lty   <- ifelse(etype == 'prior'      , "dotted" , opts$edge.lty   )
+  opts$edge.width <- ifelse(etype == 'prior'      , 3        , 1               )
 
-  plot(
-    x@graph,
-    vertex.color = vertex.color,
-    vertex.label = vertex.label,
-    edge.color   = edge.color,
-    edge.lty     = edge.lty,
-    edge.width   = edge.width
-  )
+  # merge all passed arguments into the option list
+  passed_opts <- list(...)
+  for(opt in names(passed_opts)){
+    opts[[opt]] <- passed_opts[[opt]]
+  }
+  opts <- append(list(x@graph), opts)
+
+  do.call(plot, opts)
 }
 
 .scat <- function(s, ...) cat(sprintf(s, ...)) 
