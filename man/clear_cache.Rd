@@ -17,3 +17,13 @@ Rmonad object
 \description{
 Clear cached values and delete temporary files
 }
+\examples{
+256 \%v>\% sqrt \%>>\% sqrt \%>>\% sqrt  -> m
+m
+clear_cache(m)
+}
+\seealso{
+Other cache: \code{\link{make_local_cacher}},
+  \code{\link{make_recacher}}, \code{\link{memory_cache}},
+  \code{\link{no_cache}}, \code{\link{void_cache}}
+}

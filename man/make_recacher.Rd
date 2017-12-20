@@ -37,3 +37,9 @@ cc <- make_recacher(make_local_cacher())
 3 \%>>\% add1 \%>\% cc \%>>\% add2 \%>>\% add3 -> m
 m
 }
+\seealso{
+Other cache: \code{\link{clear_cache}},
+  \code{\link{make_local_cacher}},
+  \code{\link{memory_cache}}, \code{\link{no_cache}},
+  \code{\link{void_cache}}
+}

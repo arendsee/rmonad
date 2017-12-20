@@ -7,6 +7,7 @@
 #'
 #' @return A function that represents a void, uncached value
 #' @export
+#' @family cache
 void_cache <- function(){
   # @param warn Warn if the accessed field does not exist (value was not cached)
   get <- function(warn=TRUE){
@@ -29,6 +30,7 @@ void_cache <- function(){
 #'
 #' @return A function that represents a deleted value 
 #' @export
+#' @family cache
 no_cache <- function(){
   # @param warn Warn if the accessed field does not exist (value was not cached)
   get <- function(warn=TRUE){
@@ -49,6 +51,7 @@ no_cache <- function(){
 #' @param x Value to be stored
 #' @return A function that returns a value stored in memory 
 #' @export
+#' @family cache
 #' @examples
 #' foo <- 45
 #' foo_proxy <- memory_cache(foo)
@@ -71,6 +74,7 @@ memory_cache <- function(x){
 #' created if none is given.
 #' @return A function that builds a local cache function for a value
 #' @export
+#' @family cache
 #' @examples
 #' \dontrun{
 #'   foo <- 45
@@ -113,6 +117,11 @@ make_local_cacher <- function(path=tempdir()){
 #' @param index indices to clear (all indices by default)
 #' @return Rmonad object
 #' @export
+#' @family cache
+#' @examples
+#' 256 %v>% sqrt %>>% sqrt %>>% sqrt  -> m
+#' m
+#' clear_cache(m)
 clear_cache <- function(m, index=.get_ids(m)){
   for(cc in .get_many_attributes(m, attribute='value', index=index)){
     cc@del()
@@ -131,6 +140,7 @@ clear_cache <- function(m, index=.get_ids(m)){
 #' @param preserve logical Should the cached value be preserved across bind operations?
 #' @return A function that swaps the cache function of an Rmonad
 #' @export
+#' @family cache
 #' @examples
 #' \dontrun{
 #'   recacher <- make_recacher(make_local_cacher())
