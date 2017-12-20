@@ -19,32 +19,23 @@
 
  * Export `size` function that returns the number of nodes in a workflow.
 
- * The vectorized `ms_*` are renamed as `get_*`.
+ * The vectorized `ms_*` accessors are renamed as `get_*`.
 
  * Add `has_*` vectorized accessors for the existence of fields (e.g.
    `has_value`, `has_error`).
 
- * Plot with igraph, now `...` is passed to igraph.plot
-
- * Cache functions, these new functions are somewhat experimental:
-
-   - `make_local_cacher` - build a cache function that stores data as Rdata
-     objects in a specified folder.
-
-   - `memory_cache` - cache a value in memory
-
-   - `make_recacher` - build a function to reset an `Rmonad` object's cacher
-
-   - `no_cache` - do not cache the value
+ * `plot.Rmonad` is now a wrapper for `plot.igraph`
 
 ## Deprecated/internalized functions
+
+ * Remove `as.list`
 
  * Remove `unbranch`
 
  * Remove `as_dgr_graph`, now the underlying graph is already an igraph object,
    which can be converted easily to a DiagrammeR graph, if desired
 
- * Remove all the `ms_*` functions
+ * Remove all the `ms_*` functions (replaced with `get_*`)
 
  * Remove all `m_*` functions. They provided access to the "head" of the
    workflow, but this isn't really all that well defined, since `rmonad`
@@ -59,28 +50,59 @@
 
  * Evaluate metadata in the correct environment
 
- * Now `nest_depth` is set as the Rmonad grows (in the past it wasn't added
-   until mtabulate was run).
+ * Now `nest_depth` is set as the graph grows (in the past it wasn't added
+   until `mtabulate` was run).
 
- * Free values stored in the Rmonad objects when they are combined with
-   `funnel`, previously these values were stored even when they should have
-   been removed.
+ * Free memory for values stored in the Rmonad objects when they are combined
+   with `funnel`, previously these values were stored even when they should
+   have been removed.
 
- * Fixed a lot of bugs and inconsistencies in the vectorized getters.
+ * Fixed lots of bugs and inconsistencies in the vectorized getters.
 
 ## Other
 
  * Rename `mreport` as `report`. The content of the report is updated somewhat,
    but still should be considered as a template.
 
- * Add rewriter functions that can reformat warning, error, and note message,
-   or summarize the result, after an Rmonad is built.
-
- * Replace 'children' field with 'dependents' (and the associated accessors
+ * Replace 'children' field with 'dependents' (also in the associated accessors
    `get_children` and `has_children`). The reason is the `transitive` and
    `nest` edges are both also variants parent/child relationships.
 
  * Deprecate the `recurse_nests` option in `mtabulate` and `missues`
+
+## Experimental
+
+ The following new features are experimental. I intend to keep them around in
+ some form in the future, but the API will likely change.
+
+ * Add rewriter functions that can reformat warning, error, and note message,
+   or summarize the result, after an Rmonad is built. These rewriters are set
+   in a node's metadata list. The following rewritters are currently supported:  
+ 
+   - `format_warnings` - format warning strings
+   - `format_error` - format error strings
+   - `format_notes` - format note (message) strings
+   - `summarize` - store summaries of the data
+   - `cache` - set the caching function
+   - `log` - write log
+
+ * A cache system, where values are stored as CacheManager objects which have
+   three slots: `get`, `del`, and `chk`. These are functions for getting,
+   deleting, and checking values in a cache, respectively. Internally, the `get`
+   functions may store values in memory (in a closure), locally as a Rdata
+   object, or not at all. The following new functions are exported:
+
+   - `make_local_cacher` - build a cache function that stores data as Rdata
+     objects in a specified folder.
+
+   - `memory_cache` - cache a value in memory
+
+   - `make_recacher` - build a function to reset an `Rmonad` object's cacher
+
+   - `no_cache` - do not cache the value
+
+   - `clear_cache` - removes all cached values (in memory or storage)
+
 
 # rmonad 0.3.0
 
