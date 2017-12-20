@@ -62,13 +62,10 @@ library(rmonad)
     sqrt
 #> N1> "1:5"
 #> N2> "sqrt"
-#> Parents: [1]
 #> [1] 1.000000 1.414214 1.732051 2.000000 2.236068
 #> 
 #> N3> "sqrt"
-#> Parents: [2]
 #> N4> "sqrt"
-#> Parents: [3]
 #> 
 #>  ----------------- 
 #> 
@@ -123,7 +120,6 @@ funnel(
 #>  * ERROR: stop, drop and die
 #> N4> "runif(5)"
 #> N5> "funnel(runif(5), stop("stop, drop and die"), runif("df"), 1:10)"
-#> Parents: [1, 2, 3, 4]
 #> 
 #>  ----------------- 
 #> 
@@ -232,9 +228,7 @@ analysis
 #>     runif(5)
 #> }"
 #> N2> "`^`(2)"
-#> Parents: [1]
 #> N3> "sum"
-#> Parents: [2]
 #> [1] 0.3401932
 #> 
 #> 
@@ -245,9 +239,7 @@ analysis
 #>     rnorm(6)
 #> }"
 #> N5> "`^`(2)"
-#> Parents: [4]
 #> N6> "sum"
-#> Parents: [5]
 #> [1] 10.78472
 #> 
 #> 
@@ -267,9 +259,7 @@ analysis
 #>     rexp(6)
 #> }"
 #> N9> "`^`(2)"
-#> Parents: [8]
 #> N10> "sum"
-#> Parents: [9]
 #> 
 #>  ----------------- 
 #> 
