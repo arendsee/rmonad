@@ -7,6 +7,36 @@
 #' @param warn logical In get_value, raise a warning on an attempt to access an uncached node
 #' @param ... Additional arguments
 #' @name rmonad_getters
+#' @examples
+#' data(gff)
+#' m <- gff$good_result
+#'
+#' # vectorized accessors for all stored slots
+#' get_value(m, warn=FALSE)
+#' get_OK(m)
+#' get_code(m)
+#' get_dependents(m)
+#' get_doc(m)
+#' get_error(m)
+#' get_id(m)
+#' get_mem(m)
+#' get_meta(m)
+#' get_nest(m)
+#' get_nest_depth(m)
+#' get_notes(m)
+#' get_parents(m)
+#' get_prior(m)
+#' get_summary(m)
+#' get_time(m)
+#' get_warnings(m)
+#'
+#' # get the code associated with long running functions
+#' get_code(m)[get_time(m) > 0.1]
+#'
+#' # Calculate the average node degree
+#' nparents <- sapply(get_parents(m), length)
+#' nchildren <- sapply(get_dependents(m), length)
+#' sum(nparents + nchildren) / size(m) 
 NULL
 
 #' Vectorized existence checkers for public Rmonad fields
@@ -14,6 +44,33 @@ NULL
 #' @param m An Rmonad object
 #' @param ... Additional arguments passed to \code{get_*} functions
 #' @name rmonad_checkers
+#' @examples
+#' data(gff)
+#' m <- gff$good_result
+#'
+#' has_code(m)
+#' has_dependents(m)
+#' has_doc(m)
+#' has_error(m)
+#' has_mem(m)
+#' has_meta(m)
+#' has_nest(m)
+#' has_notes(m)
+#' has_parents(m)
+#' has_prior(m)
+#' has_summary(m)
+#' has_time(m)
+#' has_value(m)
+#' has_warnings(m)
+#'
+#' # find root nodes
+#' which(!has_parents(m))
+#'
+#' # find terminal (output) nodes
+#' which(!has_dependents(m))
+#'
+#' # count number of independent chains
+#' sum(has_prior(m)) + 1
 NULL
 
 
