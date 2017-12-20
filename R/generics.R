@@ -114,7 +114,7 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
       paste(.single_notes(x, index=i), collapse="\n * NOTE: ")
     )
   }
-  if(has_parents(x, index=i)){
+  if(verbose || length(get_parents(x, index=i)) > 1){
     .scat("\nParents: [%s]", paste0(.single_parents(x, index=i), collapse=", "))
   }
   if(has_value(x, index=i) && print_value){
@@ -134,16 +134,20 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
 print.Rmonad <- function(x, verbose=FALSE, print_value=TRUE, ...){
 
   for(i in seq_len(size(x)-1)){
-    .print_record(x, i, print_value=print_value)
+    .print_record(x, i, print_value=print_value, verbose=verbose)
   }
-  .print_record(x, size(x), print_value=FALSE)
+  .print_record(x, size(x), print_value=FALSE, verbose=verbose)
 
-  if(size(x) > 1){
-    cat("\n ----------------- \n\n")
+  if(print_value){
+    if(has_value(x, index=size(x))){ 
+      if(size(x) > 1){
+        cat("\n ----------------- \n\n")
+      }
+      print(.single_value(x))
+    } else {
+      cat("  Final result not cached\n") 
+    }
   }
-
-  if(print_value)
-    print(.single_value(x))
 
   if(!.single_OK(x)){
     cat(" *** FAILURE *** \n")
