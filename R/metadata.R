@@ -39,7 +39,7 @@
 extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
 
   metadata <- list()
-  docstring <- NULL
+  docstring <- .default_doc()
 
   # Determine if expr has the form
   #
@@ -73,7 +73,7 @@ extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
       class(expr[[2]][[1]]) == "name" &&     # first element is a list
       as.character(expr[[2]][[1]]) == "list" # first element is a list
     ){
-      metadata <- eval(expr[[2]])
+      metadata <- eval(expr[[2]], envir=env)
       expr <- expr[-2]
     }
   }

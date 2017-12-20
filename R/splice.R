@@ -19,7 +19,12 @@ rmonad_ops <- c(
 #' @param f The function
 #' @param m The monadic result of running f(ms)
 #' @param ms The list of inputs passed to f
-splice_function <- function(f, m, ms){
+#' @param ... additional arguments passed to add_transitive_edges
+splice_function <- function(f, m, ms, ...){
+
+  .check_type(f,  test=is_function, type='function or function call')
+  .check_type(ms, test=is.list,     type='list')
+  .check_type(m,  test=is_rmonad,   type='Rmonad')
 
   ops <- get_monadic_operators(f)
 
@@ -32,39 +37,62 @@ splice_function <- function(f, m, ms){
 
   deps <- get_dependency_matrix(decs, names(bv))
 
-  relink_node(m=m, bv=bv, deps=deps)
+  add_transitive_edges(m=m, bv=bv, deps=deps, ...)
 
 }
 
-#' The recursive function for adding dependencies
+#' Find inputs to a nest
 #'
 #' @param m The current monadic node
 #' @param bv A named list of bound variables
 #' @param deps A mapping local variables to bound variable dependencies
 #' @keywords internal
-relink_node <- function(m, bv, deps){
+add_transitive_edges <- function(m, bv, deps, final){
 
-  m_parents(m) <- lapply(m_parents(m), relink_node, bv, deps)
+  m <<- m
+  bv <<- bv
+  deps <<- deps
+  final <<- final
 
-  code <- parse_as_block(m_code(m))
+  is_logical_matrix <- function(x) {
+    is.matrix(x) && is.logical(as.vector(x))
+  }
+  .check_type(deps,  test=is_logical_matrix, type='logical matrix')
+  .check_type(m,     type='Rmonad')
+  .check_type(bv,    type='list')
+  .check_type(final, type='Rmonad')
 
-  free_all <- get_free_variables(code)
-  free_locals <- free_all[ free_all %in% dimnames(deps)[[1]] ]
+  code <- lapply(get_code(m), parse_as_block)
+  free_all <- lapply(code, get_free_variables)
+  free_locals <- lapply(free_all, function(x) x[ x %in% dimnames(deps)[[1]] ])
+  dependencies <- lapply(
+    free_locals,
+    function(x) {
+      bv[deps[x, , drop=FALSE] %>% colSums %>% '>'(0)]
+    }
+  ) %>% lapply(unname)
 
-  dependencies <- bv[
-    deps[free_locals, ] %>% sum %>% '>'(0)
-  ]
+  if(length(dependencies) > 0){
+    for(child_id in seq_along(dependencies)){
+      for(parent_id in dependencies[[child_id]]){
 
-  # NOTE: must do this AFTER the recursion
-  m$inherit(
-    append(m_parents(m), dependencies),
-    inherit_value = FALSE,
-    inherit_OK    = FALSE,
-    force_keep    = FALSE
-  )
+        child_id <- .get_ids(m)[child_id]
 
-  m
+        .check_type(final,     type='Rmonad')
+        .check_type(child_id,  type='igraph.vs')
+        .check_type(parent_id, type='igraph.vs')
 
+        final <- .connect(
+          final,
+          from = names(parent_id), # use vertex name, NOT naked vertex
+          to   = names(child_id),  # because that will use index instead
+          type = 'transitive'
+        )
+      }
+    }
+  }
+
+  final 
 }
 
 parse_as_block <- function(code_str){
@@ -233,6 +261,9 @@ get_lhs <- function(expr){
 # Map the names of variables in a function to an input list. The main purpose
 # is to check for mismatches and give explicit names to positional arguments.
 get_bound_variables <- function(e, ms){
+
+  .check_type(e, test=is_function, type='function or function call')
+  .check_type(ms, test=is.list, type='list')
 
   if(length(ms) == 0)
     return(list())

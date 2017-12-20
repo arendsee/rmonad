@@ -515,46 +515,26 @@ missues(result)
 
 The `id` column corresponds to a row number in the `mtabulate` result.
 
-To extract particular values, we can use the `m_*` family of getters
+To extract particular values, we can use the `get_*` family of vectorized
+getters
 
 ```{r, eval=FALSE}
 # get a list of every stored value, report uncached values as NULL
-lapply(as.list(result), m_value, warn=FALSE)
+get_value(result, warn=FALSE)
 # get a list of every docstring
-lapply(as.list(result), m_doc)
+get_doc(result)
 ```
 
-<!--
-Unfortunately, knitr imports 5Mb of junk when I build this plot directly, so
-instead I am importing a static image. There should be a way to avoid this
---!>
-```{r gff-workflow-plot, eval=FALSE}
+```{r gff-workflow-plot, fig.width=6, fig.height=6}
 plot(result)
 ```
-![plot of chunk gff-workflow-plot](gff-workflow-plot-1.png)
 
 A plot of the connections between functions in the pipeline. The node labels
 are the `rmonad` ids. The red arrow indicates a 'nest' relationship. Green nodes
 are OK, orange nodes raised a warning, red nodes (none appear in this graph)
 represent errors.
 
-The generic `as.list` function extracts every node from an rmonad object. Here
-is a list of all currently supported getter functions.
-
- * `m_parents`  - list of node parents
- * `m_value`    - the value stored in the object, if any
- * `m_ok`       - is the node in a passing state?
- * `m_code`     - the code chunk (minus the docstring)
- * `m_error`    - any errors that were raised
- * `m_warnings` - any warnings that were raised
- * `m_notes`    - any messages that were printed
- * `m_doc`      - the docstring
- * `m_time`     - the time required to evaluate the chunk
- * `m_mem`      - the size of the resulting value, in bytes
- * `m_branch`   - nodes branching from this node (not used in this pipeline)
-
-
-If the pipeline fails, the last valid result is saved,
+If the pipeline fails, the last valid result is saved, for example
 
 ```{r}
 read_gff(gff$not_a_gff1)

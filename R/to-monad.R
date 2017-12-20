@@ -20,7 +20,6 @@
 #' @param xs  A list of elements to join into a monad
 #' @param doc A docstring to associate with the monad
 #' @param desc A description of the monad (usually the producing code)
-#' @param clone logical Should the R6 object be cloned?
 #' @param keep_history merge the histories of all monads
 #' @param env Evaluation environment
 #' @param lossy logical Should unnesting with record be done?
@@ -50,19 +49,16 @@ NULL
 
 #' @rdname x_to_monad
 #' @export
-as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE, clone=FALSE){
+as_monad <- function(expr, desc=.default_code(), doc=.default_doc(), lossy=FALSE){
+# TODO: 'lossy' is an lousy name, should change to 'nest', or something
 # as_monad :: a -> m a
 
-  value <- NULL 
-  warns <- NULL
-  fails <- NULL
-  isOK  <- TRUE
+  value <- .default_value()
+  warns <- .default_warnings()
+  fails <- .default_error()
+  isOK  <- .default_OK()
 
   env <- parent.frame()
-  ed <- extract_metadata(substitute(expr), env=env)
-  expr <- ed$expr
-  doc <- ed$docstring
-  met <- ed$metadata
 
   st <- system.time(
     {
@@ -89,11 +85,13 @@ as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE, clone=FALSE){
   )
 
   if(lossy && is_rmonad(value)){
-    if(clone){
-      value <- value$clone()
-    }
     return(value)
   }
+
+  ed <- extract_metadata(substitute(expr), env=env)
+  expr <- ed$expr
+  doc <- ed$docstring
+  met <- ed$metadata
 
   code <- if(is.null(desc)) {
     deparse(substitute(expr))
@@ -101,21 +99,29 @@ as_monad <- function(expr, desc=NULL, doc=NULL, lossy=FALSE, clone=FALSE){
     desc
   }
 
-  m <- Rmonad$new()
+  m <- Rmonad()
 
-  # The default value is Nothing
-  if(isOK) m_value(m) <- value
+  if(isOK){
+    .single_value(m) <- value
+  } else {
+    .single_raw_value(m) <- void_cache()
+  }
 
   # These accessors do the right thing (don't mess with them)
-  m_code(m)     <- code
-  m_error(m)    <- fails
-  m_warnings(m) <- warns
-  m_notes(m)    <- notes
-  m_OK(m)       <- isOK
-  m_doc(m)      <- doc
-  m_mem(m)      <- object.size(value)
-  m_time(m)     <- signif(unname(st[1]), 2)
-  m_meta(m)     <- met
+  .single_code(m)       <- code
+  .single_error(m)      <- fails
+  .single_warnings(m)   <- warns
+  .single_notes(m)      <- notes
+  .single_OK(m)         <- isOK
+  .single_doc(m)        <- doc
+  .single_mem(m)        <- as.integer(object.size(value))
+  .single_time(m)       <- signif(unname(st[1]), 2)
+  .single_meta(m)       <- met
+  .single_summary(m)    <- .default_summary()
+  .single_nest_depth(m) <- .default_nest_depth()
+  .single_stored(m)     <- .default_stored()
+
+  m <- apply_rewriters(m, met)
 
   m
 
@@ -178,46 +184,30 @@ funnel <- function(..., env=parent.frame(), keep_history=TRUE){
 
 #' @rdname x_to_monad
 #' @export
-combine <- function(xs, keep_history=TRUE, desc=NULL){
+combine <- function(xs, keep_history=TRUE, desc=.default_code()){
 # combine :: [m *] -> m [*]
 
-  if(!all(sapply(xs, is_rmonad))){
+  if(!all(vapply(FUN.VALUE=logical(1), xs, is_rmonad))){
     stop("'combine' works only on lists of Rmonad objects")
   }
 
-  # make a new monad that is the child of all monads in the input list
-  out <- Rmonad$new()
-  m_parents(out) <- xs
-
   # store all values (even if failing, in which case should be NULL)
-  m_value(out) <- lapply(xs, m_value, warn=FALSE)
+  value <- lapply(xs, .single_value, warn=FALSE)
+
+  # make a new monad that is the child of all monads in the input list
+  out <- as_monad(value)
+
+  xs <- lapply(xs, .single_delete_value)
+
+  .single_parents(out) <- xs
+  .single_time(out) <- .default_time()
 
   # monad is passing if all parents are cool
-    m_OK(out) <- all(sapply(xs, m_OK))
+  .single_OK(out) <- all(vapply(FUN.VALUE=logical(1), xs, .single_OK))
 
   if(!is.null(desc)){
-    m_code(out) <- desc 
+    .single_code(out) <- desc 
   }
 
   out 
-}
-
-
-
-#' Safely builds a list of monads from an argument list of expressions
-#'
-#' Deprecated, use funnel instead. \code{lsmeval} is the same as \code{funnel},
-#' but the name funnel more clearly expresses the use of this function (joining
-#' multiple pipes into one).
-#'
-#' @param ... expressions to be wrapped into monads
-#' @param keep_history Merge the histories of all monads
-#' @return A list of Rmonads
-#' @export
-lsmeval <- function(..., keep_history=TRUE){
-
-  .Deprecated("funnel")
-
-  funnel(..., keep_history=keep_history)
-
 }

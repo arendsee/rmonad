@@ -51,12 +51,19 @@ NULL
     on_entry <- entry_lhs_transform_default
   }
 
-  cmd   <- list(
+  get_parent_ids <- function(m){
+    pnames <- names(.single_value(m))
+    pids <- lapply(.single_parents(m), function(i) .get_ids(m, index=i))
+    names(pids) <- pnames
+    pids
+  }
+
+  cmd <- list(
     bind,
     lhs_expr,
     substitute(rhs),
-    bind_args=m_value,
-    bind_monad=function(m) m_parents(m),
+    bind_args=.single_value,
+    parent_ids=get_parent_ids,
     entry_lhs_transform=on_entry
   )
   eval(as.call(cmd), envir=envir)
@@ -87,10 +94,10 @@ NULL
 #' @export
 `%^>%` <- function(lhs, rhs) {
   .bind_if_fb <- function(m){
-    m_branch(m) %>% sapply(m_OK) %>% all
+    all( get_OK(m)[.single_dependents(m)] )
   }
   .bind_args_fb <- function(m){
-    m_branch(m) %>% lapply(m_value)
+    get_value(m, warn=FALSE)[.single_dependents(m)]
   }
 
   cmd   <- list(
@@ -109,7 +116,7 @@ NULL
 #' @export
 `%|>%` <- function(lhs, rhs) {
   envir <- parent.frame()
-  bind_if <- function(m) { ! m_OK(m) }
+  bind_if <- function(m) { ! .single_OK(m) }
   cmd   <- list(bind, substitute(lhs), substitute(rhs), bind_if=bind_if)
   eval(as.call(cmd), envir=envir)
 }
@@ -127,13 +134,12 @@ NULL
 
   emit <- function(input,output) {
     # if the lhs failed, pass the evaluated rhs
-    if(m_OK(input)){
+    if(.single_OK(input)){
       input
     }
     # else link the rhs to lhs input, and replace the lhs
     else {
-      output$inherit(parents=input)
-      output
+      .inherit(child=output, parent=input)
     }
   }
 
@@ -156,28 +162,19 @@ NULL
 #' @rdname infix
 #' @export
 `%__%` <- function(lhs, rhs) {
-
   envir <- parent.frame()
-  .chain(substitute(lhs), substitute(rhs), envir)
-
-}
-
-#' @rdname infix
-#' @export
-`%v__%` <- function(lhs, rhs) {
-
-  .Deprecated("Use `%__%` instead, they now do the same thing")
-
-  envir <- parent.frame()
-  .chain(substitute(lhs), substitute(rhs), envir)
-
-}
-
-.chain <- function(lhs, rhs, envir) {
+  lhs <- substitute(lhs)
+  rhs <- substitute(rhs)
 
   emit <- function(i,o) {
-    o$set_prior(i)
-    o
+    .inherit(
+      child         = o,
+      parent        = i,
+      type          = "prior",
+      inherit_value = FALSE,
+      inherit_OK    = FALSE,
+      force_keep    = TRUE
+    )
   }
 
   cmd <- list(
@@ -185,7 +182,7 @@ NULL
     lhs,
     rhs,
     bind_if   = false,
-    bind_else = function(...){as_monad(eval(rhs, envir), lossy=TRUE, clone=TRUE)},
+    bind_else = function(...){as_monad(eval(rhs, envir), lossy=TRUE)},
     emit      = emit,
     expect_rhs_function = FALSE,
     envir=envir

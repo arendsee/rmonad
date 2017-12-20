@@ -2,6 +2,8 @@
 [![Coverage Status](https://img.shields.io/codecov/c/github/arendsee/rmonad/master.svg)](https://codecov.io/github/arendsee/rmonad?branch=master)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/rmonad)](https://cran.r-project.org/package=rmonad)
 
+
+
 # `rmonad`
 
 Chain monadic sequences into stateful, branching pipelines. As nodes in the
@@ -58,12 +60,15 @@ library(rmonad)
     sqrt %v>% # record an intermediate value
     sqrt %>>%
     sqrt
-#> R> "1:5"
-#> R> "sqrt"
+#> N1> "1:5"
+#> N2> "sqrt"
+#> Parents: [1]
 #> [1] 1.000000 1.414214 1.732051 2.000000 2.236068
 #> 
-#> R> "sqrt"
-#> R> "sqrt"
+#> N3> "sqrt"
+#> Parents: [2]
+#> N4> "sqrt"
+#> Parents: [3]
 #> 
 #>  ----------------- 
 #> 
@@ -110,18 +115,15 @@ funnel(
     runif("df"),
     1:10
 )
-#> R> "1:10"
-#>  [1]  1  2  3  4  5  6  7  8  9 10
-#> 
-#> R> "runif("df")"
+#> N1> "1:10"
+#> N2> "runif("df")"
 #>  * ERROR: invalid arguments
 #>  * WARNING: NAs introduced by coercion
-#> R> "stop("stop, drop and die")"
+#> N3> "stop("stop, drop and die")"
 #>  * ERROR: stop, drop and die
-#> R> "runif(5)"
-#> [1] 0.5120101 0.8351271 0.8930770 0.4460601 0.2983039
-#> 
-#> R> "funnel(runif(5), stop("stop, drop and die"), runif("df"), 1:10)"
+#> N4> "runif(5)"
+#> N5> "funnel(runif(5), stop("stop, drop and die"), runif("df"), 1:10)"
+#> Parents: [1, 2, 3, 4]
 #> 
 #>  ----------------- 
 #> 
@@ -226,29 +228,33 @@ analysis
 #> 
 #>     This analysis begins with 5 uniform random variables
 #> 
-#> R> "{
+#> N1> "{
 #>     runif(5)
 #> }"
-#> R> "`^`(2)"
-#> R> "sum"
+#> N2> "`^`(2)"
+#> Parents: [1]
+#> N3> "sum"
+#> Parents: [2]
 #> [1] 0.3401932
 #> 
 #> 
 #> 
 #>     The next step is to take 6 normal random variables
 #> 
-#> R> "{
+#> N4> "{
 #>     rnorm(6)
 #> }"
-#> R> "`^`(2)"
-#> R> "sum"
+#> N5> "`^`(2)"
+#> Parents: [4]
+#> N6> "sum"
+#> Parents: [5]
 #> [1] 10.78472
 #> 
 #> 
 #> 
 #>     And this is were the magic happens, we take 'a' random normal variables
 #> 
-#> R> "{
+#> N7> "{
 #>     rnorm("a")
 #> }"
 #>  * ERROR: invalid arguments
@@ -257,11 +263,13 @@ analysis
 #> 
 #>     Then, just for good measure, we toss in six exponentials
 #> 
-#> R> "{
+#> N8> "{
 #>     rexp(6)
 #> }"
-#> R> "`^`(2)"
-#> R> "sum"
+#> N9> "`^`(2)"
+#> Parents: [8]
+#> N10> "sum"
+#> Parents: [9]
 #> 
 #>  ----------------- 
 #> 
@@ -278,7 +286,7 @@ as_monad({
   list(
     foo = "this is metadata, you can put anything you want in here",
     bar = "maybe can pass parameters to an Rmarkdown chunk",
-    baz = "or store stuff in state, for example:"
+    baz = "or store stuff in state, for example:",
     sysinfo = devtools::session_info()
   )
 
@@ -331,13 +339,13 @@ x <-
   NULL
 
 }
-mreport(x)
+report(x)
 ```
 
 ### Graphing pipelines
 
-An `rmonad` pipeline can be converted to a `DiagrammeR` object. Along with many
-unexplored possibilities, this allows the pipeline to be plotted:
+Internally an `Rmonad` object wraps an `igraph` object, and can thus be easily
+plotted:
 
 
 ```r
@@ -406,40 +414,33 @@ house pipeline. Green nodes are passing and yellow nodes produced warnings.
 
 ![Plot of a large rmonad pipeline](README-big-pipeline.png)
 
-## Contributing
-
-I am looking for collaborators. There are enough unsolved problems on the
-function graph side of rmonad to easily merit co-authorship. Similarly for the
-report generation handling. In addition, there are lots of smaller problems.
-See the next section for a partial summary.
+## Recursion
 
 
-## rmonad v0.4.0 goals
+```r
+countdown <- function(x) {
+    x %>_% {if(. == 0) stop('boom')} %>>% { countdown(.-1) }
+}
+10 %>>% countdown %>% plot
+```
 
- - [ ] Utility functions for extracting data from Rmonad objects
+![plot of chunk recursion](README-recursion-1.png)
 
- - [ ] Fast `as.list` function for Rmonad objects. This currently takes several
-   seconds for pipelines with hundreds of nodes.
-
- - [ ] A more elegant data structure for representing the workflow graph. I
-   want to replace my ad hoc, hand-rolled data structure with a dedicated graph
-   library (perhaps DiagrammeR).
+## rmonad v0.5.0 goals
 
  - [ ] Record all operations, even those not run. Currently if an input to a
    node fails, the node is ignored. So the ultimate graph is truncated at the
    first error.
-   
- - [ ] Full code regeneration from the `rmonad` object. Currently `rmonad`
-   stores each node's code, but it loses information.
 
  - [ ] Add function to align two `rmonad` pipelines. This function would be the
    basis for `diff` and `patch` functions. Where a `patch` function takes an
    unevaluated `rmonad` object, aligns it to a broken pipeline, and resumes
    evaluation from the failing nodes using the patch object code.
 
- - [ ] Store file and line number of all code. 
+ - [ ] Full code regeneration from the `rmonad` object. Currently `rmonad`
+   stores each node's code, but it loses information.
 
- - [ ] Persistent caching of results
+ - [ ] Store file and line number of all code. 
 
  - [ ] Job submission handling
 

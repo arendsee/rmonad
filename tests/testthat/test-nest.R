@@ -5,40 +5,57 @@ addit <- function(x,y) x + y
 subit <- function(x,y) x - y
 
 foo <- function(x,k=3){
-  45 %>>% addit(x) %>>% subit(k)
+  45 %v>% addit(x) %v>% subit(k)
 }
 
 bar <- function(x, j=4){
-  10 %>>% foo(k=x)
+  10 %v>% foo(k=x)
 }
 
 test_that("Nesting works for named functions", {
   expect_equal(4 %>>% foo %>% esc, 46)
   expect_equal(
-    4 %>>% foo %>% sapply(m_code),
+    4 %v>% foo %>% get_code %>% unlist,
     c("4", "45", "addit(x)", "subit(k)", "foo")
   )
   expect_equal(
-    4 %>>% foo %>% lapply(m_parents) %>% sapply(length),
-    c(0,0,2,1,1)
+    4 %v>% foo %>% get_parents,
+    list(
+      integer(0),
+      integer(0),
+      c(1,2),     # 1: 'transitive' edge, 2: 'depend' edge
+      3,
+      1
+    )
+  )
+  expect_equal(
+    4 %v>% foo %>% get_nest %>% sapply(length),
+    c(0,0,0,0,1)
   )
 })
 
 test_that("Nesting works for deeply nested functions", {
    expect_equal(20 %>>% bar %>% esc, 35)
-   expect_true(20 %>>% bar %>% m_OK)
+   expect_true(20 %>>% bar %>% .single_OK)
    expect_equal(
-     20 %>>% bar %>% recursive_set_nest_depth %>% sapply(m_nest_depth),
-     c(2,3,3,3,1,2,1)
+     20 %>>% bar %>% get_nest_depth,
+     c(1,2,3,3,3,2,1)
    )
    expect_equal(
-     20 %>>% bar %>% lapply(m_value, warn=FALSE),
-     list(NULL,NULL,NULL,NULL,NULL,NULL,35)
+     20 %>>% bar %>% get_value(warn=FALSE),
+     list(NULL,10,45,55,NULL,NULL,35)
    )
    expect_equal(
-     20 %>>% bar %>% sapply(m_code),
-     c("10", "45", "addit(x)", "subit(k)", "20", "foo(k = x)", "bar")
+     20 %>>% bar %>% get_code %>% unlist,
+     c("20", "10", "45", "addit(x)", "subit(k)", "foo(k = x)", "bar")
    )
+})
+
+test_that("The correct parents are set when nesting", {
+  expect_equal(
+    256 %v>% { sqrt(.) %v>% sqrt } %>>% sqrt %>% get_parents,
+    list(integer(0), 1, 2, 1, 4) 
+  )
 })
 
 
@@ -61,8 +78,8 @@ h_bomb <- function(x){
 }
 test_that("Nothing explodes when NSE is used in nested declarations", {
    expect_equal(
-     funnel(x=mtcars) %*>% h_bomb %>% m_value,
-     h_bomb(mtcars) %>% m_value
+     funnel(x=mtcars) %*>% h_bomb %>% .single_value,
+     h_bomb(mtcars) %>% .single_value
   )
-  expect_true(funnel(x=mtcars) %*>% h_bomb %>% m_OK)
+  expect_true(funnel(x=mtcars) %*>% h_bomb %>% .single_OK)
 })

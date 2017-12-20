@@ -20,6 +20,13 @@ first <- function(x, y) x
 #' @param y anything
 second <- function(x, y) y
 
+#' Do nothing
+#'
+#' @family help_functions
+#' @param ... anything
+#' @return nothing
+nothing <- function(...) { invisible() }
+
 #' Return false for all input
 #'
 #' @family helper_functions

@@ -163,20 +163,11 @@ All errors, warnings and notes can be extracted with the `missues` command
 ```
 
 The `id` column refers to row numbers in the `mtabulate` output. Internal
-values can be extracted by converting the monad to a list and indexing:
+values can be extracted:
 
 ```{r}
 result <- 1:5 %v>% sqrt %v>% sqrt %v>% sqrt
-as.list(result)[[2]] %>% esc
-```
-
-An `rmonad` can be converted to a `DiagrammeR` graph (or `igraph`); in this way,
-standard tools for network analysis can be applied to pipelines. `rmonad`
-currently has built in support for plotting piplines and making markdown
-reports (experimental).
-
-```{r, eval=FALSE}
-as_dgr_graph(result)
+get_value(result)[[2]]
 ```
 
 ## Handling effects
@@ -194,7 +185,7 @@ cars %>_% write.csv(file="cars.tab") %>>% summary
 Or plot a value along with a summary
 
 ```{r}
-cars %>_% plot(xlab="index", ylab="value") %>>% summary %>% forget
+cars %>_% plot(xlab="index", ylab="value") %>>% summary
 ```
 
 I pipe the final monad into `forget`, which is (like `esc`) a function for
@@ -207,7 +198,7 @@ You can call multiple effects
 cars                                 %>_%
     plot(xlab="index", ylab="value") %>_%
     write.csv(file="cars.tab")       %>>%
-    summary %>% forget
+    summary
 ```
 
 Since state is passed, you can make assertions about the data inside a
@@ -299,8 +290,7 @@ Branches can be used as input, as well.
 
 ```{r}
 x <- 1:10 %>^% dgamma(10, 1) %>^% dgamma(10, 5) %^>% cor
-x
-unbranch(x)
+get_value(x)
 ```
 
 Note the branches could be long monadic chains themselves, which might have
@@ -454,3 +444,69 @@ the deepest level. This failing node, where a string is passed to a `log`
 function, stores the error message and the input. Each node ascending from the
 point of failure stores their respective input. This allows debugging to resume
 from any desired level.
+
+
+### Post-processing
+
+A feature new to `rmonad v0.4` are a set of post-processors. These act on an
+`Rmonad` object after the code the object wraps has been evaluated. 
+
+Here are the currently supported post-processors:
+
+ 1. `format_warnings` - A function of the final value and the list of warnings,
+    that formats the node's warning message.
+
+ 2. `format_error` - Like `format_warnings` but for errors
+
+ 3. `format_notes` - Like `format_warnings` but for messages/notes
+
+ 4. `summarize` - A function of the final value that stores a summary of the data
+ 
+ 5. `cache` - A function of the final value that caches the value
+ 
+ 6. `log` - A function of the final state that prints an progress message
+
+These are all quite experimental at this point.
+
+The post-processors are included in the node metadata, for example
+
+```{r}
+"hello world" %>>% {
+  list(
+    format_error=function(x, err){
+      paste0("Failure on input '", x, "': ", err)  
+    }
+  )
+  sqrt(.)
+}
+```
+
+`summarize` is useful since it is often useful to store information about an
+intermediate step but storing the full data is too memory intensive. Rather
+than stopping the flow of an analysis with a bunch of intermediate analytic
+code, a summary function can be nested in a node that holds an arbitrary
+description of the data, coupled immediately to the function that produced it.
+
+```{r}
+d <- mtcars %>>% {
+  list(summarize=summary)
+  subset(., mpg > 20)
+} %>>% nrow
+
+get_summary(d)[[2]]
+```
+
+The summary information will tucked away invisibly in the `Rmonad` object until
+a debugger or report generator extracts it. Of course, this could also be used
+to just store a full copy of the output in memory, by setting the `summarize`
+function to `identity`.
+
+Summaries like this will be more useful in the `rmonad` world when a Shiny app
+(or something comparable) makes the workflow graph interactive. Then the
+summary for a node can automatically be displayed when the node is accessed.
+
+The `cache` and `log` post-processors are not yet well developed. But they are
+intended to do what their names suggest. `cache` is not yet useful since I
+don't have the infrastructure to test whether the cache is valid. `log` will
+eventually allow progress messages to be passed to STDOUT as `rmonad` is
+running (by default messages are captured and stored).

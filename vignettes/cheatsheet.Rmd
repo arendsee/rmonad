@@ -88,11 +88,7 @@ specialized and convoluted.
 
  3. `missues` - list all warnings and errors
 
- 4. `as_dgr_graph` - convert the pipeline to a DiagrammeR graph
-
- 5. `as.list` - convert pipeline to a list (same order as `mtabulate`)
-
- 6. `funnel` - merge pipelines
+ 4. `funnel` - merge pipelines
 
 ## Examples
 

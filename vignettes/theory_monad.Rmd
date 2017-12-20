@@ -14,6 +14,8 @@ This work is funded by the National Science Foundation grant [NSF-IOS
 You probably don't need to read this. Certainly you should read the
 `introduction` vignette first.
 
+** This vignette is under construction **
+
 This vignette consists of four parts. First I will describe the monad
 hidden in the R runtime. Second, I will describe how `rmonad` can serve as a
 replacement. Third, I will contrast the monadic pipelines of `rmonad` with the
@@ -32,8 +34,8 @@ What does `sqrt` do? You may answer, "return the square root of an input". But
 this is not quite right. The function `sqrt` maps an input to a set of possible
 values:
 
- * when x is numeric and $x > 0$ : $\sqrt{x}$ 
- * when x is numeric and $x \le 0$ : `NA` with a warning
+ * when x is numeric and $x \ge 0$ : $\sqrt{x}$ 
+ * when x is numeric and $x < 0$ : `NaN` with a warning
  * when x is not numeric : an error that stops evaluation and dumps a message
 
 Every R function maps a pure value to a computational context with possible
@@ -110,9 +112,6 @@ with a clean explicit monad.
 ```
 x %>>% sum %>>% sqrt
 ```
-
-In place of a `return` statement 
-
 
 The initial %>>% operators acts as both a `return` and `bind` function. It first evaluates the  
 
