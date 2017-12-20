@@ -23,6 +23,10 @@ obtain a result very close to running the same code outside the monad. The
 main difference is that Rmonad appends the toplevel code that generated the
 error.
 }
+\examples{
+library(magrittr)
+256 \%>>\% sqrt \%>\% esc
+}
 \seealso{
 Other from_Rmonad: \code{\link{missues}},
   \code{\link{mtabulate}}, \code{\link{report}}

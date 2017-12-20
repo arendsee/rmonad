@@ -18,3 +18,8 @@
 \description{
 Rmonad print generic function
 }
+\examples{
+m1 <- 256 \%v>\% sqrt \%>>\% sqrt \%>>\% sqrt
+print(m1)
+print(m1, verbose=TRUE)
+}

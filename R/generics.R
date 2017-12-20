@@ -131,6 +131,10 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
 #' @param print_value logical print the value wrapped in the Rmonad
 #' @param ... Additional arguments (unused)
 #' @export
+#' @examples
+#' m1 <- 256 %v>% sqrt %>>% sqrt %>>% sqrt
+#' print(m1)
+#' print(m1, verbose=TRUE)
 print.Rmonad <- function(x, verbose=FALSE, print_value=TRUE, ...){
 
   for(i in seq_len(size(x)-1)){

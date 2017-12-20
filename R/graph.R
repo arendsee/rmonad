@@ -8,6 +8,9 @@
 #'
 #' @param m Rmonad object
 #' @export
+#' @examples
+#' m <- 256 %>>% sqrt %>>% sqrt
+#' size(m)
 size <- function(m) {
   .m_check(m)
   igraph::vcount(m@graph)

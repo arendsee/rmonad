@@ -12,6 +12,11 @@ missues(m)
 \description{
 Tabulates all errors, warnings and notes
 }
+\examples{
+data(gff)
+m <- gff$good_result
+missues(m)
+}
 \seealso{
 Other from_Rmonad: \code{\link{esc}},
   \code{\link{mtabulate}}, \code{\link{report}}
