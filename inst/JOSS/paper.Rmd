@@ -1,0 +1,38 @@
+---
+title: "rmonad: Pipelines with history"
+authors:
+- affiliation: 1
+  name: Zebulun Arendsee 
+  orcid: 0000-0002-5833-798X
+- affiliation: 2
+  name: Jennifer Chang
+  orcid: 0000-0002-8381-3765
+- affiliation: 1
+  name: Eve Wurtele
+  orcid: XXXX-XXXX-XXXX-XXXX
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    keep_md: yes
+bibliography: paper.bib
+tags:
+- R
+- pipeline
+affiliations:
+  - index: 1
+    name: Iowa State University, Department of Genetics Development and Cell Biology
+  - index: 2
+    name: XXXXX
+---
+
+# Introduction
+
+What is involved in a pipelines (linking, caching, diagnostics, documentation)
+
+## Why do we need this?
+
+Related work ... snamemake [@koster2012snakemake]
+
+## Examples
+
+# References
