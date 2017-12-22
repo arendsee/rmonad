@@ -91,11 +91,10 @@ make_local_cacher <- function(path=tempdir()){
   # Save x and return a function that can load it
   function(x){
     filename <- file.path(path, paste0('rmonad-', uuid::UUIDgenerate(), ".Rdata"))
-    save(x, file=filename) 
+    saveRDS(x, file=filename) 
     rm(x)
     get <- function(...) {
-      load(filename)
-      x
+      readRDS(filename)
     }
     del <- function() {
       unlink(filename) 
