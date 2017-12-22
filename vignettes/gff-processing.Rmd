@@ -271,13 +271,17 @@ With `rmonad` we can mingle documentation and code in a computable object.
 
 ```{r}
 
-read_gff <- function(file, tags){
+#' @param file The input GFF file
+#' @param tags The GFF tags to keep
+#' @param cache A caching function used to store larger intermediate data (by
+#'        default these are not stored)
+read_gff <- function(file, tags, cache=identity){
 
   raw_gff <- as_monad(
     {
 
       "
-      Rmonad supports docstrings. If an block begins with a string, this
+      Rmonad supports docstrings. If a block begins with a string, this
       string is extracted and stored. Python has something similar, where the
       first string in a function is cast as documentation.
       
@@ -307,7 +311,7 @@ read_gff <- function(file, tags){
     }
   )
 
-  raw_gff %>>% {
+  raw_gff %>% cache %>>% {
 
     "
     The %>>% operator applies the function described in this block to the
@@ -317,6 +321,8 @@ read_gff <- function(file, tags){
     computations. The context can store past values, performance information,
     this docstring, and links to the parent chunk. The context is a directed
     graph of code chunks and their metadata.
+
+    Here I assert that no data is missing in the columns where it is required.
     "
 
     for(col in c("seqid", "type", "start", "stop")){
@@ -328,8 +334,10 @@ read_gff <- function(file, tags){
   } %>>% {
 
     "
-    Note that these blocks of code are copied verbatim from above, only using
-    '.' in place of 'g'.
+    According the the GFF specification, the value in the type column should be
+    from the Sequence Ontology (SO). Here I collapse the the synonymous terms
+    for the main features usually present in GFF file (gene, mRNA, CDS, and
+    exon). In production code, I would probably do something a bit more formal. 
     "
 
     gene_synonyms <- 'SO:0000704'
@@ -346,11 +354,11 @@ read_gff <- function(file, tags){
   } %>_% {
 
     "
-    The %>_% operator lets this chunk of code be run for its effects, which
-    are emitting warnings if we replace the type with a questionable synonym.
-    We could alternatively just use %>>% and add a terminal '.' to this chunk.
-    The use of this operator, though, signals an interdependent branch. Where
-    failure of this branch triggers failure downstream.
+    The %>_% operator lets this chunk of code be run for its effects, which are
+    raising warnings if we replace the type with a questionable synonym.  We
+    could alternatively just use %>>% and add a terminal '.' to this chunk.
+    However, the `%>_%` operator guarantees the input is passed without being
+    changed, which is safer and also clarifies out intention. 
     "
 
     mRNA_near_synonyms <- c('transcript', 'SO:0000673')
@@ -369,13 +377,13 @@ read_gff <- function(file, tags){
   } %>>% {
 
     "
-    Notice here that I use the magrittr operator '%>%' inside the rmonad
+    Notice below that I use the magrittr operator '%>%' inside the rmonad
     pipeline. When to pipe with rmonad and when to pipe with magrittr is a
-    matter of granularity. This chunk of code perhpas should form one
+    matter of granularity. This chunk of code perhaps should form one
     documentation unit. And perhaps I don't expect it to fail. If I break this
     chunk into several, the failures are more localized, and I can access
     intermediate values for debugging. On the other hand, putting every little
-    operation in a new chunk will clutter the graph and reports generated from
+    operation in a new chunk will clutter the graph and reports derived from
     it.
     "
 
@@ -396,10 +404,10 @@ read_gff <- function(file, tags){
    } %v>% funnel(raw_gff=raw_gff, tags=tags) %*>% {
 
     "
-    The %v>% operator stores the input value. We could replace every %>>%
-    operator with %v>%. This would let us inspect every step of an analysis at
-    the cost of high memory usage. For brevity, I won't break this following
-    block down any further.
+    The %v>% operator stores the input value in memory. We could replace every
+    %>>% operator with %v>%. This would let us inspect every step of an
+    analysis at the cost of high memory usage. For brevity, I won't break this
+    following block down any further.
 
     The `funnel` function packages a list in a monad, merging their histories
     and propagating error. That is, if `gff` or `tags` failed upstream, this
@@ -490,7 +498,12 @@ read_gff <- function(file, tags){
 That is the whole GFF program in an rmonad framework
 
 ```{r}
-result <- read_gff(file=gff$good, tags=c("ID", "Parent"))
+
+# Here we build a function to recache the last value stored in an Rmonad
+# object. We choose to cache our data locally in the 'ARCHIVE' folder. `rmonad`
+# will create the folder and the caching files automatically.
+cache <- make_recacher(make_local_cacher('ARCHIVE'))
+result <- read_gff(file=gff$good, tags=c("ID", "Parent"), cache=cache)
 ```
 
 `esc` will extract the final result, and raise all errors, warnings and
@@ -533,6 +546,12 @@ A plot of the connections between functions in the pipeline. The node labels
 are the `rmonad` ids. The red arrow indicates a 'nest' relationship. Green nodes
 are OK, orange nodes raised a warning, red nodes (none appear in this graph)
 represent errors.
+
+After we are happy with our result, we may want to remove the cached data:
+
+```{r cleaningup}
+clear_cache(result)
+```
 
 If the pipeline fails, the last valid result is saved, for example
 
