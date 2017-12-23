@@ -5,8 +5,8 @@
 #' See the main package help page (\code{?rmonad}) or the \code{intro} and
 #' \code{cheatsheet} vignettes for more information.
 #'
-#' @param lhs left hand value
-#' @param rhs right hand value
+#' @param lhs left hand side value
+#' @param rhs right hand side value
 #' @name infix
 #' @examples
 #' 256 %>>% sqrt
