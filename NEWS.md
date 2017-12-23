@@ -1,3 +1,12 @@
+# rmonad 0.5.0
+
+ * use `saveRDS`, rather than `save`, local caching
+
+## Bug fixes
+
+ * fix expression capture in `as_monad`
+
+
 # rmonad 0.4.0
 
 ## Conceptual changes

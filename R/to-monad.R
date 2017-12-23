@@ -49,7 +49,7 @@ NULL
 
 #' @rdname x_to_monad
 #' @export
-as_monad <- function(expr, desc=.default_code(), doc=.default_doc(), lossy=FALSE){
+as_monad <- function(expr, desc=NULL, doc=.default_doc(), lossy=FALSE){
 # TODO: 'lossy' is an lousy name, should change to 'nest', or something
 # as_monad :: a -> m a
 
