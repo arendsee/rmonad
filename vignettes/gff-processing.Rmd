@@ -358,7 +358,7 @@ read_gff <- function(file, tags, cache=identity){
     raising warnings if we replace the type with a questionable synonym.  We
     could alternatively just use %>>% and add a terminal '.' to this chunk.
     However, the `%>_%` operator guarantees the input is passed without being
-    changed, which is safer and also clarifies out intention. 
+    changed, which is safer and also clarifies our intention. 
     "
 
     mRNA_near_synonyms <- c('transcript', 'SO:0000673')

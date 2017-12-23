@@ -27,12 +27,150 @@ affiliations:
 
 # Introduction
 
-What is involved in a pipelines (linking, caching, diagnostics, documentation)
+The `rmonad` package provides a set of tools to chain monadic sequences into
+stateful, branching pipelines. As nodes in the pipeline are run, they are
+merged into a graph of all past operations. The resulting structure can be
+computed on to access not only the final results, but also node documentation,
+intermediate data, performance stats, and any raised messages, warnings or
+errors. `rmonad` intercepts all exceptions, which allows for pure error
+handling.
 
-## Why do we need this?
+
+
+```
+return :: a -> m a
+bind :: m a -> (a -> m b) -> m b
+```
+
+Definitely, the `Rmonad` object is `m`, but what is `a` and `b`? `return`
+should be `as_monad`, which takes R code then returns the value wrapped in an
+Rmonad. But a1 is not a2. Also bind is a little tricky, since the `%>>%`
+operator is actually:
+
+```
+%>>% :: m a -> (a -> b) -> m b
+
+step1 :: (a -> b) -> a -> m b
+step2 :: m a -> m b -> m b
+```
+
+```
+as_monad :: a -> m a      -- wrap a pure value
+as_monad :: Rcode -> m a  -- evaluate an expression wrapping the result
+```
+
+`as_monad` takes the value of the evaluated expression it is given, but
+captures any warnings, errors, or messages that are raised.
+
+That is, `as_monad` applies the previous value to the new function, wrapping
+the result in a new Rmonad.
+
+The monadic laws are held if you consider `f` to be composed with `as_monad`.
+Since the second factor of the `bind` function should be `a -> m b`, but in
+`%>>%` is instead `a -> b`, with the `(a -> b) -> a -> m b` step being carried
+out inside.
+
+```R
+(as_monad(x) %>>% foo) == as_monad(foo(x))
+(as_monad(x) %>>% as_monad) == as_monad(x)
+```
+
+
+
+
+In this paper, we provide several use cases and improvements on existing
+methods. By design, `rmonad` complements, rather than competes with
+non-monadic pipelines packages such as magrittr or pipeR. These[what is
+"these", pipelines?, packages? magritter?] can be used to perform operations
+where preservation of state is not desired. Also they are needed to operate on
+monadic containers themselves.
+
+Include graph of pipelines here. Include description for why a node is green or
+orange. Make sure this graph is color-blind safe. Point out some errors that
+are caught by this graph. Point out some design decisions to make the pipeline
+more efficient inspired by looking at the graph. Spell out why this graph is
+important.
+
+## An introduction to pipelines (or why monads)
+
+When building pipelines, especially flexible and scalable pipelines, the main challenge is to maintain clarity in design and maintenance. A pipeline tool that keeps track of branching provides standard ways to think of pipelines and more efficient pipeline design. 
+
+## Monadic pipelines (as implemented in R)
+
+rmonad has been in implemented in R (cite) and is available on the Comprehensive R Archive Network (CRAN). 
+
+Define or cite a paper for Monad. How it is applied to R. Why you implemented it in R.
+
+`magrittr` provides piping functionality in R. rmonad enhances the `magrittr` functionality by X, Y, z.
+
+This section may contain a figure such as Figure~\ref{figure:fagin}.
 
 Related work ... snamemake [@koster2012snakemake]
 
-## Examples
+## Another section
+
+**Choose 3 case studies! Doesn't have to be everything, just what you think are the main benefits**. There will likely be several sections, perhaps including code snippets, such as:
+
+\begin{example}
+  x <- 1:10
+  result <- myFunction(x)
+\end{example}
+
+**Include a table of your piping functions**
+
+rmonad modifies many of the piping functions similar to magrittr. Here are the currently supported operators:
+
+```
+  %>>% - pass left hand side (lhs) as initial argument of right hand side (rhs) function
+  %v>% - like %>>% but stores lhs value
+  %>_% - like %>>% but passes lhs instead of rhs -- propagates rhs failure
+  %>^% - like %>_% but does not propagate rhs failure, branch operator
+  %||% - use rhs value if lhs is failing
+  %|>% - call rhs on lhs if lhs failed
+  %*>% - treat lhs as list of arguments passed to the rhs function
+  %__% - ignore lhs, rhs starts a new chain (but preserves lhs history)
+```
+
+## Case Study 1: A history of intermediate values, errors and plots
+
+Let us say you are evaluating a function such as $sqrt(sqrt(sqrt(v)))$. **Come up with an example that combines history, inner values, and plotting. Use same dataset.**
+
+```
+1:5    %>>%
+  sqrt %v>% # record an intermediate value
+  sqrt %>>%
+  sqrt 
+  
+cars %>_% plot(xlab="index", ylab="value") %>>% summary
+```
+
+## Case Study 2: Two roads diverged in a yellow wood
+
+Branching example here. Once again, come up with an example that demonstrates two and more branching. 
+
+```
+1:5    %>>%
+  sqrt %v>% # record an intermediate value
+  sqrt %>>%
+  sqrt 
+  
+cars %>_% plot(xlab="index", ylab="value") %>>% summary
+```
+
+Include graph of pipelines here. Include description for why a node is green or orange. Make sure this graph is color-blind safe. Point out some errors that are caught by this graph. Point out some design decisions to make the pipeline more efficient inspired by looking at the graph. Spell out why this graph is important.
+
+Nested pipeline example
+
+## Case Study 3: Report Generation
+
+Actually report generation could be in Case Study 1 or as the final case study. Maybe have a case study where one project is passed on to a new person. Or a case study where an existing R pipeline is converted to an rmonadic pipeline. (to show how easy it is to enhance existing tools, and motivate people to adopt rmonad). 
+
+## Summary
+
+We have presented a method to incorporate monadic pipelines into R using the rmonad tool. This paper presented three case studies where R monad improvied pipelines via A, B, C. This paper was motivated by the desire to publish best practices in pipelines in R and to encourage better pipeline design and maintenance. 
+
+Is there any way to add quantitative benchmarks? (running times, speedups, user studies?)
+
+This file is only a basic article template. For full details of \emph{The R Journal} style and information on how to prepare your article for submission, see the \href{https://journal.r-project.org/share/author-guide.pdf}{Instructions for Authors}.
 
 # References
