@@ -64,7 +64,7 @@ missues <- function(m){
   )
 }
 
-#' Returns the value of a monad holds
+#' Returns the value a monad holds
 #'
 #' If the monad is in the passing state, return the wrapped value. Otherwise,
 #' raise an appropriate error.
