@@ -43,7 +43,9 @@
 rmonad_equal <- function(a, b){
   size(a) == size(b) &&
   identical(get_value(a, warn=F), get_value(b, warn=F)) &&
-  identical(mtabulate(a, code=T), mtabulate(b, code=T)) &&
+  # -5 to remove the 'time' column, which generally won't be
+  # the same between between rmonad runs
+  identical(mtabulate(a, code=T)[, -5], mtabulate(b, code=T)[, -5]) &&
   identical(missues(a), missues(b))
 }
 
