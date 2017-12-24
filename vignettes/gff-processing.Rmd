@@ -103,7 +103,6 @@ library(readr)
 library(dplyr)
 library(tidyr)
 library(magrittr)
-library(rmonad)
 set.seed(210)
 
 good_gfffile <- system.file('extdata', 'gff', '0.gff3', package='rmonad')
@@ -274,12 +273,26 @@ out.
 With `rmonad` we can mingle documentation and code in a computable object.
 
 ```{r}
+require(readr)
+require(dplyr)
+require(tidyr)
+require(magrittr)
+library(rmonad)
+set.seed(210)
 
 #' @param file The input GFF file
 #' @param tags The GFF tags to keep
 #' @param cache A caching function used to store larger intermediate data (by
 #'        default these are not stored)
 read_gff <- function(file, tags, cache=identity){
+
+  "
+  This function reads a GFF. It builds a data frame from it that with a column
+  for each value in `tags`.
+
+  The `read_gff` function is a nested function, containing an Rmonad pipeline
+  inside it. This docstring describes the entire wrapped pipeline.
+  "
 
   raw_gff <- as_monad(
     {
@@ -405,7 +418,7 @@ read_gff <- function(file, tags, cache=identity){
         extra = "merge"
       )
 
-   } %v>% funnel(raw_gff=raw_gff, tags=tags) %*>% {
+   } %>% funnel(raw_gff=raw_gff, tags=tags) %*>% {
 
     "
     The %v>% operator stores the input value in memory. We could replace every
@@ -497,17 +510,37 @@ read_gff <- function(file, tags, cache=identity){
 
 }
 
+gff_as_graph <- function(file, cache=identity){
+  read_gff(file, tags=c("ID", "Parent"), cache=cache) %>% cache %>>%
+  dplyr::filter(!is.na(Parent)) %>>%
+  {
+      "Make a unique label for each CDS and exon interval"
+      dplyr::group_by(., Parent) %>%
+      dplyr::mutate(ID = ifelse(type %in% c("CDS", "exon"),
+                                paste(type, start, sep='-'),
+                                ID)) %>%
+      dplyr::ungroup()
+  } %>% cache %>>% {
+    "Make a graph of gene models"
+    dplyr::select(., ID, Parent) %>%
+      as.matrix %>%
+      igraph::graph_from_edgelist()
+  }
+}
+
 ```
 
 That is the whole GFF program in an rmonad framework
 
 ```{r}
-
 # Here we build a function to recache the last value stored in an Rmonad
 # object. We choose to cache our data locally in the 'ARCHIVE' folder. `rmonad`
 # will create the folder and the caching files automatically.
 cache <- make_recacher(make_local_cacher('ARCHIVE'))
-result <- read_gff(file=good_gfffile, tags=c("ID", "Parent"), cache=cache)
+result <-
+  system.file('extdata', 'gff', '0.gff3', package='rmonad') %v>%
+  gff_as_graph(cache=cache)
+result %>>% plot
 ```
 
 `esc` will extract the final result, and raise all errors, warnings and
@@ -557,33 +590,69 @@ After we are happy with our result, we may want to remove the cached data:
 clear_cache(result)
 ```
 
+
 If the pipeline fails, the last valid result is saved, for example
 
 ```{r}
+cache <- make_recacher(make_local_cacher('ARCHIVE'))
 m <-
-  system.file('extdata', 'gff', '15.gff3', package='rmonad') %>%
-  read_gff(tags=c("ID", "Parent"))
+  system.file('extdata', 'gff', '15.gff3', package='rmonad') %v>%
+  gff_as_graph(cache=cache)
 ```
 
-This fails. To diagnose the problem, we might first access the error message:
+To diagnose the problem, we might first read the error messages:
+
+```{r}
+get_error(m)
+```
+
+Here we see the 4th node raised an error: we having missing values in the
+'type' column.
+
+To get a big picture of the pipeline:
+
+```{r}
+mtabulate(m)
+```
+
+The the last three nodes are in the failing state (see column 'OK'). We can see
+all issues:
 
 ```{r}
 missues(m)
 ```
 
-The `id` column above can be used to access attributes of the failing node:
+We see two warnings in node 3. To see what code is wrapped in node 3:
 
 ```{r}
-get_code(m, 2)
+get_code(m, 3)
+```
+
+So there were issues in reading the file. We can get the value of this node's parent:
+
+```{r}
+get_value(m, get_parents(m, 3)[[1]])[[1]]
+```
+
+If we wanted to explore the raw data, we could jump into a Bash shell, navigate
+to the file above, and take it apart with UNIX tools (the lines of raw data
+were not stored in the Rmonad object).
+
+We might next check out the failing columns:
+
+```{r}
+get_code(m, 4:6)
 ```
 
 Now that we know exactly _where_ the problem is, we can start working through
 the data that triggered the problem:
 
 ```{r}
-get_value(m, 2)[[1]] %>% head(5)
-get_value(m, 2)[[1]] %>% tail(5)
+get_value(m, get_parents(m, 5)[[1]])
+get_value(m, 5)[[1]]
 ```
+
+
 
 From this it looks like there is raw sequence data contained in the GFF file.
 According to the GFF specification, it is legal to have the full sequence data
