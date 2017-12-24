@@ -56,7 +56,7 @@ I   .   exon   82211   83591   .   +   .   Parent=rna2
 I   .   CDS   61931   62344   .   +   0   Parent=rna2
 I   .   CDS   82211   82681   .   +   0   Parent=rna2
 
-# Below are a few variants that occur (unforunately) in the wild
+# Below are a few variants that occur (unfortunately) in the wild
 
 # V1: CDS directly descending from a gene.
 b   .   gene   7235   9016   .   -   .   ID=gene2
@@ -85,10 +85,16 @@ purposes of this vignette, I will just handle the following sets of synonyms:
 
  * exon := `exon` | `SO:0000147` | `coding_exon` | `coding exon` |`SO:0000195` 
 
-For mRNA and exon, I am merging to ontology terms (mRNA and transcript; exon
+For mRNA and exon, I am merging ontology terms (mRNA and transcript; exon
 and coding exon). Formally, this is incorrect, but pratically it is probably
 the right thing. Since these transformations may be wrong, they need to be
 noted.
+
+**Summary of Requirements**
+
+* Validate GFF files of various formats
+* Generate informative error messages for GFF intervals that are hierarchical
+* Merge synonymous ontology terms
 
 ## Solution
 
@@ -103,7 +109,6 @@ library(readr)
 library(dplyr)
 library(tidyr)
 library(magrittr)
-library(rmonad)
 set.seed(210)
 
 good_gfffile <- system.file('extdata', 'gff', '0.gff3', package='rmonad')
@@ -128,7 +133,7 @@ read_gff <- function(file){
   )
 }
 
-read_gff(good_gfffile)
+read_gff(good_gfffile) # which file is this
 ```
 
 This is a nice start, also, `readr` will pick up on any deviations from the
@@ -137,9 +142,22 @@ specified column number and type, warning of problems:
 ```{r}
 # wrong type
 bad0 <- system.file('extdata', 'gff', 'bad-0.gff3', package='rmonad')
+read_gff(bad0)
+```
+
+Notice how row 4 has a NA for the start position. After examining the original file, we can see that the numeric start position is a string "one thousand eight hundred and seven". Not a common mistake. A more common mistake would be adding commas such as 1,807 which R would load as a string.
+
+```{,eval=FALSE}
+# incorrect type
+a       Strex   region  1       230218  .       +       .       ID=I
+a       Strex   telomere        1       801     .       -       .       ID=id1
+a       Strex   origin_of_replication   707     776     .       +       .       ID=id2
+a       Strex   gene    "one thousand eight hundred and seven"  2169    .       -       .       ID=gene1
+```
+
+```
 # wrong column number
 bad1 <- system.file('extdata', 'gff', 'bad-1.gff3', package='rmonad')
-read_gff(bad0)
 read_gff(bad1)
 ```
 
@@ -274,6 +292,7 @@ out.
 With `rmonad` we can mingle documentation and code in a computable object.
 
 ```{r}
+library(rmonad)
 
 #' @param file The input GFF file
 #' @param tags The GFF tags to keep
