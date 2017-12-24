@@ -1,0 +1,12 @@
+# polycistronic transcript
+chrX	.	gene	1000	2000	.	+	.	ID=gene01;Name=resA
+chrX	.	gene	1000	2000	.	+	.	ID=gene02;Name=resB
+chrX	.	gene	1000	2000	.	+	.	ID=gene03;Name=resX
+chrX	.	gene	1000	2000	.	+	.	ID=gene04;Name=resZ
+chrX	.	mRNA	1000	2000	.	+	.	ID=tran01;Parent=gene01,gene02,gene03,gene04
+chrX	.	exon	1000	1500	.	+	.	ID=exon00001;Parent=tran01
+chrX	.	exon	1600	2000	.	+	.	ID=exon00001;Parent=tran01
+chrX	.	CDS	1100	1159	.	+	.	Parent=tran01;Derives_from=gene01
+chrX	.	CDS	1200	1259	.	+	.	Parent=tran01;Derives_from=gene02
+chrX	.	CDS	1300	1459	.	+	.	Parent=tran01;Derives_from=gene03
+chrX	.	CDS	1900	1959	.	+	.	Parent=tran01;Derives_from=gene04

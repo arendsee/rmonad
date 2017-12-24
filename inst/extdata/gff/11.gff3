@@ -1,0 +1,4 @@
+# single exon genes, variant 3
+# Not recommended, but some people do it
+chrX	.	gene	100	400	.	+	.	ID=gene01;Name=resA
+chrX	.	CDS	200	300	.	+	.	Parent=gene01

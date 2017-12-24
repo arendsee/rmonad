@@ -1,0 +1,6 @@
+# transpiced transcript, variant 1
+chr1	.	gene	1000	2000	.	+	.	ID=gene01;name=my_gene
+chr1	.	mRNA	1000	1400	.	+	.	ID=tran01;Parent=gene01
+chr1	.	mRNA	1500	2000	.	+	.	ID=tran01;Parent=gene01
+chr1	.	exon	1100	1400	.	+	.	Parent=tran01
+chr1	.	CDS	1150	1239	.	+	.	ID=cds01;Parent=tran01
