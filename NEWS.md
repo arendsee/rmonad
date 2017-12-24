@@ -4,6 +4,9 @@
 
  * change `print.Rmonad` parameter `print_value` to `value`
 
+ * combine (and funnel) now store failing inputs as NULL and do not delete the
+   failing parent's cache
+
 ## Bug fixes
 
  * fix expression capture in `as_monad`

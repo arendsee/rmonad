@@ -192,12 +192,25 @@ combine <- function(xs, keep_history=TRUE, desc=.default_code()){
   }
 
   # store all values (even if failing, in which case should be NULL)
-  value <- lapply(xs, .single_value, warn=FALSE)
+  value <- lapply(xs, function(x){
+    if(get_OK(x, size(x))){
+      .single_value(x, warn=FALSE)
+    } else {
+      NULL
+    }
+  })
 
   # make a new monad that is the child of all monads in the input list
   out <- as_monad(value)
 
-  xs <- lapply(xs, .single_delete_value)
+  # remove cached value of parents if they were passing
+  xs <- lapply(xs, function(x){
+    if(get_OK(x, size(x))){
+      .single_delete_value(x)
+    } else {
+      x
+    }
+  })
 
   .single_parents(out) <- xs
   .single_time(out) <- .default_time()

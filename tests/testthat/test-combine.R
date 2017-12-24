@@ -9,6 +9,15 @@ test_that('combine fails on non-monadic inputs in list', {
   expect_error(combine(5))
 })
 
+test_that('funnel stores failing input as node', {
+  m <- "hi" %>>% sqrt %>% funnel(x=5) %*>% {. + x}
+  # funnel stores NULL in place of the failing input
+  expect_equal(get_value(m, size(m))[[1]], list(NULL, x=5))
+  # the failing node stores its input
+  expect_equal(get_value(m, 3)[[1]], "hi")
+})
+
+
 test_that('combine and funnel store history in list', {
 
   expect_equal(length(get_id(combine(l_monadic))[-1]), 2)
