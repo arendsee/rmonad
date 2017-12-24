@@ -32,9 +32,9 @@ lhs \%||\% rhs
 lhs \%__\% rhs
 }
 \arguments{
-\item{lhs}{left hand value}
+\item{lhs}{left hand side value}
 
-\item{rhs}{right hand value}
+\item{rhs}{right hand side value}
 }
 \description{
 Infix monadic sequence operators

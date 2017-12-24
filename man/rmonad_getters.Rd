@@ -31,7 +31,7 @@ get_prior(m, index = .get_ids(m))
 
 get_nest_depth(m, index = .get_ids(m))
 
-get_value(m, warn = TRUE, index = .get_ids(m))
+get_value(m, index = .get_ids(m), warn = TRUE)
 
 get_id(m, index = .get_ids(m))
 

@@ -106,7 +106,7 @@ library(magrittr)
 library(rmonad)
 set.seed(210)
 
-data(gff)
+good_gfffile <- system.file('extdata', 'gff', '0.gff3', package='rmonad')
 
 read_gff <- function(file){
   readr::read_tsv(
@@ -128,15 +128,19 @@ read_gff <- function(file){
   )
 }
 
-read_gff(gff$good)
+read_gff(good_gfffile)
 ```
 
 This is a nice start, also, `readr` will pick up on any deviations from the
 specified column number and type, warning of problems:
 
 ```{r}
-read_gff(gff$invalid_type)
-read_gff(gff$not_a_gff1)
+# wrong type
+bad0 <- system.file('extdata', 'gff', 'bad-0.gff3', package='rmonad')
+# wrong column number
+bad1 <- system.file('extdata', 'gff', 'bad-1.gff3', package='rmonad')
+read_gff(bad0)
+read_gff(bad1)
 ```
 
 R uses `NA` to indicate missing values. The R 'numeric' type corresponds to
@@ -145,7 +149,7 @@ columns 2,6,7,8 and 9 may be missing, the others may not. So we need an
 additional assertion that these are complete.
 
 ```{r}
-g <- read_gff(gff$good)
+g <- read_gff(good_gfffile)
 for(col in c("seqid", "type", "start", "stop")){
   if(any(is.na(g[[col]]))){
     stop("GFFError: Column '", col, "' may not have missing values")
@@ -334,8 +338,8 @@ read_gff <- function(file, tags, cache=identity){
   } %>>% {
 
     "
-    According the the GFF specification, the value in the type column should be
-    from the Sequence Ontology (SO). Here I collapse the the synonymous terms
+    According the GFF specification, the value in the type column should be
+    from the Sequence Ontology (SO). Here I collapse the synonymous terms
     for the main features usually present in GFF file (gene, mRNA, CDS, and
     exon). In production code, I would probably do something a bit more formal. 
     "
@@ -419,7 +423,7 @@ read_gff <- function(file, tags, cache=identity){
 
       %v>% function(gff=gff, tags=tags)
 
-    because this would have brough the monad wrapped gff into scope, not the
+    because this would have brought the monad wrapped gff into scope, not the
     value itself.
     "
 
@@ -471,10 +475,10 @@ read_gff <- function(file, tags, cache=identity){
       if(! all(parent_types %in% c("gene", "mRNA")))
         stop("Found CDS or exon with illegal parent")
 
-      if( any(is.na(parents)) )
+      if(any(is.na(parents)) )
         stop("Found CDS or exon with no parent")
 
-      if(! any(duplicated(.$ID, incomparables=NA)))
+      if(any(duplicated(.$ID, incomparables=NA)))
         warning("IDs are not unique, this is probably bad")
     }
 
@@ -503,7 +507,7 @@ That is the whole GFF program in an rmonad framework
 # object. We choose to cache our data locally in the 'ARCHIVE' folder. `rmonad`
 # will create the folder and the caching files automatically.
 cache <- make_recacher(make_local_cacher('ARCHIVE'))
-result <- read_gff(file=gff$good, tags=c("ID", "Parent"), cache=cache)
+result <- read_gff(file=good_gfffile, tags=c("ID", "Parent"), cache=cache)
 ```
 
 `esc` will extract the final result, and raise all errors, warnings and
@@ -556,13 +560,40 @@ clear_cache(result)
 If the pipeline fails, the last valid result is saved, for example
 
 ```{r}
-read_gff(gff$not_a_gff1)
+m <-
+  system.file('extdata', 'gff', '15.gff3', package='rmonad') %>%
+  read_gff(tags=c("ID", "Parent"))
 ```
 
-This makes debugging much simpler. We don't need to jump back and rerun small
-parts of the pipeline. The failing object, and all intermediate data, could be
-saved. This could also allow for much richer bug reporting.
+This fails. To diagnose the problem, we might first access the error message:
+
+```{r}
+missues(m)
+```
+
+The `id` column above can be used to access attributes of the failing node:
+
+```{r}
+get_code(m, 2)
+```
+
+Now that we know exactly _where_ the problem is, we can start working through
+the data that triggered the problem:
+
+```{r}
+get_value(m, 2)[[1]] %>% head(5)
+get_value(m, 2)[[1]] %>% tail(5)
+```
+
+From this it looks like there is raw sequence data contained in the GFF file.
+According to the GFF specification, it is legal to have the full sequence data
+appended to the tabular GFF data. So we probably should either add a test that
+will raise an appropriate error message or extend our function to handle this
+case.
+
+`rmonad` saved the input to the failing function. This makes debugging much
+simpler. We did not have to disassemble our pipeline and rerun it step-by-step.
 
 Overall, in `rmonad`, the output of a pipeline is not just the effluent of the
-last pipeline, but the collection of all the nodes along the way. The pipeline
+last node, but the collection of all the nodes along the way. The pipeline
 itself becomes data that can be computed upon. 

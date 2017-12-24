@@ -2,7 +2,7 @@
 % Please edit documentation in R/from-monad.R
 \name{esc}
 \alias{esc}
-\title{Returns the value of a monad holds}
+\title{Returns the value a monad holds}
 \usage{
 esc(m, quiet = FALSE)
 }
