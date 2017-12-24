@@ -89,7 +89,7 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
 }
 
 .scat <- function(s, ...) cat(sprintf(s, ...)) 
-.print_record <- function(x, i, verbose=FALSE, print_value=TRUE) {
+.print_record <- function(x, i, verbose=FALSE, value=TRUE) {
 
   if(has_doc(x, index=i)){
     .scat("\n\n    %s\n\n", .single_doc(x, i))
@@ -117,7 +117,7 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   if(verbose || length(get_parents(x, index=i)) > 1){
     .scat("\nParents: [%s]", paste0(.single_parents(x, index=i), collapse=", "))
   }
-  if(has_value(x, index=i) && print_value){
+  if(has_value(x, index=i) && value){
     cat("\n")
     print(.single_value(x, index=i))
   }
@@ -128,21 +128,21 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
 #'
 #' @param x An Rmonad object
 #' @param verbose logical print verbose output (include benchmarking)
-#' @param print_value logical print the value wrapped in the Rmonad
+#' @param value logical print the value wrapped in the Rmonad
 #' @param ... Additional arguments (unused)
 #' @export
 #' @examples
 #' m1 <- 256 %v>% sqrt %>>% sqrt %>>% sqrt
 #' print(m1)
 #' print(m1, verbose=TRUE)
-print.Rmonad <- function(x, verbose=FALSE, print_value=TRUE, ...){
+print.Rmonad <- function(x, verbose=FALSE, value=TRUE, ...){
 
   for(i in seq_len(size(x)-1)){
-    .print_record(x, i, print_value=print_value, verbose=verbose)
+    .print_record(x, i, value=value, verbose=verbose)
   }
-  .print_record(x, size(x), print_value=FALSE, verbose=verbose)
+  .print_record(x, size(x), value=FALSE, verbose=verbose)
 
-  if(print_value){
+  if(value){
     if(has_value(x, index=size(x))){ 
       if(size(x) > 1){
         cat("\n ----------------- \n\n")
