@@ -6,6 +6,7 @@
 
  * fix expression capture in `as_monad`
 
+ * make `index` the second positional argument of `has_value`, as with other accessors
 
 # rmonad 0.4.0
 

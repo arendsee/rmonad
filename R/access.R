@@ -221,7 +221,7 @@ get_nest_depth <- function(m, index=.get_ids(m)) {
 
 #' @rdname rmonad_getters
 #' @export
-get_value <- function(m, warn=TRUE, index=.get_ids(m)){
+get_value <- function(m, index=.get_ids(m), warn=TRUE){
   lapply(.get_many_attributes(m, index=index, attribute='value'), function(v) v@get(warn))
 }
 

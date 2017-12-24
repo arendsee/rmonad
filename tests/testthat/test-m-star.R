@@ -162,7 +162,7 @@ test_that("Access works for multiple values", {
 
 test_that("get_* subsetting works", {
   expect_equal(
-    get_dependents(ab, index=c(1,8,9)),
+    get_dependents(ab, c(1,8,9)),
     list(
       .default_id(), #1
       9,             #8
@@ -171,42 +171,42 @@ test_that("get_* subsetting works", {
   )
 
   expect_equal(
-    get_code(ab, index=c(1,2)), list('"hi"', '"a"')
+    get_code(ab, c(1,2)), list('"hi"', '"a"')
   )
 
   expect_equal(
-    get_doc(ab, index=c(3,9)), list("this does stuff", .default_doc())
+    get_doc(ab, c(3,9)), list("this does stuff", .default_doc())
   )
 
   expect_equal(
-    get_error(ab, index=c(1,9)), list(.default_error(), "die die")
+    get_error(ab, c(1,9)), list(.default_error(), "die die")
   )
 
   expect_equal(
-    get_id(ab, index=1:3), 1:3
+    get_id(ab, 1:3), 1:3
   )
 
   expect_true(
-    is.numeric(get_mem(ab, index=1:2)) &&
-    all(get_mem(ab, index=1:2) > 0) &&
-    length(get_mem(ab, index=1:2)) == 2
+    is.numeric(get_mem(ab, 1:2)) &&
+    all(get_mem(ab, 1:2) > 0) &&
+    length(get_mem(ab, 1:2)) == 2
   )
 
   expect_equal(
-    get_meta(ab, index=c(1,3)), list(list(), list(x=1))
+    get_meta(ab, c(1,3)), list(list(), list(x=1))
   )
 
   expect_equal(
-    get_nest(ab, index=c(1,7)), list(.default_id(), 6)
+    get_nest(ab, c(1,7)), list(.default_id(), 6)
   )
 
   expect_equal(
-    get_nest_depth(ab, index=c(1,5,9)), c(1,2,1)
+    get_nest_depth(ab, c(1,5,9)), c(1,2,1)
   )
 
   ## TODO: reinstate when testthat is fixed
   # expect_equal(
-  #   get_notes(ab, index=c(1,3,9)),
+  #   get_notes(ab, c(1,3,9)),
   #   list(
   #     .default_notes(),
   #     "yolo",
@@ -215,11 +215,11 @@ test_that("get_* subsetting works", {
   # )
 
   expect_equal(
-    get_OK(ab, index=c(1,3,9)), c(T,T,F)
+    get_OK(ab, c(1,3,9)), c(T,T,F)
   )
 
   expect_equal(
-    get_parents(ab, index=c(1,3,8)),
+    get_parents(ab, c(1,3,8)),
     list(
       .default_id(), #1
       2,             #3
@@ -228,7 +228,7 @@ test_that("get_* subsetting works", {
   )
 
   expect_equal(
-    get_prior(ab, index=c(1,3,8)),
+    get_prior(ab, c(1,3,8)),
     list(
       .default_id(), #1
       .default_id(), #3
@@ -237,7 +237,7 @@ test_that("get_* subsetting works", {
   )
 
   expect_equal(
-    get_summary(ab, index=c(1,6,9)),
+    get_summary(ab, c(1,6,9)),
     list(
       list(),          #1
       list(c(NaN, 4)), #6
@@ -246,12 +246,12 @@ test_that("get_* subsetting works", {
   )
 
   expect_true(
-    is.numeric(get_time(ab, index=8:9)) &&
-    is.na(get_time(ab, index=8:9)[1])    # This is the container created by funnel
+    is.numeric(get_time(ab, 8:9)) &&
+    is.na(get_time(ab, 8:9)[1])    # This is the container created by funnel
   )
 
   expect_equal(
-    get_value(ab, warn=FALSE, index=c(1,5,9)),
+    get_value(ab, warn=FALSE, c(1,5,9)),
     list(
       "hi",       #1
       c(NaN, 16), #5
@@ -263,7 +263,7 @@ test_that("get_* subsetting works", {
   )
 
   expect_equal(
-    get_warnings(ab, index=c(1,5,9)),
+    get_warnings(ab, c(1,5,9)),
     list(
       .default_warnings(), #1
       "NaNs produced",     #5
@@ -278,20 +278,20 @@ test_that("get_* subsetting works", {
 
 test_that("has_* works", {
   expect_equal(
-    has_dependents(ab, index=c(1,8,9)),
+    has_dependents(ab, c(1,8,9)),
     c(FALSE, TRUE, FALSE)
   )
 
   expect_equal(
-    has_code(ab, index=c(1,2)), c(TRUE, TRUE)
+    has_code(ab, c(1,2)), c(TRUE, TRUE)
   )
 
   expect_equal(
-    has_doc(ab, index=c(3,9)), c(TRUE, FALSE)
+    has_doc(ab, c(3,9)), c(TRUE, FALSE)
   )
 
   expect_equal(
-    has_error(ab, index=c(1,9)), c(FALSE, TRUE)
+    has_error(ab, c(1,9)), c(FALSE, TRUE)
   )
 
   expect_true(
@@ -299,44 +299,44 @@ test_that("has_* works", {
   )
 
   expect_equal(
-    has_meta(ab, index=c(1,3)), c(FALSE, TRUE)
+    has_meta(ab, c(1,3)), c(FALSE, TRUE)
   )
 
   expect_equal(
-    has_nest(ab, index=c(1,7)), c(FALSE, TRUE)
+    has_nest(ab, c(1,7)), c(FALSE, TRUE)
   )
 
   ## TODO: reinstate when testthat is fixed
   # expect_equal(
-  #   has_notes(ab, index=c(1,3,9)),
+  #   has_notes(ab, c(1,3,9)),
   #   c(FALSE,TRUE,FALSE)
   # )
 
   expect_equal(
-    has_parents(ab, index=c(1,3,8)),
+    has_parents(ab, c(1,3,8)),
     c(FALSE, TRUE, TRUE)
   )
 
   expect_equal(
-    has_prior(ab, index=c(1,3,8)),
+    has_prior(ab, c(1,3,8)),
     c(FALSE, FALSE, TRUE)
   )
 
   expect_equal(
-    has_summary(ab, index=c(1,6,9)),
+    has_summary(ab, c(1,6,9)),
     c(FALSE, TRUE, FALSE)
   )
 
   expect_equal(
-    has_time(ab, index=8:9), c(FALSE, TRUE)
+    has_time(ab, 8:9), c(FALSE, TRUE)
   )
 
   expect_equal(
-    has_value(ab, index=1:3), c(TRUE, TRUE, FALSE)
+    has_value(ab, 1:3), c(TRUE, TRUE, FALSE)
   )
 
   expect_equal(
-    has_warnings(ab, index=c(1,5,9)),
+    has_warnings(ab, c(1,5,9)),
     c(FALSE, TRUE, FALSE)
   )
 })
