@@ -112,6 +112,7 @@ is_rmonad <- function(m) {
 .default_stored     <- function() FALSE
 .default_id         <- function() integer(0)
 .default_summary    <- function() list()
+.default_options    <- function() list(keep_grey=FALSE)
 
 
 

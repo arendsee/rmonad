@@ -64,6 +64,13 @@ size <- function(m) {
     .single_stored(parent) <- TRUE
   }
 
+  # Pass parental options to children, overwriting child values
+  opt <- parent@data[[parent@head]]@options
+  for(i in seq_along(opt)){
+    opt_name <- names(opt)[i]
+    child@data[[child@head]]@options[[opt_name]] <- opt[[i]]
+  }
+
   child <- .rmonad_union(parent, child)
   child@graph <- child@graph + igraph::edge(parent@head, child@head, type=type)
 

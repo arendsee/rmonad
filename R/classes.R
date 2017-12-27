@@ -39,7 +39,8 @@ setClass(
     meta       = "list",
     summary    = "list",
     nest_depth = "integer",
-    stored     = "logical"
+    stored     = "logical",
+    options    = "list"
   )
 )
 RmonadData <- function(){
@@ -57,5 +58,6 @@ RmonadData <- function(){
   d@summary    <- .default_summary()
   d@nest_depth <- .default_nest_depth()
   d@stored     <- .default_stored()
+  d@options    <- .default_options()
   d
 }
