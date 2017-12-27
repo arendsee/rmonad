@@ -1,5 +1,5 @@
 ---
-title: "rmonad: Pipelines with history"
+title: "rmonad: pipelines with history"
 authors:
 - affiliation: 1
   name: Zebulun Arendsee 
@@ -45,7 +45,8 @@ handling.
 
 The concept of pipeline-based programming is well-accepted in the R community,
 mostly through the `magrittr` package. `magrittr` provides piping functionality
-in R. rmonad enhances the `magrittr` functionality by X, Y, z.
+in R. rmonad enhances the `magrittr` functionality by providing X, Y Z. (branching, error/warning/log message capture, and traceback with stored values). 
+While magrittr provides pipe-based pipelines, R provides documentation and debugging of those pipelines. 
 
 When building pipelines, especially flexible and scalable pipelines, the main
 challenge is to maintain clarity in design and maintenance. A pipeline tool
@@ -70,29 +71,53 @@ monadic.
 
  * branching (many simple pipeline programs are linear)
 
+(This provides the main challenge for documenting pipelines. Many existing simple pipeline programs are linear. By providing a tool that enables debugging branched pipelines, we can encourage more complex and efficient pipeline development.)
+
  * conditionals and error recovery
 
  * caching
 
  * documentation
 
+(both in documentation of the intermediate and final results as well as intermediate log/warning/error messages)
+
  * error, warning, message capture
+ 
+Functions may print messags -- log messages, warning messages, or error messages -- which should be stored in the same node that stores the code and value. 
+Usually in R, when running a big pipeline, it is difficult to tell what code produced what message since messages are sent to STDOUT. 
+In addition, since STDOUT history is finite, developers can very easily lose the messages. 
+For example, one function may be processing several sequences and dump thousands of lines of warnings: one warning for each bad gene. 
+This may easily be lost int he STDOUT but will be captured as strings in rmonad. 
+Capturing the messages as strings has the added benefit, that the developer can add a warning reformatter to the rmonad node, reducing this to one warning listing the number of bad genes.
+Then the developer can create a succinct issue report. Each issue is associated with a node in the Rmonad output object. 
+So the developer can find the code and, if stored, the input values, to that function.
 
  * code capture
+ 
+ (each code block is associated with a node, (couldn't we do a string match of the code block to the whole code base to get line number for missues?))
 
  * benchmarking
 
+(capturing running times? automatically in Rmonad or do you need to put it into your pipeline code?)
+
  * traceback with stored inputs
+ 
+(walk through a traceback. Long pipeline, an error at step X, go back and fix X)
 
  * post-processing functions: summarize
 
  * report generation
 
+(issue report as well as final presentation report. Report generation important, it provides wow factor and many companies sell reports.)
+
  * metadata
+(How is this different from code capture, log/warning/error message capture? Maybe this is the input dependency information? Generally the term "metadata" is very vague...)
 
 A conspicuosly absent feature is automatic parallelism and cluster submission
 handling. These may be added in the future, but currently the goal of `rmonad`
 is to handle complexity, not volume.
+
+(leave it open in the discussion as future directions, or point out how rmonad would be ideal for parallelism, unlike other pipeline documentation tools which are linear : P )
 
 # Approach
 
@@ -107,11 +132,9 @@ is to handle complexity, not volume.
  | `%*>%`   | treat lhs as list of arguments passed to the rhs function                       |
  | `%__%`   | ignore lhs, rhs starts a new chain (but preserves lhs history)                  |
 
-
-
-![plot of a big pipeline](big-pipelines.png)
+![plot of a big pipeline](big-pipeline.png)
     Include graph of pipelines here. Include description for why a node is green or
-    orange. Make sure this graph is color-blind safe. Point out some errors that
+    orange. (orange = bad? or warnings?; green = good?) Make sure this graph is color-blind safe. Point out some errors that
     are caught by this graph. Point out some design decisions to make the pipeline
     more efficient inspired by looking at the graph. Spell out why this graph is
     important.
