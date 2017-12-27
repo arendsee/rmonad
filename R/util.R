@@ -36,3 +36,16 @@
 .m_check <- function(m, ...) {
   .check_type(m, test=is_rmonad, type='Rmonad', nframe=sys.nframe()-1, ...)
 }
+
+# NOTE: This is an internal function, used only in testing.
+# Equality of Rmonad objects is a bit tricky to test, since I internally use
+# UUIDs. So I will use this rough measure of equality:
+rmonad_equal <- function(a, b){
+  size(a) == size(b) &&
+  identical(get_value(a, warn=F), get_value(b, warn=F)) &&
+  # -5 to remove the 'time' column, which generally won't be
+  # the same between between rmonad runs
+  identical(mtabulate(a, code=T)[, -5], mtabulate(b, code=T)[, -5]) &&
+  identical(missues(a), missues(b))
+}
+

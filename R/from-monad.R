@@ -4,6 +4,10 @@
 #' @param m An Rmonad
 #' @param code logical Should the code by included?
 #' @export
+#' @examples
+#' data(gff)
+#' m <- gff$good_result
+#' mtabulate(m)
 mtabulate <- function(m, code=FALSE){
   data.frame(
     code        = get_code(m) %>% vapply(FUN.VALUE=character(1), paste0, collapse="\n"),
@@ -30,6 +34,10 @@ mtabulate <- function(m, code=FALSE){
 #' @family from_Rmonad
 #' @param m An Rmonad
 #' @export
+#' @examples
+#' data(gff)
+#' m <- gff$good_result
+#' missues(m)
 missues <- function(m){
 
   error_len   <- get_error(m)    %>% vapply(FUN.VALUE=integer(1), length)
@@ -56,7 +64,7 @@ missues <- function(m){
   )
 }
 
-#' Returns the value of a monad holds
+#' Returns the value a monad holds
 #'
 #' If the monad is in the passing state, return the wrapped value. Otherwise,
 #' raise an appropriate error.
@@ -72,6 +80,9 @@ missues <- function(m){
 #' @param quiet If TRUE, print the exact messages that are raised, without
 #'        extra context. 
 #' @export 
+#' @examples
+#' library(magrittr)
+#' 256 %>>% sqrt %>% esc
 esc <- function(m, quiet=FALSE){
 
   .quiet_warning <- function(code, msg) warning(msg, call.=FALSE)

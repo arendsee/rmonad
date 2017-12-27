@@ -13,3 +13,9 @@ A function that represents a deleted value
 By default, the value of a node that has already been executed will be set
 to this function.
 }
+\seealso{
+Other cache: \code{\link{clear_cache}},
+  \code{\link{make_local_cacher}},
+  \code{\link{make_recacher}}, \code{\link{memory_cache}},
+  \code{\link{void_cache}}
+}

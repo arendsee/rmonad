@@ -12,3 +12,7 @@ size(m)
 \description{
 Return the number of nodes in the workflow
 }
+\examples{
+m <- 256 \%>>\% sqrt \%>>\% sqrt
+size(m)
+}

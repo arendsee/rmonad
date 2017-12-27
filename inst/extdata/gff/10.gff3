@@ -1,0 +1,5 @@
+# single exon genes, variant 2
+chrX	.	gene	100	400	.	+	.	ID=gene01;Name=resA
+chrX	.	mRNA	100	400	.	+	.	ID=tran01;Parent=gene01
+chrX	.	exon	200	300	.	+	.	Parent=tran01
+chrX	.	CDS	200	300	.	+	.	Parent=tran01

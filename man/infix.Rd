@@ -32,9 +32,9 @@ lhs \%||\% rhs
 lhs \%__\% rhs
 }
 \arguments{
-\item{lhs}{left hand value}
+\item{lhs}{left hand side value}
 
-\item{rhs}{right hand value}
+\item{rhs}{right hand side value}
 }
 \description{
 Infix monadic sequence operators
@@ -42,4 +42,14 @@ Infix monadic sequence operators
 \details{
 See the main package help page (\code{?rmonad}) or the \code{intro} and
 \code{cheatsheet} vignettes for more information.
+}
+\examples{
+256 \%>>\% sqrt
+256 \%v>\% sqrt
+list(1,2,3) \%*>\% sum
+iris \%>_\% plot \%>>\% summary 
+1:10 \%>^\% rgamma(10, 5) \%>^\% rgamma(10, 6) \%^>\% cor
+1:10 \%>>\% colSums \%|>\% sum
+stop("die") \%||\% 4 \%>>\% sqrt
+16 \%>>\% sqrt \%__\% 25 \%>>\% sqrt
 }

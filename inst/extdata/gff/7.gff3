@@ -1,0 +1,13 @@
+# operon
+chrX	.	operon	1000	2000	.	+	.	ID=operon01;Name=my_operon
+chrX	.	promoter	900	950	.	+	.	Parent=operon01
+chrX	.	gene	1100	1200	.	+	.	ID=gene01;Parent=operon01;Name=resA
+chrX	.	gene	1300	1400	.	+	.	ID=gene02;Parent=operon01;Name=resB
+chrX	.	gene	1500	1600	.	+	.	ID=gene03;Parent=operon01;Name=resX
+chrX	.	gene	1700	1800	.	+	.	ID=gene04;Parent=operon01;Name=resZ
+chrX	.	mRNA	1000	2000	.	+	.	ID=tran01;Parent=gene01,gene02,gene03,gene04
+chrX	.	exon	1000	2000	.	+	.	ID=exon00001;Parent=tran01
+chrX	.	CDS	1100	1200	.	+	.	Parent=tran01;Derives_from=gene01
+chrX	.	CDS	1300	1400	.	+	.	Parent=tran01;Derives_from=gene02
+chrX	.	CDS	1500	1600	.	+	.	Parent=tran01;Derives_from=gene03
+chrX	.	CDS	1700	1800	.	+	.	Parent=tran01;Derives_from=gene04

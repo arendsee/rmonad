@@ -103,10 +103,9 @@ library(readr)
 library(dplyr)
 library(tidyr)
 library(magrittr)
-library(rmonad)
 set.seed(210)
 
-data(gff)
+good_gfffile <- system.file('extdata', 'gff', '0.gff3', package='rmonad')
 
 read_gff <- function(file){
   readr::read_tsv(
@@ -128,15 +127,41 @@ read_gff <- function(file){
   )
 }
 
-read_gff(gff$good)
+read_gff(good_gfffile)
 ```
 
 This is a nice start, also, `readr` will pick up on any deviations from the
 specified column number and type, warning of problems:
 
 ```{r}
-read_gff(gff$invalid_type)
-read_gff(gff$not_a_gff1)
+# wrong type
+bad0 <- system.file('extdata', 'gff', 'bad-0.gff3', package='rmonad')
+read_gff(bad0)
+```
+
+Notice that the 4th entry has a start value of "NA". This indicates there was something wrong with he gff file and when we take a look at the original gff, we see that the entry corresponds to the string "one thousand eight hundred and seven" instead of the number. While this is not a likely error, it is a similar error for when a number contains a comma (example: "1,807"") which R will parse as a string.
+
+```{,eval=FALSE}
+# incorrect type
+a       Strex   region  1       230218  .       +       .       ID=I
+a       Strex   telomere        1       801     .       -       .       ID=id1
+a       Strex   origin_of_replication   707     776     .       +       .       ID=id2
+a       Strex   gene    "one thousand eight hundred and seven"  2169    .       -       .       ID=gene1
+```
+
+Similarly when we load in a gff missing a column.
+```{r}
+# wrong column number
+bad1 <- system.file('extdata', 'gff', 'bad-1.gff3', package='rmonad')
+read_gff(bad1)
+```
+The read_gff can correctly identify that a column is missing from the following raw file.
+```{,eval=FALSE}
+# missing one column
+a       region  1       230218  .       +       .       ID=I
+a       telomere        1       801     .       -       .       ID=id1
+a       origin_of_replication   707     776     .       +       .       ID=id2
+a       gene    1807    2169    .       -       .       ID=gene1
 ```
 
 R uses `NA` to indicate missing values. The R 'numeric' type corresponds to
@@ -145,7 +170,7 @@ columns 2,6,7,8 and 9 may be missing, the others may not. So we need an
 additional assertion that these are complete.
 
 ```{r}
-g <- read_gff(gff$good)
+g <- read_gff(good_gfffile)
 for(col in c("seqid", "type", "start", "stop")){
   if(any(is.na(g[[col]]))){
     stop("GFFError: Column '", col, "' may not have missing values")
@@ -153,7 +178,7 @@ for(col in c("seqid", "type", "start", "stop")){
 }
 ```
 
-Now we need to account for type synonyms
+Now we can account for type synonyms using the following method
 
 ```{r}
 gene_synonyms <- 'SO:0000704'
@@ -270,14 +295,32 @@ out.
 With `rmonad` we can mingle documentation and code in a computable object.
 
 ```{r}
+require(readr)
+require(dplyr)
+require(tidyr)
+require(magrittr)
+library(rmonad)
+set.seed(210)
 
-read_gff <- function(file, tags){
+#' @param file The input GFF file
+#' @param tags The GFF tags to keep
+#' @param cache A caching function used to store larger intermediate data (by
+#'        default these are not stored)
+read_gff <- function(file, tags, cache=identity){
+
+  "
+  This function reads a GFF. It builds a data frame from it that with a column
+  for each value in `tags`.
+
+  The `read_gff` function is a nested function, containing an Rmonad pipeline
+  inside it. This docstring describes the entire wrapped pipeline.
+  "
 
   raw_gff <- as_monad(
     {
 
       "
-      Rmonad supports docstrings. If an block begins with a string, this
+      Rmonad supports docstrings. If a block begins with a string, this
       string is extracted and stored. Python has something similar, where the
       first string in a function is cast as documentation.
       
@@ -307,7 +350,7 @@ read_gff <- function(file, tags){
     }
   )
 
-  raw_gff %>>% {
+  raw_gff %>% cache %>>% {
 
     "
     The %>>% operator applies the function described in this block to the
@@ -317,6 +360,8 @@ read_gff <- function(file, tags){
     computations. The context can store past values, performance information,
     this docstring, and links to the parent chunk. The context is a directed
     graph of code chunks and their metadata.
+
+    Here I assert that no data is missing in the columns where it is required.
     "
 
     for(col in c("seqid", "type", "start", "stop")){
@@ -328,8 +373,10 @@ read_gff <- function(file, tags){
   } %>>% {
 
     "
-    Note that these blocks of code are copied verbatim from above, only using
-    '.' in place of 'g'.
+    According the GFF specification, the value in the type column should be
+    from the Sequence Ontology (SO). Here I collapse the synonymous terms
+    for the main features usually present in GFF file (gene, mRNA, CDS, and
+    exon). In production code, I would probably do something a bit more formal. 
     "
 
     gene_synonyms <- 'SO:0000704'
@@ -346,11 +393,11 @@ read_gff <- function(file, tags){
   } %>_% {
 
     "
-    The %>_% operator lets this chunk of code be run for its effects, which
-    are emitting warnings if we replace the type with a questionable synonym.
-    We could alternatively just use %>>% and add a terminal '.' to this chunk.
-    The use of this operator, though, signals an interdependent branch. Where
-    failure of this branch triggers failure downstream.
+    The %>_% operator lets this chunk of code be run for its effects, which are
+    raising warnings if we replace the type with a questionable synonym.  We
+    could alternatively just use %>>% and add a terminal '.' to this chunk.
+    However, the `%>_%` operator guarantees the input is passed without being
+    changed, which is safer and also clarifies our intention. 
     "
 
     mRNA_near_synonyms <- c('transcript', 'SO:0000673')
@@ -369,13 +416,13 @@ read_gff <- function(file, tags){
   } %>>% {
 
     "
-    Notice here that I use the magrittr operator '%>%' inside the rmonad
+    Notice below that I use the magrittr operator '%>%' inside the rmonad
     pipeline. When to pipe with rmonad and when to pipe with magrittr is a
-    matter of granularity. This chunk of code perhpas should form one
+    matter of granularity. This chunk of code perhaps should form one
     documentation unit. And perhaps I don't expect it to fail. If I break this
     chunk into several, the failures are more localized, and I can access
     intermediate values for debugging. On the other hand, putting every little
-    operation in a new chunk will clutter the graph and reports generated from
+    operation in a new chunk will clutter the graph and reports derived from
     it.
     "
 
@@ -393,13 +440,13 @@ read_gff <- function(file, tags){
         extra = "merge"
       )
 
-   } %v>% funnel(raw_gff=raw_gff, tags=tags) %*>% {
+   } %>% funnel(raw_gff=raw_gff, tags=tags) %*>% {
 
     "
-    The %v>% operator stores the input value. We could replace every %>>%
-    operator with %v>%. This would let us inspect every step of an analysis at
-    the cost of high memory usage. For brevity, I won't break this following
-    block down any further.
+    The %v>% operator stores the input value in memory. We could replace every
+    %>>% operator with %v>%. This would let us inspect every step of an
+    analysis at the cost of high memory usage. For brevity, I won't break this
+    following block down any further.
 
     The `funnel` function packages a list in a monad, merging their histories
     and propagating error. That is, if `gff` or `tags` failed upstream, this
@@ -411,7 +458,7 @@ read_gff <- function(file, tags){
 
       %v>% function(gff=gff, tags=tags)
 
-    because this would have brough the monad wrapped gff into scope, not the
+    because this would have brought the monad wrapped gff into scope, not the
     value itself.
     "
 
@@ -463,10 +510,10 @@ read_gff <- function(file, tags){
       if(! all(parent_types %in% c("gene", "mRNA")))
         stop("Found CDS or exon with illegal parent")
 
-      if( any(is.na(parents)) )
+      if(any(is.na(parents)) )
         stop("Found CDS or exon with no parent")
 
-      if(! any(duplicated(.$ID, incomparables=NA)))
+      if(any(duplicated(.$ID, incomparables=NA)))
         warning("IDs are not unique, this is probably bad")
     }
 
@@ -485,12 +532,37 @@ read_gff <- function(file, tags){
 
 }
 
+gff_as_graph <- function(file, cache=identity){
+  read_gff(file, tags=c("ID", "Parent"), cache=cache) %>% cache %>>%
+  dplyr::filter(!is.na(Parent)) %>>%
+  {
+      "Make a unique label for each CDS and exon interval"
+      dplyr::group_by(., Parent) %>%
+      dplyr::mutate(ID = ifelse(type %in% c("CDS", "exon"),
+                                paste(type, start, sep='-'),
+                                ID)) %>%
+      dplyr::ungroup()
+  } %>% cache %>>% {
+    "Make a graph of gene models"
+    dplyr::select(., ID, Parent) %>%
+      as.matrix %>%
+      igraph::graph_from_edgelist()
+  }
+}
+
 ```
 
 That is the whole GFF program in an rmonad framework
 
 ```{r}
-result <- read_gff(file=gff$good, tags=c("ID", "Parent"))
+# Here we build a function to recache the last value stored in an Rmonad
+# object. We choose to cache our data locally in the 'ARCHIVE' folder. `rmonad`
+# will create the folder and the caching files automatically.
+cache <- make_recacher(make_local_cacher('ARCHIVE'))
+result <-
+  system.file('extdata', 'gff', '0.gff3', package='rmonad') %v>%
+  gff_as_graph(cache=cache)
+result %>>% plot
 ```
 
 `esc` will extract the final result, and raise all errors, warnings and
@@ -534,16 +606,85 @@ are the `rmonad` ids. The red arrow indicates a 'nest' relationship. Green nodes
 are OK, orange nodes raised a warning, red nodes (none appear in this graph)
 represent errors.
 
+After we are happy with our result, we may want to remove the cached data:
+
+```{r cleaningup}
+clear_cache(result)
+```
+
+
 If the pipeline fails, the last valid result is saved, for example
 
 ```{r}
-read_gff(gff$not_a_gff1)
+cache <- make_recacher(make_local_cacher('ARCHIVE'))
+m <-
+  system.file('extdata', 'gff', '15.gff3', package='rmonad') %v>%
+  gff_as_graph(cache=cache)
 ```
 
-This makes debugging much simpler. We don't need to jump back and rerun small
-parts of the pipeline. The failing object, and all intermediate data, could be
-saved. This could also allow for much richer bug reporting.
+To diagnose the problem, we might first read the error messages:
+
+```{r}
+get_error(m)
+```
+
+Here we see the 4th node raised an error: we having missing values in the
+'type' column.
+
+To get a big picture of the pipeline:
+
+```{r}
+mtabulate(m)
+```
+
+The the last three nodes are in the failing state (see column 'OK'). We can see
+all issues:
+
+```{r}
+missues(m)
+```
+
+We see two warnings in node 3. To see what code is wrapped in node 3:
+
+```{r}
+get_code(m, 3)
+```
+
+So there were issues in reading the file. We can get the value of this node's parent:
+
+```{r}
+get_value(m, get_parents(m, 3)[[1]])[[1]]
+```
+
+If we wanted to explore the raw data, we could jump into a Bash shell, navigate
+to the file above, and take it apart with UNIX tools (the lines of raw data
+were not stored in the Rmonad object).
+
+We might next check out the failing columns:
+
+```{r}
+get_code(m, 4:6)
+```
+
+Now that we know exactly _where_ the problem is, we can start working through
+the data that triggered the problem:
+
+```{r}
+get_value(m, get_parents(m, 5)[[1]])
+get_value(m, 5)[[1]]
+```
+
+
+
+From this it looks like there is raw sequence data contained in the GFF file.
+According to the GFF specification, it is legal to have the full sequence data
+appended to the tabular GFF data. So we probably should either add a test that
+will raise an appropriate error message or extend our function to handle this
+case.
+
+`rmonad` saved the input to the failing function. This makes debugging much
+simpler. We did not have to disassemble our pipeline and rerun it step-by-step.
 
 Overall, in `rmonad`, the output of a pipeline is not just the effluent of the
-last pipeline, but the collection of all the nodes along the way. The pipeline
+last node, but the collection of all the nodes along the way. The pipeline
 itself becomes data that can be computed upon. 

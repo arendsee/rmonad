@@ -1,0 +1,10 @@
+# Protein model with intein, a protein that is processed into two polypeptides
+chrX	.	gene	1000	2000	.	+	.	ID=gene01;Name=resA
+chrX	.	gene	1000	2000	.	+	.	ID=gene02;Name=inteinA
+chrX	.	mRNA	1000	2000	.	+	.	ID=tran01;Parent=gene01,gene02
+chrX	.	exon	1000	2000	.	+	.	Parent=tran01
+chrX	.	CDS	1100	1300	.	+	.	ID=cds01;Parent=tran01
+chrX	.	polypeptide	1100	1300	.	+	.	ID=poly01;Derives_from=cds01
+chrX	.	mature_polypeptide	1100	1159	.	+	.	ID=poly02;Parent=poly01;Derives_from=gene01
+chrX	.	mature_polypeptide	1160	1189	.	+	.	ID=poly02;Parent=poly01;Derives_from=gene01
+chrX	.	intein	1190	1300	.	+	.	ID=poly03;Parent=poly01;Derives_from=gene02

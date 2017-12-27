@@ -1,0 +1,30 @@
+# variations on monoexonic entries
+
+# the "right" way
+I	Strex	gene	1807	2169	.	-	.	ID=gene1
+I	Strex	mRNA	1807	2169	.	-	.	ID=mrna1;Parent=gene1
+I	Strex	exon	1807	2169	.	-	.	Parent=mrna1
+I	Strex	CDS	1807	2169	.	-	0	Parent=mrna1
+
+# leave out the exon, since it has the same extent as the mRNA
+I	Strex	gene	1807	2169	.	-	.	ID=gene2
+I	Strex	mRNA	1807	2169	.	-	.	ID=mrna2;Parent=gene2
+I	Strex	CDS	1807	2169	.	-	0	Parent=mrna2
+
+# leave out the mRNA (not recomended, but happens in the wild)
+I	Strex	gene	1807	2169	.	-	.	ID=gene3
+I	Strex	exon	1807	2169	.	-	.	Parent=gene3
+I	Strex	CDS	1807	2169	.	-	0	Parent=gene3
+
+# this also happens, where mRNAs are listed, but aren't grouped under genes
+I	Strex	mRNA	1807	2169	.	-	.	ID=mrna4
+I	Strex	exon	1807	2169	.	-	.	Parent=mrna4
+I	Strex	CDS	1807	2169	.	-	0	Parent=mrna4
+
+# as above, but also drop the redundant exon
+I	Strex	mRNA	1807	2169	.	-	.	ID=mrna5
+I	Strex	CDS	1807	2169	.	-	0	Parent=mrna5
+
+# also skip the exon
+I	Strex	gene	1807	2169	.	-	.	ID=gene6
+I	Strex	CDS	1807	2169	.	-	0	Parent=gene6

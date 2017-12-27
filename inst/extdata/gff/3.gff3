@@ -1,0 +1,18 @@
+# this is a gene with two splicing variants:
+
+I	.	gene	61931	83591	.	+	.	ID=gene1
+
+I	.	mRNA	61931	83591	.	+	.	ID=rna1;Parent=gene1
+I	.	exon	61931	62344	.	+	.	Parent=rna1
+I	.	exon	81616	82209	.	+	.	Parent=rna1
+I	.	exon	82211	83591	.	+	.	Parent=rna1
+I	.	CDS	61931	62344	.	+	0	Parent=rna1
+I	.	CDS	81616	82209	.	+	0	Parent=rna1
+I	.	CDS	82211	82681	.	+	0	Parent=rna1
+
+I	.	mRNA	61931	83591	.	+	.	ID=rna2;Parent=gene1
+I	.	exon	61931	62344	.	+	.	Parent=rna2
+I	.	exon	81616	82209	.	+	.	Parent=rna2
+I	.	exon	82211	83591	.	+	.	Parent=rna2
+I	.	CDS	61931	62344	.	+	0	Parent=rna2
+I	.	CDS	82211	82681	.	+	0	Parent=rna2

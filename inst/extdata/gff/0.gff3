@@ -1,0 +1,17 @@
+a	Strex	region	1	230218	.	+	.	ID=I
+a	Strex	telomere	1	801	.	-	.	ID=id1
+a	Strex	origin_of_replication	707	776	.	+	.	ID=id2
+a	Strex	gene	1807	2169	.	-	.	ID=gene1
+a	Strex	mRNA	1807	2169	.	-	.	ID=mrna1;Parent=gene1
+a	Strex	exon	1807	2169	.	-	.	Parent=mrna1
+a	Strex	CDS	1807	2169	.	-	0	Parent=mrna1
+a	Strex	mRNA	2480	2707	.	+	.	ID=mrna2;Parent=gene1
+a	Strex	exon	2480	2707	.	+	.	Parent=mrna2
+a	Strex	CDS	2480	2707	.	+	0	Parent=mrna2
+b	Strex	gene	7235	9016	.	-	.	ID=gene2
+b	Strex	CDS	7235	9016	.	-	0	Parent=gene2
+b	Strex	origin_of_replication	7997	8547	.	+	.	ID=id6
+b	Strex	gene	11565	11951	.	-	.	ID=gene3
+b	Strex	mRNA	11565	11951	.	-	.	ID=mrna3;Parent=gene3
+b	Strex	exon	11565	11951	.	-	.	Parent=mrna3
+b	Strex	CDS	11565	11951	.	-	0	Parent=mrna3

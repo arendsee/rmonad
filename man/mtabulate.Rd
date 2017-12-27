@@ -14,6 +14,11 @@ mtabulate(m, code = FALSE)
 \description{
 Make tabular summary of a pipeline
 }
+\examples{
+data(gff)
+m <- gff$good_result
+mtabulate(m)
+}
 \seealso{
 Other from_Rmonad: \code{\link{esc}},
   \code{\link{missues}}, \code{\link{report}}

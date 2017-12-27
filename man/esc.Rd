@@ -2,7 +2,7 @@
 % Please edit documentation in R/from-monad.R
 \name{esc}
 \alias{esc}
-\title{Returns the value of a monad holds}
+\title{Returns the value a monad holds}
 \usage{
 esc(m, quiet = FALSE)
 }
@@ -22,6 +22,10 @@ prints all messages. Terminating a monadic sequence with \code{esc} should
 obtain a result very close to running the same code outside the monad. The
 main difference is that Rmonad appends the toplevel code that generated the
 error.
+}
+\examples{
+library(magrittr)
+256 \%>>\% sqrt \%>\% esc
 }
 \seealso{
 Other from_Rmonad: \code{\link{missues}},

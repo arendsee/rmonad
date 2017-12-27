@@ -1,0 +1,19 @@
+# showcases some common variants of the format
+
+# the parent who wasn't there
+I	Strex	gene	1807	2169	.	-	.	ID=gene1;Parent=-
+I	Strex	mRNA	1807	2169	.	-	.	ID=mrna1;Parent=gene1
+I	Strex	exon	1807	2169	.	-	.	Parent=mrna1
+I	Strex	CDS	1807	2169	.	-	0	Parent=mrna1
+
+# the parent who shirked labels imposed on him by society
+I	Strex	gene	1807	2169	.	-	.	gene2
+I	Strex	mRNA	1807	2169	.	-	.	ID=mrna2;Parent=gene2
+I	Strex	exon	1807	2169	.	-	.	Parent=mrna2
+I	Strex	CDS	1807	2169	.	-	0	Parent=mrna2
+
+# children with identities
+I	Strex	gene	1807	2169	.	-	.	gene3
+I	Strex	mRNA	1807	2169	.	-	.	ID=mrna1;Parent=gene3
+I	Strex	exon	1807	2169	.	-	.	ID=Frodo;Parent=mrna3
+I	Strex	CDS	1807	2169	.	-	0	ID=Sam;Parent=mrna3

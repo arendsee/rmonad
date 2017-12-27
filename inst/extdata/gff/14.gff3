@@ -1,0 +1,11 @@
+# transpiced transcript, variant 2
+chr1	.	gene	100	200	.	+	.	ID=gene02;Name=leader_gene
+chr2	.	gene	1000	1200	.	+	.	ID=gene01;Name=my_gene
+chr1	.	mRNA	100	200	.	+	.	ID=tran01;Parent=gene01,gene02
+chr2	.	mRNA	1000	1200	.	+	.	ID=tran01;Parent=gene01,gene02
+chr1	.	spliced_leader_RNA	100	200	.	+	.	ID=sl01;Parent=tran01;Derives_from=gene02
+chr2	.	primary_transcript	1000	1200	.	+	.	ID=pt01;Parent=tran01;Derives_from=gene01
+chr1	.	exon	150	200	.	+	.	Parent=tran01
+chr2	.	exon	1000	1100	.	+	.	Parent=tran01
+chr1	.	CDS	190	200	.	+	.	ID=cds01;Parent=tran01
+chr2	.	CDS	1000	1030	.	+	.	ID=cds01;Parent=tran01

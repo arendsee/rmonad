@@ -3,7 +3,6 @@
 #' This function should not be used directly. Rather you should use the infix
 #' operators. They all wrap this function.
 #'
-#' @export
 #' @param x The input, may or may not be a monad report
 #' @param f A function of the value contained in x
 #' @param entry_lhs_transform f(m,x,...) a transform of the lhs called on entry

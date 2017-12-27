@@ -4,17 +4,22 @@
 \alias{print.Rmonad}
 \title{Rmonad print generic function}
 \usage{
-\method{print}{Rmonad}(x, verbose = FALSE, print_value = TRUE, ...)
+\method{print}{Rmonad}(x, verbose = FALSE, value = TRUE, ...)
 }
 \arguments{
 \item{x}{An Rmonad object}
 
 \item{verbose}{logical print verbose output (include benchmarking)}
 
-\item{print_value}{logical print the value wrapped in the Rmonad}
+\item{value}{logical print the value wrapped in the Rmonad}
 
 \item{...}{Additional arguments (unused)}
 }
 \description{
 Rmonad print generic function
+}
+\examples{
+m1 <- 256 \%v>\% sqrt \%>>\% sqrt \%>>\% sqrt
+print(m1)
+print(m1, verbose=TRUE)
 }
