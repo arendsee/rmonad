@@ -136,10 +136,32 @@ specified column number and type, warning of problems:
 ```{r}
 # wrong type
 bad0 <- system.file('extdata', 'gff', 'bad-0.gff3', package='rmonad')
+read_gff(bad0)
+```
+
+Notice that the 4th entry has a start value of "NA". This indicates there was something wrong with he gff file and when we take a look at the original gff, we see that the entry corresponds to the string "one thousand eight hundred and seven" instead of the number. While this is not a likely error, it is a similar error for when a number contains a comma (example: "1,807"") which R will parse as a string.
+
+```{,eval=FALSE}
+# incorrect type
+a       Strex   region  1       230218  .       +       .       ID=I
+a       Strex   telomere        1       801     .       -       .       ID=id1
+a       Strex   origin_of_replication   707     776     .       +       .       ID=id2
+a       Strex   gene    "one thousand eight hundred and seven"  2169    .       -       .       ID=gene1
+```
+
+Similarly when we load in a gff missing a column.
+```{r}
 # wrong column number
 bad1 <- system.file('extdata', 'gff', 'bad-1.gff3', package='rmonad')
-read_gff(bad0)
 read_gff(bad1)
+```
+The read_gff can correctly identify that a column is missing from the following raw file.
+```{,eval=FALSE}
+# missing one column
+a       region  1       230218  .       +       .       ID=I
+a       telomere        1       801     .       -       .       ID=id1
+a       origin_of_replication   707     776     .       +       .       ID=id2
+a       gene    1807    2169    .       -       .       ID=gene1
 ```
 
 R uses `NA` to indicate missing values. The R 'numeric' type corresponds to
@@ -156,7 +178,7 @@ for(col in c("seqid", "type", "start", "stop")){
 }
 ```
 
-Now we need to account for type synonyms
+Now we can account for type synonyms using the following method
 
 ```{r}
 gene_synonyms <- 'SO:0000704'
