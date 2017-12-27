@@ -293,6 +293,22 @@ get_summary <- function(m, index=.get_ids(m)) {
 }
 
 
+
+# ============== Public setters ================================================
+# Not all fields SHOULD be settable. For example, I can conceive of no reason
+# why `time` should ever be reset. There are cases where the `CacheManager`
+# object stored in the `value` slot may be changed (for example, to remove a
+# value from cache or change how it is cached), but care must be taken to
+# change only the wrapper, not the pure value. It is possible to set fields
+# directly, e.g. `m@data[[1]]@doc <- ...`. For now, I will just add commented
+# functions for the fields I think ought to be settable:
+#
+# set_summary  <- function(m){ }
+# set_error    <- function(m){ }
+# set_warnings <- function(m){ }
+# set_notes    <- function(m){ }
+# set_meta     <- function(m){ }
+
 # ============== Singular getters and setters (internal use only) ==============
 
 .single_stored <- function(m, ...) {
@@ -306,11 +322,6 @@ get_summary <- function(m, index=.get_ids(m)) {
 `.single_stored<-` <- function(m, value) {
   .set_single_attribute(m, attribute="stored", value=value)
 }
-
-.single_dependents <- function(m, ...) {
-  .get_single_relative_ids(m, mode="out", type="depend", ...)
-}
-# no setter - see inherit
 
 .single_prior <- function(m, ...) {
   .get_single_relative_ids(m, mode="in", type="prior", ...)
