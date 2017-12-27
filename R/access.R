@@ -323,6 +323,11 @@ get_summary <- function(m, index=.get_ids(m)) {
   .set_single_attribute(m, attribute="stored", value=value)
 }
 
+.single_dependents <- function(m, ...) {
+  .get_single_relative_ids(m, mode="out", type="depend", ...)
+}
+# no setter - see inherit
+
 .single_prior <- function(m, ...) {
   .get_single_relative_ids(m, mode="in", type="prior", ...)
 }
