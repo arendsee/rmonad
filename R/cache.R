@@ -23,6 +23,29 @@ void_cache <- function(){
   )
 }
 
+#' Represent a dummy value for a node downstream of a failing node 
+#'
+#' Returns a CacheManager that represents a dummy value for a node downstream
+#' of a failing node. Unlike \code{void_cache}, this presence of this manager
+#' in a pipeline is not pathological, so does not raise a warning by default.
+#'
+#' @return A function that represents an unrun node
+#' @export
+#' @family cache
+fail_cache <- function(){
+  get <- function(warn=FALSE){
+    if(warn){
+      warning("Accessing node downstream of failing function, returning 'NULL'")
+    }
+    NULL
+  }
+  new("CacheManager",
+    get = get,
+    del = nothing,
+    chk = false
+  )
+}
+
 #' Represent a value that has been deleted
 #'
 #' By default, the value of a node that has already been executed will be set

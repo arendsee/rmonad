@@ -27,6 +27,7 @@ Make a function of x that caches data locally
 }
 \seealso{
 Other cache: \code{\link{clear_cache}},
-  \code{\link{make_recacher}}, \code{\link{memory_cache}},
-  \code{\link{no_cache}}, \code{\link{void_cache}}
+  \code{\link{fail_cache}}, \code{\link{make_recacher}},
+  \code{\link{memory_cache}}, \code{\link{no_cache}},
+  \code{\link{void_cache}}
 }
