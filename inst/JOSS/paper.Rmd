@@ -45,8 +45,12 @@ handling.
 
 The concept of pipeline-based programming is well-accepted in the R community,
 mostly through the `magrittr` package. `magrittr` provides piping functionality
-in R. rmonad enhances the `magrittr` functionality by providing X, Y Z. (branching, error/warning/log message capture, and traceback with stored values). 
-While magrittr provides pipe-based pipelines, R provides documentation and debugging of those pipelines. 
+in R. rmonad enhances the `magrittr` functionality by providing X, Y Z.
+(branching, error/warning/log message capture, and traceback with stored
+values).  While magrittr provides pipe-based pipelines, R provides
+documentation and debugging of those pipelines. 
+
+Monad referecne: [@wadler1995monads]
 
 When building pipelines, especially flexible and scalable pipelines, the main
 challenge is to maintain clarity in design and maintenance. A pipeline tool
