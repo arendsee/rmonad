@@ -5,8 +5,8 @@
 \title{Apply f to the contents of a monad and merge messages}
 \usage{
 bind(x, f, entry_lhs_transform = entry_lhs_transform_default,
-  bind_if = function(m) .single_OK(m), bind_else = function(...) {     NULL
-  }, emit = emit_default, m_on_bind = function(x, ...) {     x },
+  bind_if = function(m) .single_OK(m), bind_else = default_bind_else,
+  emit = emit_default, m_on_bind = function(x, ...) {     x },
   io_combine = default_combine, bind_args = function(m)
   list(.single_value(m, warn = FALSE)), parent_ids = function(m)
   list(.get_ids(m)[.single_id(m)]), expect_rhs_function = TRUE,

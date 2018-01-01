@@ -19,7 +19,7 @@ bind <- function(
   f,
   entry_lhs_transform = entry_lhs_transform_default,
   bind_if             = function(m) .single_OK(m),
-  bind_else           = function(...){NULL},
+  bind_else           = default_bind_else,
   emit                = emit_default,
   m_on_bind           = function(x, ...){x},
   io_combine          = default_combine,
@@ -199,4 +199,12 @@ bypass_combine <- function(m, o, f, margs){
   # the new value inherits the old value, losing whatever it had but the
   # pass/fail state of the child is preserved
   .inherit(child=o, parent=m, inherit_value=TRUE, inherit_OK=FALSE)
+}
+
+
+## bind_else
+
+default_bind_else <- function(...){
+
+  NULL
 }

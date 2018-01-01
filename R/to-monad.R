@@ -193,7 +193,7 @@ combine <- function(xs, keep_history=TRUE, desc=.default_code()){
 
   # store all values (even if failing, in which case should be NULL)
   value <- lapply(xs, function(x){
-    if(get_OK(x, size(x))){
+    if(get_OK(x, x@head)){
       .single_value(x, warn=FALSE)
     } else {
       NULL
@@ -205,7 +205,7 @@ combine <- function(xs, keep_history=TRUE, desc=.default_code()){
 
   # remove cached value of parents if they were passing
   xs <- lapply(xs, function(x){
-    if(get_OK(x, size(x))){
+    if(get_OK(x, x@head)){
       .single_delete_value(x)
     } else {
       x
