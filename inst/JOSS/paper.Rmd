@@ -9,7 +9,7 @@ authors:
   orcid: 0000-0002-8381-3765
 - affiliation: 1
   name: Eve Wurtele
-  orcid: XXXX-XXXX-XXXX-XXXX
+  orcid: 0000-0003-1552-9495
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -22,7 +22,7 @@ affiliations:
   - index: 1
     name: Iowa State University, Department of Genetics Development and Cell Biology
   - index: 2
-    name: XXXXX
+    name: USDA-ARS National Animal Disease Center. Ames IA, USA.
 ---
 
 # Introduction
@@ -198,5 +198,18 @@ is to handle complexity, not volume.
     leave it open in the discussion as future directions, or point out how rmonad 
     would be ideal for parallelism, unlike other pipeline documentation tools which 
     are linear
+
+# Funding
+
+This material is based upon work supported by the National Science Foundation
+under Grant No. IOS 1546858.
+
+This research was supported in part by an appointment to the Agricultural
+Research Service (ARS) Research Participation Program administered by the Oak
+Ridge Institute for Science and Education (ORISE) through an interagency
+agreement between the U.S. Department of Energy (DOE) and the U.S. Department
+of Agriculture (USDA). ORISE is managed by ORAU under DOE contract number
+DE-SC0014664. All opinions expressed in this paper are the author's and do not
+necessarily reflect the policies and views of USDA, ARS, DOE, or ORAU/ORISE. 
 
 # References
