@@ -1,0 +1,59 @@
+---
+title: "'rmonad' with 'Nozzle.R1'"
+author: "Zebulun Arendsee"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{'rmonad' with 'Nozzle.R1'}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+This vignette shows how `rmonad` can be used in tandem with `Nozzle.R1` to
+create HTML reports. `Nozzle.R1` is a published R package for report
+generation:
+
+```{r}
+library(Nozzle.R1)
+citation('Nozzle.R1')
+```
+
+It can be used to build HTML reports section by section. The package offers a
+report generation approach that is more programable, in some ways, than
+standard literate programming approaches (e.g. `knitr`). `rmonad` is intended
+to store all the data needed for a report, but stop short of actually creating
+one. These two packages are thus highly complementary.
+
+Here is a simple example:
+
+```{r, eval=FALSE}
+m <- iris %>>% head(20) %v>% summary %v>% colSums
+
+r <- newCustomReport("Demo report")
+r <- setMaintainerName(r, "Uriah Heep")
+
+s1 <- newSection("Pipeline overview")
+
+fig1 <- "p1.png"
+png(fig1)
+plot(m)
+dev.off()
+
+s1 <- addTo(s1,
+  newFigure(fig1, "Pipeline graph"),
+  newTable(mtabulate(m), "Pipeline summary")
+)
+r <- addTo(r, s1)
+
+s2 <- newSection("Results")
+s2 <- addTo(s2, newTable(get_value(m, 2)[[1]], get_code(m, 2)[[1]]))
+s2 <- addTo(s2, newTable(get_value(m, 2)[[1]], get_code(m, 2)[[1]]))
+r <- addTo(r, s2)
+
+if(any(has_error(m) | has_warnings(m))){ 
+    s3 <- newSection("Bad things")
+    s3 <- addTo(s3, newTable(missues(m), "Issues raised"))
+    r <- addTo(r, s3)
+}
+
+writeReport(r, filename="demo")
+```

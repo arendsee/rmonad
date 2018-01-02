@@ -31,7 +31,8 @@ Suggests:
     readr,
     stringr,
     tidyr,
-    dplyr
+    dplyr,
+    Nozzle.R1
 VignetteBuilder: knitr
 LazyData: yes
 RoxygenNote: 6.0.1
