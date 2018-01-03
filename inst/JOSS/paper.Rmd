@@ -61,6 +61,12 @@ can work very nicely as an input to tools that do, such the literate
 programming package `knitr` [@knitr] or the HTML report generator `Nozzle.R1`
 [@gehlenborg2013nozzle].
 
+# Related work
+
+`rmonad` is at a deep level related to the "Make" family of programs, for
+example the original GNU Make [@stallman2002gnu] and the R package `drake`
+[@drake]. Like Make, `rmonad` builds a graph of dependent operations. 
+
 # Why we need a monadic pipeline program in R
 
 error/warning/log message
