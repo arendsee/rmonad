@@ -11,6 +11,7 @@
 \alias{get_id}
 \alias{get_OK}
 \alias{get_code}
+\alias{get_tag}
 \alias{get_error}
 \alias{get_warnings}
 \alias{get_notes}
@@ -31,13 +32,15 @@ get_prior(m, index = .get_ids(m))
 
 get_nest_depth(m, index = .get_ids(m))
 
-get_value(m, index = .get_ids(m), warn = TRUE)
+get_value(m, index = .get_ids(m), tag = NULL, warn = TRUE)
 
 get_id(m, index = .get_ids(m))
 
 get_OK(m, index = .get_ids(m))
 
 get_code(m, index = .get_ids(m))
+
+get_tag(m, index = .get_ids(m))
 
 get_error(m, index = .get_ids(m))
 
@@ -61,6 +64,8 @@ get_summary(m, index = .get_ids(m))
 \item{index}{Selection of indices to extract (all by default). The indices
 may be a vector of integers, node names, or igraph vertices
 (\code{igraph.vs}).}
+
+\item{tag}{character vector specifying the tags that must be associated with extracted nodes}
 
 \item{warn}{logical In get_value, raise a warning on an attempt to access an uncached node}
 

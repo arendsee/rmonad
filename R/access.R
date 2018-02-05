@@ -5,6 +5,7 @@
 #'              may be a vector of integers, node names, or igraph vertices
 #'              (\code{igraph.vs}).
 #' @param warn logical In get_value, raise a warning on an attempt to access an uncached node
+#' @param tag character vector specifying the tags that must be associated with extracted nodes 
 #' @param ... Additional arguments
 #' @name rmonad_getters
 #' @examples
@@ -98,6 +99,7 @@ is_rmonad <- function(m) {
 # NA_integer_, logical(0), etc) and use of the wrong one can be a source of
 # subtle of reoccuring bugs. So I gather all this into one place.
 .default_value      <- function() void_cache()
+.default_tag        <- function() ""
 .default_head       <- function() 1L
 .default_code       <- function() character(0)
 .default_error      <- function() character(0)
@@ -121,6 +123,10 @@ is_rmonad <- function(m) {
 #' @rdname rmonad_checkers
 #' @export
 has_code <- function(m, ...) sapply(get_code(m, ...), .is_not_empty_string) %>% unname
+
+#' @rdname rmonad_checkers
+#' @export
+has_tag <- function(m, ...) sapply(get_tag(m, ...), .is_not_empty_string) %>% unname
 
 #' @rdname rmonad_checkers
 #' @export
@@ -182,6 +188,38 @@ has_nest <- function(m, ...) sapply(get_nest(m, ...), function(x) length(x) > 0)
 has_summary <- function(m, ...) sapply(get_summary(m, ...), function(x) length(x) > 0) %>% unname
 
 
+# ================================ Tag handling ================================
+
+#' Set the head of an Rmonad to a particular tag 
+#'
+#' @param m Rmonad object
+#' @param tag string specifying a single tag for one node in the pipeline 
+#' @return Rmonad object with head reset
+#' @export
+view <- function(m, tag){
+  tags <- which(sapply(get_tag(m), identical, tag))
+  if(length(tags) > 1){
+    stop("The given tag, '", tag, "' is ambiguous, maybe use 'views' instead?")
+  }
+  if(length(tags) == 0){
+    stop("Tag '", tag, "' not found") 
+  }
+  m@head <- igraph::vertex_attr(m@graph)$name[tags[1]]
+  m
+}
+
+#' Set the tag of an Rmonad object 
+#'
+#' @param m Rmonad object
+#' @param value string specifying a new tag for the given nodes
+#' @param index character or integer vector, specifying the nodes which will be
+#' assigned the new tag 
+#' @return Rmonad object with new tags
+#' @export
+tag <- function(m, value, index=m@head){
+  .check_type(value, 'character')
+  .set_many_attributes(m, attribute='tag', value=value, index=index)
+}
 
 # ============================= Vectorized Getters =============================
 
@@ -222,8 +260,12 @@ get_nest_depth <- function(m, index=.get_ids(m)) {
 
 #' @rdname rmonad_getters
 #' @export
-get_value <- function(m, index=.get_ids(m), warn=TRUE){
-  lapply(.get_many_attributes(m, index=index, attribute='value'), function(v) v@get(warn))
+get_value <- function(m, index=.get_ids(m), tag=NULL, warn=TRUE){
+  values <- .get_many_attributes(m, index=index, attribute='value')
+  if(!is.null(tag)){
+    index <- which(sapply(values, function(v) v@tag() %in% tag))
+  }
+  lapply(values, function(v) v@get(warn))
 }
 
 #' @rdname rmonad_getters
@@ -243,6 +285,12 @@ get_OK <- function(m, index=.get_ids(m)) {
 #' @export
 get_code <- function(m, index=.get_ids(m)) {
   .get_many_attributes(m, index=index, attribute='code')
+}
+
+#' @rdname rmonad_getters
+#' @export
+get_tag <- function(m, index=.get_ids(m)) {
+  .get_many_attributes(m, index=index, attribute='tag')
 }
 
 #' @rdname rmonad_getters
@@ -344,7 +392,7 @@ get_summary <- function(m, index=.get_ids(m)) {
   .get_single_attribute(m, attribute="OK", ...)
 }
 `.single_OK<-` <- function(m, value) {
-  stopifnot(is.logical(value))
+  .check_type(value, 'logical')
   .set_single_attribute(m, attribute="OK", value=value)
 }
 
@@ -367,6 +415,14 @@ get_summary <- function(m, index=.get_ids(m)) {
 }
 `.single_code<-` <- function(m, value) {
   .set_single_attribute(m, attribute="code", value=value)
+}
+
+.single_tag <- function(m, ...) {
+  .get_single_attribute(m, attribute="tag", ...)
+}
+`.single_tag<-` <- function(m, value) {
+  .check_type(value, 'character')
+  .set_single_attribute(m, attribute="tag", value=value)
 }
 
 .single_error <- function(m, ...) {

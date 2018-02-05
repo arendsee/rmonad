@@ -7,7 +7,8 @@
 \alias{combine}
 \title{Conversions to monads}
 \usage{
-as_monad(expr, desc = NULL, doc = .default_doc(), lossy = FALSE)
+as_monad(expr, desc = NULL, tag = .default_tag(), doc = .default_doc(),
+  lossy = FALSE)
 
 funnel(..., env = parent.frame(), keep_history = TRUE)
 
@@ -17,6 +18,8 @@ combine(xs, keep_history = TRUE, desc = .default_code())
 \item{expr}{An expression}
 
 \item{desc}{A description of the monad (usually the producing code)}
+
+\item{tag}{Character vector specifying the tag to associate with a node}
 
 \item{doc}{A docstring to associate with the monad}
 

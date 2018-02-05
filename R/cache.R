@@ -185,9 +185,10 @@ clear_cache <- function(m, index=.get_ids(m)){
 make_recacher <- function(cacher, preserve=TRUE){
   # TODO: should check that meta$cache is a proper caching function
   # @param m An Rmonad object
-  function(m){
+  function(m, tag=.default_tag()){
     .single_raw_value(m) <- cacher(.single_value(m))
     .single_stored(m) <- preserve
+    .single_tag(m) <- tag
     m
   }
 }
