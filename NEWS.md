@@ -7,6 +7,22 @@
  * combine (and funnel) now store failing inputs as NULL and do not delete the
    failing parent's cache
 
+ * add `tag` field to `Rmonad` objects and access functions:
+
+   - `tag` - set the tag of the current head node (or nodes at given indices)
+
+   - `view` - set the head of the graph to the given tagged node
+
+   - `get_tag` - get tags for nodes
+
+   - `has_tag` - check whether nodes have tags
+
+   - add `tag` argument to `as_monad` to allow tag setting at creation 
+
+   - add `tag` argument to `get_*` to allow access by tag
+
+   - add `tag` to caching functions, to allow tag and cache to be set together
+
 ## Bug fixes
 
  * fix expression capture in `as_monad`

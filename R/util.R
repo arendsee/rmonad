@@ -37,11 +37,11 @@
   .check_type(m, test=is_rmonad, type='Rmonad', nframe=sys.nframe()-1, ...)
 }
 
-#' Determine if a is prefixed by elements of b
-#'
-#' @param a vector or list
-#' @param b vector or list
-#' @return logical vector with length equal to the length of a
+# Determine if a is prefixed by elements of b
+#
+# @param a vector or list
+# @param b vector or list
+# @return logical vector with length equal to the length of a
 .a_has_prefix_b <- function(a, b){
   if(!is.list(a)){
     a <- list(a)

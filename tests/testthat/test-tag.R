@@ -40,3 +40,25 @@ test_that("multi level tags work", {
   expect_equal(get_value(m3, tag='#1'), list('a b', 'a b c'))
   expect_equal(get_value(m3, tag=c('#1', '#2')), list(c('a b c')))
 })
+
+test_that("other get_* accessors work", {
+  expect_equal(get_OK(m3, tag='#1'), c(T,T))
+  # I could check the actual return values, but that would probably be
+  # overkill. So I just ensure nothing explodes. 
+  expect_equal(get_code       (m3, tag='#1') %>% length, 2 )
+  expect_equal(get_dependents (m3, tag='#1') %>% length, 2 )
+  expect_equal(get_doc        (m3, tag='#1') %>% length, 2 )
+  expect_equal(get_error      (m3, tag='#1') %>% length, 2 )
+  expect_equal(get_id         (m3, tag='#1') %>% length, 2 )
+  expect_equal(get_mem        (m3, tag='#1') %>% length, 2 )
+  expect_equal(get_meta       (m3, tag='#1') %>% length, 2 )
+  expect_equal(get_nest       (m3, tag='#1') %>% length, 2 )
+  expect_equal(get_nest_depth (m3, tag='#1') %>% length, 2 )
+  expect_equal(get_notes      (m3, tag='#1') %>% length, 2 )
+  expect_equal(get_parents    (m3, tag='#1') %>% length, 2 )
+  expect_equal(get_prior      (m3, tag='#1') %>% length, 2 )
+  expect_equal(get_summary    (m3, tag='#1') %>% length, 2 )
+  expect_equal(get_tag        (m3, tag='#1') %>% length, 2 )
+  expect_equal(get_time       (m3, tag='#1') %>% length, 2 )
+  expect_equal(get_value      (m3, tag='#1') %>% length, 2 )
+})

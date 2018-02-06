@@ -230,10 +230,11 @@ tag <- function(m, value, index=m@head){
 
 #' @rdname rmonad_getters
 #' @export
-get_parents <- function(m, index=.get_ids(m)) {
+get_parents <- function(m, index=.get_ids(m), tag=NULL) {
   .get_many_relative_ids(
     m     = m,
     index = index,
+    tag   = tag,
     mode  = "in",
     type  = c("depend", "transitive")
   )
@@ -241,109 +242,106 @@ get_parents <- function(m, index=.get_ids(m)) {
 
 #' @rdname rmonad_getters
 #' @export
-get_dependents <- function(m, index=.get_ids(m)) {
-  .get_many_relative_ids(m, index=index, mode="out", type="depend")
+get_dependents <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_relative_ids(m, index=index, tag=tag, mode="out", type="depend")
 }
 
 #' @rdname rmonad_getters
 #' @export
-get_nest <- function(m, index=.get_ids(m)) {
-  .get_many_relative_ids(m, index=index, mode="in", type="nest")
+get_nest <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_relative_ids(m, index=index, tag=tag, mode="in", type="nest")
 }
 
 #' @rdname rmonad_getters
 #' @export
-get_prior <- function(m, index=.get_ids(m)) {
-  .get_many_relative_ids(m, index=index, mode="in", type="prior")
+get_prior <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_relative_ids(m, index=index, tag=tag, mode="in", type="prior")
 }
 
 #' @rdname rmonad_getters
 #' @export
-get_nest_depth <- function(m, index=.get_ids(m)) {
-  .get_many_attributes(m, index=index, attribute='nest_depth') %>% as.integer
+get_nest_depth <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_attributes(m, index=index, tag=tag, attribute='nest_depth') %>% as.integer
 }
 
 #' @rdname rmonad_getters
 #' @export
 get_value <- function(m, index=.get_ids(m), tag=NULL, warn=TRUE){
-  if(!is.null(tag)){
-    index <- which(.a_has_prefix_b(get_tag(m), tag))
-  }
-  values <- .get_many_attributes(m, index=index, attribute='value')
+  values <- .get_many_attributes(m, index=index, tag=tag, attribute='value')
   lapply(values, function(v) v@get(warn))
 }
 
 #' @rdname rmonad_getters
 #' @export
-get_id <- function(m, index=.get_ids(m)) {
+get_id <- function(m, index=.get_ids(m), tag=NULL) {
   # FIXME: should I use numeric or vertex ids?
-  .get_numeric_ids(m, index=index) %>% as.integer
+  .get_numeric_ids(m, index=index, tag=tag) %>% as.integer
 }
 
 #' @rdname rmonad_getters
 #' @export
-get_OK <- function(m, index=.get_ids(m)) {
-  .get_many_attributes(m, index=index, attribute="OK") %>% as.logical
+get_OK <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_attributes(m, index=index, tag=tag, attribute="OK") %>% as.logical
 }
 
 #' @rdname rmonad_getters
 #' @export
-get_code <- function(m, index=.get_ids(m)) {
-  .get_many_attributes(m, index=index, attribute='code')
+get_code <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_attributes(m, index=index, tag=tag, attribute='code')
 }
 
 #' @rdname rmonad_getters
 #' @export
-get_tag <- function(m, index=.get_ids(m)) {
-  .get_many_attributes(m, index=index, attribute='tag')
+get_tag <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_attributes(m, index=index, tag=tag, attribute='tag')
 }
 
 #' @rdname rmonad_getters
 #' @export
-get_error <- function(m, index=.get_ids(m)) {
-  .get_many_attributes(m, index=index, attribute="error")
+get_error <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_attributes(m, index=index, tag=tag, attribute="error")
 }
 
 #' @rdname rmonad_getters
 #' @export
-get_warnings <- function(m, index=.get_ids(m)) {
-  .get_many_attributes(m, index=index, attribute="warnings")
+get_warnings <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_attributes(m, index=index, tag=tag, attribute="warnings")
 }
 
 #' @rdname rmonad_getters
 #' @export
-get_notes <- function(m, index=.get_ids(m)) {
-  .get_many_attributes(m, index=index, attribute="notes")
+get_notes <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_attributes(m, index=index, tag=tag, attribute="notes")
 }
 
 #' @rdname rmonad_getters
 #' @export
-get_doc <- function(m, index=.get_ids(m)) {
-  .get_many_attributes(m, index=index, attribute="doc")
+get_doc <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_attributes(m, index=index, tag=tag, attribute="doc")
 }
 
 #' @rdname rmonad_getters
 #' @export
-get_meta <- function(m, index=.get_ids(m)) {
-  .get_many_attributes(m, index=index, attribute='meta')
+get_meta <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_attributes(m, index=index, tag=tag, attribute='meta')
 }
 
 #' @rdname rmonad_getters
 #' @export
-get_time <- function(m, index=.get_ids(m)) {
-  .get_many_attributes(m, index=index, attribute="time") %>% as.numeric
+get_time <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_attributes(m, index=index, tag=tag, attribute="time") %>% as.numeric
 }
 
 #' @rdname rmonad_getters
 #' @export
-get_mem <- function(m, index=.get_ids(m)) {
-  .get_many_attributes(m, index=index, attribute="mem") %>% as.numeric
+get_mem <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_attributes(m, index=index, tag=tag, attribute="mem") %>% as.numeric
 }
 
 #' @rdname rmonad_getters
 #' @export
-get_summary <- function(m, index=.get_ids(m)) {
-  .get_many_attributes(m, index=index, attribute="summary")
+get_summary <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_attributes(m, index=index, tag=tag, attribute="summary")
 }
 
 

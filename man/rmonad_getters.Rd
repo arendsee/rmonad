@@ -22,41 +22,41 @@
 \alias{get_summary}
 \title{Vectorized getters for public Rmonad fields}
 \usage{
-get_parents(m, index = .get_ids(m))
+get_parents(m, index = .get_ids(m), tag = NULL)
 
-get_dependents(m, index = .get_ids(m))
+get_dependents(m, index = .get_ids(m), tag = NULL)
 
-get_nest(m, index = .get_ids(m))
+get_nest(m, index = .get_ids(m), tag = NULL)
 
-get_prior(m, index = .get_ids(m))
+get_prior(m, index = .get_ids(m), tag = NULL)
 
-get_nest_depth(m, index = .get_ids(m))
+get_nest_depth(m, index = .get_ids(m), tag = NULL)
 
 get_value(m, index = .get_ids(m), tag = NULL, warn = TRUE)
 
-get_id(m, index = .get_ids(m))
+get_id(m, index = .get_ids(m), tag = NULL)
 
-get_OK(m, index = .get_ids(m))
+get_OK(m, index = .get_ids(m), tag = NULL)
 
-get_code(m, index = .get_ids(m))
+get_code(m, index = .get_ids(m), tag = NULL)
 
-get_tag(m, index = .get_ids(m))
+get_tag(m, index = .get_ids(m), tag = NULL)
 
-get_error(m, index = .get_ids(m))
+get_error(m, index = .get_ids(m), tag = NULL)
 
-get_warnings(m, index = .get_ids(m))
+get_warnings(m, index = .get_ids(m), tag = NULL)
 
-get_notes(m, index = .get_ids(m))
+get_notes(m, index = .get_ids(m), tag = NULL)
 
-get_doc(m, index = .get_ids(m))
+get_doc(m, index = .get_ids(m), tag = NULL)
 
-get_meta(m, index = .get_ids(m))
+get_meta(m, index = .get_ids(m), tag = NULL)
 
-get_time(m, index = .get_ids(m))
+get_time(m, index = .get_ids(m), tag = NULL)
 
-get_mem(m, index = .get_ids(m))
+get_mem(m, index = .get_ids(m), tag = NULL)
 
-get_summary(m, index = .get_ids(m))
+get_summary(m, index = .get_ids(m), tag = NULL)
 }
 \arguments{
 \item{m}{An Rmonad object}
