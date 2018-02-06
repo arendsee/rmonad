@@ -23,6 +23,8 @@
 
    - add `tag` to caching functions, to allow tag and cache to be set together
 
+   - give names to elements of lists returned by tag from `get_*` functions
+
 ## Bug fixes
 
  * fix expression capture in `as_monad`
