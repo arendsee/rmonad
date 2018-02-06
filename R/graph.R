@@ -154,6 +154,20 @@ size <- function(m) {
   m
 }
 
+.process_tag_and_index <- function(m, index, tag, sep="/"){
+  if(!is.null(tag)){
+    node_tags <- get_tag(m)
+    index <- which(.a_has_prefix_b(node_tags, tag))
+    name <- sapply(node_tags[index], paste, collapse=sep)
+    if(any(duplicated(name))){
+      name <- paste0(name, sep, index)
+    }
+  } else {
+    name <- NULL
+  }
+  list(index=index, name=name)
+}
+
 .get_ids <- function(m, index=NULL, tag=NULL){
   .m_check(m)
   ids <- igraph::V(m@graph)
@@ -217,10 +231,10 @@ size <- function(m) {
   }
 }
 .get_many_relative_ids <- function(m, index=.get_ids(m), tag=NULL, ...){
-  if(!is.null(tag)){
-    index <- which(.a_has_prefix_b(get_tag(m), tag))
-  }
-  lapply(index, function(i) .get_single_relative_ids(m, index=i, ...)) %>% unname
+  ids <- .process_tag_and_index(m, index, tag)
+  x <- lapply(ids$index, function(i) .get_single_relative_ids(m, index=i, ...))
+  names(x) <- ids$name
+  x
 }
 
 # Get attributes for specified indicies
@@ -233,10 +247,10 @@ size <- function(m) {
   lapply(m@data[.as_index(m, index)], slot, attribute)
 }
 .get_many_attributes <- function(m, index=.get_ids(m), tag=NULL, ...){
-  if(!is.null(tag)){
-    index <- which(.a_has_prefix_b(get_tag(m), tag))
-  }
-  .get_attribute(m, index=index, ...) %>% unname
+  ids <- .process_tag_and_index(m, index, tag)
+  x <- .get_attribute(m, index=ids$index, ...)
+  names(x) <- ids$name
+  x
 }
 .get_single_attribute <- function(m, index=m@head, ...){
   if(length(index) != 1){
