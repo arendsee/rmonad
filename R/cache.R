@@ -186,6 +186,8 @@ make_recacher <- function(cacher, preserve=TRUE){
   # TODO: should check that meta$cache is a proper caching function
   # @param m An Rmonad object
   function(m, tag=.default_tag()){
+    # lossy, so as_monad will not create extra nesting
+    m <- as_monad(m, lossy=TRUE, desc=deparse(substitute(m)))
     .single_raw_value(m) <- cacher(.single_value(m))
     .single_stored(m) <- preserve
     .single_tag(m) <- tag
