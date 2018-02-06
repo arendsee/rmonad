@@ -37,6 +37,29 @@
   .check_type(m, test=is_rmonad, type='Rmonad', nframe=sys.nframe()-1, ...)
 }
 
+# Determine if a is prefixed by elements of b
+#
+# @param a vector or list
+# @param b vector or list
+# @return logical vector with length equal to the length of a
+.a_has_prefix_b <- function(a, b){
+  if(!is.list(a)){
+    a <- list(a)
+  }
+  if(!is.list(b)){
+    b <- list(b)
+  }
+  sapply(a, function(a_i){
+    any(sapply(b, function(b_j){
+      if(length(a_i) >= length(b_j)){
+        identical(a_i[1:length(b_j)], b_j)
+      } else {
+        FALSE
+      }
+    }))
+  })
+}
+
 # NOTE: This is an internal function, used only in testing.
 # Equality of Rmonad objects is a bit tricky to test, since I internally use
 # UUIDs. So I will use this rough measure of equality:
@@ -48,4 +71,3 @@ rmonad_equal <- function(a, b){
   identical(mtabulate(a, code=T)[, -5], mtabulate(b, code=T)[, -5]) &&
   identical(missues(a), missues(b))
 }
-

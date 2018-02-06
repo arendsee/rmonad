@@ -154,9 +154,12 @@ size <- function(m) {
   m
 }
 
-.get_ids <- function(m, index=NULL){
+.get_ids <- function(m, index=NULL, tag=NULL){
   .m_check(m)
   ids <- igraph::V(m@graph)
+  if(!is.null(tag)){
+    index <- which(.a_has_prefix_b(get_tag(m), tag))
+  }
   if(!is.null(index)){
     ids <- ids[index]
   }
@@ -213,7 +216,10 @@ size <- function(m) {
     parents
   }
 }
-.get_many_relative_ids <- function(m, index=.get_ids(m), ...){
+.get_many_relative_ids <- function(m, index=.get_ids(m), tag=NULL, ...){
+  if(!is.null(tag)){
+    index <- which(.a_has_prefix_b(get_tag(m), tag))
+  }
   lapply(index, function(i) .get_single_relative_ids(m, index=i, ...)) %>% unname
 }
 
@@ -226,7 +232,10 @@ size <- function(m) {
   .m_check(m)
   lapply(m@data[.as_index(m, index)], slot, attribute)
 }
-.get_many_attributes <- function(m, index=.get_ids(m), ...){
+.get_many_attributes <- function(m, index=.get_ids(m), tag=NULL, ...){
+  if(!is.null(tag)){
+    index <- which(.a_has_prefix_b(get_tag(m), tag))
+  }
   .get_attribute(m, index=index, ...) %>% unname
 }
 .get_single_attribute <- function(m, index=m@head, ...){

@@ -294,10 +294,43 @@ get_value(x)
 ```
 
 Note the branches could be long monadic chains themselves, which might have
-their own branches. The `unbranch` function recursively extracts all branches
-from the tree.
+their own branches.
 
 
+## Tags, caches, and views
+
+Use of the `%>^%` and `%^>%` operators is a little awkward. A more general
+option is to use tags and views. `tag` this allows the *head* of a pipeline to
+be reset.
+
+```{r, fig.cap="1: the original iris table, 2: stores the cached iris data, 3: nrow, 4: qplot, 5: summary."}
+# build memory cacher
+f <- make_recacher(memory_cache)
+
+# make core dataset
+m <- as_monad(iris) %>>%
+    dplyr::select(
+        sepal_length = Sepal.Length,
+        sepal_width = Sepal.Width,
+        species = Species
+    ) %>%
+    # cache value with tag 'iris'
+    f('iris') %>>%
+    # some downstream stuff
+    nrow 
+# Now can pick from the tagged node
+m <- view(m, 'iris') %>>% {
+  qplot(
+      x=sepal_length,
+      y=sepal_width,
+      color=species,
+      data=.
+  )} %>% f('plot')
+# and repeat however many times we like 
+m <- view(m, 'iris') %>>% summary %>% f('sum')
+
+plot(m)
+```
 
 ## Chains of chains
 
