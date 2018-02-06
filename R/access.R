@@ -266,20 +266,9 @@ get_nest_depth <- function(m, index=.get_ids(m)) {
 #' @rdname rmonad_getters
 #' @export
 get_value <- function(m, index=.get_ids(m), tag=NULL, warn=TRUE){
-  index <- if(is.character(tag)){
-    which(sapply(get_tag(m), function(t){
-      identical(t[1:min(length(tag), length(t))], tag)
-    }))
-  } else if(is.list(tag) && all(sapply(tag, is.character))){
-    which(sapply(values, function(v){
-      any(sapply(tag, function(t){
-        identical(v@tag()[1:min(length(tag), length(t))], t)
-      }))
-    }))
-  } else {
-    index 
+  if(!is.null(tag)){
+    index <- which(.a_has_prefix_b(get_tag(m), tag))
   }
-
   values <- .get_many_attributes(m, index=index, attribute='value')
   lapply(values, function(v) v@get(warn))
 }

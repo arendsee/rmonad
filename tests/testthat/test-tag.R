@@ -32,11 +32,11 @@ test_that("view works in funnel", {
 })
 
 f <- make_recacher(memory_cache)
-m3 <- 'a' %>>% paste('b') %>% f(c('a', 'b')) %>>%
-               paste('c') %>% f(c('a', 'c')) %>>%
-               paste('d') %>% f('foo') %>>%
+m3 <- 'a' %>>% paste('b') %>% f(c('#1', '#1')) %>>%
+               paste('c') %>% f(c('#1', '#2')) %>>%
+               paste('d') %>% f('#3') %>>%
                paste('e')
 test_that("multi level tags work", {
-  expect_equal(get_value(m3, tag='a'), list(c('a','b'), c('a','b','c')))
-  expect_equal(get_value(m3, tag=c('a', 'b')), list(c('a','b')))
+  expect_equal(get_value(m3, tag='#1'), list('a b', 'a b c'))
+  expect_equal(get_value(m3, tag=c('#1', '#2')), list(c('a b c')))
 })
