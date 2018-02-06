@@ -152,6 +152,23 @@ baz <- "oz" %>>%
 ```
 
 
+### Caches, tags, and views
+
+`rmonad` provides a flexible system for managing caches and tagging nodes for
+later access. 
+
+```{r}
+# Make a cacher, we choose to cache in memory
+f <- make_recacher(memory_cache)
+# cache each step you want to reuse
+as_monad(256) %>% f('a1') %>>% sqrt %>% f('a2') %__%
+as_monad(144) %>% f('b1') %>>% sqrt %>% f('b2') %__%
+as_monad(333) %>% f('c') -> m
+# sum values across three nodes of the pipeline
+funnel(view(m, 'a2'), view(m, 'b2'), view(m, 'c')) %*>% sum %>% plot(label='value')
+```
+
+
 ### Chain independent pipelines, with documentation
 
 ```{r}
