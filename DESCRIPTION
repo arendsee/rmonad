@@ -1,6 +1,6 @@
 Type: Package
 Package: rmonad
-Version: 0.4.0
+Version: 0.5.0.9001
 Title: A Monadic Pipeline System
 Description:
     A monadic solution to pipeline analysis. All operations -- and the errors,
