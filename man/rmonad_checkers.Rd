@@ -3,6 +3,7 @@
 \name{rmonad_checkers}
 \alias{rmonad_checkers}
 \alias{has_code}
+\alias{has_tag}
 \alias{has_error}
 \alias{has_doc}
 \alias{has_warnings}
@@ -19,6 +20,8 @@
 \title{Vectorized existence checkers for public Rmonad fields}
 \usage{
 has_code(m, ...)
+
+has_tag(m, ...)
 
 has_error(m, ...)
 

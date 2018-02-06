@@ -9,7 +9,7 @@ authors:
   orcid: 0000-0002-8381-3765
 - affiliation: 1
   name: Eve Wurtele
-  orcid: XXXX-XXXX-XXXX-XXXX
+  orcid: 0000-0003-1552-9495
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -22,15 +22,13 @@ affiliations:
   - index: 1
     name: Iowa State University, Department of Genetics Development and Cell Biology
   - index: 2
-    name: XXXXX
+    name: USDA-ARS National Animal Disease Center. Ames IA, USA.
 ---
 
 # Introduction
 
-`rmonad` is designed to reduce the tedium of pipeline development and maintainance.
-
-Data scientists usually spend the majority of their time getting, cleaning and
-organizing data [@crowdflower2017]. 
+`rmonad` is an R package designed to reduce the tedium of pipeline development
+and maintainance.
 
 The `rmonad` package provides a set of tools to chain monadic sequences into
 stateful, branching pipelines. As nodes in the pipeline are run, they are
@@ -40,17 +38,42 @@ intermediate data, performance stats, and any raised messages, warnings or
 errors. `rmonad` intercepts all exceptions, which allows for pure error
 handling.
 
+# Pipeline programming in R
+
+R is superably suited for pipeline programming. The `magrittr` and `pipeR`
+packages offer infix operators for chaining function application with very
+little overhead [@magrittr2014, @pipeR2016]. The output of the left-hand side
+function is passed as the first argument to the right-hand function. Since the
+first argument of most R functions is the main data input, the functions can be
+chained as neatly as in familiar Bash pipelines.
+
+The fundamental difference between `rmonad` and `magrittr` (or `pipeR`) is that
+`rmonad` passes state between nodes of the pipeline.  
+
+The output of an `rmonad` pipeline is an `igraph` object [@igraph] that stores
+the relationships between all nodes in the pipeline. In the case of an error,
+`rmonad` provies a traceback with the inputs to each failing function stored.
+This allows the pipeline to be debugged without rerunning it.
+
+Overall, the goal is to wrap within this one object everything that is need to
+produce a report on the pipeline. `rmonad` does not generate reports, but it
+can work very nicely as an input to tools that do, such the literate
+programming package `knitr` [@knitr] or the HTML report generator `Nozzle.R1`
+[@gehlenborg2013nozzle].
+
+# Related work
+
+`rmonad` is at a deep level related to the "Make" family of programs, for
+example the original GNU Make [@stallman2002gnu] and the R package `drake`
+[@drake]. Like Make, `rmonad` builds a graph of dependent operations. 
 
 # Why we need a monadic pipeline program in R
 
-The concept of pipeline-based programming is well-accepted in the R community,
-mostly through the `magrittr` package [@magrittr2014] as well as `pipeR` [@pipeR2016]. `magrittr` provides piping functionality
-in R. rmonad enhances the `magrittr` functionality by providing X, Y Z.
-(branching, error/warning/log message capture, and traceback with stored
-values).  While magrittr provides pipe-based pipelines, R provides
-documentation and debugging of those pipelines. 
+error/warning/log message
+capture, and ).  While magrittr provides pipe-based
+pipelines, R provides documentation and debugging of those pipelines. 
 
-Monad referecne: [@wadler1995monads]
+Monad reference: [@wadler1995monads]
 
 When building pipelines, especially flexible and scalable pipelines, the main
 challenge is to maintain clarity in design and maintenance. A pipeline tool
@@ -181,5 +204,18 @@ is to handle complexity, not volume.
     leave it open in the discussion as future directions, or point out how rmonad 
     would be ideal for parallelism, unlike other pipeline documentation tools which 
     are linear
+
+# Funding
+
+This material is based upon work supported by the National Science Foundation
+under Grant No. IOS 1546858.
+
+This research was supported in part by an appointment to the Agricultural
+Research Service (ARS) Research Participation Program administered by the Oak
+Ridge Institute for Science and Education (ORISE) through an interagency
+agreement between the U.S. Department of Energy (DOE) and the U.S. Department
+of Agriculture (USDA). ORISE is managed by ORAU under DOE contract number
+DE-SC0014664. All opinions expressed in this paper are the author's and do not
+necessarily reflect the policies and views of USDA, ARS, DOE, or ORAU/ORISE. 
 
 # References

@@ -22,6 +22,7 @@
 #' @param desc A description of the monad (usually the producing code)
 #' @param keep_history merge the histories of all monads
 #' @param env Evaluation environment
+#' @param tag Character vector specifying the tag to associate with a node
 #' @param lossy logical Should unnesting with record be done?
 #' @param ... multiple expressions
 #' @name x_to_monad
@@ -49,7 +50,7 @@ NULL
 
 #' @rdname x_to_monad
 #' @export
-as_monad <- function(expr, desc=NULL, doc=.default_doc(), lossy=FALSE){
+as_monad <- function(expr, desc=NULL, tag=.default_tag(), doc=.default_doc(), lossy=FALSE){
 # TODO: 'lossy' is an lousy name, should change to 'nest', or something
 # as_monad :: a -> m a
 
@@ -109,6 +110,7 @@ as_monad <- function(expr, desc=NULL, doc=.default_doc(), lossy=FALSE){
 
   # These accessors do the right thing (don't mess with them)
   .single_code(m)       <- code
+  .single_tag(m)        <- tag
   .single_error(m)      <- fails
   .single_warnings(m)   <- warns
   .single_notes(m)      <- notes

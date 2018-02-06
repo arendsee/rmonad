@@ -3,7 +3,8 @@ setClass(
   representation(
     get = "function",
     del = "function",
-    chk = "function"
+    chk = "function",
+    tag = "function"
   )
 )
 
@@ -28,6 +29,7 @@ setClass(
   "RmonadData",
   representation(
     value      = "CacheManager",
+    tag        = "character",
     code       = "character",
     error      = "character",
     warnings   = "character",
@@ -46,6 +48,7 @@ setClass(
 RmonadData <- function(){
   d <- new("RmonadData")
   d@value      <- .default_value()
+  d@tag        <- .default_tag()
   d@code       <- .default_code()
   d@error      <- .default_error()
   d@warnings   <- .default_warnings()
