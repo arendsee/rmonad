@@ -4,11 +4,20 @@
 \alias{make_local_cacher}
 \title{Make a function of x that caches data locally}
 \usage{
-make_local_cacher(path = tempdir())
+make_local_cacher(path = tempdir(), save = saveRDS, get = readRDS,
+  del = unlink, chk = file.exists)
 }
 \arguments{
 \item{path}{A directory in which to cache results. A temporary directory is
 created if none is given.}
+
+\item{save}{function of x and filename that saves x to the path filename}
+
+\item{get}{function of filename that retrieves the cached data}
+
+\item{del}{function of filename that deletes the cached data}
+
+\item{chk}{function of filename that checks existence of the cached data}
 }
 \value{
 A function that builds a local cache function for a value

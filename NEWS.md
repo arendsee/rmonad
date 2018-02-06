@@ -25,6 +25,9 @@
 
    - give names to elements of lists returned by tag from `get_*` functions
 
+ * generalize `make_local_cacher` to take custom functions for saving, getting,
+   checking and deleting data.
+
 ## Bug fixes
 
  * fix expression capture in `as_monad`

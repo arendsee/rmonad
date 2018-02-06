@@ -95,6 +95,10 @@ memory_cache <- function(x){
 #'
 #' @param path A directory in which to cache results. A temporary directory is
 #' created if none is given.
+#' @param save function of x and filename that saves x to the path filename
+#' @param get function of filename that retrieves the cached data
+#' @param del function of filename that deletes the cached data
+#' @param chk function of filename that checks existence of the cached data 
 #' @return A function that builds a local cache function for a value
 #' @export
 #' @family cache
@@ -106,7 +110,13 @@ memory_cache <- function(x){
 #'   rm(foo)
 #'   foo_@get()
 #' }
-make_local_cacher <- function(path=tempdir()){
+make_local_cacher <- function(
+  path = tempdir(),
+  save = saveRDS,
+  get  = readRDS,
+  del  = unlink,
+  chk  = file.exists
+){
   if(!dir.exists(path)){
     dir.create(path, recursive=TRUE)
   }
@@ -114,21 +124,13 @@ make_local_cacher <- function(path=tempdir()){
   # Save x and return a function that can load it
   function(x){
     filename <- file.path(path, paste0('rmonad-', uuid::UUIDgenerate(), ".Rdata"))
-    saveRDS(x, file=filename) 
+    save(x, filename) 
     rm(x)
-    get <- function(...) {
-      readRDS(filename)
-    }
-    del <- function() {
-      unlink(filename) 
-    }
-    chk <- function() {
-      file.exists(filename)
-    }
     new("CacheManager",
-      get = get,
-      del = del,
-      chk = chk
+      # Ignore warn in this case (FIXME: is this right?)
+      get = function(warn=FALSE, ...) get(filename, ...),
+      del = function(...) del(filename, ...),
+      chk = function(...) chk(filename, ...) 
     )
   }
 }
