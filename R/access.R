@@ -196,6 +196,11 @@ has_summary <- function(m, ...) sapply(get_summary(m, ...), function(x) length(x
 #' @param tag string specifying a single tag for one node in the pipeline 
 #' @return Rmonad object with head reset
 #' @export
+#' @examples
+#' library(magrittr)
+#' m <- 256 %v>% sqrt %>% tag('a') %v>% sqrt
+#' esc(view(m, 'a'))
+#' funnel(view(m, 'a'), m) %*>% sum
 view <- function(m, tag){
   tags <- which(sapply(get_tag(m), identical, tag))
   if(length(tags) > 1){

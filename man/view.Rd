@@ -17,3 +17,9 @@ Rmonad object with head reset
 \description{
 Set the head of an Rmonad to a particular tag
 }
+\examples{
+library(magrittr)
+m <- 256 \%v>\% sqrt \%>\% tag('a') \%v>\% sqrt
+esc(view(m, 'a'))
+funnel(view(m, 'a'), m) \%*>\% sum
+}
