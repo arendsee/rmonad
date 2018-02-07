@@ -5,7 +5,7 @@
 \title{Make a function of x that caches data locally}
 \usage{
 make_local_cacher(path = tempdir(), save = saveRDS, get = readRDS,
-  del = unlink, chk = file.exists)
+  del = unlink, chk = file.exists, ext = function(cls) ".Rdata")
 }
 \arguments{
 \item{path}{A directory in which to cache results. A temporary directory is
@@ -18,6 +18,8 @@ created if none is given.}
 \item{del}{function of filename that deletes the cached data}
 
 \item{chk}{function of filename that checks existence of the cached data}
+
+\item{ext}{function of class(x) that determines the filename extension}
 }
 \value{
 A function that builds a local cache function for a value

@@ -99,6 +99,7 @@ memory_cache <- function(x){
 #' @param get function of filename that retrieves the cached data
 #' @param del function of filename that deletes the cached data
 #' @param chk function of filename that checks existence of the cached data 
+#' @param ext function of class(x) that determines the filename extension
 #' @return A function that builds a local cache function for a value
 #' @export
 #' @family cache
@@ -115,7 +116,8 @@ make_local_cacher <- function(
   save = saveRDS,
   get  = readRDS,
   del  = unlink,
-  chk  = file.exists
+  chk  = file.exists,
+  ext = function(cls) ".Rdata" 
 ){
   if(!dir.exists(path)){
     dir.create(path, recursive=TRUE)
@@ -123,7 +125,7 @@ make_local_cacher <- function(
   path <- normalizePath(path)
   # Save x and return a function that can load it
   function(x){
-    filename <- file.path(path, paste0('rmonad-', uuid::UUIDgenerate(), ".Rdata"))
+    filename <- file.path(path, paste0('rmonad-', uuid::UUIDgenerate(), ext(class(x))))
     save(x, filename) 
     rm(x)
     new("CacheManager",
