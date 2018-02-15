@@ -27,9 +27,6 @@ affiliations:
 
 # Introduction
 
-`rmonad` is an R package designed to reduce the tedium of pipeline development
-and maintainance.
-
 The `rmonad` package provides a set of tools to chain monadic sequences into
 stateful, branching pipelines. As nodes in the pipeline are run, they are
 merged into a graph of all past operations. The resulting structure can be
@@ -38,42 +35,42 @@ intermediate data, performance stats, and any raised messages, warnings or
 errors. `rmonad` intercepts all exceptions, which allows for pure error
 handling.
 
+
 # Pipeline programming in R
 
-R is superably suited for pipeline programming. The `magrittr` and `pipeR`
-packages offer infix operators for chaining function application with very
-little overhead [@magrittr2014, @pipeR2016]. The output of the left-hand side
-function is passed as the first argument to the right-hand function. Since the
-first argument of most R functions is the main data input, the functions can be
-chained as neatly as in familiar Bash pipelines.
+Pipeline programming is common practice in the R community. The `magrittr` and
+`pipeR` packages offer infix operators for chained function application with
+very little overhead [@magrittr2014, @pipeR2016]. The output of the left-hand
+side value (or function output) is passed as the first argument to the
+right-hand function. Since the first argument of most R functions is the main
+data input, the functions can be chained as neatly as in familiar Bash
+pipelines.
 
 The fundamental difference between `rmonad` and `magrittr` (or `pipeR`) is that
-`rmonad` passes state between nodes of the pipeline.  
+`rmonad` passes state between nodes of the pipeline. The output of an `rmonad`
+pipeline is an `igraph` object [@igraph] that stores the relationships between
+all nodes in the pipeline. In the case of an error, `rmonad` provides access to
+both the traceback and the inputs to each failing function.  This allows the
+pipeline to be debugged without rerunning it.
 
-The output of an `rmonad` pipeline is an `igraph` object [@igraph] that stores
-the relationships between all nodes in the pipeline. In the case of an error,
-`rmonad` provies a traceback with the inputs to each failing function stored.
-This allows the pipeline to be debugged without rerunning it.
-
-Overall, the goal is to wrap within this one object everything that is need to
-produce a report on the pipeline. `rmonad` does not generate reports, but it
-can work very nicely as an input to tools that do, such the literate
-programming package `knitr` [@knitr] or the HTML report generator `Nozzle.R1`
+A goal is to wrap within one object everything that is need to produce a report
+on the pipeline. `rmonad` does not generate reports, but it can work very
+nicely as an input to tools that do, such the literate programming package
+`knitr` [@knitr] or the HTML report generator `Nozzle.R1`
 [@gehlenborg2013nozzle].
+
 
 # Related work
 
-`rmonad` is at a deep level related to the "Make" family of programs, for
-example the original GNU Make [@stallman2002gnu] and the R package `drake`
-[@drake]. Like Make, `rmonad` builds a graph of dependent operations. 
+`rmonad` is similar to the `Make` family of programs (e.g., GNU Make
+[@stallman2002gnu] or the R package `drake` [@drake]) in that it specifies a
+graph of dependent operations. Syntactically, it is more similar to `magrittr`.
+`rmonad` draws inspiration from the monad patterns of Haskell
+[@wadler1995monads]; early versions of `rmonad` were based on `Either` monad,
+but as `rmonad` has developed, the monadic connection has blurred.
+
 
 # Why we need a monadic pipeline program in R
-
-error/warning/log message
-capture, and ).  While magrittr provides pipe-based
-pipelines, R provides documentation and debugging of those pipelines. 
-
-Monad reference: [@wadler1995monads]
 
 When building pipelines, especially flexible and scalable pipelines, the main
 challenge is to maintain clarity in design and maintenance. A pipeline tool
@@ -109,18 +106,19 @@ monadic.
 
  * branching (many simple pipeline programs are linear)
 
-(This provides the main challenge for documenting pipelines. Many existing
+This provides the main challenge for documenting pipelines. Many existing
 simple pipeline programs are linear. By providing a tool that enables debugging
 branched pipelines, we can encourage more complex and efficient pipeline
-development.)
+development.
 
  * documentation
 
-(both in documentation of the intermediate and final results as well as intermediate log/warning/error messages)
+Both in documentation of the intermediate and final results as well as
+intermediate log/warning/error messages
 
  * error, warning, message capture
 
-Functions may print messags -- log messages, warning messages, or error
+Functions may print messages -- log messages, warning messages, or error
 messages -- which should be stored in the same node that stores the code and
 value.  Usually in R, when running a big pipeline, it is difficult to tell what
 code produced what message since messages are sent to STDOUT. 
@@ -128,10 +126,10 @@ code produced what message since messages are sent to STDOUT.
 In addition, since STDOUT history is finite, developers can very easily lose
 the messages.  For example, one function may be processing several sequences
 and dump thousands of lines of warnings: one warning for each bad gene.  This
-may easily be lost int he STDOUT but will be captured as strings in rmonad. 
+may easily be lost in the STDOUT but will be captured as strings in rmonad. 
 
-Capturing the messages as strings has the added benefit, that the developer can
-add a warning reformatter to the rmonad node, reducing this to one warning
+Capturing the messages as strings has the added benefit that the developer can
+add a warning formatters to the rmonad node, reducing this to one warning
 listing the number of bad genes.  Then the developer can create a succinct
 issue report. Each issue is associated with a node in the Rmonad output object.
 So the developer can find the code and, if stored, the input values, to that
@@ -139,7 +137,7 @@ function.
 
  * code capture
 
-each code block is associated with a node, (couldn't we do a string match of
+Each code block is associated with a node, (couldn't we do a string match of
 the code block to the whole code base to get line number for missues? -- Except
 we often don't have the whole code base. The R code my be copied in line by
 line, with interspersed irrelevant lines. Now, this could be possible if the
@@ -196,14 +194,14 @@ We have presented a method to incorporate monadic pipelines into R using the
 rmonad tool. This paper was motivated by the desire to publish best practices
 in pipelines in R and to encourage better pipeline design and maintenance. 
 
-
-A conspicuosly absent feature is automatic parallelism and cluster submission
+A conspicuously absent feature is automatic parallelism and cluster submission
 handling. These may be added in the future, but currently the goal of `rmonad`
 is to handle complexity, not volume.
 
     leave it open in the discussion as future directions, or point out how rmonad 
     would be ideal for parallelism, unlike other pipeline documentation tools which 
     are linear
+
 
 # Funding
 
