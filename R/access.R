@@ -207,7 +207,8 @@ view <- function(m, tag){
     stop("The given tag, '", tag, "' is ambiguous, maybe use 'views' instead?")
   }
   if(length(tags) == 0){
-    stop("Tag '", tag, "' not found") 
+    msg <- "Tag '%s' not found"
+    stop(sprintf(msg, paste(tag, collapse=", ")))
   }
   m@head <- igraph::vertex_attr(m@graph)$name[tags[1]]
   m
