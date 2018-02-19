@@ -205,9 +205,9 @@ combine <- function(xs, keep_history=TRUE, desc=.default_code()){
   # make a new monad that is the child of all monads in the input list
   out <- as_monad(value)
 
-  # remove cached value of parents if they were passing
+  # remove cached value of parents if they were passing AND if they have NO tag
   xs <- lapply(xs, function(x){
-    if(get_OK(x, x@head)){
+    if(get_OK(x, x@head) && !has_tag(x, x@head)){
       .single_delete_value(x)
     } else {
       x

@@ -7,6 +7,8 @@
  * combine (and funnel) now store failing inputs as NULL and do not delete the
    failing parent's cache
 
+ * in `combine`/`funnel`, do not delete tagged parents
+
  * add `tag` field to `Rmonad` objects and access functions:
 
    - `tag` - set the tag of the current head node (or nodes at given indices)
