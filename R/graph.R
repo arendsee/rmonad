@@ -57,7 +57,7 @@ size <- function(m) {
   if(inherit_OK && !.single_OK(parent))
     .single_OK(child) <- .single_OK(parent)
 
-  if(!force_keep && !.single_stored(parent)){
+  if(!force_keep && !.single_stored(parent) && !has_tag(parent, parent@head)){
     parent <- .single_delete_value(parent)
     .single_stored(parent) <- FALSE
   } else {
