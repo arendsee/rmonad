@@ -125,3 +125,17 @@ test_that("no duplication occurs on pipelines that branch and rejoin", {
     )
   )
 })
+
+test_that("Combine with %>>%", {
+  # The history is being lost on functions of type:
+  # m [m a] -> m [a]
+  # The problem
+  # [m a] -> m [a]
+  # works fine
+  expect_equal(
+    as_monad(c(1,2,3)) %>% tag('a') %v>%
+      lapply(function(x) { x %>>% sqrt }) %>>% combine %>%
+      get_tag(1),
+    list("a")
+  )
+})
