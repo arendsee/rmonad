@@ -8,6 +8,7 @@
 #' @param ... Additional arguments sent to \code{FUN}
 #' @return Rmonad object wrapping a vector of the values wrapped by the outputs
 #' of \code{FUN}
+#' @export
 #' @examples
 #' foo <- function(x) { x %>>% sqrt }
 #' c(256, 6561) %v>% sqrt %>% loop(foo) %>>% lapply(sqrt)
