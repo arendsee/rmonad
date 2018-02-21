@@ -3,8 +3,7 @@ setClass(
   representation(
     get = "function",
     del = "function",
-    chk = "function",
-    tag = "function"
+    chk = "function"
   )
 )
 

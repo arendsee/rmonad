@@ -187,8 +187,8 @@ clear_cache <- function(m, index=.get_ids(m)){
 #' 3 %>>% add1 %>% cc %>>% add2 %>>% add3 -> m
 #' m
 make_recacher <- function(cacher, preserve=TRUE){
-  # TODO: should check that meta$cache is a proper caching function
   # @param m An Rmonad object
+  # @param tag A tag for quick access to the cached node
   function(m, tag=.default_tag()){
     # lossy, so as_monad will not create extra nesting
     m <- as_monad(m, lossy=TRUE, desc=deparse(substitute(m)))
