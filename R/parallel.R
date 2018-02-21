@@ -8,11 +8,14 @@
 #' @param ... Additional arguments sent to \code{FUN}
 #' @return Rmonad object wrapping a vector of the values wrapped by the outputs
 #' of \code{FUN}
+#' @examples
+#' foo <- function(x) { x %>>% sqrt }
+#' c(256, 6561) %v>% sqrt %>% loop(foo) %>>% lapply(sqrt)
 loop <- function(m, FUN, looper=lapply, ...){
   # m [a] -> (a -> m b) -> ([c] -> [d]) -> m [b]
   .m_check(m)
 
-  if(!is_OK(m)){
+  if(!get_OK(m, m@head)){
     return(m)
   }
 
@@ -24,17 +27,20 @@ loop <- function(m, FUN, looper=lapply, ...){
     stop("Cannot loop over this, no values found.")
   }
 
-  xs <- get_value(m, m@head)
+  xs <- get_value(m, m@head)[[1]]
   ns <- looper(xs, FUN, ...)
 
   if(! all(sapply(ns, is_rmonad))){
     stop("FUN must return a vector or Rmonad objects")
   }
 
-  for(i in seq_along(ns)){
-    ns[[i]] <- splice_function(f=FUN, m=m, final=ns[[i]], ms=append(xs[[i]], list(...)))
-  }
-
-  # build monad around loop function
-
+  m2 <- combine(ns)
+  .inherit(
+    child=m2,
+    parent=m,
+    type          = "depend",
+    inherit_value = FALSE,
+    inherit_OK    = FALSE,
+    force_keep    = FALSE
+  )
 }

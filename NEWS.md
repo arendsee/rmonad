@@ -1,5 +1,7 @@
 # rmonad 0.5.0
 
+ * add `loop` function
+
  * use `saveRDS`, rather than `save`, local caching
 
  * change `print.Rmonad` parameter `print_value` to `value`

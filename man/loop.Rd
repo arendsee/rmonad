@@ -4,7 +4,7 @@
 \alias{loop}
 \title{Apply an rmonad pipeline function to each element in a rmonad bound list}
 \usage{
-loop(m, FUN, looper = lapply)
+loop(m, FUN, looper = lapply, ...)
 }
 \arguments{
 \item{m}{Rmonad object wrapping a vector}
@@ -14,6 +14,8 @@ returns an Rmonad object.}
 
 \item{looper}{function that applies each element in the input vector to
 \code{FUN}. The default it \code{lapply}.}
+
+\item{...}{Additional arguments sent to \code{FUN}}
 }
 \value{
 Rmonad object wrapping a vector of the values wrapped by the outputs
@@ -21,4 +23,8 @@ of \code{FUN}
 }
 \description{
 Apply an rmonad pipeline function to each element in a rmonad bound list
+}
+\examples{
+foo <- function(x) { x \%>>\% sqrt }
+c(256, 6561) \%v>\% sqrt \%>\% loop(foo) \%>>\% lapply(sqrt)
 }
