@@ -133,9 +133,7 @@ test_that("Combine with %>>%", {
   # [m a] -> m [a]
   # works fine
   expect_equal(
-    as_monad(c(1,2,3)) %>% tag('a') %v>%
-      lapply(function(x) { x %>>% sqrt }) %>>% combine %>%
-      get_tag(1),
+    as_monad(c(1,2,3)) %>% tag('a') %v>% lapply(function(x) { x %>>% sqrt }) %>>% combine %>% get_tag(1),
     list("a")
   )
 })

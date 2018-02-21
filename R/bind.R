@@ -142,7 +142,7 @@ bind <- function(
 
   st <- system.time(
     {
-      result <- as_monad( do.call(func, args, envir=env)) %>% .unnest
+      result <- as_monad(do.call(func, args, envir=env)) %>% .unnest
     },
     gcFirst=FALSE # this kills performance when TRUE
   )

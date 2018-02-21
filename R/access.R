@@ -496,6 +496,8 @@ get_summary <- function(m, index=.get_ids(m), tag=NULL) {
   .get_single_relative_ids(m, mode="in", type="nest", ...)
 }
 `.single_nest<-` <- function(m, value) {
+  # `value` is the Rmonad that will be nested inside `m`
+  # `value` is the "parent", since its value will be passed to `m`
   if(.single_OK(value)){
     .inherit(
       child         = m,

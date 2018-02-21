@@ -1,0 +1,40 @@
+#' Apply an rmonad pipeline function to each element in a rmonad bound list 
+#'
+#' @param m Rmonad object wrapping a vector
+#' @param FUN function of an element from the vector stored in \code{m} that
+#' returns an Rmonad object.
+#' @param looper function that applies each element in the input vector to
+#' \code{FUN}. The default it \code{lapply}.
+#' @param ... Additional arguments sent to \code{FUN}
+#' @return Rmonad object wrapping a vector of the values wrapped by the outputs
+#' of \code{FUN}
+loop <- function(m, FUN, looper=lapply, ...){
+  # m [a] -> (a -> m b) -> ([c] -> [d]) -> m [b]
+  .m_check(m)
+
+  if(!is_OK(m)){
+    return(m)
+  }
+
+  if(!has_value(m, m@head)){
+    # This error is raised OUTSIDE of the monad, since a violations will
+    # usually be due to a coding error on programmers part.
+    # TODO: could be more helpful, print out the incoming function, or
+    # something
+    stop("Cannot loop over this, no values found.")
+  }
+
+  xs <- get_value(m, m@head)
+  ns <- looper(xs, FUN, ...)
+
+  if(! all(sapply(ns, is_rmonad))){
+    stop("FUN must return a vector or Rmonad objects")
+  }
+
+  for(i in seq_along(ns)){
+    ns[[i]] <- splice_function(f=FUN, m=m, final=ns[[i]], ms=append(xs[[i]], list(...)))
+  }
+
+  # build monad around loop function
+
+}

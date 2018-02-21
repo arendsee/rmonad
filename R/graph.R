@@ -140,6 +140,7 @@ size <- function(m) {
       value = get_nest_depth(nest) +
               (.single_nest_depth(m) - .single_nest_depth(nest) + 1L)
     )
+    # NOTE: Great evil resides in .single_nest
     .single_nest(m) <- nest
   }
   m
