@@ -2,6 +2,7 @@ setClass(
   "CacheManager",
   representation(
     get = "function",
+    put = "function",
     del = "function",
     chk = "function"
   )
@@ -28,6 +29,7 @@ setClass(
   "RmonadData",
   representation(
     value      = "CacheManager",
+    key        = "raw",
     tag        = "character",
     code       = "character",
     error      = "character",

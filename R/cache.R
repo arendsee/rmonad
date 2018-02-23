@@ -93,8 +93,8 @@ memory_cache <- function(x){
 
 #' Make a function of x that caches data locally
 #'
-#' @param path A directory in which to cache results. A temporary directory is
-#' created if none is given.
+#' @param path A directory in which to cache results. By default, \code{hoardr}
+#' handles this.
 #' @param save function of x and filename that saves x to the path filename
 #' @param get function of filename that retrieves the cached data
 #' @param del function of filename that deletes the cached data
@@ -112,29 +112,47 @@ memory_cache <- function(x){
 #'   foo_@get()
 #' }
 make_local_cacher <- function(
-  path = tempdir(),
+  path = .rmonad_cache$cache_path_get(),
   save = saveRDS,
   get  = readRDS,
   del  = unlink,
-  chk  = file.exists,
   ext = function(cls) ".Rdata" 
 ){
   if(!dir.exists(path)){
     dir.create(path, recursive=TRUE)
   }
-  path <- normalizePath(path)
-  # Save x and return a function that can load it
-  function(x){
-    filename <- file.path(path, paste0('rmonad-', uuid::UUIDgenerate(), ext(class(x))))
-    save(x, filename) 
-    rm(x)
-    new("CacheManager",
-      # Ignore warn in this case (FIXME: is this right?)
-      get = function(warn=FALSE, ...) get(filename, ...),
-      del = function(...) del(filename, ...),
-      chk = function(...) chk(filename, ...) 
-    )
+
+  get_files <- function(key){
+    list.files(path, sprintf("^%s\\..*", key))
   }
+
+  put = function(x, key) {
+    extension <- ext(class(x))
+    filename <- file.path(path, paste0(key, extension))
+    save(x, filename)
+  }
+
+  chk = function(key) {
+    # Or exactly one cached file has this key (with any extension)
+    length(get_files(key)) == 1
+  }
+
+  get = function(key, warn=FALSE, ...) {
+    if(!chk(key)){
+      stop("This uncache this value") 
+    } else {
+      get(get_files(key), ...)
+    }
+  }
+
+  del = function(key, ...) del(get_files(key), ...)
+
+  new("CacheManager",
+    get=get,
+    put=put,
+    chk=chk,
+    del=del
+  )
 }
 
 #' Clear cached values and delete temporary files
@@ -197,4 +215,22 @@ make_recacher <- function(cacher, preserve=TRUE){
     .single_tag(m) <- tag
     m
   }
+}
+
+.digest <- function(x){
+  digest::digest(x, algo='md5', raw=TRUE)
+}
+
+crunch <- function(m){
+  # STUB: find all nodes that require a lot of memory and cache their values
+}
+
+cache <- function(cacher, key, eval, func, args){  
+
+  x <- if(cacher$chk(key)){
+    x <- get(key)
+  } else {
+    
+  }
+
 }

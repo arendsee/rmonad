@@ -110,6 +110,7 @@ as_monad <- function(expr, desc=NULL, tag=.default_tag(), doc=.default_doc(), lo
 
   # These accessors do the right thing (don't mess with them)
   .single_code(m)       <- code
+  .single_key(m)        <- .digest(code)
   .single_tag(m)        <- tag
   .single_error(m)      <- fails
   .single_warnings(m)   <- warns
