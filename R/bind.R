@@ -49,6 +49,8 @@ bind <- function(
     .single_meta(m) <- lhs_met
   }
 
+  key <- xor(get_key(m, m@head)[[1]], .digest(fdecon$expr))
+
   o <- if(bind_if(m))
   {
     fs <- fdecon$expr
@@ -100,9 +102,10 @@ bind <- function(
       }
 
     o <- .eval(
-      func       = new_function,
-      args       = final_args,
-      env        = envir
+      m    = m,
+      func = new_function,
+      args = final_args,
+      env  = envir
     )
 
     m <- m_on_bind(m)
@@ -138,7 +141,14 @@ bind <- function(
 }
 
 # Evaluate the expression, load timing info into resultant object
-.eval <- function(func, args, env){
+.eval <- function(m, func, args, env){
+
+  # FIXME: wrap this in a cache system
+  # If a cached value exists, use it
+  # Else execute
+  #   If the time required is greater than x
+  #   Then cache the result (recacher)
+  # Need one object that handles both, given a key
 
   st <- system.time(
     {

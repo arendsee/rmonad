@@ -99,6 +99,7 @@ is_rmonad <- function(m) {
 # NA_integer_, logical(0), etc) and use of the wrong one can be a source of
 # subtle of reoccuring bugs. So I gather all this into one place.
 .default_value      <- function() void_cache()
+.default_key        <- function() .digest(NULL)
 .default_tag        <- function() ""
 .default_head       <- function() 1L
 .default_code       <- function() character(0)
@@ -274,6 +275,12 @@ get_value <- function(m, index=.get_ids(m), tag=NULL, warn=TRUE){
 
 #' @rdname rmonad_getters
 #' @export
+get_key <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_attributes(m, index=index, tag=tag, attribute="key")
+}
+
+#' @rdname rmonad_getters
+#' @export
 get_id <- function(m, index=.get_ids(m), tag=NULL) {
   # FIXME: should I use numeric or vertex ids?
   .get_numeric_ids(m, index=index, tag=tag) %>% as.integer
@@ -405,6 +412,14 @@ get_summary <- function(m, index=.get_ids(m), tag=NULL) {
 }
 `.single_value<-` <- function(m, value) {
   .set_single_attribute(m, attribute="value", value=memory_cache(value))
+}
+
+.single_key <- function(m, ...) {
+  .get_single_attribute(m, attribute="key", ...)
+}
+`.single_key<-` <- function(m, value) {
+  .check_type(value, type="md5_32-byte", test=function(x) is.raw(x) && length(x) == 16)
+  .set_single_attribute(m, attribute="key", value=value)
 }
 
 .single_raw_value <- function(m, ...){

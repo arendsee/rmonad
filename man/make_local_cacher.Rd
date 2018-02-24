@@ -4,12 +4,11 @@
 \alias{make_local_cacher}
 \title{Make a function of x that caches data locally}
 \usage{
-make_local_cacher(path = tempdir(), save = saveRDS, get = readRDS,
-  del = unlink, chk = file.exists, ext = function(cls) ".Rdata")
+make_local_cacher(path = getOption("rmonad.cache_dir"), save = saveRDS,
+  get = readRDS, del = unlink, ext = function(cls) ".Rdata")
 }
 \arguments{
-\item{path}{A directory in which to cache results. A temporary directory is
-created if none is given.}
+\item{path}{A directory in which to cache results.}
 
 \item{save}{function of x and filename that saves x to the path filename}
 
@@ -17,9 +16,9 @@ created if none is given.}
 
 \item{del}{function of filename that deletes the cached data}
 
-\item{chk}{function of filename that checks existence of the cached data}
-
 \item{ext}{function of class(x) that determines the filename extension}
+
+\item{chk}{function of filename that checks existence of the cached data}
 }
 \value{
 A function that builds a local cache function for a value

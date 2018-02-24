@@ -17,6 +17,7 @@ void_cache <- function(){
     NULL
   }
   new("CacheManager",
+    # put = nothing,
     get = get,
     del = nothing,
     chk = false
@@ -40,6 +41,7 @@ fail_cache <- function(){
     NULL
   }
   new("CacheManager",
+    # put = nothing,
     get = get,
     del = nothing,
     chk = false
@@ -63,6 +65,7 @@ no_cache <- function(){
     NULL
   }
   new("CacheManager",
+    # put = nothing,
     get = get,
     del = nothing,
     chk = false
@@ -85,6 +88,7 @@ memory_cache <- function(x){
   # FIXME: allow checking, must check for presence of LOCAL x
   force(x)
   new("CacheManager",
+    # put = nothing,
     get = function(...) x,
     del = nothing,
     chk = true
@@ -93,8 +97,7 @@ memory_cache <- function(x){
 
 #' Make a function of x that caches data locally
 #'
-#' @param path A directory in which to cache results. By default, \code{hoardr}
-#' handles this.
+#' @param path A directory in which to cache results.
 #' @param save function of x and filename that saves x to the path filename
 #' @param get function of filename that retrieves the cached data
 #' @param del function of filename that deletes the cached data
@@ -112,7 +115,7 @@ memory_cache <- function(x){
 #'   foo_@get()
 #' }
 make_local_cacher <- function(
-  path = .rmonad_cache$cache_path_get(),
+  path = getOption("rmonad.cache_dir"),
   save = saveRDS,
   get  = readRDS,
   del  = unlink,

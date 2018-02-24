@@ -61,8 +61,6 @@
 }
 
 # NOTE: This is an internal function, used only in testing.
-# Equality of Rmonad objects is a bit tricky to test, since I internally use
-# UUIDs. So I will use this rough measure of equality:
 rmonad_equal <- function(a, b){
   size(a) == size(b) &&
   identical(get_value(a, warn=F), get_value(b, warn=F)) &&

@@ -19,6 +19,7 @@
 #' @param expr An expression
 #' @param xs  A list of elements to join into a monad
 #' @param doc A docstring to associate with the monad
+#' @param key 16 byte raw vector
 #' @param desc A description of the monad (usually the producing code)
 #' @param keep_history merge the histories of all monads
 #' @param env Evaluation environment
@@ -50,7 +51,14 @@ NULL
 
 #' @rdname x_to_monad
 #' @export
-as_monad <- function(expr, desc=NULL, tag=.default_tag(), doc=.default_doc(), lossy=FALSE){
+as_monad <- function(
+  expr,
+  desc  = NULL,
+  tag   = .default_tag(),
+  doc   = .default_doc(),
+  key   = NULL,
+  lossy = FALSE
+){
 # TODO: 'lossy' is an lousy name, should change to 'nest', or something
 # as_monad :: a -> m a
 
@@ -100,7 +108,11 @@ as_monad <- function(expr, desc=NULL, tag=.default_tag(), doc=.default_doc(), lo
     desc
   }
 
-  m <- Rmonad()
+  if(is.null(key)){
+    key <- .digest(code)
+  }
+
+  m <- Rmonad(node_id=paste(key, collapse=""))
 
   if(isOK){
     .single_value(m) <- value
@@ -110,7 +122,7 @@ as_monad <- function(expr, desc=NULL, tag=.default_tag(), doc=.default_doc(), lo
 
   # These accessors do the right thing (don't mess with them)
   .single_code(m)       <- code
-  .single_key(m)        <- .digest(code)
+  .single_key(m)        <- key
   .single_tag(m)        <- tag
   .single_error(m)      <- fails
   .single_warnings(m)   <- warns
@@ -203,8 +215,16 @@ combine <- function(xs, keep_history=TRUE, desc=.default_code()){
     }
   })
 
+  # When combining multiple nodes, the new key is the XOR of the code digest
+  # against the keys of all the parents.
+  # `desc` will hold the full term: e.g. `funnel(x = 2, y = whatever)`
+  # This ensures the key will change if the order of arguments changes (which
+  # is important when one or more of them are positional.
+  parent_keys <- lapply(xs, function(x) get_key(x, x@head)[[1]])
+  key <- Reduce(xor, parent_keys, .digest(desc))
+
   # make a new monad that is the child of all monads in the input list
-  out <- as_monad(value)
+  out <- as_monad(value, key=key)
 
   # remove cached value of parents if they were passing AND if they have NO tag
   xs <- lapply(xs, function(x){

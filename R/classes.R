@@ -2,11 +2,22 @@ setClass(
   "CacheManager",
   representation(
     get = "function",
-    put = "function",
     del = "function",
     chk = "function"
   )
 )
+
+setClass(
+  "Cacher",
+  representation(
+    key = "function",  # :: RmonadParent, [Argument], 
+    put = "function",
+    get = "function",
+    del = "function",
+    chk = "function"
+  )
+)
+
 
 setOldClass("igraph")
 setClass(
@@ -17,9 +28,9 @@ setClass(
     data = "list"
   )
 )
-Rmonad <- function(){
+Rmonad <- function(node_id){
   m <- new("Rmonad")
-  m <- .new_rmonad_graph(m)
+  m <- .new_rmonad_graph(m, node_id=node_id)
   m@data <- list(RmonadData())
   names(m@data) <- m@head
   m
@@ -49,6 +60,7 @@ setClass(
 RmonadData <- function(){
   d <- new("RmonadData")
   d@value      <- .default_value()
+  d@key        <- .default_key()
   d@tag        <- .default_tag()
   d@code       <- .default_code()
   d@error      <- .default_error()

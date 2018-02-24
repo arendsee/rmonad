@@ -8,7 +8,7 @@
 \title{Conversions to monads}
 \usage{
 as_monad(expr, desc = NULL, tag = .default_tag(), doc = .default_doc(),
-  lossy = FALSE)
+  key = NULL, lossy = FALSE)
 
 funnel(..., env = parent.frame(), keep_history = TRUE)
 
@@ -22,6 +22,8 @@ combine(xs, keep_history = TRUE, desc = .default_code())
 \item{tag}{Character vector specifying the tag to associate with a node}
 
 \item{doc}{A docstring to associate with the monad}
+
+\item{key}{16 byte raw vector}
 
 \item{lossy}{logical Should unnesting with record be done?}
 

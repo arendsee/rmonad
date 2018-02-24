@@ -147,8 +147,7 @@ size <- function(m) {
 }
 
 # Make an empty, directed graph
-.new_rmonad_graph <- function(m){
-  node_id <- uuid::UUIDgenerate()
+.new_rmonad_graph <- function(m, node_id){
   m@graph <- igraph::make_empty_graph(directed=TRUE, n=1)
   m@graph <- igraph::set.vertex.attribute(m@graph, "name", value=node_id)
   m@head <- node_id
