@@ -18,21 +18,26 @@ test_that("memory_cache works", {
   expect_equal({a <- memory_cache(5); a@chk()}, TRUE)
 })
 
+key1="key1"
+key2="key2"
 test_that("local_cache works", {
   expect_equal(
     {
-      f <- make_local_cacher(".")
-      a <- f(5)
-      a@del()
-      a@chk()
+      f <- make_cacher()
+      f@put(5, key1)
+      # make ValueManager
+      vm <- f@bld(key1)
+      vm@del()
+      vm@chk()
     },
     FALSE
   )
   expect_equal(
     {
-      f <- make_local_cacher(".")
-      a <- f(5)
-      x <- a@get()
+      f <- make_cacher()
+      f@put(5, key1)
+      vm <- f@bld(key1)
+      x <- vm@get()
       a@del()
       x
     },
@@ -40,10 +45,11 @@ test_that("local_cache works", {
   )
   expect_equal(
     {
-      f <- make_local_cacher(".")
-      a <- f(5)
-      x <- a@chk()
-      a@del()
+      f <- make_cacher()
+      f@put(5, key1)
+      vm <- f@bld(key1)
+      x <- vm@chk()
+      vm@del()
       x
     },
     TRUE

@@ -163,7 +163,7 @@ has_value <- function(m, ...) {
   sapply(
     .get_many_attributes(m, attribute='value', ...),
     function(x) {
-      (class(x) == "CacheManager") && x@chk()
+      (class(x) == "ValueManager") && x@chk()
     }
   ) %>% unname
 }
@@ -356,7 +356,7 @@ get_summary <- function(m, index=.get_ids(m), tag=NULL) {
 
 # ============== Public setters ================================================
 # Not all fields SHOULD be settable. For example, I can conceive of no reason
-# why `time` should ever be reset. There are cases where the `CacheManager`
+# why `time` should ever be reset. There are cases where the `ValueManager`
 # object stored in the `value` slot may be changed (for example, to remove a
 # value from cache or change how it is cached), but care must be taken to
 # change only the wrapper, not the pure value. It is possible to set fields

@@ -16,8 +16,8 @@ void_cache <- function(){
     }
     NULL
   }
-  new("CacheManager",
-    # put = nothing,
+  new("ValueManager",
+    in_memory = TRUE,
     get = get,
     del = nothing,
     chk = false
@@ -26,7 +26,7 @@ void_cache <- function(){
 
 #' Represent a dummy value for a node downstream of a failing node 
 #'
-#' Returns a CacheManager that represents a dummy value for a node downstream
+#' Returns a ValueManager that represents a dummy value for a node downstream
 #' of a failing node. Unlike \code{void_cache}, this presence of this manager
 #' in a pipeline is not pathological, so does not raise a warning by default.
 #'
@@ -40,8 +40,8 @@ fail_cache <- function(){
     }
     NULL
   }
-  new("CacheManager",
-    # put = nothing,
+  new("ValueManager",
+    in_memory = TRUE,
     get = get,
     del = nothing,
     chk = false
@@ -64,8 +64,8 @@ no_cache <- function(){
     }
     NULL
   }
-  new("CacheManager",
-    # put = nothing,
+  new("ValueManager",
+    in_memory = TRUE,
     get = get,
     del = nothing,
     chk = false
@@ -87,52 +87,37 @@ memory_cache <- function(x){
   # FIXME: allow deletion of x, must delete only the LOCAL x 
   # FIXME: allow checking, must check for presence of LOCAL x
   force(x)
-  new("CacheManager",
-    # put = nothing,
+  new("ValueManager",
+    in_memory = TRUE,
     get = function(...) x,
     del = nothing,
     chk = true
   )
 }
 
-#' Make a function of x that caches data locally
+#' Make Cacher object
 #'
-#' @param path A directory in which to cache results.
-#' @param save function of x and filename that saves x to the path filename
-#' @param get function of filename that retrieves the cached data
-#' @param del function of filename that deletes the cached data
-#' @param chk function of filename that checks existence of the cached data 
-#' @param ext function of class(x) that determines the filename extension
+#' @param f_path A function for finding the directory in which to cache results
+#' @param f_save function of x and filename that saves x to the path filename
+#' @param f_get function of filename that retrieves the cached data
+#' @param f_del function of filename that deletes the cached data
+#' @param f_ext function of class(x) that determines the filename extension
 #' @return A function that builds a local cache function for a value
 #' @export
 #' @family cache
-#' @examples
-#' \dontrun{
-#'   foo <- 45
-#'   cacher <- make_local_cacher()
-#'   foo_ <- cacher(45)
-#'   rm(foo)
-#'   foo_@get()
-#' }
-make_local_cacher <- function(
-  path = getOption("rmonad.cache_dir"),
-  save = saveRDS,
-  get  = readRDS,
-  del  = unlink,
-  ext = function(cls) ".Rdata" 
+make_cacher <- function(
+  f_path = function() getOption("rmonad.cache_dir"),
+  f_save = saveRDS,
+  f_get  = readRDS,
+  f_del  = unlink,
+  f_ext = function(cls) ".Rdata" 
 ){
-  if(!dir.exists(path)){
-    dir.create(path, recursive=TRUE)
+  if(!dir.exists(f_path())){
+    dir.create(f_path(), recursive=TRUE)
   }
 
   get_files <- function(key){
-    list.files(path, sprintf("^%s\\..*", key))
-  }
-
-  put = function(x, key) {
-    extension <- ext(class(x))
-    filename <- file.path(path, paste0(key, extension))
-    save(x, filename)
+    list.files(f_path(), sprintf("^%s\\..*", key), full.names=TRUE)
   }
 
   chk = function(key) {
@@ -141,20 +126,34 @@ make_local_cacher <- function(
   }
 
   get = function(key, warn=FALSE, ...) {
-    if(!chk(key)){
-      stop("This uncache this value") 
+    if(chk(key)){
+      f_get(get_files(key), ...)
     } else {
-      get(get_files(key), ...)
+      stop("Cannot uncache this value") 
     }
   }
 
-  del = function(key, ...) del(get_files(key), ...)
+  put = function(x, key) {
+    extension <- f_ext(class(x))
+    filename <- file.path(f_path(), paste0(key, extension))
+    f_save(x, filename)
+  }
 
-  new("CacheManager",
-    get=get,
-    put=put,
-    chk=chk,
-    del=del
+  del = function(key, ...) f_del(get_files(key), ...)
+
+  new("Cacher",
+    chk = chk,
+    put = put,
+    get = get,
+    del = del,
+    bld = function(key){
+      new("ValueManager",
+        in_memory = FALSE,
+        get = function() get(key),
+        del = function() del(key),
+        chk = function() chk(key)
+      )
+    }
   )
 }
 

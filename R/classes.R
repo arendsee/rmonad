@@ -1,6 +1,7 @@
 setClass(
-  "CacheManager",
+  "ValueManager",
   representation(
+    in_memory = "logical",
     get = "function",
     del = "function",
     chk = "function"
@@ -10,11 +11,11 @@ setClass(
 setClass(
   "Cacher",
   representation(
-    key = "function",  # :: RmonadParent, [Argument], 
     put = "function",
     get = "function",
     del = "function",
-    chk = "function"
+    chk = "function",
+    bld = "function" # build a ValueManager object
   )
 )
 
@@ -39,7 +40,7 @@ Rmonad <- function(node_id){
 setClass(
   "RmonadData",
   representation(
-    value      = "CacheManager",
+    value      = "ValueManager",
     key        = "raw",
     tag        = "character",
     code       = "character",
