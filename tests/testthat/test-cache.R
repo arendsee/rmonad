@@ -38,7 +38,7 @@ test_that("local_cache works", {
       f@put(5, key1)
       vm <- f@bld(key1)
       x <- vm@get()
-      a@del()
+      vm@del()
       x
     },
     5
