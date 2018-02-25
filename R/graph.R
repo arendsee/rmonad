@@ -71,6 +71,8 @@ size <- function(m) {
     child@data[[child@head]]@options[[opt_name]] <- opt[[i]]
   }
 
+  .single_depth(child) <- get_depth(parent, parent@head) + 1L
+
   child <- .rmonad_union(parent, child)
   child@graph <- child@graph + igraph::edge(parent@head, child@head, type=type)
 

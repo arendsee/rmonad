@@ -111,6 +111,7 @@ is_rmonad <- function(m) {
 .default_mem        <- function() NA_real_
 .default_time       <- function() NA_real_
 .default_meta       <- function() list()
+.default_depth      <- function() 1L
 .default_nest_depth <- function() 1L
 .default_stored     <- function() FALSE
 .default_id         <- function() integer(0)
@@ -258,6 +259,12 @@ get_nest <- function(m, index=.get_ids(m), tag=NULL) {
 #' @export
 get_prior <- function(m, index=.get_ids(m), tag=NULL) {
   .get_many_relative_ids(m, index=index, tag=tag, mode="in", type="prior")
+}
+
+#' @rdname rmonad_getters
+#' @export
+get_depth <- function(m, index=.get_ids(m), tag=NULL) {
+  .get_many_attributes(m, index=index, tag=tag, attribute='depth') %>% as.integer
 }
 
 #' @rdname rmonad_getters
@@ -534,6 +541,13 @@ get_summary <- function(m, index=.get_ids(m), tag=NULL) {
     .single_raw_value(m) <- void_cache()
     m
   }
+}
+
+.single_depth <- function(m, ...) {
+  .get_single_attribute(m, attribute="depth", ...)
+}
+`.single_depth<-` <- function(m, value) {
+  .set_single_attribute(m, attribute="depth", value=value)
 }
 
 .single_nest_depth <- function(m, ...) {

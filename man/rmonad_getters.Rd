@@ -6,6 +6,7 @@
 \alias{get_dependents}
 \alias{get_nest}
 \alias{get_prior}
+\alias{get_depth}
 \alias{get_nest_depth}
 \alias{get_value}
 \alias{get_key}
@@ -30,6 +31,8 @@ get_dependents(m, index = .get_ids(m), tag = NULL)
 get_nest(m, index = .get_ids(m), tag = NULL)
 
 get_prior(m, index = .get_ids(m), tag = NULL)
+
+get_depth(m, index = .get_ids(m), tag = NULL)
 
 get_nest_depth(m, index = .get_ids(m), tag = NULL)
 

@@ -53,6 +53,7 @@ setClass(
     time       = "numeric",
     meta       = "list",
     summary    = "list",
+    depth      = "integer",
     nest_depth = "integer",
     stored     = "logical",
     options    = "list"

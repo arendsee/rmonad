@@ -49,8 +49,6 @@ bind <- function(
     .single_meta(m) <- lhs_met
   }
 
-  key <- xor(get_key(m, m@head)[[1]], .digest(fdecon$expr))
-
   o <- if(bind_if(m))
   {
     fs <- fdecon$expr
@@ -105,7 +103,8 @@ bind <- function(
       m    = m,
       func = new_function,
       args = final_args,
-      env  = envir
+      env  = envir,
+      expr = fdecon$expr
     )
 
     m <- m_on_bind(m)
@@ -141,24 +140,47 @@ bind <- function(
 }
 
 # Evaluate the expression, load timing info into resultant object
-.eval <- function(m, func, args, env){
+.eval <- function(
+  m,     # LHS monad, needed for making the key
+  func,  # main function
+  args,  # arguments to the main function
+  env,   # for evaluation in correct environment 
+  expr   # to set the code string when used cache
+){
 
-  # FIXME: wrap this in a cache system
-  # If a cached value exists, use it
-  # Else execute
-  #   If the time required is greater than x
-  #   Then cache the result (recacher)
-  # Need one object that handles both, given a key
+  key <- xor(
+    xor(
+      get_key(m, m@head)[[1]],
+      .digest(get_depth(m, m@head)[[1]])
+    ),
+    .digest(expr)
+  )
+
+  cacher <- getOption("rmonad.cacher")
 
   st <- system.time(
     {
-      result <- as_monad(do.call(func, args, envir=env)) %>% .unnest
+      # If a value with this key is cached, use it
+      o <- if(cacher@chk(key)){
+        as_monad(cacher@get(key), desc=expr, key=key) %>% .unnest
+      # Otherwise execute the function
+      } else {
+        as_monad(do.call(func, args, envir=env), key=key) %>% .unnest
+      }
     },
     gcFirst=FALSE # this kills performance when TRUE
   )
-  .single_time(result) <- signif(unname(st[1]), 2)
 
-  result
+  runtime <- signif(unname(st[1]), 2)
+
+  # If this took a long time to run, then cache the value
+  if(runtime > getOption("rmonad.cache_maxtime") && get_OK(o, o@head)){
+    cacher@put(get_value(o, o@head), key=key)
+  }
+
+  .single_time(o) <- runtime
+
+  o
 }
 
 

@@ -133,6 +133,7 @@ as_monad <- function(
   .single_time(m)       <- signif(unname(st[1]), 2)
   .single_meta(m)       <- met
   .single_summary(m)    <- .default_summary()
+  .single_depth(m)      <- .default_depth()
   .single_nest_depth(m) <- .default_nest_depth()
   .single_stored(m)     <- .default_stored()
 
