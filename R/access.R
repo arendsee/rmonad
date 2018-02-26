@@ -192,28 +192,84 @@ has_summary <- function(m, ...) sapply(get_summary(m, ...), function(x) length(x
 
 # ================================ Tag handling ================================
 
+#' Move head to this id
+#'
+#' @param m rmonad object
+#' @param id integer index
+#' @export
+viewID <- function(m, id){
+  .m_check(m)
+  .check_type(id, type='index', test=function(x) is.numeric(id) && length(id) == 1)
+  m@head <- igraph::vertex_attr(m@graph)$name[id]
+  m
+}
+
+#' Return a list of Rmonad objects at these positions
+#'
+#' @param m rmonad object
+#' @param ids integer vector index
+#' @export
+viewIDs <- function(m, ids){
+  .m_check(m)
+  .check_type(ids, type='index', test=is.numeric)
+  lapply(ids, viewID, m=m)
+}
+
+.parse_tags <- function(...){
+  tags <- unlist(list(...))
+  tags <- ifelse(tags == "", "/", tags)
+  tags <- unlist(strsplit(tags, '/'))
+  list(tag=tags, str=paste(tags, collapse='/'))
+}
+
 #' Set the head of an Rmonad to a particular tag 
 #'
+#' Will split on '/'
+#'
 #' @param m Rmonad object
-#' @param tag string specifying a single tag for one node in the pipeline 
+#' @param ... one or more tag strings specifying a unique node in the pipeline 
 #' @return Rmonad object with head reset
 #' @export
 #' @examples
 #' library(magrittr)
-#' m <- 256 %v>% sqrt %>% tag('a') %v>% sqrt
-#' esc(view(m, 'a'))
+#' m <- 256 %v>% sqrt %>% tag('a', 'b') %v>% sqrt
+#' esc(view(m, 'a/b'))
 #' funnel(view(m, 'a'), m) %*>% sum
-view <- function(m, tag){
-  tags <- which(sapply(get_tag(m), identical, tag))
+view <- function(m, ...){
+  .m_check(m)
+  x <- .parse_tags(...)
+  tags <- which(sapply(get_tag(m), identical, x$tag))
   if(length(tags) > 1){
-    stop("The given tag, '", tag, "' is ambiguous, maybe use 'views' instead?")
+    msg <- "The given tag, '%s', is ambiguous, maybe use 'views' instead?"
+    stop(sprintf(msg, x$str))
   }
   if(length(tags) == 0){
     msg <- "Tag '%s' not found"
-    stop(sprintf(msg, paste(tag, collapse=", ")))
+    stop(sprintf(msg, x$str))
   }
   m@head <- igraph::vertex_attr(m@graph)$name[tags[1]]
   m
+}
+
+#' Get a list of Rmonad objects matching the given tag
+#'
+#' @param m Rmonad object
+#' @param ... one or more tags
+#' @return list of Rmonad objects
+#' @export
+#' @examples
+#' library(magrittr)
+#' 1 %>>% prod(2) %>% tag('a/b') %>>%
+#'        prod(2) %>% tag('a/c') %>>%
+#'        prod(2) %>% tag('a/c') %>>%
+#'        prod(2) %>% tag('g/a') -> m
+#' views(m, 'a')
+views <- function(m, ...){
+  .m_check(m)
+  x <- .parse_tags(...)
+  node_tags <- get_tag(m)
+  ids <- which(.a_has_prefix_b(node_tags, x$tag))
+  viewIDs(m, ids)
 }
 
 #' Set the tag of an Rmonad object 
@@ -225,16 +281,16 @@ view <- function(m, tag){
 #' @return Rmonad object with new tags
 #' @export
 #' @examples
-#' 1 %>>% prod(2) %>% tag('a', 'b') %>>% prod(3) %>% get_tag
+#' library(magrittr)
+#' 1 %>>% prod(2) %>% tag('a/b') %>>% prod(3) %>% get_tag
 #'
 tag <- function(m, ..., index=m@head){
-  value <- unlist(list(...))
-  .check_type(value, 'character')
+  x <- .parse_tags(...)
   if(!is.list(index)){
     index = list(index)
   }
   for(i in index){
-    m <- .set_single_attribute(m, attribute='tag', value=value, index=i)
+    m <- .set_single_attribute(m, attribute='tag', value=x$tag, index=i)
   }
   m
 }

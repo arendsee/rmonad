@@ -19,6 +19,12 @@
 
    - `view` - set the head of the graph to the given tagged node
 
+   - `views` - get list of Rmonad objects matching a given tag
+
+   - `viewID` - like view but with ID
+
+   - `viewIDs` - like views but with ID
+
    - `get_tag` - get tags for nodes
 
    - `has_tag` - check whether nodes have tags

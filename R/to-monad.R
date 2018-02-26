@@ -130,10 +130,12 @@ as_monad <- function(
     .single_raw_value(m) <- void_cache()
   }
 
+  # `tag` splits the tags on '/'
+  m <- tag(m, tag)
+
   # These accessors do the right thing (don't mess with them)
   .single_code(m)       <- code
   .single_key(m)        <- key
-  .single_tag(m)        <- tag
   .single_error(m)      <- fails
   .single_warnings(m)   <- warns
   .single_notes(m)      <- notes

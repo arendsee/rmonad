@@ -9,10 +9,10 @@ tag(m, ..., index = m@head)
 \arguments{
 \item{m}{Rmonad object}
 
+\item{...}{one or more tags for the given nodes}
+
 \item{index}{character or integer vector, specifying the nodes which will be
 assigned the new tag}
-
-\item{value}{string specifying a new tag for the given nodes}
 }
 \value{
 Rmonad object with new tags
@@ -21,6 +21,7 @@ Rmonad object with new tags
 Set the tag of an Rmonad object
 }
 \examples{
-1 \%>>\% prod(2) \%>\% tag('a', 'b') \%>>\% prod(3) \%>\% get_tag
+library(magrittr)
+1 \%>>\% prod(2) \%>\% tag('a/b') \%>>\% prod(3) \%>\% get_tag
 
 }
