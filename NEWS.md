@@ -15,7 +15,7 @@
 
  * add `tag` field to `Rmonad` objects and access functions:
 
-   - `tag` - set the tag of the current head node (or nodes at given indices)
+   - `tag` - set the tags of the current head node (or nodes at given indices)
 
    - `view` - set the head of the graph to the given tagged node
 

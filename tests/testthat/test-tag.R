@@ -13,6 +13,11 @@ test_that("tag sets tag", {
     as_monad(16) %>% tag('a') %>>% sqrt %>% tag('b') %>>% sqrt %>% get_tag,
     list("a", "b", "")
   )
+  # tag sets the head node
+  expect_equal(
+    as_monad(16) %>% tag('a', 'foo') %>>% sqrt %>% tag('b') %>>% sqrt %>% get_tag,
+    list(c("a", "foo"), "b", "")
+  )
 })
 
 m <- as_monad(16) %>% tag('a') %>>% sqrt %>% tag('b') %v>% sqrt

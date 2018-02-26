@@ -219,14 +219,24 @@ view <- function(m, tag){
 #' Set the tag of an Rmonad object 
 #'
 #' @param m Rmonad object
-#' @param value string specifying a new tag for the given nodes
+#' @param ... one or more tags for the given nodes
 #' @param index character or integer vector, specifying the nodes which will be
 #' assigned the new tag 
 #' @return Rmonad object with new tags
 #' @export
-tag <- function(m, value, index=m@head){
+#' @examples
+#' 1 %>>% prod(2) %>% tag('a', 'b') %>>% prod(3) %>% get_tag
+#'
+tag <- function(m, ..., index=m@head){
+  value <- unlist(list(...))
   .check_type(value, 'character')
-  .set_many_attributes(m, attribute='tag', value=value, index=index)
+  if(!is.list(index)){
+    index = list(index)
+  }
+  for(i in index){
+    m <- .set_single_attribute(m, attribute='tag', value=value, index=i)
+  }
+  m
 }
 
 # ============================= Vectorized Getters =============================
