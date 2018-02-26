@@ -149,18 +149,15 @@ bind <- function(
 ){
 
   key <- xor(
-    # XOR(parent_key, md5(depth + nchildren))
-    xor(
-      get_key(m, m@head)[[1]],
-      .digest(
-        get_depth(m, m@head)[[1]] +
-        length(get_dependents(m, m@head)[[1]])
-      )
-    ),
+    get_key(m, m@head)[[1]],
     # md5(code + nest hash)
     .digest(c(
       # binary representation of the code
       serialize(expr, NULL),
+      # account for depth in the workflow
+      serialize(get_depth(m, m@head)[[1]], NULL),
+      # account for position among the children
+      serialize(length(get_dependents(m, m@head)[[1]]), NULL),
       # a nest dependent raw vector
       .get_nest_salt()
     ))
