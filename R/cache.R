@@ -112,10 +112,6 @@ make_cacher <- function(
   f_del  = unlink,
   f_ext = function(cls) ".Rdata" 
 ){
-  if(!dir.exists(f_path())){
-    dir.create(f_path(), recursive=TRUE)
-  }
-
   get_files <- function(key){
     list.files(f_path(), sprintf("^%s\\..*", key), full.names=TRUE)
   }
@@ -127,7 +123,7 @@ make_cacher <- function(
 
   get = function(key, warn=FALSE, ...) {
     if(chk(key)){
-      f_get(get_files(key), ...)
+      f_get(get_files(key)[1], ...)
     } else {
       stop("Cannot uncache this value") 
     }
@@ -136,6 +132,9 @@ make_cacher <- function(
   put = function(x, key) {
     extension <- f_ext(class(x))
     filename <- file.path(f_path(), paste0(key, extension))
+    if(!dir.exists(f_path())){
+      dir.create(f_path(), showWarnings=FALSE, recursive=TRUE)
+    }
     f_save(x, filename)
   }
 

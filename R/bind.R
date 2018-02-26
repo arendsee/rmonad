@@ -167,7 +167,7 @@ bind <- function(
     {
       # If a value with this key is cached, use it
       o <- if(cacher@chk(key)){
-        as_monad(cacher@get(key), desc=expr, key=key) %>% .unnest
+        as_monad(cacher@get(key), key=key) %>% .unnest
       # Otherwise execute the function
       } else {
         as_monad(do.call(func, args, envir=env), key=key) %>% .unnest
@@ -180,7 +180,7 @@ bind <- function(
 
   # If this took a long time to run, then cache the value
   if(runtime > getOption("rmonad.cache_maxtime") && get_OK(o, o@head)){
-    cacher@put(get_value(o, o@head), key=key)
+    cacher@put(get_value(o, o@head)[[1]], key=key)
   }
 
   .single_time(o) <- runtime
