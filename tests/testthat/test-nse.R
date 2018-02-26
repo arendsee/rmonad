@@ -99,7 +99,7 @@ test_that("as_monad handles docstrings", {
   expect_equal(as_monad({"asdf"; 5}) %>% .single_doc, "asdf")
   expect_equal(as_monad({"asdf"; 5}) %>% esc, 5)
   # no funny business is going on ...
-  expect_equal(as_monad({"asdf"; 5}) %>>% '*'(6) %>% esc, 30)
+  expect_equal(as_monad({"asdf"; 5}) %>>% prod(6) %>% esc, 30)
   expect_equal(as_monad({}) %>% esc, NULL)
 
   expect_true(
