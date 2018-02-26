@@ -1,5 +1,7 @@
 # rmonad 0.5.0
 
+ * add caching, if a function takes more than s seconds to run, it is cached
+
  * add `loop` function
 
  * use `saveRDS`, rather than `save`, local caching
