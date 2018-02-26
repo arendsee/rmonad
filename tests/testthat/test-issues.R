@@ -20,20 +20,24 @@ test_that('issue #2: funnel works with %__%', {
 test_that('issue #3: nested errors are localized', {
   expect_equal(
     "a" %>>% {
+      "Level One"
       . %>>% paste("b") %>>% {
+        "Level Two"
         . %>>% paste("c") %>>% stop
       }
     } %>% get_value(warn=FALSE),
-    list(NULL, NULL, NULL, NULL, NULL, "a b c", "a b", "a")
+    list(NULL, NULL, NULL, NULL, "a b c", "a b", "a")
   )
   # The %__% operator often screws things up, best to check
   expect_equal(
     "yolo" %__%
     "a" %>>% {
+      "Level One"
       . %>>% paste("b") %>>% {
+        "Level Two"
         . %>>% paste("c") %>>% stop
       }
     } %>% get_value(warn=FALSE),
-    list("yolo", NULL, NULL, NULL, NULL, NULL, "a b c", "a b", "a")
+    list("yolo", NULL, NULL, NULL, NULL, "a b c", "a b", "a")
   )
 })
