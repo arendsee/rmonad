@@ -70,7 +70,7 @@ test_that("Can search nested tags", {
   expect_equal(names(get_value(m5, tag='a')), c("a/1", "a/3"))
 })
 
-f <- make_recacher(make_local_cacher())
+f <- make_recacher(memory_cache)
 m6 <- 256 %>% f('a') %>>%
   sqrt %>% f('b') %>% funnel(a = ., b=view(., 'a')) %*>%
   sum
