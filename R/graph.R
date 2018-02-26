@@ -162,8 +162,16 @@ size <- function(m) {
   m
 }
 
+.parse_tags <- function(...){
+  tags <- unlist(list(...))
+  tags <- ifelse(tags == "", "/", tags)
+  tags <- unlist(strsplit(tags, '/'))
+  list(tag=tags, str=paste(tags, collapse='/'))
+}
+
 .process_tag_and_index <- function(m, index, tag, sep="/"){
   if(!is.null(tag)){
+    tag <- .parse_tags(tag)$tag
     node_tags <- get_tag(m)
     index <- which(.a_has_prefix_b(node_tags, tag))
     name <- sapply(node_tags[index], paste, collapse=sep)

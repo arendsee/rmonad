@@ -40,10 +40,9 @@ test_that("view works in funnel", {
   expect_equal(get_value(m2, warn=F), list(NULL, 16,       4,        2,          NULL, 119       ))
 })
 
-f <- make_recacher(memory_cache)
-m3 <- 'a' %>>% paste('b') %>% f(c('foo', 'bar')) %>>%
-               paste('c') %>% f(c('foo', 'rad')) %>>%
-               paste('d') %>% f('baz') %>>%
+m3 <- 'a' %>>% paste('b') %>% tag(c('foo', 'bar')) %>>%
+               paste('c') %>% tag(c('foo', 'rad')) %>>%
+               paste('d') %>% tag('baz') %>>%
                paste('e')
 test_that("multi level tags work", {
   expect_equal(get_value(m3, tag='foo'), list('foo/bar'='a b', 'foo/rad'='a b c'))
@@ -52,6 +51,7 @@ test_that("multi level tags work", {
 
 test_that("other get_* accessors work", {
   expect_equal(get_OK(m3, tag='foo'), c(T,T))
+  expect_equal(get_OK(m3, tag='foo/bar'), T)
   # I could check the actual return values, but that would probably be
   # overkill. So I just ensure nothing explodes. 
   expect_equal(get_code       (m3, tag='foo') %>% length, 2 )
@@ -72,6 +72,7 @@ test_that("other get_* accessors work", {
   expect_equal(get_value      (m3, tag='foo') %>% length, 2 )
 })
 
+f <- make_recacher(memory_cache)
 m4 <- 256 %>% f(c('a', 'b')) %>>% sqrt %>% f('b') %>>% sqrt %>% f(c('a', 'b'))
 m5 <- 256 %>% f('a') %>>% sqrt %>% f('b') %>>% sqrt %>% f('a')
 test_that("Can search nested tags", {
