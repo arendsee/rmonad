@@ -176,3 +176,10 @@ test_that("metadata lists are evaluated in the proper environment", {
     "dang it"
   )
 })
+
+foo <- function(x) { list(x=x); x }
+test_that("metadata are evaluated in function scope", {
+  expect_equal(
+    5 %>>% foo %>% get_meta, list(x=10)
+  )
+})
