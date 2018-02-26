@@ -104,7 +104,7 @@ bind <- function(
       func = new_function,
       args = final_args,
       env  = envir,
-      expr = fdecon$expr
+      code = rhs_str
     )
 
     m <- m_on_bind(m)
@@ -145,14 +145,16 @@ bind <- function(
   func,  # main function
   args,  # arguments to the main function
   env,   # for evaluation in correct environment 
-  expr   # to set the code string when used cache
+  code   # needed for making the key 
 ){
 
   key <- .digest(
     # parent key
     get_key(m, m@head)[[1]],
-    # binary representation of the code
-    expr,
+    # the function that will be executed
+    func,
+    # the RHS expression (distinguishes between arguments)
+    code,
     # account for depth in the workflow
     get_depth(m, m@head)[[1]],
     # account for position among the children
@@ -161,31 +163,7 @@ bind <- function(
     .get_nest_salt()
   )
 
-  cacher <- getOption("rmonad.cacher")
-
-  st <- system.time(
-    {
-      # If a value with this key is cached, use it
-      o <- if(cacher@chk(key)){
-        as_monad(cacher@get(key), key=key) %>% .unnest
-      # Otherwise execute the function
-      } else {
-        as_monad(do.call(func, args, envir=env), key=key) %>% .unnest
-      }
-    },
-    gcFirst=FALSE # this kills performance when TRUE
-  )
-
-  runtime <- signif(unname(st[1]), 2)
-
-  # If this took a long time to run, then cache the value
-  if(runtime > getOption("rmonad.cache_maxtime") && get_OK(o, o@head)){
-    cacher@put(get_value(o, o@head)[[1]], key=key)
-  }
-
-  .single_time(o) <- runtime
-
-  o
+  as_monad(do.call(func, args, envir=env), desc=code, key=key, env=env) %>% .unnest
 }
 
 

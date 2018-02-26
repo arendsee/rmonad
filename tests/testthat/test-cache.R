@@ -55,3 +55,24 @@ test_that("local_cache works", {
     TRUE
   )
 })
+
+
+cache_dir <- "cache"
+options(rmonad.cache_dir = cache_dir)
+options(rmonad.cache_maxtime=0)
+test_that("local_cache works", {
+  expect_equal(
+    10 %>>% runif %>% esc,
+    10 %>>% runif %>% esc
+  )
+  expect_equal(
+    11 %>>% runif %>% tag('a') %>>% sqrt %>% {get_value(., tag='a')[[1]]},
+    11 %>>% runif %>% tag('b') %>>% sqrt %>% {get_value(., tag='b')[[1]]}
+  )
+  expect_equal(
+    12 %>>% runif %>>% sqrt %>% esc,
+    12 %>>% runif %>>% sqrt %>% esc
+  )
+})
+options(rmonad.cache_maxtime=3)
+unlink(cache_dir, recursive=TRUE)

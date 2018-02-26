@@ -63,6 +63,11 @@ as_monad <- function(
 # TODO: 'lossy' is an lousy name, should change to 'nest', or something
 # as_monad :: a -> m a
 
+  cacher <- make_cacher()
+  if(!is.null(key) && cacher@chk(key)){
+    return(cacher@get(key))
+  }
+
   value <- .default_value()
   warns <- .default_warnings()
   fails <- .default_error()
@@ -92,7 +97,13 @@ as_monad <- function(
     gcFirst=FALSE # this kills performance when TRUE
   )
 
+  runtime <- signif(unname(st[1]), 2)
+
   if(lossy && is_rmonad(value)){
+    # If this took a long time to run, then cache the value
+    if(runtime > getOption("rmonad.cache_maxtime") && isOK){
+      cacher@put(value, key=key)
+    }
     return(value)
   }
 
@@ -129,7 +140,7 @@ as_monad <- function(
   .single_OK(m)         <- isOK
   .single_doc(m)        <- doc
   .single_mem(m)        <- as.integer(object.size(value))
-  .single_time(m)       <- signif(unname(st[1]), 2)
+  .single_time(m)       <- runtime
   .single_meta(m)       <- met
   .single_summary(m)    <- .default_summary()
   .single_depth(m)      <- .default_depth()
@@ -137,6 +148,11 @@ as_monad <- function(
   .single_stored(m)     <- .default_stored()
 
   m <- apply_rewriters(m, met)
+
+  # If this took a long time to run, then cache the value
+  if(runtime >= getOption("rmonad.cache_maxtime") && isOK){
+    cacher@put(m, key=key)
+  }
 
   m
 
