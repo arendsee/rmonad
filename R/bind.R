@@ -149,11 +149,21 @@ bind <- function(
 ){
 
   key <- xor(
+    # XOR(parent_key, md5(depth + nchildren))
     xor(
       get_key(m, m@head)[[1]],
-      .digest(get_depth(m, m@head)[[1]])
+      .digest(
+        get_depth(m, m@head)[[1]] +
+        length(get_dependents(m, m@head)[[1]])
+      )
     ),
-    .digest(expr)
+    # md5(code + nest hash)
+    .digest(c(
+      # binary representation of the code
+      serialize(expr, NULL),
+      # a nest dependent raw vector
+      .get_nest_salt()
+    ))
   )
 
   cacher <- getOption("rmonad.cacher")

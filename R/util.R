@@ -69,3 +69,12 @@ rmonad_equal <- function(a, b){
   identical(mtabulate(a, code=T)[, -5], mtabulate(b, code=T)[, -5]) &&
   identical(missues(a), missues(b))
 }
+
+.get_nest_salt <- function(){
+  dynGet(".rmonad_nest_salt", ifnotfound=NULL, inherits=TRUE)
+}
+
+.set_nest_salt <- function(...){
+  env <- parent.frame()
+  assign(".rmonad_nest_salt", c(.get_nest_salt(), ...), envir=env)  
+}

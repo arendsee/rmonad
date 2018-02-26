@@ -28,9 +28,17 @@ loop <- function(m, FUN, looper=lapply, ...){
     stop("Cannot loop over this, no values found.")
   }
 
-  xs <- get_value(m, m@head)[[1]]
-  ns <- looper(xs, FUN, ...)
+  indexed_looper <- (function(){
+    i=0
+    function(x){
+      i <<- i + 1
+      .set_nest_salt(get_key(m, m@head)[[1]], serialize(i, NULL))
+      FUN(x)
+    }
+  })()
 
+  xs <- get_value(m, m@head)[[1]]
+  ns <- looper(xs, indexed_looper, ...)
   if(! all(sapply(ns, is_rmonad))){
     stop("FUN must return a vector or Rmonad objects")
   }

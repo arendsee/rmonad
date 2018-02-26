@@ -57,6 +57,7 @@ as_monad <- function(
   tag   = .default_tag(),
   doc   = .default_doc(),
   key   = NULL,
+  env   = parent.frame(),
   lossy = FALSE
 ){
 # TODO: 'lossy' is an lousy name, should change to 'nest', or something
@@ -66,8 +67,6 @@ as_monad <- function(
   warns <- .default_warnings()
   fails <- .default_error()
   isOK  <- .default_OK()
-
-  env <- parent.frame()
 
   st <- system.time(
     {
@@ -109,7 +108,7 @@ as_monad <- function(
   }
 
   if(is.null(key)){
-    key <- .digest(code)
+    key <- .digest(c(serialize(code, NULL), .get_nest_salt()))
   }
 
   m <- Rmonad(node_id=paste(key, collapse=""))

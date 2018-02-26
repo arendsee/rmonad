@@ -1,21 +1,22 @@
-context("combine and funnel")
+context("higher-order functions")
 
-foo <- function(x) { x %>>% sqrt %>% tag(as.character(x)) }
+f <- function(x, a){ x * a }
+foo <- function(x) { x %>>% f(3) %>% tag(as.character(x)) }
 test_that("basic loop", {
   # The correct output is obtained
   expect_equal(
-    c(256, 6561) %v>% sqrt %>% loop(foo) %>>% lapply(sqrt) %>% esc,
-    list(2,3)
+    c(1, 2, 3) %v>% f(2) %>% loop(foo) %>>% lapply(f, 4) %>% esc,
+    list(24,48,72)
   )
   # History is preserved across the loop
   expect_equal(
-    c(256, 6561) %v>% sqrt %>% loop(foo) %>>% lapply(sqrt) %>%
+    c(1, 2) %v>% f(2) %>% loop(foo) %>>% lapply(f, 4) %>%
       get_value(1) %>% unlist,
-    c(256, 6561)
+    c(1, 2)
   )
   # Topology is correct
   expect_equal(
-    c(256, 6561) %v>% sqrt %>% loop(foo) %>>% lapply(sqrt) %>% get_parents,
+    c(1, 2) %v>% f(2) %>% loop(foo) %>>% lapply(f, 4) %>% get_parents,
     list(
       integer(0),
       1,

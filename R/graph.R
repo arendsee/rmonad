@@ -79,7 +79,6 @@ size <- function(m) {
   child
 }
 
-
 # The following functions resolve conflicts in attributes that arise with the
 # union of two igraph objects. If any attributes are shared between the graphs,
 # then they are copied into new vectors with the prefixes `_1` and `_2` added.
@@ -111,6 +110,13 @@ size <- function(m) {
     b@graph <- .zip_edge(b@graph)
     # FIXME: need to resolve any possible name conflicts here
     b@data <- append(a@data[setdiff(names(a@data), names(b@data))], b@data)
+    
+    # common <- intersect(names(a@data), names(b@data))
+    # if(length(common) > 0){
+    #   i = common[1]
+    #   msg <- sprintf("These have the same same: '%s', '%s'", a@data[[i]]@code, b@data[[i]]@code)
+    #   warning(msg)
+    # }
   }
   b
 }
