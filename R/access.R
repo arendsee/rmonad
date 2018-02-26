@@ -425,7 +425,7 @@ get_summary <- function(m, index=.get_ids(m), tag=NULL) {
   .get_single_attribute(m, attribute="key", ...)
 }
 `.single_key<-` <- function(m, value) {
-  .check_type(value, type="md5_32-byte", test=function(x) is.raw(x) && length(x) == 16)
+  .check_type(value, type="md5sum", test=is.character)
   .set_single_attribute(m, attribute="key", value=value)
 }
 

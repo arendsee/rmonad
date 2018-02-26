@@ -148,19 +148,17 @@ bind <- function(
   expr   # to set the code string when used cache
 ){
 
-  key <- xor(
+  key <- .digest(
+    # parent key
     get_key(m, m@head)[[1]],
-    # md5(code + nest hash)
-    .digest(c(
-      # binary representation of the code
-      serialize(expr, NULL),
-      # account for depth in the workflow
-      serialize(get_depth(m, m@head)[[1]], NULL),
-      # account for position among the children
-      serialize(length(get_dependents(m, m@head)[[1]]), NULL),
-      # a nest dependent raw vector
-      .get_nest_salt()
-    ))
+    # binary representation of the code
+    expr,
+    # account for depth in the workflow
+    get_depth(m, m@head)[[1]],
+    # account for position among the children
+    length(get_dependents(m, m@head)[[1]]),
+    # a nest dependent raw vector
+    .get_nest_salt()
   )
 
   cacher <- getOption("rmonad.cacher")

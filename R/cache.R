@@ -219,8 +219,8 @@ make_recacher <- function(cacher, preserve=TRUE){
   }
 }
 
-.digest <- function(x){
-  digest::digest(x, algo='md5', raw=TRUE)
+.digest <- function(...){
+    lapply(list(...), serialize, connection=NULL) %>% digest::digest(algo='md5')
 }
 
 crunch <- function(m){

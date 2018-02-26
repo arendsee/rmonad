@@ -41,7 +41,7 @@ setClass(
   "RmonadData",
   representation(
     value      = "ValueManager",
-    key        = "raw",
+    key        = "character",
     tag        = "character",
     code       = "character",
     error      = "character",

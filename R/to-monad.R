@@ -108,7 +108,7 @@ as_monad <- function(
   }
 
   if(is.null(key)){
-    key <- .digest(c(serialize(code, NULL), .get_nest_salt()))
+    key <- .digest(code, .get_nest_salt())
   }
 
   m <- Rmonad(node_id=paste(key, collapse=""))
@@ -221,7 +221,7 @@ combine <- function(xs, keep_history=TRUE, desc=.default_code()){
   # This ensures the key will change if the order of arguments changes (which
   # is important when one or more of them are positional.
   parent_keys <- lapply(xs, function(x) get_key(x, x@head)[[1]])
-  key <- Reduce(xor, parent_keys, .digest(desc))
+  key <- .digest(parent_keys, desc)
 
   # make a new monad that is the child of all monads in the input list
   out <- as_monad(value, key=key)
