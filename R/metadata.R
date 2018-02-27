@@ -38,6 +38,13 @@
 #' extract_metadata(substitute(foo(y=2)))
 extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
 
+  # NOTE: I used to use methods::existsFunction here, but that misses them
+  # Or more likely I am using it wrong, but the following does what I want
+  is_function <- function(x,e){
+    exists(as.character(x), e) &&
+    is.function(get(as.character(x), e))
+  }
+
   metadata <- substitute(list())
   docstring <- .default_doc()
   enclos <- env
@@ -120,7 +127,7 @@ extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
   else if(
     is.call(expr) &&
     length(expr[[1]]) == 1 && # i.e. not in a namespace (foo::bar)
-    methods::existsFunction(as.character(expr[[1]]), where=env)
+    is_function(as.character(expr[[1]]), env)
   ) {
     meta <- extract_metadata(expr[[1]], env=env, skip_name=FALSE)
     docstring <- meta$docstring
@@ -131,15 +138,16 @@ extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
   else if (
     ! skip_name &&
     is.name(expr) &&
-    methods::existsFunction(as.character(expr), where=env)
+    is_function(as.character(expr), env)
   ){
+
     x <- get( as.character(expr), envir=env )
     if(!is.null(body(x))){
       bod <- extract_metadata(body(x), env=env)
       docstring <- bod$docstring
       metadata <- bod$metadata
-      enclos <- environment(x)
     }
+
   }
 
   list(expr=expr, docstring=docstring, metadata=metadata, enclos=enclos)

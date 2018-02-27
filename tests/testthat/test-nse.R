@@ -178,7 +178,8 @@ test_that("metadata lists are evaluated in the proper environment", {
   )
 })
 
-foo <- function(x) { list(x=2*x); x }
+
+foo <- function(x, k=1) { list(x=2*x); x }
 bar <- (function(){ fluf = 9; function(y, k=1) { list(x=fluf); fluf }})()
 bomb <- function(x){ list(stop("on no!")); x }
 test_that("metadata are evaluated in function scope", {
@@ -188,10 +189,10 @@ test_that("metadata are evaluated in function scope", {
   )
   # Can access enclosing scope
   expect_equal(
-    5 %>>% bar %>% get_meta, list(list(), list(x=9)) 
+    5 %>>% bar %>% get_meta, list(list(), list(x=9))
   )
   # Errors in the metadata do not blow up the pipeline
   expect_equal(
-    5 %>>% bomb %>% get_meta, list(list(), list(.metadata_error="on no!")) 
+    5 %>>% bomb %>% get_meta, list(list(), list(.metadata_error="on no!"))
   )
 })
