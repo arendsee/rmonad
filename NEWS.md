@@ -1,5 +1,9 @@
 # rmonad 0.5.0
 
+ * metadata lists are now evaluated in the natural lexical scope, with access
+   to the function arguments and variables in the scope where the function was
+   defined.
+
  * add caching, if a function takes more than s seconds to run, it is cached
 
  * add `loop` function
