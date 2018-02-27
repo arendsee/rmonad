@@ -140,10 +140,12 @@ extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
     is.name(expr) &&
     is_function(as.character(expr), env)
   ){
-
     x <- get( as.character(expr), envir=env )
     if(!is.null(body(x))){
-      bod <- extract_metadata(body(x), env=env)
+      # We are entering the scope of a function ...
+      enclos <- environment(x)
+      # so recurse in the enclosing environment
+      bod <- extract_metadata(body(x), env=enclos)
       docstring <- bod$docstring
       metadata <- bod$metadata
     }
