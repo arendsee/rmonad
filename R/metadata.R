@@ -38,8 +38,9 @@
 #' extract_metadata(substitute(foo(y=2)))
 extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
 
-  metadata <- list()
+  metadata <- substitute(list())
   docstring <- .default_doc()
+  enclos <- env
 
   # Determine if expr has the form
   #
@@ -73,7 +74,7 @@ extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
       class(expr[[2]][[1]]) == "name" &&     # first element is a list
       as.character(expr[[2]][[1]]) == "list" # first element is a list
     ){
-      metadata <- eval(expr[[2]], envir=env)
+      metadata <- expr[[2]]
       expr <- expr[-2]
     }
   }
@@ -137,9 +138,9 @@ extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
       bod <- extract_metadata(body(x), env=env)
       docstring <- bod$docstring
       metadata <- bod$metadata
+      enclos <- environment(x)
     }
   }
 
-
-  list(expr=expr, docstring=docstring, metadata=metadata)
+  list(expr=expr, docstring=docstring, metadata=metadata, enclos=enclos)
 }

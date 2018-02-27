@@ -110,7 +110,7 @@ as_monad <- function(
   ed <- extract_metadata(substitute(expr), env=env)
   expr <- ed$expr
   doc <- ed$docstring
-  met <- ed$metadata
+  met <- eval(ed$metadata, envir=env)
 
   code <- if(is.null(desc)) {
     deparse(substitute(expr))
