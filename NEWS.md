@@ -6,6 +6,8 @@
 
  * add caching, if a function takes more than s seconds to run, it is cached
 
+ * add option to turn off auto caching: `rmonad.auto_cache`
+
  * add `loop` function
 
  * use `saveRDS`, rather than `save`, local caching

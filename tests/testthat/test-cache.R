@@ -74,5 +74,15 @@ test_that("local_cache works", {
     12 %>>% runif %>>% sqrt %>% esc
   )
 })
+options(rmonad.auto_cache=FALSE)
+test_that("Can turn off auto_cache", {
+  expect_true(
+    !identical(
+      10 %>>% runif %>% esc,
+      10 %>>% runif %>% esc
+    )
+  )
+})
+options(rmonad.auto_cache=TRUE)
 options(rmonad.cache_maxtime=3)
 unlink(cache_dir, recursive=TRUE)

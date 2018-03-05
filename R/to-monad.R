@@ -63,9 +63,11 @@ as_monad <- function(
 # TODO: 'lossy' is an lousy name, should change to 'nest', or something
 # as_monad :: a -> m a
 
-  cacher <- make_cacher()
-  if(!is.null(key) && cacher@chk(key)){
-    return(cacher@get(key))
+  if(getOption("rmonad.auto_cache")){
+    cacher <- make_cacher()
+    if(!is.null(key) && cacher@chk(key)){
+      return(cacher@get(key))
+    }
   }
 
   value <- .default_value()
@@ -100,8 +102,15 @@ as_monad <- function(
   runtime <- signif(unname(st[1]), 2)
 
   if(lossy && is_rmonad(value)){
-    # If this took a long time to run, then cache the value
-    if(runtime > getOption("rmonad.cache_maxtime") && isOK){
+    if(
+       # If auto_cache is on
+       getOption("rmonad.auto_cache") &&
+       # AND this expression took a long time to run
+       runtime > getOption("rmonad.cache_maxtime") &&
+       # AND the result passed
+       isOK
+     ){
+      # THEN cache the result
       cacher@put(value, key=key)
     }
     return(value)
@@ -151,8 +160,14 @@ as_monad <- function(
 
   m <- apply_rewriters(m, met)
 
-  # If this took a long time to run, then cache the value
-  if(runtime >= getOption("rmonad.cache_maxtime") && isOK){
+  if(
+     # If auto_cache is on
+     getOption("rmonad.auto_cache") &&
+     # AND if this took a long time to run, then cache the value
+     runtime >= getOption("rmonad.cache_maxtime") &&
+     # AND the evaluation passed
+     isOK)
+  {
     cacher@put(m, key=key)
   }
 

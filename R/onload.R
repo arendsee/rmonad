@@ -5,6 +5,11 @@
     options(rmonad.cache_dir = "cache")
   }
 
+  # Set whether automatic caching is on or off 
+  if(is.null(getOption("rmonad.auto_cache"))){
+    options(rmonad.auto_cache = TRUE)
+  }
+
   # Default cache function
   if(is.null(getOption("rmonad.cacher"))){
     options(rmonad.cacher = make_cacher())
