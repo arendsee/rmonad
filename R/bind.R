@@ -175,6 +175,8 @@ bind <- function(
     .get_nest_salt()
   )
 
+  .set_nest_salt(serialize(key, NULL))
+
   as_monad(do.call(func, args, envir=env), desc=code, key=key, env=env) %>% .unnest
 }
 

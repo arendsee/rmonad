@@ -147,3 +147,17 @@ test_that("no duplication occurs on pipelines that branch and rejoin", {
     )
   )
 })
+
+test_that("funnel works with view", {
+  expect_equal(
+    2 %>>% prod(2) %>% tag("A") %>>%
+           prod(3) %>% tag("B") %>>%
+           prod(4) %>% tag("C") %>>%
+           prod(5) %>% tag("D") %>%
+             {rmonad::funnel(
+               x = view(., "A"),
+               y = view(., "B")
+             )} %>% esc(T),
+    list(x=4, y=12)
+  )
+})

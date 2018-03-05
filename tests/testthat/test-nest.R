@@ -83,3 +83,18 @@ test_that("Nothing explodes when NSE is used in nested declarations", {
   )
   expect_true(funnel(x=mtcars) %*>% h_bomb %>% .single_OK)
 })
+
+
+test_that("Identical nests are OK", {
+  expect_equal(
+    {
+      m <- "a" %>>%
+        # The repeated nests can result in identical keys, which leads to nodes
+        # being overwritten when the graphs are merged. 
+        { paste0(., "b") %>>% paste0(".") %>% tag("foo") } %>>%
+        { paste0(., "b") %>>% paste0(".") %>% tag("bar") }
+      c(get_value(m, tag="foo")[[1]], get_value(m, tag="bar")[[1]])
+    },
+    c("ab.", "ab.b.")
+  )
+})

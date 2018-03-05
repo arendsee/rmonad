@@ -26,7 +26,7 @@ test_that('issue #3: nested errors are localized', {
         . %>>% paste("c") %>>% stop
       }
     } %>% get_value(warn=FALSE),
-    list(NULL, NULL, NULL, NULL, "a b c", "a b", "a")
+    list(NULL, NULL, NULL, NULL, NULL, "a b c", "a b", "a")
   )
   # The %__% operator often screws things up, best to check
   expect_equal(
@@ -38,6 +38,6 @@ test_that('issue #3: nested errors are localized', {
         . %>>% paste("c") %>>% stop
       }
     } %>% get_value(warn=FALSE),
-    list("yolo", NULL, NULL, NULL, NULL, "a b c", "a b", "a")
+    list("yolo", NULL, NULL, NULL, NULL, NULL, "a b c", "a b", "a")
   )
 })

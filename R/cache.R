@@ -225,13 +225,3 @@ make_recacher <- function(cacher, preserve=TRUE){
 crunch <- function(m){
   # STUB: find all nodes that require a lot of memory and cache their values
 }
-
-cache <- function(cacher, key, eval, func, args){  
-
-  x <- if(cacher$chk(key)){
-    x <- get(key)
-  } else {
-    
-  }
-
-}
