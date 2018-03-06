@@ -86,3 +86,18 @@ test_that("Can turn off auto_cache", {
 options(rmonad.auto_cache=TRUE)
 options(rmonad.cache_maxtime=3)
 unlink(cache_dir, recursive=TRUE)
+
+options(rmonad.crunch_maxmem = 1e5)
+test_that("crunch works", {
+  expect_true({
+    m <- as_monad(runif(1e5), tag="a") %>>%
+         sqrt %>% tag("b") %>>%
+         log %>% tag("c") %>>% prod(2) %>>% prod(3)
+    m1 <- crunch(m)
+    identical(
+      get_value(m,  1:3) %>% lapply(head),
+      get_value(m1, 1:3) %>% lapply(head)
+    )
+  })
+})
+options(rmonad.crunch_maxmem = 1e6)
