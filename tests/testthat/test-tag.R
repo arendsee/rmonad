@@ -29,6 +29,7 @@ test_that("view gets tagged node", {
   expect_equal(view(m, c('foo','bar')) %>% esc, 4)
 })
 
+
 test_that("has_tag works", {
   expect_equal(has_tag(m), c(TRUE, TRUE, FALSE))
 })
