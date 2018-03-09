@@ -1,42 +1,42 @@
 context("binary operators")
 
 test_that('%>>% and esc work (simple)', {
-  expect_equal(1 %>>% '*'(2) %>% esc, 2)
-  expect_true(1 %>>% '*'(2) %>% .single_OK)
+  expect_equal(1 %>>% prod(2) %>% esc, 2)
+  expect_true(1 %>>% prod(2) %>% .single_OK)
 
   expect_equal(cars %>>% head %>% esc, head(cars))
   expect_true( cars %>>% head %>% .single_OK)
 
-  expect_equal(1:3 %>>% '*'(2) %>% esc, c(2,4,6))
-  expect_true( 1:3 %>>% '*'(2) %>% .single_OK)
+  expect_equal(c(4,16,36) %>>% sqrt %>% esc, c(2,4,6))
+  expect_true( c(4,16,36) %>>% sqrt %>% .single_OK)
 
-  expect_error("3" %>>% '*'(2) %>% esc)
+  expect_error("3" %>>% prod(2) %>% esc)
 
-  expect_equal(1:3 %>>% (function(x){x^2}) %>>% '*'(2) %>% esc, 2*((1:3)^2) )
-  expect_equal(1:3 %>>% (function(x){x^2})             %>% esc,   ((1:3)^2) )
+  expect_equal(1:3 %>>% (function(x){x^2}) %>>% sqrt %>% esc, sqrt((1:3)^2) )
+  expect_equal(1:3 %>>% (function(x){x^2})           %>% esc,   ((1:3)^2) )
 })
 
 test_that('%>>% chaining works', {
-  expect_equal(1 %>>% '*'(2) %>>% '*'(4) %>>% '*'(3) %>% esc  , 24 )
-  expect_true( 1 %>>% '*'(2) %>>% '*'(4) %>>% '*'(3) %>% .single_OK      )
+  expect_equal(1 %>>% prod(2) %>>% prod(4) %>>% prod(3) %>% esc  , 24 )
+  expect_true( 1 %>>% prod(2) %>>% prod(4) %>>% prod(3) %>% .single_OK      )
 
   expect_equal(cars %>>% head %>>% colSums %>% esc, colSums(head(cars)))
   expect_true( cars %>>% head %>>% colSums %>% .single_OK)
 
-  expect_error(1 %>>% '*'(2) %>>% '*'('4') %>>% '*'(3) %>% esc          )
+  expect_error(1 %>>% prod(2) %>>% prod('4') %>>% prod(3) %>% esc          )
 })
 
 test_that('last passing value propagate', {
-  expect_equal(1 %>>% '*'(2) %>>% '*'('4') %>>% '*'(3) %>% .single_value , 2)
-  expect_false(1 %>>% '*'(2) %>>% '*'('4') %>>% '*'(3) %>% .single_OK       )
+  expect_equal(1 %>>% prod(2) %>>% prod('4') %>>% prod(3) %>% .single_value , 2)
+  expect_false(1 %>>% prod(2) %>>% prod('4') %>>% prod(3) %>% .single_OK       )
 
   expect_equal(iris %>>% head %>>% colSums %>% .single_value, head(iris))
   expect_false(iris %>>% head %>>% colSums %>% .single_OK)
 })
 
 test_that('function passing works with package labels', {
-  expect_equal(2 %>>% base::'*'(3) %>>% base::'*'(4) %>% esc, 24)
-  expect_true( 2 %>>% base::'*'(3) %>>% base::'*'(4) %>% .single_OK   )
+  expect_equal(2 %>>% base::prod(3) %>>% base::prod(4) %>% esc, 24)
+  expect_true( 2 %>>% base::prod(3) %>>% base::prod(4) %>% .single_OK   )
 
   expect_equal(4 %>>% base::sqrt %>% esc, 2)
   expect_true( 4 %>>% base::sqrt %>% .single_OK  )
@@ -67,11 +67,11 @@ test_that('Alteratives (%||%) work', {
 })
 
 test_that('output toss works %>_%', {
-  expect_equal(1 %>_% '*'(3) %>>% '*'(2) %>% get_code, list("1", "*3", "*2"))
-  expect_equal(1 %>_% '*'(3) %>>% '*'(2) %>% .single_value, 2)
-  expect_true( 1 %>_% '*'(3) %>>% '*'(2) %>% .single_OK)
+  expect_equal(1 %>_% prod(3) %>>% prod(2) %>% get_code, list("1", "prod(3)", "prod(2)"))
+  expect_equal(1 %>_% prod(3) %>>% prod(2) %>% .single_value, 2)
+  expect_true( 1 %>_% prod(3) %>>% prod(2) %>% .single_OK)
 
-  expect_error( 1 %>_% stop(1) %>>% '*'(2) %>% esc)
+  expect_error( 1 %>_% stop(1) %>>% prod(2) %>% esc)
 })
 
 test_that('%*>% safely evaluates failing lists', {
@@ -109,13 +109,13 @@ test_that('%*>% evaluates lists in variables', {
 })
 
 test_that('anonymous expressions can be run', {
-  expect_equal( 1:10 %>>% { 4 } %>% esc  , 4 )
-  expect_true(  1:10 %>>% { 4 } %>% .single_OK     )
+  expect_equal(1:10 %>>% { 4 } %>% esc, 4)
+  expect_true(1:10 %>>% { 4 } %>% .single_OK)
 })
 
 test_that('dot substitution is performed in anonymous expressions', {
-  expect_equal( 1:10 %>>% { . * 2 } %>% esc  , (1:10)*2 )
-  expect_true(  1:10 %>>% { . * 2 } %>% .single_OK            )
+  expect_equal(1:10 %>>% { . * 2 } %>% esc, (1:10)*2)
+  expect_true(1:10 %>>% { . * 2 } %>% .single_OK)
 
   expect_true(  cars %>>% { sapply(., is.numeric) %>% all } %>% esc  )
   expect_true(  cars %>>% { sapply(., is.numeric) %>% all } %>% .single_OK )

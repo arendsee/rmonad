@@ -23,11 +23,11 @@ test_that('simple branching works', {
 
 test_that('branching works %>^%', {
   expect_equal(
-    16 %>^% sqrt %>^% '*'(2) %>% get_value,
+    16 %>^% sqrt %>^% prod(2) %>% get_value,
     list(16,4,32)
   )
   expect_equal(
-    16 %>^% stop(1) %>^% '*'(2) %>% get_value(warn=FALSE), 
+    16 %>^% stop(1) %>^% prod(2) %>% get_value(warn=FALSE), 
     list(16,NULL,32)
   )
 })

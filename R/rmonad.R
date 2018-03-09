@@ -1,8 +1,12 @@
 #' @importFrom utils capture.output object.size
-#' @importFrom magrittr "%>%"
 #' @importFrom methods new slot 'slot<-'
 #' @importFrom graphics plot
 utils::globalVariables(c("%>%", "."))
+NULL
+
+#' @importFrom magrittr %>%
+#' @export
+magrittr::`%>%`
 NULL
 
 #' rmonad: handling pipes, errors, and everything with monads

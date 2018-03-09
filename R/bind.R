@@ -33,12 +33,14 @@ bind <- function(
   fdecon <- extract_metadata(substitute(f), env=envir, skip_name=!expect_rhs_function)
   rhs_str <- deparse(fdecon$expr)
   rhs_doc <- fdecon$docstring
-  rhs_met <- fdecon$metadata
+  rhs_met_raw <- fdecon$metadata # an unevaluated expression
+  rhs_enclos <- fdecon$enclos
 
   xdecon <- extract_metadata(substitute(x), env=envir)
   lhs_str <- deparse(xdecon$expr)
   lhs_doc <- xdecon$docstring
-  lhs_met <- xdecon$metadata
+  lhs_met_raw <- xdecon$metadata # an unevaluated expression
+  lhs_enclos <- xdecon$enclos
 
   m <- entry_lhs_transform(x, f, desc=lhs_str)
 
@@ -46,7 +48,8 @@ bind <- function(
     .single_doc(m) <- lhs_doc
   }
   if(!has_meta(m, index=m@head)){
-    .single_meta(m) <- lhs_met
+    # FIXME: is this really where I want to evaluate the metadata?
+    .single_meta(m) <- eval(lhs_met_raw, envir=lhs_enclos)
   }
 
   o <- if(bind_if(m))
@@ -100,18 +103,29 @@ bind <- function(
       }
 
     o <- .eval(
-      func       = new_function,
-      args       = final_args,
-      env        = envir
+      m    = m,
+      func = new_function,
+      args = final_args,
+      env  = envir,
+      code = rhs_str
     )
 
     m <- m_on_bind(m)
 
-    o <- io_combine(m=m, o=o, f=new_function, margs=parent_ids(m))
+    o <- io_combine(m=m, o=o, f=new_function, margs=parent_ids(m)) 
+
+    rhs_met <- eval_function_metadata(
+      f         = new_function,
+      args      = final_args,
+      meta_expr = rhs_met_raw,
+      env       = envir,
+      enclos    = rhs_enclos
+    )
 
     apply_rewriters(o, rhs_met)
 
   } else {
+    rhs_met <- eval(rhs_met_raw, envir=envir, enclos=rhs_enclos)
     bind_else(m, f)
   }
 
@@ -138,19 +152,61 @@ bind <- function(
 }
 
 # Evaluate the expression, load timing info into resultant object
-.eval <- function(func, args, env){
+.eval <- function(
+  m,     # LHS monad, needed for making the key
+  func,  # main function
+  args,  # arguments to the main function
+  env,   # for evaluation in correct environment 
+  code   # needed for making the key 
+){
 
-  st <- system.time(
-    {
-      result <- as_monad( do.call(func, args, envir=env)) %>% .unnest
-    },
-    gcFirst=FALSE # this kills performance when TRUE
+  key <- .digest(
+    # parent key
+    get_key(m, m@head)[[1]],
+    # the function that will be executed
+    func,
+    # the RHS expression (distinguishes between arguments)
+    code,
+    # account for depth in the workflow
+    get_depth(m, m@head)[[1]],
+    # account for position among the children
+    length(get_dependents(m, m@head)[[1]]),
+    # a nest dependent raw vector
+    .get_nest_salt()
   )
-  .single_time(result) <- signif(unname(st[1]), 2)
 
-  result
+  .set_nest_salt(serialize(key, NULL))
+
+  as_monad(do.call(func, args, envir=env), desc=code, key=key, env=env) %>% .unnest
 }
 
+eval_function_metadata <- function(f, args, meta_expr, env, enclos){
+  if(meta_expr == substitute(list())){
+    return(list())
+  }
+
+  body(f) <- as.call(c(as.name("{"), meta_expr))
+  environment(f) <- enclos
+  m_meta <- as_monad(do.call(f, args), env=env)
+
+  meta <- if(get_OK(m_meta, m_meta@head)){
+    get_value(m_meta, m_meta@head)[[1]]
+  } else {
+    list()
+  }
+
+  if(any(has_warnings(m_meta))){
+    meta$.metadata_warnings <- get_warnings(m_meta)[[1]]
+  }
+  if(any(has_error(m_meta))){
+    meta$.metadata_error <- get_error(m_meta)[[1]]
+  }
+  if(any(has_notes(m_meta))){
+    meta$.metadata_message <- get_notes(m_meta)[[1]]
+  }
+
+  meta
+}
 
 ## m_on_bind options
 

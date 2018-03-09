@@ -49,11 +49,6 @@ splice_function <- function(f, m, ms, ...){
 #' @keywords internal
 add_transitive_edges <- function(m, bv, deps, final){
 
-  m <<- m
-  bv <<- bv
-  deps <<- deps
-  final <<- final
-
   is_logical_matrix <- function(x) {
     is.matrix(x) && is.logical(as.vector(x))
   }

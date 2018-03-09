@@ -61,8 +61,6 @@
 }
 
 # NOTE: This is an internal function, used only in testing.
-# Equality of Rmonad objects is a bit tricky to test, since I internally use
-# UUIDs. So I will use this rough measure of equality:
 rmonad_equal <- function(a, b){
   size(a) == size(b) &&
   identical(get_value(a, warn=F), get_value(b, warn=F)) &&
@@ -70,4 +68,13 @@ rmonad_equal <- function(a, b){
   # the same between between rmonad runs
   identical(mtabulate(a, code=T)[, -5], mtabulate(b, code=T)[, -5]) &&
   identical(missues(a), missues(b))
+}
+
+.get_nest_salt <- function(){
+  dynGet(".rmonad_nest_salt", ifnotfound=NULL, inherits=TRUE)
+}
+
+.set_nest_salt <- function(...){
+  env <- parent.frame()
+  assign(".rmonad_nest_salt", c(.get_nest_salt(), ...), envir=env)  
 }

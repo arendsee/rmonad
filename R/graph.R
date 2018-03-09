@@ -71,12 +71,13 @@ size <- function(m) {
     child@data[[child@head]]@options[[opt_name]] <- opt[[i]]
   }
 
+  .single_depth(child) <- get_depth(parent, parent@head) + 1L
+
   child <- .rmonad_union(parent, child)
   child@graph <- child@graph + igraph::edge(parent@head, child@head, type=type)
 
   child
 }
-
 
 # The following functions resolve conflicts in attributes that arise with the
 # union of two igraph objects. If any attributes are shared between the graphs,
@@ -109,6 +110,13 @@ size <- function(m) {
     b@graph <- .zip_edge(b@graph)
     # FIXME: need to resolve any possible name conflicts here
     b@data <- append(a@data[setdiff(names(a@data), names(b@data))], b@data)
+    
+    # common <- intersect(names(a@data), names(b@data))
+    # if(length(common) > 0){
+    #   i = common[1]
+    #   msg <- sprintf("These have the same same: '%s', '%s'", a@data[[i]]@code, b@data[[i]]@code)
+    #   warning(msg)
+    # }
   }
   b
 }
@@ -140,22 +148,30 @@ size <- function(m) {
       value = get_nest_depth(nest) +
               (.single_nest_depth(m) - .single_nest_depth(nest) + 1L)
     )
+    # NOTE: Great evil resides in .single_nest
     .single_nest(m) <- nest
   }
   m
 }
 
 # Make an empty, directed graph
-.new_rmonad_graph <- function(m){
-  node_id <- uuid::UUIDgenerate()
+.new_rmonad_graph <- function(m, node_id){
   m@graph <- igraph::make_empty_graph(directed=TRUE, n=1)
   m@graph <- igraph::set.vertex.attribute(m@graph, "name", value=node_id)
   m@head <- node_id
   m
 }
 
+.parse_tags <- function(...){
+  tags <- unlist(list(...))
+  tags <- ifelse(tags == "", "/", tags)
+  tags <- unlist(strsplit(tags, '/'))
+  list(tag=tags, str=paste(tags, collapse='/'))
+}
+
 .process_tag_and_index <- function(m, index, tag, sep="/"){
   if(!is.null(tag)){
+    tag <- .parse_tags(tag)$tag
     node_tags <- get_tag(m)
     index <- which(.a_has_prefix_b(node_tags, tag))
     name <- sapply(node_tags[index], paste, collapse=sep)

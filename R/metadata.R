@@ -38,8 +38,16 @@
 #' extract_metadata(substitute(foo(y=2)))
 extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
 
-  metadata <- list()
+  # NOTE: I used to use methods::existsFunction here, but that misses them
+  # Or more likely I am using it wrong, but the following does what I want
+  is_function <- function(x,e){
+    exists(as.character(x), e) &&
+    is.function(get(as.character(x), e))
+  }
+
+  metadata <- substitute(list())
   docstring <- .default_doc()
+  enclos <- env
 
   # Determine if expr has the form
   #
@@ -73,7 +81,7 @@ extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
       class(expr[[2]][[1]]) == "name" &&     # first element is a list
       as.character(expr[[2]][[1]]) == "list" # first element is a list
     ){
-      metadata <- eval(expr[[2]], envir=env)
+      metadata <- expr[[2]]
       expr <- expr[-2]
     }
   }
@@ -119,7 +127,7 @@ extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
   else if(
     is.call(expr) &&
     length(expr[[1]]) == 1 && # i.e. not in a namespace (foo::bar)
-    methods::existsFunction(as.character(expr[[1]]), where=env)
+    is_function(as.character(expr[[1]]), env)
   ) {
     meta <- extract_metadata(expr[[1]], env=env, skip_name=FALSE)
     docstring <- meta$docstring
@@ -130,16 +138,19 @@ extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
   else if (
     ! skip_name &&
     is.name(expr) &&
-    methods::existsFunction(as.character(expr), where=env)
+    is_function(as.character(expr), env)
   ){
     x <- get( as.character(expr), envir=env )
     if(!is.null(body(x))){
-      bod <- extract_metadata(body(x), env=env)
+      # We are entering the scope of a function ...
+      enclos <- environment(x)
+      # so recurse in the enclosing environment
+      bod <- extract_metadata(body(x), env=enclos)
       docstring <- bod$docstring
       metadata <- bod$metadata
     }
+
   }
 
-
-  list(expr=expr, docstring=docstring, metadata=metadata)
+  list(expr=expr, docstring=docstring, metadata=metadata, enclos=enclos)
 }

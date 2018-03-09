@@ -1,17 +1,19 @@
 context("non-standard evaluation")
 
+s <- substitute
+
 test_that("when expression is not a lambda", {
   expect_equal(
-    extract_metadata(2),
-    list(expr=2, docstring=.default_doc(), metadata=list())
+    extract_metadata(2)[1:3],
+    list(expr=2, docstring=.default_doc(), metadata=s(list()))
   )
   expect_equal(
-    extract_metadata("adsf"),
-    list(expr="adsf", docstring=.default_doc(), metadata=list())
+    extract_metadata("adsf")[1:3],
+    list(expr="adsf", docstring=.default_doc(), metadata=s(list()))
   )
   expect_equal(
-    extract_metadata(c("adsf", "df")),
-    list(expr=c("adsf", "df"), docstring=.default_doc(), metadata=list())
+    extract_metadata(c("adsf", "df"))[1:3],
+    list(expr=c("adsf", "df"), docstring=.default_doc(), metadata=s(list()))
   )
 })
 
@@ -20,56 +22,55 @@ foo <- function(x, y) { "foofoo"; list(k=1); x + y }
 e=environment()
 test_that("when expression is a named function", {
   expect_equal(
-    extract_metadata(substitute(foo), env=e, skip_name=FALSE),
-    list(expr=substitute(foo), docstring="foofoo", metadata=list(k=1))
+    extract_metadata(substitute(foo), env=e, skip_name=FALSE)[1:3],
+    list(expr=substitute(foo), docstring="foofoo", metadata=s(list(k=1)))
   )
   expect_equal(
-    extract_metadata(substitute(foo(y=2)), env=e),
-    list(expr=substitute(foo(y=2)), docstring="foofoo", metadata=list(k=1))
+    extract_metadata(substitute(foo(y=2)), env=e)[1:3],
+    list(expr=substitute(foo(y=2)), docstring="foofoo", metadata=s(list(k=1)))
   )
 })
 
-
 test_that("when lambda is only a string", {
   expect_equal(
-    extract_metadata(substitute({"this is not a docstring"})),
+    extract_metadata(substitute({"this is not a docstring"}))[1:3],
     list(
       expr      = substitute({"this is not a docstring"}),
       docstring = .default_doc(),
-      metadata  = list()
+      metadata  = s(list())
     )
   )
 })
 
 test_that("when lambda has no docstring", {
   expect_equal(
-    extract_metadata(substitute({2*2;5*x})),
+    extract_metadata(substitute({2*2;5*x}))[1:3],
     list(
       expr=substitute({2*2;5*x}),
       docstring=.default_doc(),
-      metadata=list()
+      metadata=s(list())
     )
   )
 })
 
 test_that("when lambda has docstring", {
   expect_equal(
-    extract_metadata(substitute({"this is a docstring";NULL})),
+    extract_metadata(substitute({"this is a docstring";NULL}))[1:3],
     list(
       expr=substitute({NULL}),
       docstring="this is a docstring",
-      metadata=list()
+      metadata=s(list())
     )
   )
 })
 
 test_that("when lambda starts with string that is part of an expression", {
   expect_equal(
-    extract_metadata(substitute({"this is not a docstring" %>% foo;NULL})),
+    extract_metadata(substitute({"this is not a docstring" %>% foo;NULL}))[1:3],
     list(
       expr=substitute({"this is not a docstring" %>% foo;NULL}),
       docstring=.default_doc(),
-      metadata=list()
+      metadata=s(list())
     )
   )
 })
@@ -99,7 +100,7 @@ test_that("as_monad handles docstrings", {
   expect_equal(as_monad({"asdf"; 5}) %>% .single_doc, "asdf")
   expect_equal(as_monad({"asdf"; 5}) %>% esc, 5)
   # no funny business is going on ...
-  expect_equal(as_monad({"asdf"; 5}) %>>% '*'(6) %>% esc, 30)
+  expect_equal(as_monad({"asdf"; 5}) %>>% prod(6) %>% esc, 30)
   expect_equal(as_monad({}) %>% esc, NULL)
 
   expect_true(
@@ -128,19 +129,19 @@ test_that("anonymous functions handle docstrings and metadata", {
 
 test_that("metadata is extracted", {
   expect_equal(
-    extract_metadata(substitute({list(k=1); NULL})),
+    extract_metadata(substitute({list(k=1); NULL}))[1:3],
     list(
       expr      = substitute({NULL}),
       docstring = .default_doc(),
-      metadata  = list(k=1)
+      metadata  = s(list(k=1))
     )
   )
   expect_equal(
-    extract_metadata(substitute({"asdf"; list(k=1); x + y})),
+    extract_metadata(substitute({"asdf"; list(k=1); x + y}))[1:3],
     list(
       expr      = substitute({x + y}),
       docstring = "asdf",
-      metadata  = list(k=1)
+      metadata  = s(list(k=1))
     )
   )
 })
@@ -157,9 +158,9 @@ test_that("docstrings are correct in anonymous bind expressions", {
 test_that("metadata lists are evaluated in the proper environment", {
   expect_equal(
     {
-      x <- 42
+      y <- 42
       36 %>>% {
-        list(foo = x)
+        list(foo = y)
         NULL
       } %>% .single_meta %>% { .$foo }
     },
@@ -174,5 +175,24 @@ test_that("metadata lists are evaluated in the proper environment", {
       } %>% .single_error
     },
     "dang it"
+  )
+})
+
+
+foo <- function(x, k=1) { list(x=2*x); x }
+bar <- (function(){ fluf = 9; function(y, k=1) { list(x=fluf); fluf }})()
+bomb <- function(x){ list(stop("on no!")); x }
+test_that("metadata are evaluated in function scope", {
+  # Can access arguments
+  expect_equal(
+    5 %>>% foo %>% get_meta, list(list(), list(x=10))
+  )
+  # Can access enclosing scope
+  expect_equal(
+    5 %>>% bar %>% get_meta, list(list(), list(x=9))
+  )
+  # Errors in the metadata do not blow up the pipeline
+  expect_equal(
+    5 %>>% bomb %>% get_meta, list(list(), list(.metadata_error="on no!"))
   )
 })

@@ -304,9 +304,8 @@ set.seed(210)
 
 #' @param file The input GFF file
 #' @param tags The GFF tags to keep
-#' @param cache A caching function used to store larger intermediate data (by
 #'        default these are not stored)
-read_gff <- function(file, tags, cache=identity){
+read_gff <- function(file, tags){
 
   "
   This function reads a GFF. It builds a data frame from it that with a column
@@ -350,7 +349,7 @@ read_gff <- function(file, tags, cache=identity){
     }
   )
 
-  raw_gff %>% cache %>>% {
+  raw_gff %>% tag('raw_gff') %>>% {
 
     "
     The %>>% operator applies the function described in this block to the
@@ -532,8 +531,8 @@ read_gff <- function(file, tags, cache=identity){
 
 }
 
-gff_as_graph <- function(file, cache=identity){
-  read_gff(file, tags=c("ID", "Parent"), cache=cache) %>% cache %>>%
+gff_as_graph <- function(file){
+  read_gff(file, tags=c("ID", "Parent")) %>>%
   dplyr::filter(!is.na(Parent)) %>>%
   {
       "Make a unique label for each CDS and exon interval"
@@ -542,7 +541,7 @@ gff_as_graph <- function(file, cache=identity){
                                 paste(type, start, sep='-'),
                                 ID)) %>%
       dplyr::ungroup()
-  } %>% cache %>>% {
+  } %>>% {
     "Make a graph of gene models"
     dplyr::select(., ID, Parent) %>%
       as.matrix %>%
@@ -555,14 +554,9 @@ gff_as_graph <- function(file, cache=identity){
 That is the whole GFF program in an rmonad framework
 
 ```{r}
-# Here we build a function to recache the last value stored in an Rmonad
-# object. We choose to cache our data locally in the 'ARCHIVE' folder. `rmonad`
-# will create the folder and the caching files automatically.
-cache <- make_recacher(make_local_cacher('ARCHIVE'))
 result <-
-  system.file('extdata', 'gff', '0.gff3', package='rmonad') %v>%
-  gff_as_graph(cache=cache)
-result %>>% plot
+  system.file('extdata', 'gff', '0.gff3', package='rmonad') %v>% gff_as_graph
+result %>% plot
 ```
 
 `esc` will extract the final result, and raise all errors, warnings and
@@ -606,20 +600,12 @@ are the `rmonad` ids. The red arrow indicates a 'nest' relationship. Green nodes
 are OK, orange nodes raised a warning, red nodes (none appear in this graph)
 represent errors.
 
-After we are happy with our result, we may want to remove the cached data:
-
-```{r cleaningup}
-clear_cache(result)
-```
-
-
 If the pipeline fails, the last valid result is saved, for example
 
 ```{r}
-cache <- make_recacher(make_local_cacher('ARCHIVE'))
 m <-
   system.file('extdata', 'gff', '15.gff3', package='rmonad') %v>%
-  gff_as_graph(cache=cache)
+  gff_as_graph
 ```
 
 To diagnose the problem, we might first read the error messages:
@@ -673,7 +659,6 @@ the data that triggered the problem:
 get_value(m, get_parents(m, 5)[[1]])
 get_value(m, 5)[[1]]
 ```
-
 
 
 From this it looks like there is raw sequence data contained in the GFF file.

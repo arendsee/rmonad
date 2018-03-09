@@ -1,6 +1,16 @@
 # rmonad 0.5.0
 
- * use `saveRDS`, rather than `save`, local caching
+ * add vignette showing integration with `Nozzle.R1`
+
+ * reexport `magrittr` pipe operator
+
+ * metadata lists are now evaluated in the natural lexical scope, with access
+   to the function arguments and variables in the scope where the function was
+   defined.
+
+ * add `loop` function
+
+ * use `saveRDS`, rather than `save`, for local caching
 
  * change `print.Rmonad` parameter `print_value` to `value`
 
@@ -11,9 +21,15 @@
 
  * add `tag` field to `Rmonad` objects and access functions:
 
-   - `tag` - set the tag of the current head node (or nodes at given indices)
+   - `tag` - set the tags of the current head node (or nodes at given indices)
 
    - `view` - set the head of the graph to the given tagged node
+
+   - `views` - get list of Rmonad objects matching a given tag
+
+   - `viewID` - like view but with ID
+
+   - `viewIDs` - like views but with ID
 
    - `get_tag` - get tags for nodes
 
@@ -29,6 +45,14 @@
 
  * generalize `make_local_cacher` to take custom functions for saving, getting,
    checking and deleting data.
+
+
+## Experimental
+
+ * add automatic caching, if a function takes more than s seconds to run, it is cached
+
+ * add option to turn toggle auto caching: `rmonad.auto_cache` (FALSE, by default)
+
 
 ## Bug fixes
 

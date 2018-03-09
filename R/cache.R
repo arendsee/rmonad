@@ -16,7 +16,8 @@ void_cache <- function(){
     }
     NULL
   }
-  new("CacheManager",
+  new("ValueManager",
+    in_memory = TRUE,
     get = get,
     del = nothing,
     chk = false
@@ -25,7 +26,7 @@ void_cache <- function(){
 
 #' Represent a dummy value for a node downstream of a failing node 
 #'
-#' Returns a CacheManager that represents a dummy value for a node downstream
+#' Returns a ValueManager that represents a dummy value for a node downstream
 #' of a failing node. Unlike \code{void_cache}, this presence of this manager
 #' in a pipeline is not pathological, so does not raise a warning by default.
 #'
@@ -39,7 +40,8 @@ fail_cache <- function(){
     }
     NULL
   }
-  new("CacheManager",
+  new("ValueManager",
+    in_memory = TRUE,
     get = get,
     del = nothing,
     chk = false
@@ -62,7 +64,8 @@ no_cache <- function(){
     }
     NULL
   }
-  new("CacheManager",
+  new("ValueManager",
+    in_memory = TRUE,
     get = get,
     del = nothing,
     chk = false
@@ -84,57 +87,73 @@ memory_cache <- function(x){
   # FIXME: allow deletion of x, must delete only the LOCAL x 
   # FIXME: allow checking, must check for presence of LOCAL x
   force(x)
-  new("CacheManager",
+  new("ValueManager",
+    in_memory = TRUE,
     get = function(...) x,
     del = nothing,
     chk = true
   )
 }
 
-#' Make a function of x that caches data locally
+#' Make Cacher object
 #'
-#' @param path A directory in which to cache results. A temporary directory is
-#' created if none is given.
-#' @param save function of x and filename that saves x to the path filename
-#' @param get function of filename that retrieves the cached data
-#' @param del function of filename that deletes the cached data
-#' @param chk function of filename that checks existence of the cached data 
-#' @param ext function of class(x) that determines the filename extension
+#' @param f_path A function for finding the directory in which to cache results
+#' @param f_save function of x and filename that saves x to the path filename
+#' @param f_get function of filename that retrieves the cached data
+#' @param f_del function of filename that deletes the cached data
+#' @param f_ext function of class(x) that determines the filename extension
 #' @return A function that builds a local cache function for a value
 #' @export
 #' @family cache
-#' @examples
-#' \dontrun{
-#'   foo <- 45
-#'   cacher <- make_local_cacher()
-#'   foo_ <- cacher(45)
-#'   rm(foo)
-#'   foo_@get()
-#' }
-make_local_cacher <- function(
-  path = tempdir(),
-  save = saveRDS,
-  get  = readRDS,
-  del  = unlink,
-  chk  = file.exists,
-  ext = function(cls) ".Rdata" 
+make_cacher <- function(
+  f_path = function() getOption("rmonad.cache_dir"),
+  f_save = saveRDS,
+  f_get  = readRDS,
+  f_del  = unlink,
+  f_ext = function(cls) ".Rdata" 
 ){
-  if(!dir.exists(path)){
-    dir.create(path, recursive=TRUE)
+  get_files <- function(key){
+    list.files(f_path(), sprintf("^%s\\..*", key), full.names=TRUE)
   }
-  path <- normalizePath(path)
-  # Save x and return a function that can load it
-  function(x){
-    filename <- file.path(path, paste0('rmonad-', uuid::UUIDgenerate(), ext(class(x))))
-    save(x, filename) 
-    rm(x)
-    new("CacheManager",
-      # Ignore warn in this case (FIXME: is this right?)
-      get = function(warn=FALSE, ...) get(filename, ...),
-      del = function(...) del(filename, ...),
-      chk = function(...) chk(filename, ...) 
-    )
+
+  chk = function(key) {
+    # Or exactly one cached file has this key (with any extension)
+    length(get_files(key)) == 1
   }
+
+  get = function(key, warn=FALSE, ...) {
+    if(chk(key)){
+      f_get(get_files(key)[1], ...)
+    } else {
+      stop(sprintf("Cannot uncache, failed to find key '%s' in path '%s'", key, f_path()))
+    }
+  }
+
+  put = function(x, key) {
+    extension <- f_ext(class(x))
+    filename <- file.path(f_path(), paste0(key, extension))
+    if(!dir.exists(f_path())){
+      dir.create(f_path(), showWarnings=FALSE, recursive=TRUE)
+    }
+    f_save(x, filename)
+  }
+
+  del = function(key, ...) f_del(get_files(key), ...)
+
+  new("Cacher",
+    chk = chk,
+    put = put,
+    get = get,
+    del = del,
+    bld = function(key){
+      new("ValueManager",
+        in_memory = FALSE,
+        get = function(...) get(key, ...),
+        del = function() del(key),
+        chk = function() chk(key)
+      )
+    }
+  )
 }
 
 #' Clear cached values and delete temporary files
@@ -187,8 +206,8 @@ clear_cache <- function(m, index=.get_ids(m)){
 #' 3 %>>% add1 %>% cc %>>% add2 %>>% add3 -> m
 #' m
 make_recacher <- function(cacher, preserve=TRUE){
-  # TODO: should check that meta$cache is a proper caching function
   # @param m An Rmonad object
+  # @param tag A tag for quick access to the cached node
   function(m, tag=.default_tag()){
     # lossy, so as_monad will not create extra nesting
     m <- as_monad(m, lossy=TRUE, desc=deparse(substitute(m)))
@@ -197,4 +216,43 @@ make_recacher <- function(cacher, preserve=TRUE){
     .single_tag(m) <- tag
     m
   }
+}
+
+.digest <- function(...){
+    lapply(list(...), serialize, connection=NULL) %>% digest::digest(algo='md5')
+}
+
+#' Cache all large values that are stored in memory
+#'
+#' @param m Rmonad object
+#' @export
+#' @examples
+#' \dontrun{
+#' set.seed(42)
+#' m <- as_monad(runif(1e6), tag="a") %>>%
+#'      sqrt %>% tag("b") %>>%
+#'      log %>% tag("c") %>>% prod(2) %>>% prod(3)
+#' m1 <- crunch(m)
+#' get_value(m,  1:3) %>% lapply(head)
+#' get_value(m1, 1:3) %>% lapply(head)
+#' }
+crunch <- function(m){
+  .m_check(m)
+  head <- m@head
+  cacher <- make_cacher()
+  keys <- get_key(m)[get_mem(m) > getOption("rmonad.crunch_maxmem")]
+  for(k in keys){
+    m@head <- k
+    raw <- .single_raw_value(m)
+    if(raw@in_memory){
+      cacher@put(raw@get(), key=m@head)
+      .single_raw_value(m) <- cacher@bld(key=m@head)
+      # FIXME: Abmoninable hack:
+      # Accessing the value on the detached head is seemingly needed ...
+      # otherwise, for whatever reason, it grabs the head value.
+      .hack <- get_value(m, m@head)[[1]]
+    }
+  }
+  m@head <- head
+  m
 }

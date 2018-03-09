@@ -4,22 +4,22 @@
 \alias{view}
 \title{Set the head of an Rmonad to a particular tag}
 \usage{
-view(m, tag)
+view(m, ...)
 }
 \arguments{
 \item{m}{Rmonad object}
 
-\item{tag}{string specifying a single tag for one node in the pipeline}
+\item{...}{one or more tag strings specifying a unique node in the pipeline}
 }
 \value{
 Rmonad object with head reset
 }
 \description{
-Set the head of an Rmonad to a particular tag
+Will split on '/'
 }
 \examples{
 library(magrittr)
-m <- 256 \%v>\% sqrt \%>\% tag('a') \%v>\% sqrt
-esc(view(m, 'a'))
+m <- 256 \%v>\% sqrt \%>\% tag('a', 'b') \%v>\% sqrt
+esc(view(m, 'a/b'))
 funnel(view(m, 'a'), m) \%*>\% sum
 }

@@ -6,8 +6,10 @@
 \alias{get_dependents}
 \alias{get_nest}
 \alias{get_prior}
+\alias{get_depth}
 \alias{get_nest_depth}
 \alias{get_value}
+\alias{get_key}
 \alias{get_id}
 \alias{get_OK}
 \alias{get_code}
@@ -30,9 +32,13 @@ get_nest(m, index = .get_ids(m), tag = NULL)
 
 get_prior(m, index = .get_ids(m), tag = NULL)
 
+get_depth(m, index = .get_ids(m), tag = NULL)
+
 get_nest_depth(m, index = .get_ids(m), tag = NULL)
 
 get_value(m, index = .get_ids(m), tag = NULL, warn = TRUE)
+
+get_key(m, index = .get_ids(m), tag = NULL)
 
 get_id(m, index = .get_ids(m), tag = NULL)
 

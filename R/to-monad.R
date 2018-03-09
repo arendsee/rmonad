@@ -19,6 +19,7 @@
 #' @param expr An expression
 #' @param xs  A list of elements to join into a monad
 #' @param doc A docstring to associate with the monad
+#' @param key 16 byte raw vector
 #' @param desc A description of the monad (usually the producing code)
 #' @param keep_history merge the histories of all monads
 #' @param env Evaluation environment
@@ -50,16 +51,29 @@ NULL
 
 #' @rdname x_to_monad
 #' @export
-as_monad <- function(expr, desc=NULL, tag=.default_tag(), doc=.default_doc(), lossy=FALSE){
+as_monad <- function(
+  expr,
+  desc  = NULL,
+  tag   = .default_tag(),
+  doc   = .default_doc(),
+  key   = NULL,
+  env   = parent.frame(),
+  lossy = FALSE
+){
 # TODO: 'lossy' is an lousy name, should change to 'nest', or something
 # as_monad :: a -> m a
+
+  if(getOption("rmonad.auto_cache")){
+    cacher <- make_cacher()
+    if(!is.null(key) && cacher@chk(key)){
+      return(cacher@get(key))
+    }
+  }
 
   value <- .default_value()
   warns <- .default_warnings()
   fails <- .default_error()
   isOK  <- .default_OK()
-
-  env <- parent.frame()
 
   st <- system.time(
     {
@@ -85,14 +99,27 @@ as_monad <- function(expr, desc=NULL, tag=.default_tag(), doc=.default_doc(), lo
     gcFirst=FALSE # this kills performance when TRUE
   )
 
+  runtime <- signif(unname(st[1]), 2)
+
   if(lossy && is_rmonad(value)){
+    if(
+       # If auto_cache is on
+       getOption("rmonad.auto_cache") &&
+       # AND this expression took a long time to run
+       runtime > getOption("rmonad.cache_maxtime") &&
+       # AND the result passed
+       isOK
+     ){
+      # THEN cache the result
+      cacher@put(value, key=key)
+    }
     return(value)
   }
 
   ed <- extract_metadata(substitute(expr), env=env)
   expr <- ed$expr
   doc <- ed$docstring
-  met <- ed$metadata
+  met <- eval(ed$metadata, envir=env)
 
   code <- if(is.null(desc)) {
     deparse(substitute(expr))
@@ -100,7 +127,11 @@ as_monad <- function(expr, desc=NULL, tag=.default_tag(), doc=.default_doc(), lo
     desc
   }
 
-  m <- Rmonad()
+  if(is.null(key)){
+    key <- .digest(code, .get_nest_salt())
+  }
+
+  m <- Rmonad(node_id=paste(key, collapse=""))
 
   if(isOK){
     .single_value(m) <- value
@@ -108,22 +139,37 @@ as_monad <- function(expr, desc=NULL, tag=.default_tag(), doc=.default_doc(), lo
     .single_raw_value(m) <- void_cache()
   }
 
+  # `tag` splits the tags on '/'
+  m <- tag(m, tag)
+
   # These accessors do the right thing (don't mess with them)
   .single_code(m)       <- code
-  .single_tag(m)        <- tag
+  .single_key(m)        <- key
   .single_error(m)      <- fails
   .single_warnings(m)   <- warns
   .single_notes(m)      <- notes
   .single_OK(m)         <- isOK
   .single_doc(m)        <- doc
   .single_mem(m)        <- as.integer(object.size(value))
-  .single_time(m)       <- signif(unname(st[1]), 2)
+  .single_time(m)       <- runtime
   .single_meta(m)       <- met
   .single_summary(m)    <- .default_summary()
+  .single_depth(m)      <- .default_depth()
   .single_nest_depth(m) <- .default_nest_depth()
   .single_stored(m)     <- .default_stored()
 
   m <- apply_rewriters(m, met)
+
+  if(
+     # If auto_cache is on
+     getOption("rmonad.auto_cache") &&
+     # AND if this took a long time to run, then cache the value
+     runtime >= getOption("rmonad.cache_maxtime") &&
+     # AND the evaluation passed
+     isOK)
+  {
+    cacher@put(m, key=key)
+  }
 
   m
 
@@ -202,8 +248,16 @@ combine <- function(xs, keep_history=TRUE, desc=.default_code()){
     }
   })
 
+  # When combining multiple nodes, the new key is the XOR of the code digest
+  # against the keys of all the parents.
+  # `desc` will hold the full term: e.g. `funnel(x = 2, y = whatever)`
+  # This ensures the key will change if the order of arguments changes (which
+  # is important when one or more of them are positional.
+  parent_keys <- lapply(xs, function(x) get_key(x, x@head)[[1]])
+  key <- .digest(parent_keys, desc)
+
   # make a new monad that is the child of all monads in the input list
-  out <- as_monad(value)
+  out <- as_monad(value, key=key)
 
   # remove cached value of parents if they were passing AND if they have NO tag
   xs <- lapply(xs, function(x){
