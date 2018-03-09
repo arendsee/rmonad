@@ -13,7 +13,6 @@ Description:
 Authors@R: person("Zebulun", "Arendsee", email="zbwrnz@gmail.com", role=c("aut","cre"))
 URL: https://github.com/arendsee/rmonad
 BugReports: https://github.com/arendsee/rmonad/issues
-Encoding: UTF-8
 Depends:
     R (>= 3.2.0)
 Imports:
