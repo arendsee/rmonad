@@ -4,13 +4,9 @@
    to the function arguments and variables in the scope where the function was
    defined.
 
- * add caching, if a function takes more than s seconds to run, it is cached
-
- * add option to turn off auto caching: `rmonad.auto_cache`
-
  * add `loop` function
 
- * use `saveRDS`, rather than `save`, local caching
+ * use `saveRDS`, rather than `save`, for local caching
 
  * change `print.Rmonad` parameter `print_value` to `value`
 
@@ -45,6 +41,14 @@
 
  * generalize `make_local_cacher` to take custom functions for saving, getting,
    checking and deleting data.
+
+
+## Experimental
+
+ * add automatic caching, if a function takes more than s seconds to run, it is cached
+
+ * add option to turn toggle auto caching: `rmonad.auto_cache` (FALSE, by default)
+
 
 ## Bug fixes
 

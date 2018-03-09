@@ -7,7 +7,7 @@
 
   # Set whether automatic caching is on or off 
   if(is.null(getOption("rmonad.auto_cache"))){
-    options(rmonad.auto_cache = TRUE)
+    options(rmonad.auto_cache = FALSE)
   }
 
   # Default cache function
