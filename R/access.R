@@ -200,7 +200,7 @@ has_summary <- function(m, ...) sapply(get_summary(m, ...), function(x) length(x
 viewID <- function(m, id){
   .m_check(m)
   .check_type(id, type='index', test=function(x) is.numeric(id) && length(id) == 1)
-  m@head <- igraph::vertex_attr(m@graph)$name[id]
+  m@head <- get_key(m, id)[[1]]
   m
 }
 

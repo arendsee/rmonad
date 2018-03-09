@@ -125,7 +125,7 @@ make_cacher <- function(
     if(chk(key)){
       f_get(get_files(key)[1], ...)
     } else {
-      stop("Cannot uncache this value") 
+      stop(sprintf("Cannot uncache, failed to find key '%s' in path '%s'", key, f_path()))
     }
   }
 
@@ -148,7 +148,7 @@ make_cacher <- function(
     bld = function(key){
       new("ValueManager",
         in_memory = FALSE,
-        get = function() get(key),
+        get = function(...) get(key, ...),
         del = function() del(key),
         chk = function() chk(key)
       )
@@ -222,6 +222,35 @@ make_recacher <- function(cacher, preserve=TRUE){
     lapply(list(...), serialize, connection=NULL) %>% digest::digest(algo='md5')
 }
 
+#' Cache all large values that are stored in memory
+#'
+#' @param m Rmonad object
+#' @export
+#' @examples
+#' set.seed(42)
+#' m <- as_monad(runif(1e6), tag="a") %>>%
+#'      sqrt %>% tag("b") %>>%
+#'      log %>% tag("c") %>>% prod(2) %>>% prod(3)
+#' m1 <- crunch(m)
+#' get_value(m,  1:3) %>% lapply(head)
+#' get_value(m1, 1:3) %>% lapply(head)
 crunch <- function(m){
-  # STUB: find all nodes that require a lot of memory and cache their values
+  .m_check(m)
+  head <- m@head
+  cacher <- make_cacher()
+  keys <- get_key(m)[get_mem(m) > getOption("rmonad.crunch_maxmem")]
+  for(k in keys){
+    m@head <- k
+    raw <- .single_raw_value(m)
+    if(raw@in_memory){
+      cacher@put(raw@get(), key=m@head)
+      .single_raw_value(m) <- cacher@bld(key=m@head)
+      # FIXME: Abmoninable hack:
+      # Accessing the value on the detached head is seemingly needed ...
+      # otherwise, for whatever reason, it grabs the head value.
+      .hack <- get_value(m, m@head)[[1]]
+    }
+  }
+  m@head <- head
+  m
 }
