@@ -227,6 +227,7 @@ make_recacher <- function(cacher, preserve=TRUE){
 #' @param m Rmonad object
 #' @export
 #' @examples
+#' \dontrun{
 #' set.seed(42)
 #' m <- as_monad(runif(1e6), tag="a") %>>%
 #'      sqrt %>% tag("b") %>>%
@@ -234,6 +235,7 @@ make_recacher <- function(cacher, preserve=TRUE){
 #' m1 <- crunch(m)
 #' get_value(m,  1:3) %>% lapply(head)
 #' get_value(m1, 1:3) %>% lapply(head)
+#' }
 crunch <- function(m){
   .m_check(m)
   head <- m@head

@@ -3,6 +3,7 @@
 S3method(plot,Rmonad)
 S3method(print,Rmonad)
 export("%*>%")
+export("%>%")
 export("%>>%")
 export("%>^%")
 export("%>_%")

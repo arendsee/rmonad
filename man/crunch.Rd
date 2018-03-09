@@ -13,7 +13,7 @@ crunch(m)
 Cache all large values that are stored in memory
 }
 \examples{
-poo = list(); document() #####!!!!!!!!!!!!!!!!!!!!!!!!
+\dontrun{
 set.seed(42)
 m <- as_monad(runif(1e6), tag="a") \%>>\%
      sqrt \%>\% tag("b") \%>>\%
@@ -21,4 +21,5 @@ m <- as_monad(runif(1e6), tag="a") \%>>\%
 m1 <- crunch(m)
 get_value(m,  1:3) \%>\% lapply(head)
 get_value(m1, 1:3) \%>\% lapply(head)
+}
 }

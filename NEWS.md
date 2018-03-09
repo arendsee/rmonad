@@ -1,5 +1,7 @@
 # rmonad 0.5.0
 
+ * reexport `magrittr` pipe operator
+
  * metadata lists are now evaluated in the natural lexical scope, with access
    to the function arguments and variables in the scope where the function was
    defined.
