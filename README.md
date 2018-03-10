@@ -199,12 +199,10 @@ later access.
 
 
 ```r
-# Make a cacher, we choose to cache in memory
-f <- make_recacher(memory_cache)
-# cache each step you want to reuse
-as_monad(256) %>% f('a1') %>>% sqrt %>% f('a2') %__%
-as_monad(144) %>% f('b1') %>>% sqrt %>% f('b2') %__%
-as_monad(333) %>% f('c') -> m
+# tag each step you want to reuse
+as_monad(256) %>% tag('a1') %>>% sqrt %>% tag('a2') %__%
+as_monad(144) %>% tag('b1') %>>% sqrt %>% tag('b2') %__%
+as_monad(333) %>% tag('c') -> m
 # sum values across three nodes of the pipeline
 funnel(view(m, 'a2'), view(m, 'b2'), view(m, 'c')) %*>% sum %>% plot(label='value')
 ```
@@ -255,33 +253,17 @@ analysis
 #> 
 #> 
 #> 
-#>     The next step is to take 6 normal random variables
+#>     Then, just for good measure, we toss in six exponentials
 #> 
 #> N4> "{
-#>     rnorm(6)
+#>     rexp(6)
 #> }"
 #> N5> "`^`(2)"
 #> N6> "sum"
 #> [1] 1.103617
 #> 
-#> 
-#> 
-#>     And this is were the magic happens, we take 'a' random normal variables
-#> 
-#> N7> "{
-#>     rnorm("a")
-#> }"
-#>  * ERROR: invalid arguments
-#>  * WARNING: NAs introduced by coercion
-#> 
-#> 
-#>     Then, just for good measure, we toss in six exponentials
-#> 
-#> N8> "{
-#>     rexp(6)
-#> }"
-#> N9> "`^`(2)"
-#> N10> "sum"
+#> N7> "`^`(2)"
+#> N8> "sum"
 #> 
 #>  ----------------- 
 #> 
@@ -438,11 +420,7 @@ countdown <- function(x) {
 
 ![plot of chunk recursion](README-recursion-1.png)
 
-## rmonad v0.5.0 goals
-
- - [ ] The "caching" system currently really does not do caching. It does
-   archiving. Rerunning the pipeline will not automatically reuse cached
-   values.
+## rmonad v0.6.0 goals
 
  - [ ] Record all operations, even those not run. Currently if an input to a
    node fails, the node is ignored. So the ultimate graph is truncated at the
