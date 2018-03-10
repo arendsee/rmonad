@@ -1,25 +1,16 @@
 # rmonad 0.5.0
 
- * add vignette showing integration with `Nozzle.R1`
+## New Features
 
- * reexport `magrittr` pipe operator
+ * Generalize `make_local_cacher` to take custom functions for saving, getting,
+   checking and deleting data.
 
- * metadata lists are now evaluated in the natural lexical scope, with access
-   to the function arguments and variables in the scope where the function was
-   defined.
+ * Add `crunch` function to cache all values over a given size that are stored
+   in memory.
 
- * add `loop` function
+ * Add `loop` function
 
- * use `saveRDS`, rather than `save`, for local caching
-
- * change `print.Rmonad` parameter `print_value` to `value`
-
- * combine (and funnel) now store failing inputs as NULL and do not delete the
-   failing parent's cache
-
- * in `combine`/`funnel`, do not delete tagged parents
-
- * add `tag` field to `Rmonad` objects and access functions:
+ * Add `tag` field to `Rmonad` objects and access functions:
 
    - `tag` - set the tags of the current head node (or nodes at given indices)
 
@@ -43,22 +34,54 @@
 
    - give names to elements of lists returned by tag from `get_*` functions
 
- * generalize `make_local_cacher` to take custom functions for saving, getting,
-   checking and deleting data.
+
+## Changes
+
+ * Node names are now reproducible. If you notice any internal nodes
+   disappearing, please file a bug report, since this means we missed some case
+   in our hashing system.
+
+ * Use `saveRDS`, rather than `save`, for local caching
+
+ * Change `print.Rmonad` parameter `print_value` to `value`
+
+ * Combine (and funnel) now stores failing inputs as NULL and does not delete
+   the failing parent's cache
+
+ * In `combine`/`funnel`, tagged parents are not deleted
 
 
 ## Experimental
 
- * add automatic caching, if a function takes more than s seconds to run, it is cached
+ * Add automatic caching, if a function takes a long time to run, it is cached
 
- * add option to turn toggle auto caching: `rmonad.auto_cache` (FALSE, by default)
+ * Add option to turn toggle auto caching: `rmonad.auto_cache` (default = FALSE)
+
+ * Add option to set how long an expression can take before its result will be
+   cached: `rmonad.cache_maxtime` (default = 3 seconds)
+
+ * Add option to set cache directory: `rmonad.cache_dir` (default = "cache")
+
+ * Add option to set cache function: `rmonad.cacher` (default = `make_cacher()`)
 
 
 ## Bug fixes
 
- * fix expression capture in `as_monad`
+ * Fix expression capture in `as_monad`
 
- * make `index` the second positional argument of `has_value`, as with other accessors
+ * Make `index` the second positional argument of `has_value`, as with other
+   accessors
+
+ * Metadata lists are now evaluated in the natural lexical scope, with access
+   to the function arguments and variables in the scope where the function was
+   defined.
+
+
+## Other
+
+ * Add vignette showing integration with `Nozzle.R1`
+
+ * Reexport `magrittr` pipe operator
 
 
 # rmonad 0.4.0
