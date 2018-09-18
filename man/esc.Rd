@@ -31,3 +31,4 @@ library(magrittr)
 Other from_Rmonad: \code{\link{missues}},
   \code{\link{mtabulate}}, \code{\link{report}}
 }
+\concept{from_Rmonad}

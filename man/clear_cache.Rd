@@ -28,3 +28,4 @@ Other cache: \code{\link{fail_cache}},
   \code{\link{memory_cache}}, \code{\link{no_cache}},
   \code{\link{void_cache}}
 }
+\concept{cache}

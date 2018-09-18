@@ -17,3 +17,4 @@ Other helper_functions: \code{\link{const}},
   \code{\link{false_as_error}}, \code{\link{false}},
   \code{\link{null_as_error}}, \code{\link{toss}}
 }
+\concept{helper_functions}

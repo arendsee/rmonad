@@ -21,3 +21,4 @@ missues(m)
 Other from_Rmonad: \code{\link{esc}},
   \code{\link{mtabulate}}, \code{\link{report}}
 }
+\concept{from_Rmonad}
