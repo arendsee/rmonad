@@ -30,10 +30,10 @@ loop <- function(m, FUN, looper=lapply, ...){
 
   indexed_looper <- (function(){
     i=0
-    function(x){
+    function(x, ...){
       i <<- i + 1
       .set_nest_salt(get_key(m, m@head)[[1]], serialize(i, NULL))
-      FUN(x)
+      FUN(x, ...)
     }
   })()
 

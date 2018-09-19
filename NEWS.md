@@ -1,3 +1,7 @@
+# current
+
+ * Fix argument passing to the functions in `loop`
+
 # rmonad 0.5.0
 
 ## New Features
