@@ -19,3 +19,4 @@ Do nothing
 Other help_functions: \code{\link{first}},
   \code{\link{second}}
 }
+\concept{help_functions}

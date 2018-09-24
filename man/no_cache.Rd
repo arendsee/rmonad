@@ -19,3 +19,4 @@ Other cache: \code{\link{clear_cache}},
   \code{\link{make_recacher}}, \code{\link{memory_cache}},
   \code{\link{void_cache}}
 }
+\concept{cache}

@@ -18,3 +18,4 @@ Given two arguments, return the second
 Other help_functions: \code{\link{first}},
   \code{\link{nothing}}
 }
+\concept{help_functions}

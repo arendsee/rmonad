@@ -23,3 +23,4 @@ mtabulate(m)
 Other from_Rmonad: \code{\link{esc}},
   \code{\link{missues}}, \code{\link{report}}
 }
+\concept{from_Rmonad}

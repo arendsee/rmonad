@@ -27,3 +27,4 @@ Other cache: \code{\link{clear_cache}},
   \code{\link{make_recacher}}, \code{\link{no_cache}},
   \code{\link{void_cache}}
 }
+\concept{cache}
