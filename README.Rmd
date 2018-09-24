@@ -3,6 +3,7 @@
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/rmonad)](https://cran.r-project.org/package=rmonad)
 [![CRAN downloads](http://cranlogs.r-pkg.org/badges/rmonad)](http://cran.rstudio.com/web/packages/rmonad/index.html)
 [![total downloads](http://cranlogs.r-pkg.org/badges/grand-total/rmonad)](http://cranlogs.r-pkg.org/badges/grand-total/rmonad)
+[![DOI](https://zenodo.org/badge/95687512.svg)](https://zenodo.org/badge/latestdoi/95687512)
 
 ```{r, echo = FALSE}
 set.seed(210)
