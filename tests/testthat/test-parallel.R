@@ -42,7 +42,7 @@ test_that("basic loop", {
 
   # Failures are detected
   expect_equal(
-    as_monad(list(2, "bowzer")) %>% loop(mayfail) %>% mtabulate %$% OK,
+    as_monad(list(2, "bowzer")) %>% loop(mayfail) %>% mtabulate %>% {.$OK},
     c(T,T,F,T,T,T,F)
   )
 })
