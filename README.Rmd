@@ -339,7 +339,7 @@ countdown <- function(x) {
 10 %>>% countdown %>% plot
 ```
 
-## rmonad v0.6.0 goals
+## rmonad v0.6.0 aspirational goals
 
  - [ ] Record all operations, even those not run. Currently if an input to a
    node fails, the node is ignored. So the ultimate graph is truncated at the
@@ -363,3 +363,10 @@ countdown <- function(x) {
    internals using `igraph`. I thought it would just be easier to use the
    `igraph` plot functions. However, making `igraph` plots that are
    consistently good across scales has been difficult. 
+
+## rmonad v0.6.0 realistic goals
+
+ - [ ] Resolve post-writer scoping issue
+
+ - [ ] Choose whether to include the node before `%*>%` or `funnel` that merges
+   all inputs into a list
