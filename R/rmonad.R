@@ -1,4 +1,4 @@
-#' @importFrom utils capture.output object.size
+#' @importFrom utils capture.output object.size head
 #' @importFrom methods new slot 'slot<-'
 #' @importFrom graphics plot
 utils::globalVariables(c("%>%", "."))

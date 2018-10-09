@@ -363,10 +363,3 @@ countdown <- function(x) {
    internals using `igraph`. I thought it would just be easier to use the
    `igraph` plot functions. However, making `igraph` plots that are
    consistently good across scales has been difficult. 
-
-## rmonad v0.6.0 realistic goals
-
- - [ ] Resolve post-writer scoping issue
-
- - [ ] Choose whether to include the node before `%*>%` or `funnel` that merges
-   all inputs into a list

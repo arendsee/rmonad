@@ -1,6 +1,7 @@
 # current
 
  * Fix argument passing to the functions in `loop`
+ * Allow multiple tags
 
 # rmonad 0.5.0
 
