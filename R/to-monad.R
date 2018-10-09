@@ -54,7 +54,7 @@ NULL
 as_monad <- function(
   expr,
   desc  = NULL,
-  tag   = .default_tag(),
+  tag   = NULL,
   doc   = .default_doc(),
   key   = NULL,
   env   = parent.frame(),
@@ -140,7 +140,9 @@ as_monad <- function(
   }
 
   # `tag` splits the tags on '/'
-  m <- tag(m, tag)
+  if(!is.null(tag)){
+    m <- tag(m, tag)
+  }
 
   # These accessors do the right thing (don't mess with them)
   .single_code(m)       <- code

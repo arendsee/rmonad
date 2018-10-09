@@ -42,7 +42,7 @@ setClass(
   representation(
     value      = "ValueManager",
     key        = "character",
-    tag        = "character",
+    tag        = "list",
     code       = "character",
     error      = "character",
     warnings   = "character",
