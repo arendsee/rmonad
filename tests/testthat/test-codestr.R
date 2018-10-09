@@ -31,11 +31,11 @@ test_that("correct for funnel", {
 })
 
 test_that("funnel taking from pipe", {
-# # TODO: better handling for this case
-#   expect_equal(
-#     1:10 %>>% funnel(stop("hi"), sqrt(1)) %>% as.list %>% lapply(.single_code),
-#     list("1:10", 'funnel(stop("hi"), sqrt(1))')
-#   )
+  # # TODO: better handling for this case
+  # expect_equal(
+  #   1:10 %>>% funnel(stop("hi"), sqrt(1)) %>% get_code,
+  #   list("1:10", 'funnel(stop("hi"), sqrt(1))')
+  # )
   expect_equal(
     1:10 %>% funnel(stop("hi"), sqrt(1)) %>% get_code,
     list("sqrt(1)", 'stop("hi")', ".", 'funnel(., stop("hi"), sqrt(1))')
@@ -64,23 +64,26 @@ test_that("partially applied functions are as expected", {
   )
 })
 
-## TODO: resurrect these tests
-# test_that("%*>% doesn't do anything weird", {
-#   expect_equal(
-#     list(d=iris, i=2) %*>% { head(d, i) } %>%
-#       lapply(.single_code) %>%
-#       lapply(paste0, collapse=" ") %>%
-#       gsub(pattern=" ", replacement=""),
-#     c('2', 'iris', 'function(d,i){head(d,i)}')
-#   )
-# })
-#
-# test_that("funnel doesn't do anything weird", {
-#   expect_equal(
-#     funnel(d=iris, i=2) %*>% { head(d, i) } %>%
-#       lapply(.single_code) %>%
-#       lapply(paste0, collapse=" ") %>%
-#       gsub(pattern=" ", replacement=""),
-#     c('2', 'iris', 'function(d,i){head(d,i)}')
-#   )
-# })
+test_that("%*>% produces the correct code", {
+  expect_equal(
+    list(d=iris, i=2) %*>% { head(d, i) } %>%
+      get_code %>%
+      lapply(paste0, collapse=" ") %>%
+      gsub(pattern=" ", replacement=""),
+    c('2', 'iris',
+      'list(d=iris,i=2)', # FIXME: can we prune this node?
+      'function(d,i){head(d,i)}')
+  )
+})
+
+test_that("funnel produces correct code", {
+  expect_equal(
+    funnel(d=iris, i=2) %*>% { head(d, i) } %>%
+      get_code %>%
+      lapply(paste0, collapse=" ") %>%
+      gsub(pattern=" ", replacement=""),
+    c('2', 'iris',
+      'funnel(d=iris,i=2)', # FIXME: can we prune this node?
+      'function(d,i){head(d,i)}')
+  )
+})

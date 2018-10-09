@@ -162,24 +162,13 @@ size <- function(m) {
   m
 }
 
-.parse_tags <- function(...){
-  tags <- unlist(list(...))
-  tags <- ifelse(tags == "", "/", tags)
-  tags <- unlist(strsplit(tags, '/'))
-  list(tag=tags, str=paste(tags, collapse='/'))
-}
-
 .process_tag_and_index <- function(m, index, tag, sep="/"){
-  if(!is.null(tag)){
-    tag <- .parse_tags(tag)$tag
-    node_tags <- get_tag(m)
-    index <- which(.a_has_prefix_b(node_tags, tag))
-    name <- sapply(node_tags[index], paste, collapse=sep)
-    if(any(duplicated(name))){
-      name <- paste0(name, sep, index)
-    }
-  } else {
+  if(is.null(tag)){
     name <- NULL
+  } else {
+    x <- .named_match_tag(m, tag, sep)
+    index <- x$indices
+    name  <- x$names
   }
   list(index=index, name=name)
 }
@@ -188,7 +177,7 @@ size <- function(m) {
   .m_check(m)
   ids <- igraph::V(m@graph)
   if(!is.null(tag)){
-    index <- which(.a_has_prefix_b(get_tag(m), tag))
+    index <- .match_tag(m, tag=tag, by_prefix=TRUE)
   }
   if(!is.null(index)){
     ids <- ids[index]

@@ -213,7 +213,7 @@ make_recacher <- function(cacher, preserve=TRUE){
     m <- as_monad(m, lossy=TRUE, desc=deparse(substitute(m)))
     .single_raw_value(m) <- cacher(.single_value(m))
     .single_stored(m) <- preserve
-    .single_tag(m) <- tag
+    m <- tag(m, tag)
     m
   }
 }

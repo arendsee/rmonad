@@ -100,7 +100,7 @@ is_rmonad <- function(m) {
 # subtle of reoccuring bugs. So I gather all this into one place.
 .default_value      <- function() void_cache()
 .default_key        <- function() .digest(NULL)
-.default_tag        <- function() ""
+.default_tag        <- function() list()
 .default_head       <- function() 1L
 .default_code       <- function() character(0)
 .default_error      <- function() character(0)
@@ -128,7 +128,7 @@ has_code <- function(m, ...) sapply(get_code(m, ...), .is_not_empty_string) %>% 
 
 #' @rdname rmonad_checkers
 #' @export
-has_tag <- function(m, ...) sapply(get_tag(m, ...), .is_not_empty_string) %>% unname
+has_tag <- function(m, ...) sapply(get_tag(m, ...), function(x) length(x) > 0) %>% unname
 
 #' @rdname rmonad_checkers
 #' @export
@@ -215,13 +215,6 @@ viewIDs <- function(m, ids){
   lapply(ids, viewID, m=m)
 }
 
-.parse_tags <- function(...){
-  tags <- unlist(list(...))
-  tags <- ifelse(tags == "", "/", tags)
-  tags <- unlist(strsplit(tags, '/'))
-  list(tag=tags, str=paste(tags, collapse='/'))
-}
-
 #' Set the head of an Rmonad to a particular tag 
 #'
 #' Will split on '/'
@@ -238,7 +231,7 @@ viewIDs <- function(m, ids){
 view <- function(m, ...){
   .m_check(m)
   x <- .parse_tags(...)
-  tags <- which(sapply(get_tag(m), identical, x$tag))
+  tags <- .match_tag(m, x$tag)
   if(length(tags) > 1){
     msg <- "The given tag, '%s', is ambiguous, maybe use 'views' instead?"
     stop(sprintf(msg, x$str))
@@ -267,8 +260,7 @@ view <- function(m, ...){
 views <- function(m, ...){
   .m_check(m)
   x <- .parse_tags(...)
-  node_tags <- get_tag(m)
-  ids <- which(.a_has_prefix_b(node_tags, x$tag))
+  ids <- .match_tag(m, x$tag, by_prefix=TRUE)
   viewIDs(m, ids)
 }
 
@@ -290,7 +282,8 @@ tag <- function(m, ..., index=m@head){
     index = list(index)
   }
   for(i in index){
-    m <- .set_single_attribute(m, attribute='tag', value=x$tag, index=i)
+    m <- .set_single_attribute(m, attribute='tag', index=i,
+                               value=append(get_tag(m, i)[[1]], list(x$tag)))
   }
   m
 }

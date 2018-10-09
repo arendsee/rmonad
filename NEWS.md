@@ -1,6 +1,11 @@
-# current
+# rmonad 0.6.2 (minor)
 
  * Fix argument passing to the functions in `loop`
+ * Allow multiple tags
+
+# rmonad 0.6.1 (minor)
+
+ * Add Zenodo UID
 
 # rmonad 0.5.0
 

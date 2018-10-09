@@ -10,6 +10,7 @@ test_that("Lists over nested functions produce the correct output", {
     -1:1 %>>% { lapply(., foo) } %>% {sapply(.single_value(.), is_rmonad)},
     c(TRUE, TRUE, TRUE)
   )
+
   # binding this to `combine` performs the operation
   #   m [m a] -> m [a]
   expect_equal(
