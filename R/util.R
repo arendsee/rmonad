@@ -91,7 +91,10 @@ rmonad_equal <- function(a, b){
 #  m := Rmonad object
 #  tag := expected tag as character vector
 # return indices
-.match_tag <- function(m, tag, by_prefix=FALSE){
+.match_tag <- function(m, tag, sep="/", by_prefix=FALSE){
+  if(!is.null(tag)){
+    tag <- unlist(strsplit(tag, sep))
+  }
   if(by_prefix){
     which(sapply(get_tag(m),
            function(obs) any(sapply(obs, .a_has_prefix_b, tag))))
@@ -111,6 +114,9 @@ filter <- function(x, f){
 #  tag := expected tag as character vector
 # return ([name], [index])
 .named_match_tag <- function(m, tag, sep="/"){
+  if(!is.null(tag)){
+    tag <- unlist(strsplit(tag, sep))
+  }
   indices <- .match_tag(m, tag, by_prefix=TRUE)
   names <- lapply(
     get_tag(m, indices),

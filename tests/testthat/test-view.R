@@ -22,18 +22,17 @@ foo <- function(x, pre="yolo"){
 }
 
 test_that("view handles failure", {
-
   # The fail state is propagated. When it is chained with a monadic operator,
   # the fail state propagates and no action is taken, but when it is tagged,
   # the current tag is overwritten.
-  a0 <- as_monad("hi") %>>% sqrt %>% tag("a") %>>% log %>% tag("b") %>% view("a")
-  a1 <- as_monad("hi") %>>% sqrt %>% tag("a") %>>% log %>% tag("b") %>% view("b")
+  a0 <- as_monad("hi") %>>% sqrt %>% tag("a/f") %>>% log %>% tag("b") %>% view("a/f")
+  a1 <- as_monad("hi") %>>% sqrt %>% tag("a/f") %>>% log %>% tag("b") %>% view("a/f")
   expect_false(
     a0 %>% get_OK %>% tail(1)
   )
   expect_false(
     a1 %>% get_OK %>% tail(1)
   )
-  expect_equal(get_tag(a0) %>% tail(1), list("a", "b"))
-  expect_equal(get_tag(a1) %>% tail(1), list("a", "b"))
+  expect_equal(get_tag(a0) %>% tail(1), list(list(c("a", "f"), "b")))
+  expect_equal(get_tag(a1) %>% tail(1), list(list(c("a", "f"), "b")))
 })

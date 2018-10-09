@@ -177,7 +177,7 @@ size <- function(m) {
   .m_check(m)
   ids <- igraph::V(m@graph)
   if(!is.null(tag)){
-    index <- .match_tag(m, tag, by_prefix=TRUE)
+    index <- .match_tag(m, tag=tag, by_prefix=TRUE)
   }
   if(!is.null(index)){
     ids <- ids[index]
