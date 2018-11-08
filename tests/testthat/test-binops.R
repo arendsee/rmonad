@@ -130,3 +130,9 @@ test_that('"%__%" works', {
   expect_equal( 1:5 %__% 1:10 %>% get_value(warn=FALSE), list(1:5, 1:10) )
   expect_true(  1:5 %__% 1:10 %>% .single_OK )
 })
+
+test_that("%__% chaining works (issue #19)", {
+  expect_equal('a' %__% 'b'                   %>% get_value(), list('a', 'b'))
+  expect_equal('a' %__% 'b' %__% 'c'          %>% get_value(), list('a', 'b', 'c'))
+  expect_equal('a' %__% 'b' %__% 'c' %__% 'd' %>% get_value(), list('a', 'b', 'c', 'd'))
+})
