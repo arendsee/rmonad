@@ -276,6 +276,9 @@ views <- function(m, ...){
 #' library(magrittr)
 #' 1 %>>% prod(2) %>% tag('a/b') %>>% prod(3) %>% get_tag
 #'
+#' # to tag the first element in a pipeline, use `as_monad`:
+#' as_monad(2, tag="x") %>>% sqrt %>>% get_tag
+#'
 tag <- function(m, ..., index=m@head){
   x <- .parse_tags(...)
   if(!is.list(index)){

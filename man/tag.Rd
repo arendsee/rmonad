@@ -18,10 +18,13 @@ assigned the new tag}
 Rmonad object with new tags
 }
 \description{
-Set the tag of an Rmonad object
+The input to tag is an Rmonad object.
 }
 \examples{
 library(magrittr)
 1 \%>>\% prod(2) \%>\% tag('a/b') \%>>\% prod(3) \%>\% get_tag
+
+# to tag the first element in a pipeline, use `as_monad`:
+as_monad(2, tag="x")
 
 }
