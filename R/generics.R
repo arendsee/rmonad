@@ -31,6 +31,8 @@
 #' plot(gff$good_result)
 #' # turn off vertex labels and set vertex size
 #' plot(gff$good_result, vertex.size=10, vertex.label=NA)
+#' # use documentation in labels, similarly for other get_* functions
+#' plot(gff$good_result, label=get_doc)
 plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   y <- NULL
 
