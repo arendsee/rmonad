@@ -46,7 +46,7 @@ get_OK(m, index = .get_ids(m), tag = NULL)
 
 get_code(m, index = .get_ids(m), tag = NULL)
 
-get_tag(m, index = .get_ids(m), tag = NULL)
+get_tag(m, index = .get_ids(m), collapse = FALSE, tag = NULL)
 
 get_error(m, index = .get_ids(m), tag = NULL)
 
@@ -74,6 +74,8 @@ may be a vector of integers, node names, or igraph vertices
 \item{tag}{character vector specifying the tags that must be associated with extracted nodes}
 
 \item{warn}{logical In get_value, raise a warning on an attempt to access an uncached node}
+
+\item{collapse}{logical in get_tag, collapse tag vectors to '/' delimited paths}
 
 \item{...}{Additional arguments}
 }

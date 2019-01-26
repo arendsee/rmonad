@@ -6,6 +6,7 @@
 #'              (\code{igraph.vs}).
 #' @param warn logical In get_value, raise a warning on an attempt to access an uncached node
 #' @param tag character vector specifying the tags that must be associated with extracted nodes 
+#' @param collapse logical in get_tag, collapse tag vectors to '/' delimited paths 
 #' @param ... Additional arguments
 #' @name rmonad_getters
 #' @examples
@@ -369,8 +370,13 @@ get_code <- function(m, index=.get_ids(m), tag=NULL) {
 
 #' @rdname rmonad_getters
 #' @export
-get_tag <- function(m, index=.get_ids(m), tag=NULL) {
-  .get_many_attributes(m, index=index, tag=tag, attribute='tag')
+get_tag <- function(m, index=.get_ids(m), collapse=FALSE, tag=NULL) {
+  tags <- .get_many_attributes(m, index=index, tag=tag, attribute='tag')
+  if(collapse){
+    lapply(tags, function(xss) sapply(xss, function(xs) paste0(xs, collapse="/")))
+  } else {
+    tags
+  }
 }
 
 #' @rdname rmonad_getters

@@ -1,3 +1,7 @@
+# rmonad current
+
+ * add `collapse` option to `get_tag`
+
 # rmonad 0.6.2 (minor)
 
  * Fix argument passing to the functions in `loop`
