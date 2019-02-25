@@ -1,6 +1,7 @@
 # rmonad current
 
  * add `collapse` option to `get_tag`
+ * in `plot`, make node red for error, not just error message
 
 # rmonad 0.6.2 (minor)
 

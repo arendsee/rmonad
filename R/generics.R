@@ -61,7 +61,7 @@ plot.Rmonad <- function(x, y, label=NULL, color='status', ...){
   if(is.function(color)){
     color(x)
   } else if(color == 'status'){
-    ifelse(has_error(x), 'red', 'palegreen') %>%
+    ifelse(!get_OK(x), 'red', 'palegreen') %>%
     {ifelse(has_warnings(x) & !has_error(x), 'yellow', .)}
   } else {
     stop("The 'color' field in plot.Rmonad must be either 'status' or a function")
