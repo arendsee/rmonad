@@ -34,6 +34,6 @@ Suggests:
     Nozzle.R1
 VignetteBuilder: knitr
 LazyData: yes
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 License: GPL-3
 Encoding: UTF-8
