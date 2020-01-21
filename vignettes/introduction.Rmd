@@ -497,7 +497,7 @@ Here are the currently supported post-processors:
  
  5. `cache` - A function of the final value that caches the value
  
- 6. `log` - A function of the final state that prints an progress message
+ 6. `format_log` - A function of the final state that prints an progress message
 
 These are all quite experimental at this point.
 

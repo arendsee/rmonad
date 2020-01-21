@@ -25,17 +25,6 @@
 #'   }
 #' )
 #' extract_metadata(expr)
-#'
-#' foo <- function(x,y){
-#'   "docstring"
-#'   list(meta="data")
-#'   x + y
-#' }
-#' ## extract metadata from a function name
-#' extract_metadata(substitute(foo), skip_name=FALSE)
-#'
-#' ## extract from a partially applied function
-#' extract_metadata(substitute(foo(y=2)))
 extract_metadata <- function(expr, env=parent.frame(), skip_name=TRUE){
 
   # NOTE: I used to use methods::existsFunction here, but that misses them
