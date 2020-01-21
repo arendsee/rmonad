@@ -1,3 +1,7 @@
+# rmoand 0.7.0
+
+ * Rename `log` rewriter as `format_log`
+
 # rmonad 0.6.2 (minor)
 
  * Fix argument passing to the functions in `loop`

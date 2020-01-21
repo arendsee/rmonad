@@ -33,8 +33,8 @@ apply_rewriters <- function(x, meta=.single_meta(x)){
     x <- make_recacher(meta$cache)(x)
   }
 
-  if(is.function(meta$log)){
-    meta$log(x, passing=.single_OK(x))
+  if(is.function(meta$format_log)){
+    meta$format_log(x, passing=.single_OK(x))
   }
 
   x
