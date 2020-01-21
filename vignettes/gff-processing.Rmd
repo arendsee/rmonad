@@ -136,7 +136,8 @@ specified column number and type, warning of problems:
 ```{r}
 # wrong type
 bad0 <- system.file('extdata', 'gff', 'bad-0.gff3', package='rmonad')
-read_gff(bad0)
+bad_result0 <- read_gff(bad0)
+bad_result0
 ```
 
 Notice that the 4th entry has a start value of "NA". This indicates there was something wrong with he gff file and when we take a look at the original gff, we see that the entry corresponds to the string "one thousand eight hundred and seven" instead of the number. While this is not a likely error, it is a similar error for when a number contains a comma (example: "1,807"") which R will parse as a string.
@@ -153,7 +154,8 @@ Similarly when we load in a gff missing a column.
 ```{r}
 # wrong column number
 bad1 <- system.file('extdata', 'gff', 'bad-1.gff3', package='rmonad')
-read_gff(bad1)
+bad_result1 <- read_gff(bad1)
+bad_result1
 ```
 The read_gff can correctly identify that a column is missing from the following raw file.
 ```{,eval=FALSE}
@@ -673,3 +675,8 @@ simpler. We did not have to disassemble our pipeline and rerun it step-by-step.
 Overall, in `rmonad`, the output of a pipeline is not just the effluent of the
 last node, but the collection of all the nodes along the way. The pipeline
 itself becomes data that can be computed upon. 
+
+```{r, echo=FALSE}
+gff <- list(good_result=result, bad_result0 = bad_result0, bad_result1 = bad_result1)
+save(gff, file="gff.rda")
+```
