@@ -120,7 +120,7 @@ test_that("Access works for multiple values", {
 
   expect_true(
     is.numeric(get_time(ab)) &&
-    is.na(get_time(ab)[8])    # This is the container created by funnel
+    all(is.na(get_time(ab)[8]))    # This is the container created by funnel
   )
 
   expect_equal(
@@ -247,7 +247,7 @@ test_that("get_* subsetting works", {
 
   expect_true(
     is.numeric(get_time(ab, 8:9)) &&
-    is.na(get_time(ab, 8:9)[1])    # This is the container created by funnel
+    all(is.na(get_time(ab, 8:9)[1])))    # This is the container created by funnel
   )
 
   expect_equal(
