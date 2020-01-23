@@ -175,7 +175,7 @@ get_free_variables <- function(expr, bound_args=""){
   # accessed variable. For example, the expression `x$y` contains only the one
   # free variable, `x`, not two. Note that the expression `x[[y]]`, contains
   # two free variables.
-  else if(is.call(expr) && (as.character(expr[[1]]) %in% c('$', '@'))){
+  else if(is.call(expr) && length(expr[[1]]) == 1 && (as.character(expr[[1]]) %in% c('$', '@'))){
     as.character(expr[[2]])
   }
 
