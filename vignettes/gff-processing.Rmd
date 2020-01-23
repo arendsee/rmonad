@@ -677,6 +677,7 @@ last node, but the collection of all the nodes along the way. The pipeline
 itself becomes data that can be computed upon. 
 
 ```{r, echo=FALSE}
-gff <- list(good_result=result, bad_result0 = bad_result0, bad_result1 = bad_result1)
-save(gff, file="gff.rda")
+# # save data, this is used in testing and examples
+# gff <- list(good_result=result, bad_result0 = bad_result0, bad_result1 = bad_result1)
+# save(gff, file="gff.rda", version=3)
 ```
