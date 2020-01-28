@@ -13,8 +13,11 @@ null_as_error(x)
 Currently not exported.
 }
 \seealso{
-Other helper_functions: \code{\link{const}},
-  \code{\link{false_as_error}}, \code{\link{false}},
-  \code{\link{toss}}, \code{\link{true}}
+Other helper_functions: 
+\code{\link{const}()},
+\code{\link{false_as_error}()},
+\code{\link{false}()},
+\code{\link{toss}()},
+\code{\link{true}()}
 }
 \concept{helper_functions}

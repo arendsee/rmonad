@@ -3,7 +3,6 @@
 \docType{package}
 \name{rmonad}
 \alias{rmonad}
-\alias{rmonad-package}
 \title{rmonad: handling pipes, errors, and everything with monads}
 \description{
 Rmonad merges blocks of code into a graph containing the history of all past
