@@ -38,7 +38,7 @@ test_that("Access works for multiple values", {
   )
 
   expect_true(
-    is.numeric(get_mem(ab)) && get_mem(ab) > 0 && length(get_mem(ab)) == 9
+    is.numeric(get_mem(ab)) && all(get_mem(ab)) > 0 && length(get_mem(ab)) == 9
   )
 
   expect_equal(
