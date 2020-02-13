@@ -18,7 +18,7 @@ citation('Nozzle.R1')
 ```
 
 It can be used to build HTML reports section by section. The package offers a
-report generation approach that is more programable, in some ways, than
+report generation approach that is more programmable, in some ways, than
 standard literate programming approaches (e.g. `knitr`). `rmonad` is intended
 to store all the data needed for a report, but stop short of actually creating
 one. These two packages are thus highly complementary.

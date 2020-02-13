@@ -374,7 +374,7 @@ foo <- function(x){
 
 ### Docstrings
 
-This allows chunks of code to be annotated without the exta boilerplate of
+This allows chunks of code to be annotated without the extra boilerplate of
 `%>%doc(...`, that was used in the previous example.
 
 

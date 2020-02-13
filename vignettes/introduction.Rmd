@@ -64,11 +64,11 @@ new monad from them. This new monad holds the computed value, if the
 computation succeeded. It collates all errors, warnings, and messages. These
 are stored in step-by-step a history of the pipeline.
 
-`%>%` is an application operator, `%>>%` is a *monadic bind* operator. `magrittr`
-and `rmonad` complement eachother. `%>%` can be used inside a monadic sequence to
-perform operations *on* monads, whereas `%>>%` performs operations *in* them.
-If this is all too mystical, just hold on, the examples are sensical even
-without an understanding of monads.
+`%>%` is an application operator, `%>>%` is a *monadic bind* operator.
+`magrittr` and `rmonad` complement each other. `%>%` can be used inside a
+monadic sequence to perform operations *on* monads, whereas `%>>%` performs
+operations *in* them.  If this is all too mystical, just hold on, you don't
+need to understand monads to understand the examples.
 
 Below, we store an intermediate value in the monad:
 
@@ -82,7 +82,7 @@ Below, we store an intermediate value in the monad:
 The `%v>%` variant of the *monadic bind* operator stores the results as they
 are passed.
 
-Following the example of `magrittr`, arbirary anonymous functions of '.' are
+Following the example of `magrittr`, arbitrary anonymous functions of '.' are
 supported
 
 ```{r}
@@ -385,7 +385,7 @@ funnel(
 
 This returns a monad which fails if any of the components evaluate to an error.
 But it does not toss the rest of the inputs, instead returning a clean list
-with a NULL filling in missing pieces. Constrast this with normal list evaluation:
+with a NULL filling in missing pieces. Contrast this with normal list evaluation:
 
 ```{r, error=TRUE}
 list( "yolo", stop("stop, drop, and die"), runif("simon"), 2)

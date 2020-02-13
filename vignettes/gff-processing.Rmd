@@ -86,7 +86,7 @@ purposes of this vignette, I will just handle the following sets of synonyms:
  * exon := `exon` | `SO:0000147` | `coding_exon` | `coding exon` |`SO:0000195` 
 
 For mRNA and exon, I am merging to ontology terms (mRNA and transcript; exon
-and coding exon). Formally, this is incorrect, but pratically it is probably
+and coding exon). Formally, this is incorrect, but practically it is probably
 the right thing. Since these transformations may be wrong, they need to be
 noted.
 
@@ -140,7 +140,11 @@ bad_result0 <- read_gff(bad0)
 bad_result0
 ```
 
-Notice that the 4th entry has a start value of "NA". This indicates there was something wrong with he gff file and when we take a look at the original gff, we see that the entry corresponds to the string "one thousand eight hundred and seven" instead of the number. While this is not a likely error, it is a similar error for when a number contains a comma (example: "1,807"") which R will parse as a string.
+Notice that the 4th entry has a start value of "NA". This indicates there was
+something wrong with the gff file and when we take a look at the original gff,
+we see that the entry corresponds to the string "one thousand eight hundred and
+seven" instead of the number. A more likely error would be including a comma in
+a number (e.g., "1,807"), which R will parse as a string.
 
 ```{,eval=FALSE}
 # incorrect type

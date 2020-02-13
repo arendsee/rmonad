@@ -62,7 +62,7 @@ Given these states, the current operators can be represented as
 There are a lot of potentially useful combinations that are not used. And there
 are likely other operator types not in this space that would be useful.
 
-Below is reformating of the same information:
+Below is reformatting of the same information:
 
  op      | lhs | rhs      | store | passes    | runif        | pass error
  ------- | --- | -------- | ----- | --------- | -----------  | ----------
