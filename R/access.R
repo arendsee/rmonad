@@ -6,7 +6,6 @@
 #'              (\code{igraph.vs}).
 #' @param warn logical In get_value, raise a warning on an attempt to access an uncached node
 #' @param tag character vector specifying the tags that must be associated with extracted nodes 
-#' @param ... Additional arguments
 #' @name rmonad_getters
 #' @examples
 #' data(gff)
