@@ -16,8 +16,7 @@ nothing
 Do nothing
 }
 \seealso{
-Other help_functions: 
-\code{\link{first}()},
-\code{\link{second}()}
+Other help_functions: \code{\link{first}},
+  \code{\link{second}}
 }
 \concept{help_functions}

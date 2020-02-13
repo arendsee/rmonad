@@ -13,11 +13,8 @@ false_as_error(x)
 Make NULL values an error
 }
 \seealso{
-Other helper_functions: 
-\code{\link{const}()},
-\code{\link{false}()},
-\code{\link{null_as_error}()},
-\code{\link{toss}()},
-\code{\link{true}()}
+Other helper_functions: \code{\link{const}},
+  \code{\link{false}}, \code{\link{null_as_error}},
+  \code{\link{toss}}, \code{\link{true}}
 }
 \concept{helper_functions}

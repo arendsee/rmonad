@@ -28,9 +28,7 @@ library(magrittr)
 256 \%>>\% sqrt \%>\% esc
 }
 \seealso{
-Other from_Rmonad: 
-\code{\link{missues}()},
-\code{\link{mtabulate}()},
-\code{\link{report}()}
+Other from_Rmonad: \code{\link{missues}},
+  \code{\link{mtabulate}}, \code{\link{report}}
 }
 \concept{from_Rmonad}

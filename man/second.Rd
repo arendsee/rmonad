@@ -15,8 +15,7 @@ second(x, y)
 Given two arguments, return the second
 }
 \seealso{
-Other help_functions: 
-\code{\link{first}()},
-\code{\link{nothing}()}
+Other help_functions: \code{\link{first}},
+  \code{\link{nothing}}
 }
 \concept{help_functions}

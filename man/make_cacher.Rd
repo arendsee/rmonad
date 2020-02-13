@@ -4,13 +4,9 @@
 \alias{make_cacher}
 \title{Make Cacher object}
 \usage{
-make_cacher(
-  f_path = function() getOption("rmonad.cache_dir"),
-  f_save = saveRDS,
-  f_get = readRDS,
-  f_del = unlink,
-  f_ext = function(cls) ".Rdata"
-)
+make_cacher(f_path = function() getOption("rmonad.cache_dir"),
+  f_save = saveRDS, f_get = readRDS, f_del = unlink,
+  f_ext = function(cls) ".Rdata")
 }
 \arguments{
 \item{f_path}{A function for finding the directory in which to cache results}
@@ -30,12 +26,9 @@ A function that builds a local cache function for a value
 Make Cacher object
 }
 \seealso{
-Other cache: 
-\code{\link{clear_cache}()},
-\code{\link{fail_cache}()},
-\code{\link{make_recacher}()},
-\code{\link{memory_cache}()},
-\code{\link{no_cache}()},
-\code{\link{void_cache}()}
+Other cache: \code{\link{clear_cache}},
+  \code{\link{fail_cache}}, \code{\link{make_recacher}},
+  \code{\link{memory_cache}}, \code{\link{no_cache}},
+  \code{\link{void_cache}}
 }
 \concept{cache}

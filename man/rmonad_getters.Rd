@@ -74,8 +74,6 @@ may be a vector of integers, node names, or igraph vertices
 \item{tag}{character vector specifying the tags that must be associated with extracted nodes}
 
 \item{warn}{logical In get_value, raise a warning on an attempt to access an uncached node}
-
-\item{...}{Additional arguments}
 }
 \description{
 Vectorized getters for public Rmonad fields

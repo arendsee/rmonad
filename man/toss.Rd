@@ -13,11 +13,8 @@ toss(...)
 Take input and do nothing with it
 }
 \seealso{
-Other helper_functions: 
-\code{\link{const}()},
-\code{\link{false_as_error}()},
-\code{\link{false}()},
-\code{\link{null_as_error}()},
-\code{\link{true}()}
+Other helper_functions: \code{\link{const}},
+  \code{\link{false_as_error}}, \code{\link{false}},
+  \code{\link{null_as_error}}, \code{\link{true}}
 }
 \concept{helper_functions}

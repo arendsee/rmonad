@@ -16,12 +16,9 @@ the user is directly creating RmonadData objects (in which case they should
 be spoken to sternly) or 2) there is a bug in rmonad.
 }
 \seealso{
-Other cache: 
-\code{\link{clear_cache}()},
-\code{\link{fail_cache}()},
-\code{\link{make_cacher}()},
-\code{\link{make_recacher}()},
-\code{\link{memory_cache}()},
-\code{\link{no_cache}()}
+Other cache: \code{\link{clear_cache}},
+  \code{\link{fail_cache}}, \code{\link{make_cacher}},
+  \code{\link{make_recacher}}, \code{\link{memory_cache}},
+  \code{\link{no_cache}}
 }
 \concept{cache}

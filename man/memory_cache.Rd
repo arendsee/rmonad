@@ -22,12 +22,9 @@ foo
 foo_proxy@get()
 }
 \seealso{
-Other cache: 
-\code{\link{clear_cache}()},
-\code{\link{fail_cache}()},
-\code{\link{make_cacher}()},
-\code{\link{make_recacher}()},
-\code{\link{no_cache}()},
-\code{\link{void_cache}()}
+Other cache: \code{\link{clear_cache}},
+  \code{\link{fail_cache}}, \code{\link{make_cacher}},
+  \code{\link{make_recacher}}, \code{\link{no_cache}},
+  \code{\link{void_cache}}
 }
 \concept{cache}
