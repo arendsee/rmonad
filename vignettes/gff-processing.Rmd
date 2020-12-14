@@ -321,7 +321,7 @@ read_gff <- function(file, tags){
   inside it. This docstring describes the entire wrapped pipeline.
   "
 
-  raw_gff <- as_monad(
+  raw_gff <- evalwrap(
     {
 
       "
@@ -329,7 +329,7 @@ read_gff <- function(file, tags){
       string is extracted and stored. Python has something similar, where the
       first string in a function is cast as documentation.
       
-      The `as_monad` function takes an expression and wraps its result into a
+      The `evalwrap` function takes an expression and wraps its result into a
       context. It also handles the extraction of this docstring. The result
       here is used at more than one place in the pipeline. Rather than
       accessing it later as a global, it will be funneled bach in.

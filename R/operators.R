@@ -159,7 +159,7 @@ NULL
     # skip the bind code
     bind_if = false,
     # and instead just evaluate the rhs
-    bind_else = function(i,o) as_monad(o, desc=rhs_str),
+    bind_else = function(i,o) evalwrap(o, desc=rhs_str),
     emit = emit,
     expect_rhs_function = FALSE
   )
@@ -191,7 +191,7 @@ NULL
     lhs,
     rhs,
     bind_if   = false,
-    bind_else = function(...){as_monad(eval(rhs, envir), lossy=TRUE)},
+    bind_else = function(...){evalwrap(eval(rhs, envir), lossy=TRUE)},
     emit      = emit,
     expect_rhs_function = FALSE,
     envir=envir

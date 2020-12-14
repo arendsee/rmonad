@@ -3,7 +3,6 @@
 \docType{package}
 \name{rmonad}
 \alias{rmonad}
-\alias{rmonad-package}
 \title{rmonad: handling pipes, errors, and everything with monads}
 \description{
 Rmonad merges blocks of code into a graph containing the history of all past
@@ -43,7 +42,7 @@ vignette.
 \section{x to monad functions}{
 
 
-\code{as_monad} - evaluate an expression into a monad (capturing error)
+\code{evalwrap} - evaluate an expression into a monad (capturing error)
 
 \code{funnel} - evaluate expressions into a list inside a monad
 }
@@ -90,7 +89,7 @@ read.csv("a.csv") \%||\% iris \%>>\% head
 cars \%>>\% colSums \%__\% cars \%>>\% lapply(sd) \%>>\% unlist
 
 # load an expression into a monad, catching errors
-as_monad(stop("instant death"))
+evalwrap(stop("instant death"))
 
 # convert multiple expressions into a list inside a monad
 funnel(stop("oh no"), runif(5), sqrt(-1))

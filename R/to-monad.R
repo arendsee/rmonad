@@ -6,7 +6,7 @@
 #' whole. Any non-monadic inputs will be converted to monads. Any exceptions
 #' raised in the inputs will be caught.
 #'
-#' \code{as_monad} evaluate a single expression into an Rmonad. If the value is
+#' \code{evalwrap} evaluate a single expression into an Rmonad. If the value is
 #' already an Rmonad, it will be nested.
 #'
 #' \code{funnel} evaluates multiple arguments into one Rmonad. It can be used
@@ -28,9 +28,9 @@
 #' @param ... multiple expressions
 #' @name x_to_monad
 #' @examples
-#' as_monad(stop(1))
-#' as_monad(1:10)
-#' as_monad(5 %>>% sqrt)
+#' evalwrap(stop(1))
+#' evalwrap(1:10)
+#' evalwrap(5 %>>% sqrt)
 #'
 #' ## merge failing inputs 
 #' funnel( 1:10, stop(1), sqrt(-3:3) )
@@ -51,7 +51,7 @@ NULL
 
 #' @rdname x_to_monad
 #' @export
-as_monad <- function(
+evalwrap <- function(
   expr,
   desc  = NULL,
   tag   = NULL,
@@ -61,7 +61,7 @@ as_monad <- function(
   lossy = FALSE
 ){
 # TODO: 'lossy' is an lousy name, should change to 'nest', or something
-# as_monad :: a -> m a
+# evalwrap :: a -> m a
 
   if(getOption("rmonad.auto_cache")){
     cacher <- make_cacher()
@@ -226,7 +226,7 @@ funnel <- function(..., env=parent.frame(), keep_history=TRUE){
         "."
       }
 
-      as_monad(eval(x, env), desc=desc, lossy=TRUE)
+      evalwrap(eval(x, env), desc=desc, lossy=TRUE)
     }
   )
 }
@@ -259,7 +259,7 @@ combine <- function(xs, keep_history=TRUE, desc=.default_code()){
   key <- .digest(parent_keys, desc)
 
   # make a new monad that is the child of all monads in the input list
-  out <- as_monad(value, key=key)
+  out <- evalwrap(value, key=key)
 
   # remove cached value of parents if they were passing AND if they have NO tag
   xs <- lapply(xs, function(x){

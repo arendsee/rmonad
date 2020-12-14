@@ -96,16 +96,16 @@ test_that("docstrings work with %__%", {
   )
 })
 
-test_that("as_monad handles docstrings", {
-  expect_equal(as_monad({"asdf"; 5}) %>% .single_doc, "asdf")
-  expect_equal(as_monad({"asdf"; 5}) %>% esc, 5)
+test_that("evalwrap handles docstrings", {
+  expect_equal(evalwrap({"asdf"; 5}) %>% .single_doc, "asdf")
+  expect_equal(evalwrap({"asdf"; 5}) %>% esc, 5)
   # no funny business is going on ...
-  expect_equal(as_monad({"asdf"; 5}) %>>% prod(6) %>% esc, 30)
-  expect_equal(as_monad({}) %>% esc, NULL)
+  expect_equal(evalwrap({"asdf"; 5}) %>>% prod(6) %>% esc, 30)
+  expect_equal(evalwrap({}) %>% esc, NULL)
 
   expect_true(
     {
-      x <- as_monad({"asdf"; list(k=1); 5})
+      x <- evalwrap({"asdf"; list(k=1); 5})
       .single_doc(x) == "asdf" && identical(.single_meta(x), list(k=1))
     }
   )

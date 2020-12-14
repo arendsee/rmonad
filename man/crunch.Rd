@@ -15,7 +15,7 @@ Cache all large values that are stored in memory
 \examples{
 \dontrun{
 set.seed(42)
-m <- as_monad(runif(1e6), tag="a") \%>>\%
+m <- evalwrap(runif(1e6), tag="a") \%>>\%
      sqrt \%>\% tag("b") \%>>\%
      log \%>\% tag("c") \%>>\% prod(2) \%>>\% prod(3)
 m1 <- crunch(m)

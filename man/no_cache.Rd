@@ -14,9 +14,12 @@ By default, the value of a node that has already been executed will be set
 to this function.
 }
 \seealso{
-Other cache: \code{\link{clear_cache}},
-  \code{\link{fail_cache}}, \code{\link{make_cacher}},
-  \code{\link{make_recacher}}, \code{\link{memory_cache}},
-  \code{\link{void_cache}}
+Other cache: 
+\code{\link{clear_cache}()},
+\code{\link{fail_cache}()},
+\code{\link{make_cacher}()},
+\code{\link{make_recacher}()},
+\code{\link{memory_cache}()},
+\code{\link{void_cache}()}
 }
 \concept{cache}

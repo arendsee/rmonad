@@ -23,7 +23,9 @@ report(-1:2 \%>>\% log \%>>\% sqrt \%__\% "asdf" \%>>\% sqrt)
 }
 }
 \seealso{
-Other from_Rmonad: \code{\link{esc}},
-  \code{\link{missues}}, \code{\link{mtabulate}}
+Other from_Rmonad: 
+\code{\link{esc}()},
+\code{\link{missues}()},
+\code{\link{mtabulate}()}
 }
 \concept{from_Rmonad}

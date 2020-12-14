@@ -1,7 +1,7 @@
 context("combine and funnel")
 
 l_non_monadic <- list("hi", 42)
-l_monadic <- list(as_monad("hi"), as_monad(42))
+l_monadic <- list(evalwrap("hi"), evalwrap(42))
 
 test_that('combine fails on non-monadic inputs in list', {
   expect_error(combine(l_non_monadic))
@@ -47,19 +47,19 @@ test_that('combine and funnel store history in list', {
 })
 
 test_that('combine and funnel store all results into an order preserving list', {
-  expect_equal(combine(c(as_monad(3), as_monad(5), as_monad(1))) %>% .single_value %>% unlist, c(3, 5, 1))
+  expect_equal(combine(c(evalwrap(3), evalwrap(5), evalwrap(1))) %>% .single_value %>% unlist, c(3, 5, 1))
   expect_equal(funnel(3, 5, 1) %>% .single_value %>% unlist, c(3, 5, 1))
 
   expect_true(is.list(funnel(3, 5, 1) %>% .single_value))
-  expect_true(is.list(combine(list(as_monad(3), as_monad(5), as_monad(1))) %>% .single_value))
+  expect_true(is.list(combine(list(evalwrap(3), evalwrap(5), evalwrap(1))) %>% .single_value))
 })
 
 
 test_that('combine and funnel work with expressions', {
-  expect_equal( combine(list(as_monad(max(3, 2)), as_monad(prod(2, 3)))) %>% .single_value %>% unlist, c(3, 6))
+  expect_equal( combine(list(evalwrap(max(3, 2)), evalwrap(prod(2, 3)))) %>% .single_value %>% unlist, c(3, 6))
   expect_equal( funnel(               max(3, 2) ,          prod(2, 3))   %>% .single_value %>% unlist, c(3, 6))
 
-  expect_true( combine( list(as_monad(max(3,2)), as_monad(prod(2,3))) ) %>% .single_OK )
+  expect_true( combine( list(evalwrap(max(3,2)), evalwrap(prod(2,3))) ) %>% .single_OK )
   expect_true( funnel(                max(3,2) ,          prod(2,3)   ) %>% .single_OK )
 })
 

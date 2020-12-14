@@ -1,3 +1,8 @@
+# rmonad 0.8.0
+
+ * Rename `as_monad` to `evalwrap` to capture the evaluation, not just
+   wrapping, action
+
 # rmonad 0.7.0
 
  * Rename `log` rewriter as `format_log`

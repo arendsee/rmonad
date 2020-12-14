@@ -1,3 +1,12 @@
+#' Deprecated name for evalwrap
+#'
+#' @param ... arguments passed to evalwrap
+#' @export
+as_monad <- function(...){
+  .Deprecated("evalwrap")
+  evalwrap(...)
+}
+
 #' Apply f to the contents of a monad and merge messages 
 #'
 #' This function should not be used directly. Rather you should use the infix
@@ -177,7 +186,7 @@ bind <- function(
 
   .set_nest_salt(serialize(key, NULL))
 
-  as_monad(do.call(func, args, envir=env), desc=code, key=key, env=env) %>% .unnest
+  evalwrap(do.call(func, args, envir=env), desc=code, key=key, env=env) %>% .unnest
 }
 
 eval_function_metadata <- function(f, args, meta_expr, env, enclos){
@@ -187,7 +196,7 @@ eval_function_metadata <- function(f, args, meta_expr, env, enclos){
 
   body(f) <- as.call(c(as.name("{"), meta_expr))
   environment(f) <- enclos
-  m_meta <- as_monad(do.call(f, args), env=env)
+  m_meta <- evalwrap(do.call(f, args), env=env)
 
   meta <- if(get_OK(m_meta, m_meta@head)){
     get_value(m_meta, m_meta@head)[[1]]
@@ -216,7 +225,7 @@ store_value <- function(m) { .single_stored(m) <- TRUE ; m }
 entry_lhs_transform_default <- function(m, f, ...) {
   # FIXME: This is a sneaky way of safely evaluating the lhs without nesting
   # the nads. I need a cleaner solution.
-  as_monad(m, lossy=TRUE, ...)
+  evalwrap(m, lossy=TRUE, ...)
 }
 
 emit_default <- function(input, output) {

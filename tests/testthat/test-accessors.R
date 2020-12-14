@@ -1,6 +1,6 @@
 context("accessor methods")
 
-m <- as_monad(42)
+m <- evalwrap(42)
 
 test_that("The .has_* correctly return false", {
   expect_equal(has_doc(m),        FALSE)
@@ -29,9 +29,9 @@ test_that("You can't put in illegal values", {
   expect_error(.single_notes(.m)    <- FALSE )
 })
 
-m1 <- as_monad({warning("w"); message("m"); 46})
-m2 <- as_monad({warning("w1"); warning("w2"); message("m1"); message("m2"); 47})
-e1 <- as_monad({warning("w"); stop("e"); 48})
+m1 <- evalwrap({warning("w"); message("m"); 46})
+m2 <- evalwrap({warning("w1"); warning("w2"); message("m1"); message("m2"); 47})
+e1 <- evalwrap({warning("w"); stop("e"); 48})
 
 test_that(".single_* return unlisted results", {
   expect_equal(.single_warnings(m1), "w")

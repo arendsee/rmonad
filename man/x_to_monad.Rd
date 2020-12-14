@@ -2,13 +2,20 @@
 % Please edit documentation in R/to-monad.R
 \name{x_to_monad}
 \alias{x_to_monad}
-\alias{as_monad}
+\alias{evalwrap}
 \alias{funnel}
 \alias{combine}
 \title{Conversions to monads}
 \usage{
-as_monad(expr, desc = NULL, tag = NULL, doc = .default_doc(),
-  key = NULL, env = parent.frame(), lossy = FALSE)
+evalwrap(
+  expr,
+  desc = NULL,
+  tag = NULL,
+  doc = .default_doc(),
+  key = NULL,
+  env = parent.frame(),
+  lossy = FALSE
+)
 
 funnel(..., env = parent.frame(), keep_history = TRUE)
 
@@ -43,7 +50,7 @@ For each of these functions, failure of any part causes failure of the
 whole. Any non-monadic inputs will be converted to monads. Any exceptions
 raised in the inputs will be caught.
 
-\code{as_monad} evaluate a single expression into an Rmonad. If the value is
+\code{evalwrap} evaluate a single expression into an Rmonad. If the value is
 already an Rmonad, it will be nested.
 
 \code{funnel} evaluates multiple arguments into one Rmonad. It can be used
@@ -54,9 +61,9 @@ Rmonad. The values of the original monadic containers joined into a list in
 the child Rmonad. The list Rmonads are recorded as the new Rmonad's parents.
 }
 \examples{
-as_monad(stop(1))
-as_monad(1:10)
-as_monad(5 \%>>\% sqrt)
+evalwrap(stop(1))
+evalwrap(1:10)
+evalwrap(5 \%>>\% sqrt)
 
 ## merge failing inputs 
 funnel( 1:10, stop(1), sqrt(-3:3) )

@@ -90,7 +90,7 @@ unlink(cache_dir, recursive=TRUE)
 options(rmonad.crunch_maxmem = 1e5)
 test_that("crunch works", {
   expect_true({
-    m <- as_monad(runif(1e5), tag="a") %>>%
+    m <- evalwrap(runif(1e5), tag="a") %>>%
          sqrt %>% tag("b") %>>%
          log %>% tag("c") %>>% prod(2) %>>% prod(3)
     m1 <- crunch(m)

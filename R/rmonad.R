@@ -43,7 +43,7 @@ NULL
 #'
 #' @section x to monad functions:
 #'
-#' \code{as_monad} - evaluate an expression into a monad (capturing error)
+#' \code{evalwrap} - evaluate an expression into a monad (capturing error)
 #'
 #' \code{funnel} - evaluate expressions into a list inside a monad
 #'
@@ -87,7 +87,7 @@ NULL
 #' cars %>>% colSums %__% cars %>>% lapply(sd) %>>% unlist
 #'
 #' # load an expression into a monad, catching errors
-#' as_monad(stop("instant death"))
+#' evalwrap(stop("instant death"))
 #'
 #' # convert multiple expressions into a list inside a monad
 #' funnel(stop("oh no"), runif(5), sqrt(-1))

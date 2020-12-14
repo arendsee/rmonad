@@ -1,7 +1,7 @@
 context("code strings")
 
-test_that("as_monad captures code string", {
-  expect_equal(get_code(as_monad(41+1))[[1]], '41 + 1') 
+test_that("evalwrap captures code string", {
+  expect_equal(get_code(evalwrap(41+1))[[1]], '41 + 1') 
 })
 
 test_that("correct for %>>%", {

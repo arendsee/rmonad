@@ -8,7 +8,7 @@ test_that("format warnings", {
     c("oops")
   )
   expect_equal(
-    as_monad({
+    evalwrap({
       list(format_warnings=function(x, w) { "oops" } )
       log(-1)
     }) %>% .single_warnings,
@@ -16,7 +16,7 @@ test_that("format warnings", {
   )
   # Ensure the function isn't called when no warnings are raised
   expect_equal(
-    as_monad({
+    evalwrap({
       list(format_warnings=function(x, w) { "oops" } )
       sqrt(16)
     }) %>% esc, 4

@@ -209,8 +209,8 @@ make_recacher <- function(cacher, preserve=TRUE){
   # @param m An Rmonad object
   # @param tag A tag for quick access to the cached node
   function(m, tag=.default_tag()){
-    # lossy, so as_monad will not create extra nesting
-    m <- as_monad(m, lossy=TRUE, desc=deparse(substitute(m)))
+    # lossy, so evalwrap will not create extra nesting
+    m <- evalwrap(m, lossy=TRUE, desc=deparse(substitute(m)))
     .single_raw_value(m) <- cacher(.single_value(m))
     .single_stored(m) <- preserve
     m <- tag(m, tag)
@@ -229,7 +229,7 @@ make_recacher <- function(cacher, preserve=TRUE){
 #' @examples
 #' \dontrun{
 #' set.seed(42)
-#' m <- as_monad(runif(1e6), tag="a") %>>%
+#' m <- evalwrap(runif(1e6), tag="a") %>>%
 #'      sqrt %>% tag("b") %>>%
 #'      log %>% tag("c") %>>% prod(2) %>>% prod(3)
 #' m1 <- crunch(m)

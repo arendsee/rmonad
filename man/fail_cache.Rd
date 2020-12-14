@@ -15,9 +15,12 @@ of a failing node. Unlike \code{void_cache}, this presence of this manager
 in a pipeline is not pathological, so does not raise a warning by default.
 }
 \seealso{
-Other cache: \code{\link{clear_cache}},
-  \code{\link{make_cacher}}, \code{\link{make_recacher}},
-  \code{\link{memory_cache}}, \code{\link{no_cache}},
-  \code{\link{void_cache}}
+Other cache: 
+\code{\link{clear_cache}()},
+\code{\link{make_cacher}()},
+\code{\link{make_recacher}()},
+\code{\link{memory_cache}()},
+\code{\link{no_cache}()},
+\code{\link{void_cache}()}
 }
 \concept{cache}

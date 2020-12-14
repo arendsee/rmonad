@@ -1,6 +1,6 @@
 context("tags and views")
 
-m1 <- as_monad(16) %>% tag('a') %>>% sqrt %>% tag('foo/bar') %v>% sqrt
+m1 <- evalwrap(16) %>% tag('a') %>>% sqrt %>% tag('foo/bar') %v>% sqrt
 m2 <- funnel(view(m1, 'a'), view(m1, 'foo/bar'), 99) %*>% sum
 m3 <- 'a' %>>% paste('b') %>% tag(c('foo', 'bar')) %>>%
                paste('c') %>% tag(c('foo', 'rad')) %>>%
@@ -17,23 +17,23 @@ test_that("tag utilities work", {
 })
 
 test_that("tag sets tag", {
-  # can set tag from as_monad
-  expect_equal(as_monad(5, tag='a') %>% get_tag, list(list("a")))
+  # can set tag from evalwrap
+  expect_equal(evalwrap(5, tag='a') %>% get_tag, list(list("a")))
   # tag splits on '/'
-  expect_equal(as_monad(5, tag='foo/bar') %>% get_tag, list(list(c("foo", "bar"))))
+  expect_equal(evalwrap(5, tag='foo/bar') %>% get_tag, list(list(c("foo", "bar"))))
   # default tag values are empty lists
   expect_equal(
-    as_monad(16) %>>% sqrt %>>% sqrt %>% get_tag,
+    evalwrap(16) %>>% sqrt %>>% sqrt %>% get_tag,
     list(list(), list(), list())
   )
   # tag sets the head node
   expect_equal(
-    as_monad(16) %>% tag('a') %>>% sqrt %>% tag('b') %>>% sqrt %>% get_tag,
+    evalwrap(16) %>% tag('a') %>>% sqrt %>% tag('b') %>>% sqrt %>% get_tag,
     list(list("a"), list("b"), list())
   )
   # tag sets the head node
   expect_equal(
-    as_monad(16) %>% tag('a', 'foo') %>>% sqrt %>% tag('b') %>>% sqrt %>% get_tag,
+    evalwrap(16) %>% tag('a', 'foo') %>>% sqrt %>% tag('b') %>>% sqrt %>% get_tag,
     list(list(c("a", "foo")), list("b"), list())
   )
 })

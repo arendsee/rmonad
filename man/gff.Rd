@@ -4,7 +4,9 @@
 \name{gff}
 \alias{gff}
 \title{Data for GFF processing vignette}
-\format{List}
+\format{
+List
+}
 \usage{
 gff
 }

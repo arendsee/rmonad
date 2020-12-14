@@ -162,9 +162,9 @@ later access.
 
 ```{r}
 # tag each step you want to reuse
-as_monad(256) %>% tag('a1') %>>% sqrt %>% tag('a2') %__%
-as_monad(144) %>% tag('b1') %>>% sqrt %>% tag('b2') %__%
-as_monad(333) %>% tag('c') -> m
+evalwrap(256) %>% tag('a1') %>>% sqrt %>% tag('a2') %__%
+evalwrap(144) %>% tag('b1') %>>% sqrt %>% tag('b2') %__%
+evalwrap(333) %>% tag('c') -> m
 # sum values across three nodes of the pipeline
 funnel(view(m, 'a2'), view(m, 'b2'), view(m, 'c')) %*>% sum %>% plot(label='value')
 ```
@@ -204,7 +204,7 @@ analysis
 ### Add metadata to chunk
 
 ```{r, eval=FALSE}
-as_monad({
+evalwrap({
   "This is data describing a chunk"
 
   list(

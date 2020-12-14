@@ -35,7 +35,7 @@ test_that('branching works %>^%', {
 test_that('New rmonad dont overwrite old ones (not an issue without R6)', {
   expect_equal(
     {
-      foo_ <- as_monad({ "yolo"; 64 })
+      foo_ <- evalwrap({ "yolo"; 64 })
       foo_ %>>% {"ggg" ; sqrt(.)} # The externally defined 'foo_' should not be modified
       foo_ %>>% {"hhh" ; sqrt(.)} %>% esc
     },

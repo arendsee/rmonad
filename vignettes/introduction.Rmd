@@ -308,7 +308,7 @@ be reset.
 f <- make_recacher(memory_cache)
 
 # make core dataset
-m <- as_monad(iris) %>>%
+m <- evalwrap(iris) %>>%
     dplyr::select(
         sepal_length = Sepal.Length,
         sepal_width = Sepal.Width,

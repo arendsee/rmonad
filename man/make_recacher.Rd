@@ -38,9 +38,12 @@ cc <- make_recacher(make_local_cacher())
 m
 }
 \seealso{
-Other cache: \code{\link{clear_cache}},
-  \code{\link{fail_cache}}, \code{\link{make_cacher}},
-  \code{\link{memory_cache}}, \code{\link{no_cache}},
-  \code{\link{void_cache}}
+Other cache: 
+\code{\link{clear_cache}()},
+\code{\link{fail_cache}()},
+\code{\link{make_cacher}()},
+\code{\link{memory_cache}()},
+\code{\link{no_cache}()},
+\code{\link{void_cache}()}
 }
 \concept{cache}
